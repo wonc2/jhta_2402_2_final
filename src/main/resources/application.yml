@@ -1,0 +1,11 @@
+server:
+  servlet:
+    session:
+      timeout: 1800
+
+spring:
+  security:
+    user:
+      name: admin
+      password: 1234
+      roles: USER, ADMIN
