@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CommonDao {
+
+    // Dao 더 만들필요 없이 이거하나 공유해서 쓸 수 있을겁니다. 아마도? 아니면 지움
+
     @Autowired
     private SqlSessionTemplate sqlSessionTemplate;
 
