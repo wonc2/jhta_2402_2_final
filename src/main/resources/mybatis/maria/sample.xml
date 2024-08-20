@@ -1,6 +1,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="Sample">
-    <insert id="sampleInsert" parameterType="Map">
-        INSERT INTO SAMPLE VALUES #{sample01},#{sample02}
+<mapper namespace="org.example.jhta_2402_2_final.dao.SampleDao">
+    <select id="findAll" resultType="Sample">
+        SELECT * from sample
+    </select>
+
+    <select id="findById" resultType="Sample" parameterType="Long">
+        SELECT id, name
+        FROM sample
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="Sample">
+        INSERT INTO sample (id, name)
+        VALUES (#{id}, #{name})
     </insert>
+
+    <update id="update" parameterType="Sample">
+        UPDATE sample set name = #{name} where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="Long">
+        DELETE FROM sample WHERE id = #{id}
+    </delete>
 </mapper>
