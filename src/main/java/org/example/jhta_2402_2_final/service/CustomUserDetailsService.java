@@ -17,8 +17,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final MemberDao memberDao;
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        MemberDto memberDto = memberDao.findById(username);  //아이디만 가지고 검증하면 password는 시큐리티가 알아서 처리해준다.
+    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+        MemberDto memberDto = memberDao.selectUserWithRole(userId);  //아이디만 가지고 검증하면 password는 시큐리티가 알아서 처리해준다.
         if(memberDto !=null) {
             return new CustomUserDetails(memberDto);
         }

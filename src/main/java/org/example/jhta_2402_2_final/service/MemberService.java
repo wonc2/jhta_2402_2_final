@@ -14,7 +14,7 @@ public class MemberService {
     private final MemberDao memberDao;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public int signin(MemberDto memberDto) {
+    public int insertUser(MemberDto memberDto) {
         MemberDto memberDto02 = MemberDto.builder()
                 .userName(memberDto.getUserName())
                 .userEmail(memberDto.getUserEmail())
@@ -23,7 +23,13 @@ public class MemberService {
                 //.role("ROLE_"+signinDto.getRole())
                 .role(memberDto.getRole())
                 .build();
-        return memberDao.signin(memberDto02);
+        int result01 = memberDao.insertUser(memberDto02);
+        int result02 = memberDao.insertRole(memberDto02);
+        int result = 0;
+        if (result01 > 0 || result02 > 0) {
+            result = 1;
+        }
+        return result;
     }
     //생성자 주입이 됨...
 }

@@ -7,4 +7,7 @@ import org.example.jhta_2402_2_final.model.dto.MemberDto;
 public interface MemberDao {
     MemberDto findById(String userId);
     int signin(MemberDto memberDto);
+    int insertUser(MemberDto memberDto);
+    int insertRole(MemberDto memberDto);
+    MemberDto selectUserWithRole(String username);
 }

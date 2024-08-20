@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="" th:href="@{/css/common.css}">
+</head>
+<body>
+<h1>회원가입</h1>
+<form method="post" action="/member/signin" th:action="@{/member/signin}">
+    아이디<input type="text" name="userId">
+    패스워드<input type="password" name="userPassword">
+    이름<input type="text" name="userName">
+    이메일<input type="text" name="userEmail">
+    <br>
+    역할:
+    <select name="role" required>
+        <option value="">선택하세요</option>
+        <option name="role" value="ROLE_USER">사용자</option>
+        <option name="role" value="ROLE_ADMIN">관리자</option>
+        <option name="role" value="ROLE_MANAGER">매니저</option>
+    </select>
+    <br>
+    
+    <button>회원가입</button>
+</form>
+</body>
+</html>

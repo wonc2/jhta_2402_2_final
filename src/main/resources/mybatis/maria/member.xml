@@ -19,18 +19,19 @@
     </insert>
 
 
-    <select id="selectUserWithRole" resultMap="org.example.jhta_2402_2_final.model.dto.MemberDto">
+    <select id="selectUserWithRole" parameterType="String" resultType="memberDto">
         SELECT
         u.USER_PK as userPk,
         u.USER_NAME as userName,
         u.USER_PASSWORD as userPassword,
         u.USER_ID as userId,
         u.USER_EMAIL as userEmail,
-        r.ROLE_NAME as roleName
+        rn.ROLE_NAME as roleName
         FROM USERS u
         LEFT JOIN ROLE r ON u.USER_PK = r.USER_PK
         LEFT JOIN ROLE_NAME rn ON r.ROLE_NAME_PK = rn.ROLE_NAME_PK
-    </select
+        WHERE u.USER_ID = #{userId}
+    </select>
 
 
 </mapper>

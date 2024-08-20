@@ -33,7 +33,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
         httpSecurity.authorizeHttpRequests((auth)->auth
-                .requestMatchers("/")
+                .requestMatchers("/","/member/signin")
                 .permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/user/**").hasAnyRole("ADMIN","USER")
@@ -42,8 +42,8 @@ public class SecurityConfig {
                 .authenticated()
         );
         httpSecurity.formLogin((auth)->auth
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
+                .loginPage("/member/login")
+                .loginProcessingUrl("/member/login")
                 .usernameParameter("userId")
                 .passwordParameter("userPassword")
                 .defaultSuccessUrl("/",true) //true를 쓰지 않으면 이전 페이지로 간다.
