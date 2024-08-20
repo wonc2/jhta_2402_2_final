@@ -19,7 +19,7 @@ public class SampleService {
     }
 
     public Sample getSampleById(Long id) {
-        return sampleDao.findById(id);
+        return sampleDao.findById(id).get();
     }
 
     public int createSample(Sample sample) {

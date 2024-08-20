@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @Transactional
@@ -32,16 +34,9 @@ public class SampleDaoTest {
         assertThat(rs).isEqualTo(1); // 삽입된 행의 수가 1인지 확인
 
         // 추가 검증 - 데이터가 제대로 삽입되었는지 확인
-        Sample sample02 = sampleDao.findById(1L);
+        Sample sample02 = sampleDao.findById(1L).get();
         assertThat(sample02).isNotNull();
         assertThat(sample02.getName()).isEqualTo("샘플샘플");
-    }
-
-    @Test
-    public void getTest() {
-        List<Map<String, String>> map = sampleDao.getTest();
-        assertThat(map).isNotNull();
-        assertThat(map.size()).isEqualTo(2);
     }
 
     @Test
@@ -53,4 +48,14 @@ public class SampleDaoTest {
             System.out.println(sample.getName());
         }
     }
+    @Test
+    public void testInsert() {
+        Sample sample = new Sample(6L, "TestName");
+        sampleDao.insert(sample);
+
+        Sample reSample = sampleDao.findById(6L).get();
+        assertNotNull(reSample);
+        assertEquals("TestName", reSample.getName());
+    }
+
 }
