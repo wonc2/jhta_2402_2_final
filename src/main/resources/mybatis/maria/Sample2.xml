@@ -2,13 +2,21 @@
 <mapper namespace="org.example.jhta_2402_2_final.dao.SampleDao">
 
     <insert id="insert" parameterType="Sample">
-        INSERT INTO SAMPLE (id, name)
+        INSERT INTO sample (id, name)
         VALUES (#{id}, #{name})
     </insert>
 
     <select id="findById" resultType="Sample" parameterType="Long">
         SELECT id, name
-        FROM SAMPLE
+        FROM sample
         WHERE id = #{id}
+    </select>
+
+    <select id="findAll" resultType="Sample">
+        SELECT * from sample
+    </select>
+
+    <select id="getTest" resultType="Map">
+        SELECT * from test
     </select>
 </mapper>

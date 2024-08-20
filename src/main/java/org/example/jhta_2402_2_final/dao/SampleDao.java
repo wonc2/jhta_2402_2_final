@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.example.jhta_2402_2_final.model.dto.Sample;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface SampleDao {
@@ -12,4 +13,6 @@ public interface SampleDao {
     int insert(Sample sample);
     int update(Sample sample);
     int delete(Long id);
+
+    List<Map<String, String>> getTest();
 }

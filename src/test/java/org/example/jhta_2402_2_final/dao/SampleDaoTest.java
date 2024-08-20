@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -32,5 +35,22 @@ public class SampleDaoTest {
         Sample sample02 = sampleDao.findById(1L);
         assertThat(sample02).isNotNull();
         assertThat(sample02.getName()).isEqualTo("샘플샘플");
+    }
+
+    @Test
+    public void getTest() {
+        List<Map<String, String>> map = sampleDao.getTest();
+        assertThat(map).isNotNull();
+        assertThat(map.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void findAllSamples() {
+        List<Sample> map = sampleDao.findAll();
+        assertThat(map).isNotNull();
+
+        for (Sample sample : map) {
+            System.out.println(sample.getName());
+        }
     }
 }
