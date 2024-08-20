@@ -10,4 +10,6 @@ public interface MemberDao {
     int insertUser(MemberDto memberDto);
     int insertRole(MemberDto memberDto);
     MemberDto selectUserWithRole(String username);
+    boolean checkUserIdExists(String userId);
+
 }

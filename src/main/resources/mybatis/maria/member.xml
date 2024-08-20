@@ -18,6 +18,12 @@
         )
     </insert>
 
+    <!-- memberMapper.xml -->
+    <select id="checkUserIdExists" parameterType="String" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM USERS
+        WHERE USER_ID = #{userId}
+    </select>
 
     <select id="selectUserWithRole" parameterType="String" resultType="memberDto">
         SELECT

@@ -31,6 +31,9 @@ public class MemberService {
         }
         return result;
     }
-    //생성자 주입이 됨...
+    public boolean isUserIdAvailable(String userId) {
+        return memberDao.checkUserIdExists(userId);
+    }
+
 }
 
