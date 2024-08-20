@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.jhta_2402_2_final.dao.MemberDao">
+    <!-- INSERT 쿼리 for USERS 테이블 -->
+    <insert id="insertUser" parameterType="org.example.jhta_2402_2_final.model.dto.MemberDto" useGeneratedKeys="true" keyProperty="primaryKey">
+        INSERT INTO USERS (USER_NAME, USER_PASSWORD, USER_ID, USER_EMAIL)
+        VALUES (#{userName}, #{userPassword}, #{userId}, #{userEmail})
+    </insert>
+
+    <!-- INSERT 쿼리 for ROLE 테이블 -->
+    <insert id="insertRole" parameterType="org.example.jhta_2402_2_final.model.dto.MemberDto">
+        INSERT INTO ROLE (USER_PK, ROLE_NAME_PK)
+        VALUES (
+        #{primaryKey},
+        (SELECT ROLE_NAME_PK FROM ROLE_NAME WHERE ROLE_NAME = #{role})
+        )
+    </insert>
+
+
+    <select id="selectUserWithRole" resultMap="org.example.jhta_2402_2_final.model.dto.MemberDto">
+        SELECT
+        u.USER_PK as userPk,
+        u.USER_NAME as userName,
+        u.USER_PASSWORD as userPassword,
+        u.USER_ID as userId,
+        u.USER_EMAIL as userEmail,
+        r.ROLE_NAME as roleName
+        FROM USERS u
+        LEFT JOIN ROLE r ON u.USER_PK = r.USER_PK
+        LEFT JOIN ROLE_NAME rn ON r.ROLE_NAME_PK = rn.ROLE_NAME_PK
+    </select
+
+
+</mapper>
