@@ -18,7 +18,6 @@ public class TestRestController {
     @ResponseBody
     @GetMapping("error")
     public ResponseEntity<Object> test() {
-//        throw new TestException(ErrorCode.BAD_REQUEST);
-        throw new TestException(ErrorCode.BAD_REQUEST, "asdaad ", HttpStatus.INTERNAL_SERVER_ERROR);
+        throw new TestException(ErrorCode.BAD_REQUEST);
     }
 }

@@ -5,12 +5,12 @@ import org.example.jhta_2402_2_final.model.enums.ErrorCode;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class TestException extends RuntimeException {
+public class SampleException extends RuntimeException {
     private ErrorCode errorCode;
 //    private String detailMessage;
 //    private HttpStatus status;
 
-    public TestException(ErrorCode errorCode) {
+    public SampleException(ErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 }
