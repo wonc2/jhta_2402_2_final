@@ -9,7 +9,7 @@
 <h1>로그인</h1>
 <form method="post" action="/member/login" th:action="@{/member/login}">
     <input type="text" name="userId">
-    <input type="password" name="password">
+    <input type="password" name="userPassword">
     <button>로그인</button>
 </form>
 <div th:text="${param.msg}"></div>

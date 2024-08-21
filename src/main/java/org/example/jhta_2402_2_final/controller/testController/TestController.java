@@ -1,4 +1,4 @@
-package org.example.jhta_2402_2_final.testController;
+package org.example.jhta_2402_2_final.controller.testController;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
