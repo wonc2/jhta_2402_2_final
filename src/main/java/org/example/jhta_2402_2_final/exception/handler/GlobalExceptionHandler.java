@@ -2,6 +2,7 @@ package org.example.jhta_2402_2_final.exception.handler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.jhta_2402_2_final.exception.ExceptionUtil;
 import org.example.jhta_2402_2_final.exception.types.SampleException;
 import org.example.jhta_2402_2_final.exception.types.TestException;
 import org.springframework.http.HttpStatus;
@@ -16,34 +17,30 @@ import java.util.Map;
 
 @ControllerAdvice
 @Slf4j
-//@RequiredArgsConstructor
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
 
-//    private final ExceptionUtil util;
+    private final ExceptionUtil util;
 
-    /* 예외 Json 으로 던질시 사용하면 됩니다. 테스트용 샘플입니다 ~ */
+    /* 예외 Json 으로 던질시 ResponseEntity 리턴해서 사용하면 됩니다. 테스트용 샘플입니다 ~ */
     @ExceptionHandler(TestException.class)
-    @ResponseBody
     public ResponseEntity<Map<String, Object>> testException(TestException e) {
 
-        Map<String, Object> errorMap = new HashMap<>();
-        errorMap.put("errorCode", e.getErrorCode());    //  에러 코드
-        errorMap.put("errorMessage", e.getErrorCode().getMessage()); // Enum 에서 정의한 에러 메시지
-        errorMap.put("errorStatus", e.getErrorCode().getStatus()); // Enum 에서 정의한 HTTP 상태 코드
-
-        return new ResponseEntity<>(errorMap, e.getErrorCode().getStatus());
+        // exception 패키지 - ExceptionUtil 에 getErrorMap(Exception e) 로 errorMap 가져옴
+        // errorMap: {
+        //           "errorMessage": "에러메시지",
+        //           "errorCode": "enum 에러 코드",
+        //           "errorStatus": "http 상태 코드"
+        //          }
+        Map<String, Object> errorMap = util.getErrorMap(e);
+        return new ResponseEntity<>(errorMap, (HttpStatus) errorMap.get("errorStatus"));
     }
 
-    /* 예외 View 로 던질시 @ResponseBody 빼고, view 리턴해서 사용하면 됩니다. */
+    /* 예외 View 로 던질시 view 리턴해서 사용하면 됩니다. 테스트용 샘플입니다 ~ */
     @ExceptionHandler(SampleException.class)
     public String sampleException(SampleException e, Model model) {
-
-        Map<String, Object> errorMap = new HashMap<>();
-        errorMap.put("errorCode", e.getErrorCode());    //  에러 코드
-        errorMap.put("errorMessage", e.getErrorCode().getMessage()); // Enum 에서 정의한 에러 메시지
-        errorMap.put("errorStatus", e.getErrorCode().getStatus()); // Enum 에서 정의한 HTTP 상태 코드
+        Map<String, Object> errorMap = util.getErrorMap(e);
         model.addAttribute("error", errorMap);
-
-        return "error.html";
+        return "error";
     }
 }
