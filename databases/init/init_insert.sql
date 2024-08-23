@@ -126,3 +126,51 @@ VALUES (UUID(), '1톤 트럭', 1000),
        (UUID(), '10톤 트럭', 10000),
        (UUID(), '25톤 트럭', 25000);
 
+
+INSERT INTO WAREHOUSE_STATUS (warehouse_status_uid, warehouse_uid, warehouse_amount, warehouse_tx, warehouse_date, product_uid)
+VALUES (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 500, '입고', '2024-01-15 09:30:00',
+        (SELECT product_uid FROM PRODUCT WHERE product_name = '양파')),
+       (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 300, '입고', '2024-02-20 14:00:00',
+        (SELECT product_uid FROM PRODUCT WHERE product_name = '참치')),
+       (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '서울1센터'), 1000, '입고', '2024-03-05 11:15:00',
+        (SELECT product_uid FROM PRODUCT WHERE product_name = '목살')),
+       (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '부산 물류센터'), 200, '입고', '2024-04-10 16:45:00',
+        (SELECT product_uid FROM PRODUCT WHERE product_name = '즉석 카레'));
+
+INSERT INTO SUPPLIER_STATUS (supplier_status_uid, supplier_uid, supplier_amount, product_uid)
+VALUES (UUID(), (SELECT supplier_uid FROM SUPPLIER WHERE supplier_name = '농협'), 1000,
+        (SELECT product_uid FROM PRODUCT WHERE product_name = '양파')),
+       (UUID(), (SELECT supplier_uid FROM SUPPLIER WHERE supplier_name = '수협'), 2000,
+        (SELECT product_uid FROM PRODUCT WHERE product_name = '참치')),
+       (UUID(), (SELECT supplier_uid FROM SUPPLIER WHERE supplier_name = '팜한농'), 1500,
+        (SELECT product_uid FROM PRODUCT WHERE product_name = '호박'));
+
+INSERT INTO STORE_STATUS (store_status_uid, store_uid, store_amount, store_tx, store_date, product_uid)
+VALUES (UUID(), (SELECT store_uid FROM STORE WHERE store_name = '서울 강남점'), 300, '입고', '2024-01-10 08:00:00',
+        (SELECT product_uid FROM PRODUCT WHERE product_name = '대파')),
+       (UUID(), (SELECT store_uid FROM STORE WHERE store_name = '서울 잠실점'), 150, '입고', '2024-02-15 13:00:00',
+        (SELECT product_uid FROM PRODUCT WHERE product_name = '오징어')),
+       (UUID(), (SELECT store_uid FROM STORE WHERE store_name = '부산 해운대점'), 200, '입고', '2024-03-20 10:30:00',
+        (SELECT product_uid FROM PRODUCT WHERE product_name = '치즈'));
+
+INSERT INTO ORDER_TABLE (order_uid, order_status, order_by_tpye, order_by_uid, supply_by_type, supply_by_uid)
+VALUES (UUID(), '요청', 'STORE', (SELECT store_uid FROM STORE WHERE store_name = '서울 강남점'), 'WAREHOUSE',
+        (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터')),
+       (UUID(), '승인', 'STORE', (SELECT store_uid FROM STORE WHERE store_name = '부산 해운대점'), 'WAREHOUSE',
+        (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '서울1센터'));
+
+INSERT INTO ORDER_DETAIL (order_detail_uid, order_date, order_amount, product_uid, order_uid)
+VALUES (UUID(), '2024-01-12 10:00:00', 100, (SELECT product_uid FROM PRODUCT WHERE product_name = '대파'),
+        (SELECT order_uid FROM ORDER_TABLE WHERE order_by_uid = (SELECT store_uid FROM STORE WHERE store_name = '서울 강남점'))),
+       (UUID(), '2024-02-18 12:00:00', 50, (SELECT product_uid FROM PRODUCT WHERE product_name = '오징어'),
+        (SELECT order_uid FROM ORDER_TABLE WHERE order_by_uid = (SELECT store_uid FROM STORE WHERE store_name = '부산 해운대점')));
+
+INSERT INTO DISTRIBUTION_LOG (distribution_log_uid, product_uid, source_type, source_uid, detination_type, destination_uid, amount, log_date, transport_uid)
+VALUES (UUID(), (SELECT product_uid FROM PRODUCT WHERE product_name = '양파'), 'SUPPLIER',
+        (SELECT supplier_uid FROM SUPPLIER WHERE supplier_name = '농협'), 'WAREHOUSE',
+        (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 500, '2024-01-14 09:00:00',
+        (SELECT transport_uid FROM TRANSPORT WHERE transport_type = '1톤 트럭')),
+       (UUID(), (SELECT product_uid FROM PRODUCT WHERE product_name = '참치'), 'SUPPLIER',
+        (SELECT supplier_uid FROM SUPPLIER WHERE supplier_name = '수협'), 'WAREHOUSE',
+        (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '서울1센터'), 200, '2024-02-22 14:30:00',
+        (SELECT transport_uid FROM TRANSPORT WHERE transport_type = '5톤 트럭'));
