@@ -4,6 +4,10 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <typeAliases>
+        <typeAlias alias="UUID" type="java.util.UUID"/>
         <package name="org.example.jhta_2402_2_final.model.dto"/>
     </typeAliases>
+    <typeHandlers>
+        <typeHandler handler="org.example.jhta_2402_2_final.config.UUIDTypeHandler" javaType="java.util.UUID"/>
+    </typeHandlers>
 </configuration>

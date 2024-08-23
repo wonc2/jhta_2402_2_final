@@ -12,7 +12,7 @@
 
     <insert id="insert" parameterType="Sample">
         INSERT INTO sample (id, name)
-        VALUES (#{id}, #{name})
+        VALUES (UUID(), #{name})
     </insert>
 
     <update id="update" parameterType="Sample">

@@ -20,16 +20,17 @@ public class MemberService {
                 .userEmail(memberDto.getUserEmail())
                 .userId(memberDto.getUserId())
                 .userPassword(bCryptPasswordEncoder.encode(memberDto.getUserPassword()))
+                .userTel("0123-1231")
                 //.role("ROLE_"+signinDto.getRole())
                 .role(memberDto.getRole())
                 .build();
-        int result01 = memberDao.insertUser(memberDto02);
-        int result02 = memberDao.insertRole(memberDto02);
-        int result = 0;
-        if (result01 > 0 || result02 > 0) {
-            result = 1;
-        }
-        return result;
+        return  memberDao.insertUser(memberDto02);
+//        int result02 = memberDao.insertRole(memberDto02);
+//        int result = 0;
+//        if (result01 > 0 || result02 > 0) {
+//            result = 1;
+//        }
+//        return result;
     }
     public boolean isUserIdAvailable(String userId) {
         return memberDao.checkUserIdExists(userId);

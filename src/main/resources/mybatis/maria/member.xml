@@ -4,39 +4,40 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.MemberDao">
     <!-- INSERT 쿼리 for USERS 테이블 -->
-    <insert id="insertUser" parameterType="org.example.jhta_2402_2_final.model.dto.MemberDto" useGeneratedKeys="true" keyProperty="primaryKey">
-        INSERT INTO USERS (USER_NAME, USER_PASSWORD, USER_ID, USER_EMAIL)
-        VALUES (#{userName}, #{userPassword}, #{userId}, #{userEmail})
+    <insert id="insertUser" parameterType="MemberDto" useGeneratedKeys="true" keyProperty="userUid">
+        INSERT INTO USER (user_uid, user_name, user_pw, user_id, user_email, user_tel)
+        VALUES (UUID(), #{userName}, #{userPassword}, #{userId}, #{userEmail}, #{userTel})
     </insert>
 
     <!-- INSERT 쿼리 for ROLE 테이블 -->
-    <insert id="insertRole" parameterType="org.example.jhta_2402_2_final.model.dto.MemberDto">
-        INSERT INTO ROLE (USER_PK, ROLE_NAME_PK)
+    <insert id="insertRole" parameterType="MemberDto">
+        INSERT INTO ACCOUNT (account_uid, user_uid, role_uid)
         VALUES (
+        UUID(),
         #{primaryKey},
-        (SELECT ROLE_NAME_PK FROM ROLE_NAME WHERE ROLE_NAME = #{role})
+        (SELECT role_uid FROM ROLE WHERE role_name = #{role})
         )
     </insert>
 
     <!-- memberMapper.xml -->
     <select id="checkUserIdExists" parameterType="String" resultType="boolean">
         SELECT COUNT(*) > 0
-        FROM USERS
-        WHERE USER_ID = #{userId}
+        FROM USER
+        WHERE user_id = #{userId}
     </select>
 
-    <select id="selectUserWithRole" parameterType="String" resultType="memberDto">
+    <select id="selectUserWithRole" parameterType="String" resultType="MemberDto">
         SELECT
-        u.USER_PK as userPk,
-        u.USER_NAME as userName,
-        u.USER_PASSWORD as userPassword,
-        u.USER_ID as userId,
-        u.USER_EMAIL as userEmail,
-        rn.ROLE_NAME as roleName
-        FROM USERS u
-        LEFT JOIN ROLE r ON u.USER_PK = r.USER_PK
-        LEFT JOIN ROLE_NAME rn ON r.ROLE_NAME_PK = rn.ROLE_NAME_PK
-        WHERE u.USER_ID = #{userId}
+        u.user_uid as userUid,
+        u.user_name as userName,
+        u.user_pw as userPassword,
+        u.user_id as userId,
+        u.user_email as userEmail,
+        r.role_name as roleName
+        FROM USER u
+        LEFT JOIN ACCOUNT a ON u.user_uid = a.user_uid
+        LEFT JOIN ROLE r ON a.role_uid = r.role_uid
+        WHERE u.user_id = #{userId}
     </select>
 
 
