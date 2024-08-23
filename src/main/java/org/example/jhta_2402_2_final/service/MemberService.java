@@ -20,7 +20,7 @@ public class MemberService {
                 .userEmail(memberDto.getUserEmail())
                 .userId(memberDto.getUserId())
                 .userPassword(bCryptPasswordEncoder.encode(memberDto.getUserPassword()))
-                .userTel("0123-1231")
+                .userTel(memberDto.getUserTel())
                 //.role("ROLE_"+signinDto.getRole())
                 .role(memberDto.getRole())
                 .build();
