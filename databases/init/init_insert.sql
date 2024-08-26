@@ -186,7 +186,7 @@ VALUES
 (UUID(), (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '롯데제과'), 200, (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '식빵')),
 (UUID(), (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '롯데제과'), 150, (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '치즈'));
 
-INSERT INTO `ORDER_TABLE` (`order_uid`, `order_status`, `order_by_tpye`, `order_by_uid`, `supply_by_type`, `supply_by_uid`)
+INSERT INTO `ORDER_TABLE` (`order_uid`, `order_status`, `order_by_type`, `order_by_uid`, `supply_by_type`, `supply_by_uid`)
 VALUES
     (UUID(), '요청', 'SUPPLY', (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'admin'), 'WAREHOUSE', (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '농협')),
     (UUID(), '승인', 'SUPPLY', (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'john1'), 'WAREHOUSE', (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '수협'));
