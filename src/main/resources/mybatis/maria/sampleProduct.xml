@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.jhta_2402_2_final.dao.SampleProductDao">
+
+    <!-- SELECT query: 모든 제품을 조회 -->
+    <select id="findAll" resultType="org.example.jhta_2402_2_final.model.dto.ProductDto">
+        SELECT * FROM PRODUCT;
+    </select>
+
+    <!-- INSERT query: 새로운 제품 추가 -->
+    <insert id="insertNewProduct" parameterType="ProductDto">
+        INSERT INTO PRODUCT (product_uid, category_uid, product_name, product_size, product_cost)
+        VALUES  (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '농산물'), #{productName}, #{productSize}, #{productCost});
+    </insert>
+
+</mapper>
