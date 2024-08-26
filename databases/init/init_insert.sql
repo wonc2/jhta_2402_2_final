@@ -12,14 +12,42 @@ VALUES (UUID(), 'ROLE_ADMIN'),
 
 -- 유저 추가
 INSERT INTO `USER` (`user_uid`, `user_name`, `user_id`, `user_pw`, `user_email`, `user_tel`)
-VALUES (UUID(), '관리자', 'admin', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'admin@example.com',
-        '010-0000-0000');
+VALUES (UUID(), 'Admin', 'admin', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'admin@example.com','010-0000-0000'),
+       (UUID(), 'John Doe', 'john1', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'john1@example.com', '010-0000-0001'),
+       (UUID(), 'Jane Doe', 'jane2', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'jane2@example.com', '010-0000-0002'),
+       (UUID(), 'Michael Scott', 'michael3', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'michael3@example.com', '010-0000-0003'),
+       (UUID(), 'Dwight Schrute', 'dwight4', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'dwight4@example.com', '010-0000-0004'),
+       (UUID(), 'Jim Halpert', 'jim5', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'jim5@example.com', '010-0000-0005'),
+       (UUID(), 'Pam Beesly', 'pam6', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'pam6@example.com', '010-0000-0006'),
+       (UUID(), 'Stanley Hudson', 'stanley7', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'stanley7@example.com', '010-0000-0007'),
+       (UUID(), 'Kevin Malone', 'kevin8', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'kevin8@example.com', '010-0000-0008'),
+       (UUID(), 'Oscar Martinez', 'oscar9', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'oscar9@example.com', '010-0000-0009'),
+       (UUID(), 'Toby Flenderson', 'toby10', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'toby10@example.com', '010-0000-0010'),
+       (UUID(), 'Meredith Palmer', 'meredith11', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'meredith11@example.com', '010-0000-0011'),
+       (UUID(), 'Ryan Howard', 'ryan12', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'ryan12@example.com', '010-0000-0012'),
+       (UUID(), 'Kelly Kapoor', 'kelly13', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'kelly13@example.com', '010-0000-0013'),
+       (UUID(), 'Andy Bernard', 'andy14', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'andy14@example.com', '010-0000-0014'),
+       (UUID(), 'Angela Martin', 'angela15', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJeIJZXVMLeqF7xa3a', 'angela15@example.com', '010-0000-0015');
 
--- 다음으로 ACCOUNT 테이블에 USER와 ROLE을 연결합니다.
-INSERT INTO `ACCOUNT` (`account_uid`, `role_uid`, `user_uid`)
-VALUES (UUID(),
-        (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_ADMIN'),
-        (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'admin'));
+
+-- USER_ROLE 테이블에 USER와 ROLE을 연결
+INSERT INTO `USER_ROLE` (`user_role_uid`, `role_uid`, `user_uid`)
+VALUES (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_ADMIN'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'admin')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_STORE_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'john1')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_WAREHOUSE_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'jane2')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_STORE_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'michael3')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_ACCOUNT_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'dwight4')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_SALES_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'jim5')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_HR_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'pam6')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_ORDER_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'stanley7')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_WAREHOUSE_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'kevin8')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_STORE_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'oscar9')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_ACCOUNT_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'toby10')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_SALES_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'meredith11')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_HR_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'ryan12')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_ORDER_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'kelly13')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_SALES_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'andy14')),
+       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_HR_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'angela15'));
 
 
 -- 카테고리
@@ -127,14 +155,18 @@ VALUES (UUID(), '1톤 트럭', 1000),
        (UUID(), '25톤 트럭', 25000);
 
 
-INSERT INTO WAREHOUSE_STATUS (warehouse_status_uid, warehouse_uid, warehouse_amount, warehouse_tx, warehouse_date, product_uid)
-VALUES (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 500, '입고', '2024-01-15 09:30:00',
+INSERT INTO WAREHOUSE_STATUS (warehouse_status_uid, warehouse_uid, warehouse_amount, warehouse_tx, warehouse_date,
+                              product_uid)
+VALUES (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 500, '입고',
+        '2024-01-15 09:30:00',
         (SELECT product_uid FROM PRODUCT WHERE product_name = '양파')),
-       (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 300, '입고', '2024-02-20 14:00:00',
+       (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 300, '입고',
+        '2024-02-20 14:00:00',
         (SELECT product_uid FROM PRODUCT WHERE product_name = '참치')),
        (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '서울1센터'), 1000, '입고', '2024-03-05 11:15:00',
         (SELECT product_uid FROM PRODUCT WHERE product_name = '목살')),
-       (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '부산 물류센터'), 200, '입고', '2024-04-10 16:45:00',
+       (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '부산 물류센터'), 200, '입고',
+        '2024-04-10 16:45:00',
         (SELECT product_uid FROM PRODUCT WHERE product_name = '즉석 카레'));
 
 INSERT INTO SUPPLIER_STATUS (supplier_status_uid, supplier_uid, supplier_amount, product_uid)
@@ -161,11 +193,16 @@ VALUES (UUID(), '요청', 'STORE', (SELECT store_uid FROM STORE WHERE store_name
 
 INSERT INTO ORDER_DETAIL (order_detail_uid, order_date, order_amount, product_uid, order_uid)
 VALUES (UUID(), '2024-01-12 10:00:00', 100, (SELECT product_uid FROM PRODUCT WHERE product_name = '대파'),
-        (SELECT order_uid FROM ORDER_TABLE WHERE order_by_uid = (SELECT store_uid FROM STORE WHERE store_name = '서울 강남점'))),
+        (SELECT order_uid
+         FROM ORDER_TABLE
+         WHERE order_by_uid = (SELECT store_uid FROM STORE WHERE store_name = '서울 강남점'))),
        (UUID(), '2024-02-18 12:00:00', 50, (SELECT product_uid FROM PRODUCT WHERE product_name = '오징어'),
-        (SELECT order_uid FROM ORDER_TABLE WHERE order_by_uid = (SELECT store_uid FROM STORE WHERE store_name = '부산 해운대점')));
+        (SELECT order_uid
+         FROM ORDER_TABLE
+         WHERE order_by_uid = (SELECT store_uid FROM STORE WHERE store_name = '부산 해운대점')));
 
-INSERT INTO DISTRIBUTION_LOG (distribution_log_uid, product_uid, source_type, source_uid, detination_type, destination_uid, amount, log_date, transport_uid)
+INSERT INTO DISTRIBUTION_LOG (distribution_log_uid, product_uid, source_type, source_uid, destination_type,
+                              destination_uid, amount, log_date, transport_uid)
 VALUES (UUID(), (SELECT product_uid FROM PRODUCT WHERE product_name = '양파'), 'SUPPLIER',
         (SELECT supplier_uid FROM SUPPLIER WHERE supplier_name = '농협'), 'WAREHOUSE',
         (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 500, '2024-01-14 09:00:00',
@@ -174,3 +211,6 @@ VALUES (UUID(), (SELECT product_uid FROM PRODUCT WHERE product_name = '양파'),
         (SELECT supplier_uid FROM SUPPLIER WHERE supplier_name = '수협'), 'WAREHOUSE',
         (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '서울1센터'), 200, '2024-02-22 14:30:00',
         (SELECT transport_uid FROM TRANSPORT WHERE transport_type = '5톤 트럭'));
+
+
+

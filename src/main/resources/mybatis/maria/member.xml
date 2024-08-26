@@ -11,20 +11,13 @@
 
     <!-- INSERT 쿼리 for ROLE 테이블 -->
     <insert id="insertRole" parameterType="MemberDto">
-        INSERT INTO ACCOUNT (account_uid, user_uid, role_uid)
+        INSERT INTO USER_ROLE (user_role_uid, user_uid, role_uid)
         VALUES (
         UUID(),
-        #{primaryKey},
+        (SELECT user_uid FROM USER WHERE user_id = #{userId}),
         (SELECT role_uid FROM ROLE WHERE role_name = #{role})
         )
     </insert>
-
-    <!-- memberMapper.xml -->
-    <select id="checkUserIdExists" parameterType="String" resultType="boolean">
-        SELECT COUNT(*) > 0
-        FROM USER
-        WHERE user_id = #{userId}
-    </select>
 
     <select id="selectUserWithRole" parameterType="String" resultType="MemberDto">
         SELECT
@@ -35,10 +28,8 @@
         u.user_email as userEmail,
         r.role_name as roleName
         FROM USER u
-        LEFT JOIN ACCOUNT a ON u.user_uid = a.user_uid
+        LEFT JOIN USER_ROLE a ON u.user_uid = a.user_uid
         LEFT JOIN ROLE r ON a.role_uid = r.role_uid
         WHERE u.user_id = #{userId}
     </select>
-
-
 </mapper>
