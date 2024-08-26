@@ -154,7 +154,7 @@ CREATE TABLE `ORDER_TABLE`
 (
     `order_uid`      VARCHAR(50) NOT NULL,
     `order_status`   VARCHAR(50) NOT NULL COMMENT '요청/승인/취소',
-    `order_by_tpye`  VARCHAR(50) NOT NULL,
+    `order_by_type`  VARCHAR(50) NOT NULL,
     `order_by_uid`   VARCHAR(50) NOT NULL,
     `supply_by_type` VARCHAR(50) NOT NULL,
     `supply_by_uid`  VARCHAR(50) NOT NULL

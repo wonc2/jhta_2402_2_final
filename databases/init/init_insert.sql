@@ -4,7 +4,7 @@
 INSERT INTO `ROLE` (`role_uid`, `role_name`)
 VALUES (UUID(), 'ROLE_ADMIN'),
        (UUID(), 'ROLE_WAREHOUSE_MANAGER'),
-       (UUID(), 'ROLE_STORE_MANAGER'),
+
        (UUID(), 'ROLE_ACCOUNT_MANAGER'),
        (UUID(), 'ROLE_SALES_MANAGER'),
        (UUID(), 'ROLE_HR_MANAGER'),
@@ -33,15 +33,15 @@ VALUES (UUID(), 'Admin', 'admin', '$2b$12$G.FBR8kI/A9ekBqe.mcfmuzuyUXNjgysEBiEJe
 -- USER_ROLE 테이블에 USER와 ROLE을 연결
 INSERT INTO `USER_ROLE` (`user_role_uid`, `role_uid`, `user_uid`)
 VALUES (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_ADMIN'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'admin')),
-       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_STORE_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'john1')),
+
        (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_WAREHOUSE_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'jane2')),
-       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_STORE_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'michael3')),
+
        (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_ACCOUNT_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'dwight4')),
        (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_SALES_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'jim5')),
        (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_HR_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'pam6')),
        (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_ORDER_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'stanley7')),
        (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_WAREHOUSE_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'kevin8')),
-       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_STORE_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'oscar9')),
+
        (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_ACCOUNT_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'toby10')),
        (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_SALES_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'meredith11')),
        (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_HR_MANAGER'), (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'ryan12')),
@@ -67,29 +67,40 @@ VALUES
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '농산물'), '마늘', 1, 3500),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '농산물'), '오이', 1, 1500),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '농산물'), '상추', 1, 1000),
+(UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '농산물'), '배추', 2, 2500),
+(UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '농산물'), '당근', 1, 2000),
 -- 수산물
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '수산물'), '참치', 2, 25000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '수산물'), '연어', 1, 20000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '수산물'), '굴비', 3, 15000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '수산물'), '오징어', 1, 7000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '수산물'), '홍합', 1, 5000),
+(UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '수산물'), '새우', 1, 10000),
+
 -- 축산물
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '축산물'), '목살', 2, 13000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '축산물'), '갈비살', 3, 16000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '축산물'), '불고기용 소고기', 1, 14000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '축산물'), '오리 훈제', 1, 12000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '축산물'), '베이컨', 1, 8000),
+(UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '축산물'), '닭가슴살', 2, 12000),
+(UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '축산물'), '양고기', 1, 20000),
+
 -- 가공식품
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '가공식품'), '즉석 카레', 1, 2000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '가공식품'), '즉석 미역국', 1, 2500),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '가공식품'), '식빵', 3, 3000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '가공식품'), '우유', 2, 2000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '가공식품'), '치즈', 1, 5000),
+(UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '가공식품'), '통조림', 1, 1500),
+(UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '가공식품'), '라면', 5, 5000),
 -- 생필품
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '생필품'), '면도기', 1, 15000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '생필품'), '치약', 1, 3000),
 (UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '생필품'), '휴대용 손소독제', 1, 2000),
-(UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '생필품'), '비닐봉지', 1, 1000);
+(UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '생필품'), '비닐봉지', 1, 1000),
+(UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '생필품'), '세제', 2, 4000),
+(UUID(), (SELECT `category_uid` FROM `CATEGORY` WHERE `category_name` = '생필품'), '스폰지', 1, 1000);
 
 
 INSERT INTO `WAREHOUSE` (`warehouse_uid`, `role_uid`, `warehouse_name`, `warehouse_address`, `warehouse_capacity`)
@@ -137,16 +148,6 @@ VALUES (UUID(), '농협', '서울특별시 중구 충정로 1'),
        (UUID(), '동원산업', '서울특별시 서초구 서초대로 511'),
        (UUID(), '롯데제과', '서울특별시 영등포구 양평로 21');
 
-INSERT INTO `STORE` (`store_uid`, `role_uid`, `store_name`, `store_address`)
-VALUES (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_STORE_MANAGER'), '서울 강남점',
-        '서울특별시 강남구 강남대로 396'),
-       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_STORE_MANAGER'), '서울 잠실점',
-        '서울특별시 송파구 올림픽로 240'),
-       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_STORE_MANAGER'), '부산 해운대점',
-        '부산광역시 해운대구 해운대로 620'),
-       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_STORE_MANAGER'), '인천 송도점',
-        '인천광역시 연수구 송도국제대로 123'),
-       (UUID(), (SELECT `role_uid` FROM `ROLE` WHERE `role_name` = 'ROLE_STORE_MANAGER'), '대구 동성로점', '대구광역시 중구 동성로 23');
 
 INSERT INTO `TRANSPORT` (`transport_uid`, `transport_type`, `transport_capacity`)
 VALUES (UUID(), '1톤 트럭', 1000),
@@ -155,62 +156,53 @@ VALUES (UUID(), '1톤 트럭', 1000),
        (UUID(), '25톤 트럭', 25000);
 
 
-INSERT INTO WAREHOUSE_STATUS (warehouse_status_uid, warehouse_uid, warehouse_amount, warehouse_tx, warehouse_date,
-                              product_uid)
-VALUES (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 500, '입고',
-        '2024-01-15 09:30:00',
-        (SELECT product_uid FROM PRODUCT WHERE product_name = '양파')),
-       (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 300, '입고',
-        '2024-02-20 14:00:00',
-        (SELECT product_uid FROM PRODUCT WHERE product_name = '참치')),
-       (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '서울1센터'), 1000, '입고', '2024-03-05 11:15:00',
-        (SELECT product_uid FROM PRODUCT WHERE product_name = '목살')),
-       (UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '부산 물류센터'), 200, '입고',
-        '2024-04-10 16:45:00',
-        (SELECT product_uid FROM PRODUCT WHERE product_name = '즉석 카레'));
+INSERT INTO WAREHOUSE_STATUS (warehouse_status_uid, warehouse_uid, warehouse_amount, warehouse_tx, warehouse_date, product_uid)
+VALUES
+-- 중구 물류센터
+(UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 200, '출고', '2024-08-01 10:00:00', (SELECT product_uid FROM PRODUCT WHERE product_name = '양파')),
+(UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 300, '입고', '2024-08-02 14:00:00', (SELECT product_uid FROM PRODUCT WHERE product_name = '오징어')),
+-- MEGA 물류센터
+(UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = 'MEGA 물류센터'), 150, '입고', '2024-08-03 11:00:00', (SELECT product_uid FROM PRODUCT WHERE product_name = '참치')),
+(UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = 'MEGA 물류센터'), 100, '출고', '2024-08-04 09:00:00', (SELECT product_uid FROM PRODUCT WHERE product_name = '베이컨')),
+-- 부천 물류센터
+(UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '부천 물류센터'), 250, '입고', '2024-08-05 13:00:00', (SELECT product_uid FROM PRODUCT WHERE product_name = '닭가슴살')),
+(UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '부천 물류센터'), 180, '출고', '2024-08-06 15:00:00', (SELECT product_uid FROM PRODUCT WHERE product_name = '치즈')),
+-- 인천1센터
+(UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '인천1센터'), 300, '입고', '2024-08-07 16:00:00', (SELECT product_uid FROM PRODUCT WHERE product_name = '굴비')),
+(UUID(), (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '인천1센터'), 220, '출고', '2024-08-08 12:00:00', (SELECT product_uid FROM PRODUCT WHERE product_name = '우유'));
 
-INSERT INTO SUPPLIER_STATUS (supplier_status_uid, supplier_uid, supplier_amount, product_uid)
-VALUES (UUID(), (SELECT supplier_uid FROM SUPPLIER WHERE supplier_name = '농협'), 1000,
-        (SELECT product_uid FROM PRODUCT WHERE product_name = '양파')),
-       (UUID(), (SELECT supplier_uid FROM SUPPLIER WHERE supplier_name = '수협'), 2000,
-        (SELECT product_uid FROM PRODUCT WHERE product_name = '참치')),
-       (UUID(), (SELECT supplier_uid FROM SUPPLIER WHERE supplier_name = '팜한농'), 1500,
-        (SELECT product_uid FROM PRODUCT WHERE product_name = '호박'));
+INSERT INTO `SUPPLIER_STATUS` (`supplier_status_uid`, `supplier_uid`, `supplier_amount`, `product_uid`)
+VALUES
+-- 농협
+(UUID(), (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '농협'), 500, (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '양파')),
+(UUID(), (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '농협'), 300, (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '당근')),
+-- 수협
+(UUID(), (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '수협'), 400, (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '오징어')),
+(UUID(), (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '수협'), 250, (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '새우')),
+-- 동원산업
+(UUID(), (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '동원산업'), 600, (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '참치')),
+(UUID(), (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '동원산업'), 500, (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '굴비')),
+-- 롯데제과
+(UUID(), (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '롯데제과'), 200, (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '식빵')),
+(UUID(), (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '롯데제과'), 150, (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '치즈'));
 
-INSERT INTO STORE_STATUS (store_status_uid, store_uid, store_amount, store_tx, store_date, product_uid)
-VALUES (UUID(), (SELECT store_uid FROM STORE WHERE store_name = '서울 강남점'), 300, '입고', '2024-01-10 08:00:00',
-        (SELECT product_uid FROM PRODUCT WHERE product_name = '대파')),
-       (UUID(), (SELECT store_uid FROM STORE WHERE store_name = '서울 잠실점'), 150, '입고', '2024-02-15 13:00:00',
-        (SELECT product_uid FROM PRODUCT WHERE product_name = '오징어')),
-       (UUID(), (SELECT store_uid FROM STORE WHERE store_name = '부산 해운대점'), 200, '입고', '2024-03-20 10:30:00',
-        (SELECT product_uid FROM PRODUCT WHERE product_name = '치즈'));
+INSERT INTO `ORDER_TABLE` (`order_uid`, `order_status`, `order_by_tpye`, `order_by_uid`, `supply_by_type`, `supply_by_uid`)
+VALUES
+    (UUID(), '요청', 'SUPPLY', (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'admin'), 'WAREHOUSE', (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '농협')),
+    (UUID(), '승인', 'SUPPLY', (SELECT `user_uid` FROM `USER` WHERE `user_id` = 'john1'), 'WAREHOUSE', (SELECT `supplier_uid` FROM `SUPPLIER` WHERE `supplier_name` = '수협'));
 
-INSERT INTO ORDER_TABLE (order_uid, order_status, order_by_tpye, order_by_uid, supply_by_type, supply_by_uid)
-VALUES (UUID(), '요청', 'STORE', (SELECT store_uid FROM STORE WHERE store_name = '서울 강남점'), 'WAREHOUSE',
-        (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터')),
-       (UUID(), '승인', 'STORE', (SELECT store_uid FROM STORE WHERE store_name = '부산 해운대점'), 'WAREHOUSE',
-        (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '서울1센터'));
+INSERT INTO `ORDER_DETAIL` (`order_detail_uid`, `order_date`, `order_amount`, `product_uid`, `order_uid`)
+VALUES
+    (UUID(), '2024-08-09 10:00:00', 100, (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '양파'), (SELECT `order_uid` FROM `ORDER_TABLE` WHERE `order_status` = '요청')),
+    (UUID(), '2024-08-10 11:00:00', 50, (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '새우'), (SELECT `order_uid` FROM `ORDER_TABLE` WHERE `order_status` = '승인'));
 
-INSERT INTO ORDER_DETAIL (order_detail_uid, order_date, order_amount, product_uid, order_uid)
-VALUES (UUID(), '2024-01-12 10:00:00', 100, (SELECT product_uid FROM PRODUCT WHERE product_name = '대파'),
-        (SELECT order_uid
-         FROM ORDER_TABLE
-         WHERE order_by_uid = (SELECT store_uid FROM STORE WHERE store_name = '서울 강남점'))),
-       (UUID(), '2024-02-18 12:00:00', 50, (SELECT product_uid FROM PRODUCT WHERE product_name = '오징어'),
-        (SELECT order_uid
-         FROM ORDER_TABLE
-         WHERE order_by_uid = (SELECT store_uid FROM STORE WHERE store_name = '부산 해운대점')));
-
-INSERT INTO DISTRIBUTION_LOG (distribution_log_uid, product_uid, source_type, source_uid, destination_type,
-                              destination_uid, amount, log_date, transport_uid)
-VALUES (UUID(), (SELECT product_uid FROM PRODUCT WHERE product_name = '양파'), 'SUPPLIER',
-        (SELECT supplier_uid FROM SUPPLIER WHERE supplier_name = '농협'), 'WAREHOUSE',
-        (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '중구 물류센터'), 500, '2024-01-14 09:00:00',
-        (SELECT transport_uid FROM TRANSPORT WHERE transport_type = '1톤 트럭')),
-       (UUID(), (SELECT product_uid FROM PRODUCT WHERE product_name = '참치'), 'SUPPLIER',
-        (SELECT supplier_uid FROM SUPPLIER WHERE supplier_name = '수협'), 'WAREHOUSE',
-        (SELECT warehouse_uid FROM WAREHOUSE WHERE warehouse_name = '서울1센터'), 200, '2024-02-22 14:30:00',
-        (SELECT transport_uid FROM TRANSPORT WHERE transport_type = '5톤 트럭'));
-
-
-
+INSERT INTO `DISTRIBUTION_LOG` (`distribution_log_uid`, `product_uid`, `source_type`, `source_uid`, `destination_type`, `destination_uid`, `amount`, `log_date`, `transport_uid`)
+VALUES
+-- 중구 물류센터 -> MEGA 물류센터
+(UUID(), (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '양파'), 'WAREHOUSE', (SELECT `warehouse_uid` FROM `WAREHOUSE` WHERE `warehouse_name` = '중구 물류센터'), 'WAREHOUSE', (SELECT `warehouse_uid` FROM `WAREHOUSE` WHERE `warehouse_name` = 'MEGA 물류센터'), 100, '2024-08-11 12:00:00', (SELECT `transport_uid` FROM `TRANSPORT` WHERE `transport_type` = '5톤 트럭')),
+-- MEGA 물류센터 -> 부천 물류센터
+(UUID(), (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '새우'), 'WAREHOUSE', (SELECT `warehouse_uid` FROM `WAREHOUSE` WHERE `warehouse_name` = 'MEGA 물류센터'), 'WAREHOUSE', (SELECT `warehouse_uid` FROM `WAREHOUSE` WHERE `warehouse_name` = '부천 물류센터'), 50, '2024-08-12 14:00:00', (SELECT `transport_uid` FROM `TRANSPORT` WHERE `transport_type` = '1톤 트럭')),
+-- 부천 물류센터 -> 인천1센터
+(UUID(), (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '참치'), 'WAREHOUSE', (SELECT `warehouse_uid` FROM `WAREHOUSE` WHERE `warehouse_name` = '부천 물류센터'), 'WAREHOUSE', (SELECT `warehouse_uid` FROM `WAREHOUSE` WHERE `warehouse_name` = '인천1센터'), 75, '2024-08-13 09:00:00', (SELECT `transport_uid` FROM `TRANSPORT` WHERE `transport_type` = '25톤 트럭')),
+-- 인천1센터 -> 중구 물류센터
+(UUID(), (SELECT `product_uid` FROM `PRODUCT` WHERE `product_name` = '치즈'), 'WAREHOUSE', (SELECT `warehouse_uid` FROM `WAREHOUSE` WHERE `warehouse_name` = '인천1센터'), 'WAREHOUSE', (SELECT `warehouse_uid` FROM `WAREHOUSE` WHERE `warehouse_name` = '중구 물류센터'), 30, '2024-08-14 15:00:00', (SELECT `transport_uid` FROM `TRANSPORT` WHERE `transport_type` = '1톤 트럭'));
