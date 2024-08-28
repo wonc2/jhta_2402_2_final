@@ -80,118 +80,46 @@
                             </tr>
                             </tfoot>
                             <tbody>
-                            <tr>
-                                <td>aasdawd001</td>
-                                <td>가현농가</td>
-                                <td>감자</td>
-                                <td>500</td>
-                                <td>500</td>
-                                <td>250000</td>
-                                <td>2011/04/25</td>
-                                <td>완료</td>
-                                <td><button>수정하기</button></td>
-                            </tr>
-                            <tr>
-                                <td>aasdawd001</td>
-                                <td>가현농가</td>
-                                <td>감자</td>
-                                <td>500</td>
-                                <td>500</td>
-                                <td>250000</td>
-                                <td>2011/04/25</td>
-                                <td>완료</td>
-                                <td><button>수정하기</button></td>
-                            </tr>
-                            <tr>
-                                <td>aasdawd001</td>
-                                <td>가현농가</td>
-                                <td>감자</td>
-                                <td>500</td>
-                                <td>500</td>
-                                <td>250000</td>
-                                <td>2011/04/25</td>
-                                <td>완료</td>
-                                <td><button>수정하기</button></td>
-                            </tr>
-                            <tr>
-                                <td>aasdawd001</td>
-                                <td>가현농가</td>
-                                <td>감자</td>
-                                <td>500</td>
-                                <td>500</td>
-                                <td>250000</td>
-                                <td>2011/04/25</td>
-                                <td>완료</td>
-                                <td><button>수정하기</button></td>
-                            </tr>
-                            <tr>
-                                <td>aasdawd001</td>
-                                <td>가현농가</td>
-                                <td>감자</td>
-                                <td>500</td>
-                                <td>500</td>
-                                <td>250000</td>
-                                <td>2011/04/25</td>
-                                <td>완료</td>
-                                <td><button>수정하기</button></td>
-                            </tr>
-                            <tr>
-                                <td>aasdawd001</td>
-                                <td>가현농가</td>
-                                <td>감자</td>
-                                <td>500</td>
-                                <td>500</td>
-                                <td>250000</td>
-                                <td>2011/04/25</td>
-                                <td>완료</td>
-                                <td><button>수정하기</button></td>
-                            </tr>
-                            <tr>
-                                <td>aasdawd001</td>
-                                <td>가현농가</td>
-                                <td>감자</td>
-                                <td>500</td>
-                                <td>500</td>
-                                <td>250000</td>
-                                <td>2011/04/25</td>
-                                <td>완료</td>
-                                <td><button>수정하기</button></td>
-                            </tr>
-                            <tr>
-                                <td>aasdawd001</td>
-                                <td>가현농가</td>
-                                <td>감자</td>
-                                <td>500</td>
-                                <td>500</td>
-                                <td>250000</td>
-                                <td>2011/04/25</td>
-                                <td>완료</td>
-                                <td><button>수정하기</button></td>
-                            </tr>
-                            <tr>
-                                <td>aasdawd001</td>
-                                <td>가현농가</td>
-                                <td>감자</td>
-                                <td>500</td>
-                                <td>500</td>
-                                <td>250000</td>
-                                <td>2011/04/25</td>
-                                <td>완료</td>
-                                <td><button>수정하기</button></td>
-                            </tr>
-                            <tr>
-                                <td>aasdawd001</td>
-                                <td>가현농가</td>
-                                <td>감자</td>
-                                <td>500</td>
-                                <td>500</td>
-                                <td>250000</td>
-                                <td>2011/04/25</td>
-                                <td>완료</td>
-                                <td><button>수정하기</button></td>
+                            <tr th:each="product : ${productList}" >
+                                <td th:text="${#strings.substring(product.productOrderId, 0, 8)}"></td>
+                                <td th:text="${product.productCompanyName}"></td>
+                                <td th:text="${product.sourceName}"></td>
+                                <td th:text="${product.sourcePrice}"></td>
+                                <td th:text="${product.quantity}"></td>
+                                <td th:text="${product.totalPrice}"></td>
+                                <td th:text="${product.productOrderDate}"></td>
+                                <td th:text="${product.statusName}"></td>
+                                <td>
+                                    <!-- 수정 -->
+                                    <button type="button" class="btn btn-info btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#productUpdateModal"
+                                            th:attr="data-id=${product.productOrderId}">
+                                        수정
+                                    </button>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
+
+                        <!-- 수정 모달 -->
+                        <div class="modal fade" id="productUpdateModal" tabindex="-1" aria-labelledby="productUpdateModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form id="productUpdate" th:action="@{/}" th:method="post">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="productUpdateModalLabel">product Update</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="card-body-bottom">
                             <!-- Button trigger modal -->

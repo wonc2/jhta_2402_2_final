@@ -8,6 +8,7 @@
             pc.NAME AS 'productCompanyName',
             s.NAME AS 'sourceName',
             sp.PRICE AS 'sourcePrice',
+            po.QUENTITY AS 'quantity',
             (po.QUENTITY * sp.PRICE) AS 'totalPrice',
             po.PRODUCT_ORDER_DATE as 'productOrderDate',
             st.STATUS as 'statusName'
