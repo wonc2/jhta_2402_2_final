@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+>
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
     <h1> index </h1>
-
     <h2><a href="/test">템플릿 적용 화면</a></h2>
     <h2><a href="/adminMain">crud 샘플 화면</a></h2>
+    <hr>
+    <a href="/product/main" th:href="@{/product/main}">생산업체</a>
 </body>
 </html>
