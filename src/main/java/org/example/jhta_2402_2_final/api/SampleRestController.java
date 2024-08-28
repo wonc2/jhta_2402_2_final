@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("sample")
+@RequestMapping("api/sample")
 public class SampleRestController {
 
     // api 컨트롤러 샘플
