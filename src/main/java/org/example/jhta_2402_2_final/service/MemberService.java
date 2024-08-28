@@ -22,7 +22,7 @@ public class MemberService {
                 .userPassword(bCryptPasswordEncoder.encode(memberDto.getUserPassword()))
                 .userTel(memberDto.getUserTel())
                 //.role("ROLE_"+signinDto.getRole())
-                .role(memberDto.getRole())
+                .roleId(memberDto.getRoleId())
                 .build();
         return  memberDao.insertUser(memberDto02);
 //        int result02 = memberDao.insertRole(memberDto02);

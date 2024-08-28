@@ -15,17 +15,17 @@ public class MemberDto {
     private String userPassword;
     private String userEmail;
     private String userTel;
-    private String role;
+    private String roleId;
 
 
 
     @Builder
-    public MemberDto(String userId, String userName, String userPassword, String userEmail, String role, String userTel) {
+    public MemberDto(String userId, String userName, String userPassword, String userEmail, String roleId, String userTel) {
         this.userId = userId;
         this.userName = userName;
         this.userPassword = userPassword;
         this.userEmail = userEmail;
         this.userTel = userTel;
-        this.role = role;
+        this.roleId = roleId;
     }
 }

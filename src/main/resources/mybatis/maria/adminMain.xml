@@ -1,0 +1,71 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.jhta_2402_2_final.dao.AdminMainDao">
+    <select id="findAll" resultType="Employee">
+        SELECT * from employees
+    </select>
+
+    <select id="findById" resultType="Sample" parameterType="Long">
+        SELECT id, name
+        FROM sample
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO employees (firstname, lastname, email, department, hiredate)
+        VALUES (#{firstName}, #{lastName}, #{email}, #{department}, #{hireDate})
+    </insert>
+
+    <update id="update">
+        UPDATE employees
+        SET
+            firstname = #{firstName},
+            lastname = #{lastName},
+            email = #{email},
+            department = #{department},
+            hiredate = #{hireDate}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="Long">
+        DELETE FROM employees WHERE id = #{id}
+    </delete>
+
+
+    <select id="search" parameterType="map" resultType="Employee">
+        SELECT *
+        FROM employees
+        WHERE 1=1
+        <choose>
+            <when test="category != 'All'">
+                <choose>
+                    <when test="category == 'firstName'">
+                        AND firstName LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="category == 'lastName'">
+                        AND lastName LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="category == 'email'">
+                        AND email LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="category == 'department'">
+                        AND department LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                    <when test="category == 'hiredate'">
+                        AND hireDate LIKE CONCAT('%', #{keyword}, '%')
+                    </when>
+                </choose>
+            </when>
+            <otherwise>
+                AND (
+                firstName LIKE CONCAT('%', #{keyword}, '%')
+                OR lastName LIKE CONCAT('%', #{keyword}, '%')
+                OR email LIKE CONCAT('%', #{keyword}, '%')
+                OR department LIKE CONCAT('%', #{keyword}, '%')
+                OR hireDate LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </otherwise>
+        </choose>
+
+    </select>
+
+</mapper>

@@ -3,33 +3,39 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.MemberDao">
-    <!-- INSERT 쿼리 for USERS 테이블 -->
-    <insert id="insertUser" parameterType="MemberDto" useGeneratedKeys="true" keyProperty="userUid">
-        INSERT INTO USER (user_uid, user_name, user_pw, user_id, user_email, user_tel)
-        VALUES (UUID(), #{userName}, #{userPassword}, #{userId}, #{userEmail}, #{userTel})
+    <!-- USER 테이블에 데이터를 삽입하는 쿼리 -->
+    <insert id="insertUser" parameterType="MemberDto" useGeneratedKeys="true" keyProperty="userPk">
+        INSERT INTO USER (USER_PK, USER_NAME, USER_PASSWORD, USER_ID, USER_EMAIL, USER_TEL, ROLE_ID)
+        VALUES (UUID(), #{userName}, #{userPassword}, #{userId}, #{userEmail}, #{userTel}, #{roleId})
     </insert>
 
-    <!-- INSERT 쿼리 for ROLE 테이블 -->
+    <!-- ROLE 테이블의 데이터를 USER 테이블과 연결하는 쿼리 -->
     <insert id="insertRole" parameterType="MemberDto">
-        INSERT INTO USER_ROLE (user_role_uid, user_uid, role_uid)
+        INSERT INTO USER (USER_PK, USER_NAME, USER_PASSWORD, USER_ID, USER_EMAIL, USER_TEL, ROLE_ID)
         VALUES (
         UUID(),
-        (SELECT user_uid FROM USER WHERE user_id = #{userId}),
-        (SELECT role_uid FROM ROLE WHERE role_name = #{role})
+        #{userName},
+        #{userPassword},
+        #{userId},
+        #{userEmail},
+        #{userTel},
+        (SELECT ROLE_ID FROM ROLE WHERE ROLE_NAME = #{roleName})
         )
     </insert>
 
+    <!-- USER 테이블과 ROLE 테이블을 조인하여 사용자 정보를 조회하는 쿼리 -->
     <select id="selectUserWithRole" parameterType="String" resultType="MemberDto">
         SELECT
-        u.user_uid as userUid,
-        u.user_name as userName,
-        u.user_pw as userPassword,
-        u.user_id as userId,
-        u.user_email as userEmail,
-        r.role_name as roleName
+        u.USER_PK as userPk,
+        u.USER_NAME as userName,
+        u.USER_PASSWORD as userPassword,
+        u.USER_ID as userId,
+        u.USER_EMAIL as userEmail,
+        u.USER_TEL as userTel,
+        r.ROLE_NAME as roleName
         FROM USER u
-        LEFT JOIN USER_ROLE a ON u.user_uid = a.user_uid
-        LEFT JOIN ROLE r ON a.role_uid = r.role_uid
-        WHERE u.user_id = #{userId}
+        LEFT JOIN ROLE r ON u.ROLE_ID = r.ROLE_ID
+        WHERE u.USER_ID = #{userId}
     </select>
+
 </mapper>
