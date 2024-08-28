@@ -1,0 +1,44 @@
+
+-- 1. 밀키트 주문로그 테이블 삭제
+DROP TABLE IF EXISTS KIT_ORDER_LOG;
+
+-- 2. 밀키트 주문 테이블 삭제
+DROP TABLE IF EXISTS KIT_ORDER;
+
+-- 3. 생산주문(발주) 로그 테이블 삭제
+DROP TABLE IF EXISTS PRODUCT_ORDER_LOG;
+
+-- 4. 생산주문(발주) 테이블 삭제
+DROP TABLE IF EXISTS PRODUCT_ORDER;
+
+-- 5. 밀키트 재료 가격 테이블 삭제
+DROP TABLE IF EXISTS KIT_SOURCE_PRICE;
+
+-- 6. 밀키트 가격 테이블 삭제
+DROP TABLE IF EXISTS KIT_TOTAL_PRICE;
+
+-- 7. 생산 업체별 재료 가격 테이블 삭제
+DROP TABLE IF EXISTS SOURCE_PRICE;
+
+-- 8. 재료 테이블 삭제
+DROP TABLE IF EXISTS SOURCE;
+
+-- 9. 생산업체 테이블 삭제
+DROP TABLE IF EXISTS PRODUCT_COMPANY;
+
+-- 10. 밀키트 판매 업체 테이블 삭제
+DROP TABLE IF EXISTS KIT_COMPANY;
+
+-- 11. 밀키트 테이블 삭제
+DROP TABLE IF EXISTS MEALKIT;
+
+-- 12. 유저 테이블 삭제
+DROP TABLE IF EXISTS USER;
+
+-- 13. 권한 테이블 삭제
+DROP TABLE IF EXISTS ROLE;
+
+-- 14. 상태 테이블 삭제
+DROP TABLE IF EXISTS STATUS;
+
+
