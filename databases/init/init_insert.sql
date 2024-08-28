@@ -118,4 +118,5 @@ VALUES (1, 'ADMIN'),
 INSERT INTO USER (USER_PK, USER_NAME, USER_ID, USER_PASSWORD, USER_EMAIL, USER_TEL, ROLE_ID)
 VALUES (UUID(), '김철수', 'chulsoo', 'password123', 'chulsoo@example.com', '010-1234-5678', 1),
        (UUID(), '이영희', 'younghee', 'password456', 'younghee@example.com', '010-2345-6789', 2),
-       (UUID(), '박영수', 'youngsoo', 'password789', 'youngsoo@example.com', '010-3456-7890', 3);
+       (UUID(), '박영수', 'youngsoo', 'password789', 'youngsoo@example.com', '010-3456-7890', 3),
+       (UUID(), 'Admin', 'admin', '$2a$12$o9M5nC6PUyvUpy2uY71vJuzinkjUjl2YAGASLOnefnPAM/nIvNLN2', 'admin@example.com', '010-0000-1313', 1);
