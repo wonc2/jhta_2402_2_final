@@ -103,7 +103,7 @@ CREATE TABLE USER (
                       USER_PK	VARCHAR(50) PRIMARY KEY, -- 유저PK
                       USER_NAME VARCHAR(50) NOT NULL, -- 유저이름
                       USER_ID	VARCHAR(50) NOT NULL, -- 유저아이디
-                      USER_PASSWORD VARCHAR(50) NOT NULL, -- 유저 비밀번호
+                      USER_PASSWORD VARCHAR(128) NOT NULL, -- 유저 비밀번호
                       USER_EMAIL VARCHAR(50) NOT NULL, -- 유저 이메일
                       USER_TEL VARCHAR(50) NOT NULL, -- 전화번호
                       ROLE_ID INT, -- 권한FK

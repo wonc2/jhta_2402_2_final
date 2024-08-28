@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <th:block th:replace="fragment/adminHeader :: head"></th:block>
+</head>
+
+
+<th:block th:replace="fragment/adminHeader :: body"></th:block>
+<div id="layoutSidenav_content">
+    <!-- 페이지마다 다른 콘텐츠 -->
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4 mb-4">밀키트 주문 확인</h1>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    밀키트 주문 확인
+                </div>
+                <div class="card-body">
+
+                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                        <select class="datatable-selector" name="category">
+                            <option value="All">All</option>
+                            <option value="firstName">firstName</option>
+                            <option value="lastName">lastName</option>
+                            <option value="email">email</option>
+                            <option value="department">department</option>
+                            <option value="hiredate">hiredate</option>
+                        </select>
+                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+
+
+
+
+                    <table id="datatablesSimple">
+                        <thead>
+                        <tr>
+                            <th>주문 ID</th>
+                            <th>밀키트 업체 ID</th>
+                            <th>밀키트 ID</th>
+                            <th>수량</th>
+                            <th>주문 날짜</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>주문 ID</th>
+                            <th>밀키트 업체 ID</th>
+                            <th>밀키트 ID</th>
+                            <th>수량</th>
+                            <th>주문 날짜</th>
+                            <th>상태</th>
+                        </tr>
+                        </tfoot>
+
+                        <!--tbody > tr > td-->
+                        <tbody>
+                        <tr th:each="kitOrders : ${kitOrders}" >
+
+                            <td th:text="${kitOrders.kitOrderId}"></td>
+                            <td th:text="${kitOrders.kitCompanyId}"></td>
+                            <td th:text="${kitOrders.mealkitId}"></td>
+                            <td th:text="${kitOrders.quentity}"></td>
+                            <td th:text="${kitOrders.productOrderDate}"></td>
+                            <td th:text="${kitOrders.statusId}"></td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">추가</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+
+
+
+
+
+
+
+
+<th:block th:replace="fragment/adminFooter :: footer"></th:block>
+</body>
+</html>
