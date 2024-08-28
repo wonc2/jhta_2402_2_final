@@ -1,0 +1,27 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.jhta_2402_2_final.dao.ProductDao">
+    <!--  po.주문번호(PRODUCT_ORDER_PK), 생산업체명(pc.NAME), 생산품(s.NAME), 생산품가격(sp.PRICE),
+          갯수 (po.QUANTITY), 총주문가격(po.QUANTITY * sp.PRICE), 주문일자(po.DATE), 상태(s.NAME)  -->
+    <select id="findAll" resultType="Map">
+        SELECT
+            po.PRODUCT_ORDER_ID AS 'productOrderId',
+                pc.NAME AS 'productCompanyName',
+                s.NAME AS 'sourceName',
+                sp.PRICE AS 'sourcePrice',
+                (po.QUENTITY * sp.PRICE) AS 'totalPrice',
+                po.PRODUCT_ORDER_DATE as 'productOrderDate',
+                st.STATUS as 'statusName'
+        FROM
+            PRODUCT_ORDER po
+                JOIN
+            KIT_SOURCE_PRICE ksr ON ksr.KIT_SOURCE_PRICE_ID = po.KIT_SOURCE_PRICE_ID
+                JOIN
+            SOURCE_PRICE sp ON sp.SOURCE_PRICE_ID = ksr.SOURCE_PRICE_ID
+                JOIN
+            SOURCE s ON s.SOURCE_ID = sp.SOURCE_ID
+                JOIN
+            PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+                JOIN
+            STATUS st ON st.STATUS_ID = po.STATUS_ID;
+    </select>
+</mapper>
