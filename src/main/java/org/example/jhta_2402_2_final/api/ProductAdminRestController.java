@@ -13,8 +13,8 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/product")
-public class ProductRestController {
+@RequestMapping("api/product/admin")
+public class ProductAdminRestController {
     private final ProductService productService;
 
     @GetMapping("selectAll")

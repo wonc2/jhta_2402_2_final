@@ -19,20 +19,9 @@ public class ProductController {
 
     private final ProductService productService;
 
-
     @GetMapping("/main")
-    public String productMainPage(Model model, @RequestParam Map<String, Object> params) {
-        // 모든 검색 조건 params 에 담김
+    public String productMainPage(Model model) {
 
-        List<Map<String, Object>> productList = productService.getProductListByParams(params);
-        List<ProductCompanyDto> companies = productService.getAllCompanies();
-        List<Map<String, Object>> status = productService.getAllStatus();
-
-        model.addAttribute("productList",productList);
-        model.addAttribute("companies", companies);
-        model.addAttribute("status", status);
-        model.addAttribute("params", params);
-
-        return "product/productAdminMainPage";
+        return "product/productCompanyMainPage";
     }
 }
