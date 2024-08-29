@@ -1,0 +1,62 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.jhta_2402_2_final.dao.distribution.DistributionSourcePriceDao">
+    <!-- 특정 밀키트의 재료와 가격을 조회하는 쿼리 -->
+    <select id="getSourcePricesForKit" resultType="org.example.jhta_2402_2_final.model.dto.distribution.DistributionSourcePriceDto">
+        SELECT
+            k.MEALKIT_ID AS mealkitId,
+            s.NAME AS materialName,
+            sp.PRICE AS price,
+            pc.NAME AS supplierName
+        FROM
+            KIT_SOURCE_PRICE ksp
+                JOIN
+            SOURCE_PRICE sp ON ksp.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+                JOIN
+            SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
+                JOIN
+            PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+        WHERE
+            k.MEALKIT_ID = #{kitId};
+    </select>
+
+    <!-- 각 재료별 최저가 제공 업체를 조회하는 쿼리 -->
+    <select id="getBestSuppliers" resultType="org.example.jhta_2402_2_final.model.dto.distribution.DistributionBestSupplierDto">
+        SELECT
+            sp.SOURCE_ID AS sourceId,
+            s.NAME AS materialName,
+            MIN(sp.PRICE) AS lowestPrice,
+            pc.NAME AS bestSupplierName
+        FROM
+            SOURCE_PRICE sp
+                JOIN
+            SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
+                JOIN
+            PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+        GROUP BY
+            sp.SOURCE_ID, s.NAME, pc.NAME;
+    </select>
+
+    <!-- 주문 내역을 조회하는 쿼리 -->
+    <select id="getOrderDetails" resultType="org.example.jhta_2402_2_final.model.dto.distribution.DistributionOrderDetailDto">
+        SELECT
+            KO.KIT_ORDER_ID AS 주문번호,
+            KC.NAME AS 주문업체명,
+            M.NAME AS 밀키트이름,
+            M.PRICE AS 밀키트가격,
+            KO.QUANTITY AS 주문개수,
+            KO.QUANTITY * M.PRICE AS 총판매가,
+            KO.PRODUCT_ORDER_DATE AS 주문일자,
+            S.STATUS AS 상태
+        FROM
+            KIT_ORDER KO
+                JOIN
+            KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
+                JOIN
+            MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
+                JOIN
+            STATUS S ON KO.STATUS_ID = S.STATUS_ID;
+    </select>
+
+</mapper>
