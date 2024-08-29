@@ -9,7 +9,7 @@
             <div class="container-fluid px-4">
                 <h1 class="mt-4">생산 업무 페이지</h1>
                 <ol class="breadcrumb mb-4">
-<!--                    <li class="breadcrumb-item active">Dashboard</li>-->
+                    <!--                    <li class="breadcrumb-item active">Dashboard</li>-->
                 </ol>
                 <div class="row">
                     <div class="col-xl-6">
@@ -41,17 +41,35 @@
                         주문 현황
                     </div>
                     <div class="card-body">
-                        <div class="input-group justify-content-end mb-3" style="width: 500px;">
-                            <select class="datatable-selector">
-                                <option>1</option>
-                                <option>2</option>
-                                <option>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                            </select>
-                            <input type="text" class="form-control">
-                            <button class="btn btn-primary btn-sm">검색</button>
-                        </div>
+                            <div class="d-flex justify-content-end ms-auto mb-3"  style="width: 700px;">
+                                <select class="datatable-selector" id="productCompanyId">
+                                    <option value="" selected>생산업체 선택</option>
+                                    <option th:each="company : ${companies}"
+                                            th:value="${company.productCompanyId}"
+                                            th:text="${company.productCompanyName}"
+                                            th:selected="${company.productCompanyId.toString() == params['productCompanyId']}">
+                                    </option>
+                                </select>
+                                <select class="datatable-selector" id="statusId">
+                                    <option value="" selected>주문 상태</option>
+                                    <option th:each="st : ${status}"
+                                            th:value="${st.statusId}"
+                                            th:text="${st.statusName}"
+                                            th:selected="${st.statusId.toString() == params['statusId']}">
+                                    </option>
+                                </select>
+                                <select class="datatable-selector">
+                                    <option value="" selected>생산품</option>
+                                    <option>추가예정</option>
+                                </select>
+                                <select class="datatable-selector">
+                                    <option value="" selected>주문일자</option>
+                                    <option>추가예정</option>
+                                </select>
+<!--                                <input type="text" class="form-control" placeholder="검색어">-->
+                                <button class="btn btn-primary btn-sm" onclick="performSearch()">검색</button>
+                            </div>
+
                         <table id="datatablesSimple">
                             <thead>
                             <tr>
@@ -63,24 +81,11 @@
                                 <th>가격</th>
                                 <th>주문일자</th>
                                 <th>상태</th>
-                                <th>수정하기</th>
+                                <th>주문 승인 | 주문 거절</th>
                             </tr>
                             </thead>
-                            <tfoot>
-                            <tr>
-                                <th>주문번호</th>
-                                <th>생산업체명</th>
-                                <th>생산품</th>
-                                <th>생산품가격</th>
-                                <th>개수</th>
-                                <th>가격</th>
-                                <th>주문일자</th>
-                                <th>상태</th>
-                                <th>수정하기</th>
-                            </tr>
-                            </tfoot>
                             <tbody>
-                            <tr th:each="product : ${productList}" >
+                            <tr th:each="product : ${productList}">
                                 <td th:text="${#strings.substring(product.productOrderId, 0, 8)}"></td>
                                 <td th:text="${product.productCompanyName}"></td>
                                 <td th:text="${product.sourceName}"></td>
@@ -88,38 +93,40 @@
                                 <td th:text="${product.quantity}"></td>
                                 <td th:text="${product.totalPrice}"></td>
                                 <td th:text="${product.productOrderDate}"></td>
-                                <td th:text="${product.statusName}"></td>
+                                <td th:text="${product.productOrderStatus}"></td>
                                 <td>
-                                    <!-- 수정 -->
                                     <button type="button" class="btn btn-info btn-sm"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#productUpdateModal"
-                                            th:attr="data-id=${product.productOrderId}">
-                                        수정
-                                    </button>
+                                            th:attr="data-id=${product.productOrderId}" data-action="approve">승인</button>
+                                    |
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                            th:attr="data-id=${product.productOrderId}" data-action="cancel">거절</button>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
 
-                        <!-- 수정 모달 -->
-                        <div class="modal fade" id="productUpdateModal" tabindex="-1" aria-labelledby="productUpdateModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <form id="productUpdate" th:action="@{/}" th:method="post">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="productUpdateModalLabel">product Update</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
+<!--                        &lt;!&ndash; 수정 모달 &ndash;&gt;-->
+<!--                        <div class="modal fade" id="productUpdateModal" tabindex="-1"-->
+<!--                             aria-labelledby="productUpdateModalLabel" aria-hidden="true">-->
+<!--                            <div class="modal-dialog">-->
+<!--                                <div class="modal-content">-->
+<!--                                    <form id="productUpdate" th:action="@{/}" th:method="post">-->
+<!--                                        <div class="modal-header">-->
+<!--                                            <h5 class="modal-title" id="productUpdateModalLabel">product Update</h5>-->
+<!--                                            <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+<!--                                                    aria-label="Close"></button>-->
+<!--                                        </div>-->
 
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary">Save</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+<!--                                        <div class="modal-footer">-->
+<!--                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">-->
+<!--                                                Close-->
+<!--                                            </button>-->
+<!--                                            <button type="submit" class="btn btn-primary">Save</button>-->
+<!--                                        </div>-->
+<!--                                    </form>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
 
                         <div class="card-body-bottom">
                             <!-- Button trigger modal -->
@@ -149,7 +156,8 @@
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">카테고리</label>
                                                     <div class="col-sm-9">
-                                                        <select class="form-select" id="category" name="category" required>
+                                                        <select class="form-select" id="category" name="category"
+                                                                required>
                                                             <option>선택</option>
                                                             <option value="1">농산물</option>
                                                             <option value="2">축산물</option>
@@ -161,7 +169,8 @@
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">제품</label>
                                                     <div class="col-sm-9">
-                                                        <select class="form-select" id="product" name="product" required>
+                                                        <select class="form-select" id="product" name="product"
+                                                                required>
                                                             <option>선택</option>
                                                             <option value="1">고등어</option>
                                                             <option value="2">문어</option>
@@ -183,7 +192,8 @@
                                             <label class="col-sm-3 col-form-label">가격</label>
                                             <div class="col-sm-9">
                                                 <div class="input-group">
-                                                    <input type="text" class="form-control" value="4500000" readonly aria-label="price" name="price" id="price">
+                                                    <input type="text" class="form-control" value="4500000" readonly
+                                                           aria-label="price" name="price" id="price">
                                                     <span class="input-group-text">₩</span>
                                                 </div>
                                             </div>
@@ -222,20 +232,77 @@
 <th:block th:replace="~{fragment/footer}"></th:block>
 <script>
 
-    document.getElementById('orderBtn').addEventListener('click', function (){
-        const product = document.getElementById('product').value;
-        const count = document.getElementById('count').value;
-        console.log(product);
-        console.log(count);
+    // ajax 테스트 세이브 tbody 안에 내용 지우고 사용
+    /*let myDataTable;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // 초기 로딩 시 필터 없이 전체 데이터를 가져옴
+        fetchProductData();
     });
 
-    /* price 콤마 표기 ex) 4500000 -> 4,500,000 */
-    document.addEventListener("DOMContentLoaded", function () {
-        var priceInput = document.getElementById("price");
-        var priceValue = 4500000; // 예를 들어 서버에서 받아온 숫자 값
+    function fetchProductData(queryString = '') {
+        // API에서 데이터를 비동기적으로 가져오기
+        fetch(`/api/product/selectAll/params${queryString}`)
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.querySelector('#myCustomTable tbody');
+                tableBody.innerHTML = ''; // 테이블 내용을 초기화
 
-        priceInput.value = priceValue.toLocaleString('ko-KR');
-    });
+                // API에서 받은 데이터를 사용하여 테이블 행을 생성
+                data.forEach(product => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                    <td>${product.productOrderId ? product.productOrderId.substring(0, 8) : ''}</td>
+                    <td>${product.productCompanyName || ''}</td>
+                    <td>${product.sourceName || ''}</td>
+                    <td>${product.sourcePrice || ''}</td>
+                    <td>${product.quantity || ''}</td>
+                    <td>${product.totalPrice || ''}</td>
+                    <td>${product.productOrderDate || ''}</td>
+                    <td>${product.productOrderStatus || ''}</td>
+                    <td>
+                        <button type="button" class="btn btn-info btn-sm" data-id="${product.productOrderId}" data-action="approve">승인</button>
+                        |
+                        <button type="button" class="btn btn-danger btn-sm" data-id="${product.productOrderId}" data-action="cancel">거절</button>
+                    </td>
+                `;
+                    tableBody.appendChild(row);
+                });
+
+                // 기존 DataTable 인스턴스가 존재하면 파괴
+                if (myDataTable) {
+                    myDataTable.destroy();
+                    // 테이블을 다시 초기화
+                    // myDataTable = new simpleDatatables.DataTable(document.getElementById('myCustomTable'));
+                }
+
+
+                // Simple-DataTables 초기화
+                new simpleDatatables.DataTable(document.getElementById('myCustomTable'));
+            })
+            .catch(error => console.error('Error loading data:', error));
+    }*/
+
+
+    // 검색 파라미터 모아서 Map 으로 날리기
+    function performSearch() {
+        let productCompanyId = document.getElementById('productCompanyId').value;
+        let statusId = document.getElementById('statusId').value;
+        const params = new URLSearchParams();
+
+        // 선택 안하면 쿼리에 안들어감
+        if (productCompanyId) {
+            params.append('productCompanyId', productCompanyId);
+        }
+        if (statusId) {
+            params.append('statusId', statusId);
+        }
+
+        const queryString = params.toString();
+        const baseUrl = '/product/admin/main';
+
+        window.location.href = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+    }
 
     const ctx = document.getElementById('salesProductChart');
     new Chart(ctx, {
