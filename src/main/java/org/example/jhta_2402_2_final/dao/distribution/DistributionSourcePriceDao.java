@@ -17,6 +17,9 @@ public interface DistributionSourcePriceDao {
     // 각 재료의 최저가 제공 업체 정보를 가져오는 메서드
     List<DistributionBestSupplierDto> getBestSuppliers();
 
-    //주문내역 가져오는 메서드
+    // 주문 내역을 가져오는 메서드
     List<DistributionOrderDetailDto> getOrderDetails();
+
+    // 전체 가격 리스트를 가져오는 메서드 추가
+    List<DistributionSourcePriceDto> getAllSourcePrices();
 }
