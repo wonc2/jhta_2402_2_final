@@ -1,5 +1,5 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.example.jhta_2402_2_final.dao.ProductDao">
+<mapper namespace="org.example.jhta_2402_2_final.dao.product.ProductAdminDao">
     <!-- Admin Product 페이지 리스트 필요 컬럼 -->
     <!--  po.주문번호(PRODUCT_ORDER_PK), 생산업체명(pc.NAME), 생산품(s.NAME), 생산품가격(sp.PRICE),
           갯수 (po.QUANTITY), 총주문가격(po.QUANTITY * sp.PRICE), 주문일자(po.DATE), 상태(s.NAME)  -->
@@ -48,7 +48,6 @@
             AND st.STATUS_ID = #{statusId}
         </if>
     </select>
-
     <!-- Common -->
 
     <!-- 검색 조건 셀렉트에 뿌리는용 -->
@@ -60,9 +59,6 @@
         from PRODUCT_COMPANY
     </select>
     <select id="getAllStatus" resultType="Map">
-        select
-            STATUS_ID as 'statusId',
-            STATUS as 'statusName'
-        from STATUS
+        select STATUS_ID as 'statusId', STATUS as 'statusName' from STATUS
     </select>
 </mapper>

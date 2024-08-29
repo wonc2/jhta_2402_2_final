@@ -1,8 +1,8 @@
-package org.example.jhta_2402_2_final.controller;
+package org.example.jhta_2402_2_final.controller.product;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
-import org.example.jhta_2402_2_final.service.ProductService;
+import org.example.jhta_2402_2_final.service.product.ProductAdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,16 +17,16 @@ import java.util.Map;
 @RequestMapping("/product/admin")
 public class ProductAdminController {
 
-    private final ProductService productService;
+    private final ProductAdminService productAdminService;
 
 
     @GetMapping("/main")
     public String productMainPage(Model model, @RequestParam Map<String, Object> params) {
         // 모든 검색 조건 params 에 담김
 
-        List<Map<String, Object>> productList = productService.getProductListByParams(params);
-        List<ProductCompanyDto> companies = productService.getAllCompanies();
-        List<Map<String, Object>> status = productService.getAllStatus();
+        List<Map<String, Object>> productList = productAdminService.getProductListByParams(params);
+        List<ProductCompanyDto> companies = productAdminService.getAllCompanies();
+        List<Map<String, Object>> status = productAdminService.getAllStatus();
 
         model.addAttribute("productList",productList);
         model.addAttribute("companies", companies);

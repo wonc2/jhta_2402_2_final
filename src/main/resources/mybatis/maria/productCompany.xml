@@ -1,0 +1,17 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.jhta_2402_2_final.dao.product.ProductCompanyDao">
+    <select id="getSourcesByCompanyName" resultType="Map" parameterType="String">
+        select
+            sp.SOURCE_PRICE_ID as 'companySourceId',
+            s.NAME as 'sourceName',
+            PRICE as 'sourcePrice',
+            pc.NAME as 'companyName',
+            pc.ADDRESS as 'companyAddress'
+        from SOURCE_PRICE sp
+        join SOURCE s ON s.source_id = sp.source_id
+        join PRODUCT_COMPANY pc ON pc.product_company_id = sp.product_company_id
+        <if test="companyName != null and companyName != ''">
+            where pc.NAME = #{companyName}
+        </if>
+    </select>
+</mapper>
