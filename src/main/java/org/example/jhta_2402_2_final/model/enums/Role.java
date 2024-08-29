@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum Role {
     ADMIN("ROLE_ADMIN"),
     KIT_MANAGER("ROLE_KIT_MANAGER"),
-    FARM_MANAGER("ROLE_FARM_MANAGER"),
+    PRODUCT_MANAGER("ROLE_PRODUCT_MANAGER"),
 
 
 

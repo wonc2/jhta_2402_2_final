@@ -5,7 +5,7 @@
 <mapper namespace="org.example.jhta_2402_2_final.dao.SampleProductDao">
 
     <!-- SELECT query: 모든 제품을 조회 -->
-    <select id="findAll" resultType="org.example.jhta_2402_2_final.model.dto.ProductDto">
+    <select id="findAll" resultType="org.example.jhta_2402_2_final.model.dto.product.ProductDto">
         SELECT * FROM PRODUCT;
     </select>
 

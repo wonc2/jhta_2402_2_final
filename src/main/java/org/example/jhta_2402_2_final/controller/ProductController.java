@@ -10,6 +10,6 @@ public class ProductController {
 
     @GetMapping("/main")
     public String productMainPage(){
-        return "main/productMainPage";
+        return "product/productMainPage";
     }
 }
