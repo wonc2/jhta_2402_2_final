@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.product.ProductCompanyDao;
 import org.example.jhta_2402_2_final.model.dto.common.SourceDto;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -22,5 +25,11 @@ public class ProductCompanyService {
     // Select 에 뿌리는 용
     public List<SourceDto> getAllSources(){
         return productCompanyDao.getAllSources();
+    }
+
+    @Transactional
+    public void insertCompanySource(UUID sourceId, int sourcePrice) {
+        Map<String, Object> params = new HashMap<>();
+        productCompanyDao.insertCompanySource(params);
     }
 }

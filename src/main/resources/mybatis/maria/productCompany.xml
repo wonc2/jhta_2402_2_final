@@ -15,6 +15,9 @@
         </if>
     </select>
 
+    <insert id="insertSource" parameterType="Map">
+
+    </insert>
     <!-- Select 에 뿌리는용 -->
     <select id="getAllSources" resultType="SourceDto">
         SELECT SOURCE_ID as 'sourceId', NAME as 'sourceName' FROM SOURCE
