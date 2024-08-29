@@ -14,4 +14,9 @@
             where pc.NAME = #{companyName}
         </if>
     </select>
+
+    <!-- Select 에 뿌리는용 -->
+    <select id="getAllSources" resultType="SourceDto">
+        SELECT SOURCE_ID as 'sourceId', NAME as 'sourceName' FROM SOURCE
+    </select>
 </mapper>

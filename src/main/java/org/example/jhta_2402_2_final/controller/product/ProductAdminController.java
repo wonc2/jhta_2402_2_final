@@ -1,6 +1,7 @@
 package org.example.jhta_2402_2_final.controller.product;
 
 import lombok.RequiredArgsConstructor;
+import org.example.jhta_2402_2_final.model.dto.common.StatusDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
 import org.example.jhta_2402_2_final.service.product.ProductAdminService;
 import org.springframework.stereotype.Controller;
@@ -19,14 +20,13 @@ public class ProductAdminController {
 
     private final ProductAdminService productAdminService;
 
-
     @GetMapping("/main")
     public String productMainPage(Model model, @RequestParam Map<String, Object> params) {
         // 모든 검색 조건 params 에 담김
 
         List<Map<String, Object>> productList = productAdminService.getProductListByParams(params);
         List<ProductCompanyDto> companies = productAdminService.getAllCompanies();
-        List<Map<String, Object>> status = productAdminService.getAllStatus();
+        List<StatusDto> status = productAdminService.getAllStatus();
 
         model.addAttribute("productList",productList);
         model.addAttribute("companies", companies);

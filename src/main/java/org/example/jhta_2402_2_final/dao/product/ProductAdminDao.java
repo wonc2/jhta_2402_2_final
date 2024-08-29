@@ -1,6 +1,7 @@
 package org.example.jhta_2402_2_final.dao.product;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.example.jhta_2402_2_final.model.dto.common.StatusDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
 
 import java.util.List;
@@ -12,5 +13,6 @@ public interface ProductAdminDao {
     List<Map<String, Object>> findAll();
     List<Map<String, Object>> getProductListByParams(Map<String, Object> params);
     List<ProductCompanyDto> getAllCompanies();
-    List<Map<String, Object>> getAllStatus();
+
+    List<StatusDto> getAllStatus();
 }

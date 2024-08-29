@@ -61,7 +61,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="source : ${sources}">
+                            <tr th:each="source : ${productSourceList}">
                                 <td th:text="${#strings.substring(source.companySourceId, 0, 8)}"></td>
                                 <td th:text="${source.companyName}"></td>
                                 <td th:text="${source.companyAddress}"></td>
@@ -106,7 +106,7 @@
                             <div class="d-flex justify-content-end">
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#orderModal">
-                                    생산(재료 품목 올리기)? 갯수?
+                                    생산
                                 </button>
                             </div>
                         </div>
@@ -116,7 +116,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="orderModalLabel">발주</h1>
+                                        <h1 class="modal-title fs-5" id="orderModalLabel">생산</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                     </div>
@@ -127,26 +127,14 @@
                                         <form>
                                             <div class="container">
                                                 <div class="mb-3 row align-items-center">
-                                                    <label class="col-sm-3 col-form-label">카테고리</label>
-                                                    <div class="col-sm-9">
-                                                        <select class="form-select" id="category" name="category"
-                                                                required>
-                                                            <option>선택</option>
-                                                            <option value="1">농산물</option>
-                                                            <option value="2">축산물</option>
-                                                            <option value="3">수산물</option>
-                                                            <option value="4">...</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">제품</label>
                                                     <div class="col-sm-9">
-                                                        <select class="form-select" id="product" name="product"
-                                                                required>
-                                                            <option>선택</option>
-                                                            <option value="1">고등어</option>
-                                                            <option value="2">문어</option>
+                                                        <select class="datatable-selector" id="sourceId">
+                                                            <option value="" disabled selected>생산할 제품 선택</option>
+                                                            <option th:each="source : ${sources}"
+                                                                    th:value="${source.sourceId}"
+                                                                    th:text="${source.sourceName}">
+                                                            </option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -154,30 +142,30 @@
                                                     <label class="col-sm-3 col-form-label">갯수</label>
                                                     <div class="col-sm-9">
                                                         <input type="number" id="count" class="form-control"
-                                                               min="1" max="99" value="1" step="1" name="count">
+                                                               min="1" max="50000" value="1" step="1" name="count">
                                                     </div>
                                                 </div>
                                             </div>
                                         </form>
 
-                                        <!-- 가격 자동 계산 해서 보여줌 readonly -->
-                                        <div class="mb-3 row align-items-center">
-                                            <label class="col-sm-3 col-form-label">가격</label>
-                                            <div class="col-sm-9">
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" value="4500000" readonly
-                                                           aria-label="price" name="price" id="price">
-                                                    <span class="input-group-text">₩</span>
-                                                </div>
-                                            </div>
-                                        </div>
+<!--                                        &lt;!&ndash; 가격 자동 계산 해서 보여줌 readonly &ndash;&gt;-->
+<!--                                        <div class="mb-3 row align-items-center">-->
+<!--                                            <label class="col-sm-3 col-form-label">가격</label>-->
+<!--                                            <div class="col-sm-9">-->
+<!--                                                <div class="input-group">-->
+<!--                                                    <input type="text" class="form-control" value="4500000" readonly-->
+<!--                                                           aria-label="price" name="price" id="price">-->
+<!--                                                    <span class="input-group-text">₩</span>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
 
                                         <!-- 모달 바디 끝 -->
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기
                                         </button>
-                                        <button type="button" class="btn btn-primary" id="orderBtn">주문</button>
+                                        <button type="button" class="btn btn-primary" id="orderBtn">생산</button>
                                     </div>
                                 </div>
                             </div>

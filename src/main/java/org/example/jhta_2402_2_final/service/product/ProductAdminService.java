@@ -2,6 +2,7 @@ package org.example.jhta_2402_2_final.service.product;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.product.ProductAdminDao;
+import org.example.jhta_2402_2_final.model.dto.common.StatusDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +29,7 @@ public class ProductAdminService {
     public List<ProductCompanyDto> getAllCompanies() {
         return productDao.getAllCompanies();
     }
-    // StatusDto 생성 + CommonService 로 옮길수도
-    public List<Map<String, Object>> getAllStatus() {
+    public List<StatusDto> getAllStatus() {
         return productDao.getAllStatus();
     }
 }

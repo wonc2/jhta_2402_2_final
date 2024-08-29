@@ -58,7 +58,7 @@
             ADDRESS as 'productCompanyAddress'
         from PRODUCT_COMPANY
     </select>
-    <select id="getAllStatus" resultType="Map">
+    <select id="getAllStatus" resultType="StatusDto">
         select STATUS_ID as 'statusId', STATUS as 'statusName' from STATUS
     </select>
 </mapper>

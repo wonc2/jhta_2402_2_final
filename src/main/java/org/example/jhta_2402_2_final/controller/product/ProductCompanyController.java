@@ -1,6 +1,7 @@
 package org.example.jhta_2402_2_final.controller.product;
 
 import lombok.RequiredArgsConstructor;
+import org.example.jhta_2402_2_final.model.dto.common.SourceDto;
 import org.example.jhta_2402_2_final.service.product.ProductCompanyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,8 +24,12 @@ public class ProductCompanyController {
         // 생산품 리스트 ( 일단 로그인 ID(UNIQUE) = 생산업체 Name으로 구분 )
         // 리스트{ 생산중인 재료 가격 및 이름, 또 뭐 기타등등 필요한거 있으면 추가 }
 
-        List<Map<String, Object>> sources = productCompanyService.getSourcesByCompanyName(companyName);
+        List<Map<String, Object>> productSourceList = productCompanyService.getSourcesByCompanyName(companyName);
+        List<SourceDto> sources = productCompanyService.getAllSources();
+
+        model.addAttribute("productSourceList", productSourceList);
         model.addAttribute("sources", sources);
+
         return "product/productCompanyMainPage";
     }
 
