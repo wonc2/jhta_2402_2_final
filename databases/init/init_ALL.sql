@@ -155,10 +155,10 @@ CREATE TABLE ROLE
 -- 14. 유저 테이블
 CREATE TABLE USER
 (
-    USER_PK       VARCHAR(50) PRIMARY KEY, -- 유저PK
+    USER_PK       VARCHAR(255) PRIMARY KEY, -- 유저PK
     USER_NAME     VARCHAR(50) NOT NULL,    -- 유저이름
     USER_ID       VARCHAR(50) NOT NULL,    -- 유저아이디
-    USER_PASSWORD VARCHAR(50) NOT NULL,    -- 유저 비밀번호
+    USER_PASSWORD VARCHAR(255) NOT NULL,    -- 유저 비밀번호
     USER_EMAIL    VARCHAR(50) NOT NULL,    -- 유저 이메일
     USER_TEL      VARCHAR(50) NOT NULL,    -- 전화번호
     ROLE_ID       INT,                     -- 권한FK
@@ -269,4 +269,5 @@ VALUES (1, 'ADMIN'),
 INSERT INTO USER (USER_PK, USER_NAME, USER_ID, USER_PASSWORD, USER_EMAIL, USER_TEL, ROLE_ID)
 VALUES (UUID(), '김철수', 'chulsoo', 'password123', 'chulsoo@example.com', '010-1234-5678', 1),
        (UUID(), '이영희', 'younghee', 'password456', 'younghee@example.com', '010-2345-6789', 2),
+       ('2fc622e6-64fe-11ef-9a4b-0242ac110002', '신가현', 'admin', '$2a$10$Oe87iYbNOD1PZ/Fav.N6Weijo4/dhwnBCluJg6qBUxf.OkNCtYv1C', 'younghee@example.com', '010-2345-6789', 1),
        (UUID(), '박영수', 'youngsoo', 'password789', 'youngsoo@example.com', '010-3456-7890', 3);

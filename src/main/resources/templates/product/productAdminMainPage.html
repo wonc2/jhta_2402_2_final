@@ -41,7 +41,7 @@
                         주문 현황
                     </div>
                     <div class="card-body">
-                            <div class="d-flex justify-content-end ms-auto mb-3"  style="width: 500px;">
+                            <div class="d-flex justify-content-end ms-auto mb-3"  style="width: 700px;">
                                 <select class="datatable-selector" id="productCompanyId">
                                     <option value="" selected>생산업체 선택</option>
                                     <option th:each="company : ${companies}"
@@ -57,6 +57,14 @@
                                             th:text="${st.statusName}"
                                             th:selected="${st.statusId.toString() == params['statusId']}">
                                     </option>
+                                </select>
+                                <select class="datatable-selector">
+                                    <option value="" selected>생산품</option>
+                                    <option>추가예정</option>
+                                </select>
+                                <select class="datatable-selector">
+                                    <option value="" selected>주문일자</option>
+                                    <option>추가예정</option>
                                 </select>
 <!--                                <input type="text" class="form-control" placeholder="검색어">-->
                                 <button class="btn btn-primary btn-sm" onclick="performSearch()">검색</button>
