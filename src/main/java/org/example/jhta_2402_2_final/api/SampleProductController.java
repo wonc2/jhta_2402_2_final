@@ -1,7 +1,7 @@
 package org.example.jhta_2402_2_final.api;
 
 import lombok.RequiredArgsConstructor;
-import org.example.jhta_2402_2_final.model.dto.ProductDto;
+import org.example.jhta_2402_2_final.model.dto.product.ProductDto;
 import org.example.jhta_2402_2_final.service.SampleProductService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +12,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @ResponseBody
-@RequestMapping("/api/test/product")
+@RequestMapping("/api/product")
 public class SampleProductController {
 
     private final SampleProductService sampleProductService;
@@ -31,16 +31,11 @@ public class SampleProductController {
     }
 
     @GetMapping("/insertProduct")
-    public void insertProduct(
-            @RequestParam("productName") String productName,
-            @RequestParam("productSize") Integer productSize,
-            @RequestParam("productCost") Integer productCost) {
-        ProductDto productDto = ProductDto.builder()
-                .productName(productName)
-                .productSize(productSize)
-                .productCost(productCost)
+    public void insertProduct(@ModelAttribute ProductDto productDto) {
+        ProductDto insertProductDto = ProductDto.builder()
+                .productName(productDto.getProductName())
                 .build();
-        sampleProductService.insertNewProduct(productDto);
+        sampleProductService.insertNewProduct(insertProductDto);
     }
 
 }

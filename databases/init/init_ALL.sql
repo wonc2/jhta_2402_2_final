@@ -45,7 +45,8 @@ DROP TABLE IF EXISTS STATUS;
 CREATE TABLE MEALKIT
 (
     MEALKIT_ID VARCHAR(50) PRIMARY KEY, -- 밀키트PK
-    NAME       VARCHAR(50) NOT NULL     -- 밀키트이름
+    NAME       VARCHAR(50) NOT NULL,     -- 밀키트이름
+    PRICE INT -- 밀키트 가격
 );
 -- 2. 밀키트 판매 업체 테이블
 CREATE TABLE KIT_COMPANY
@@ -77,22 +78,14 @@ CREATE TABLE SOURCE_PRICE
     FOREIGN KEY (PRODUCT_COMPANY_ID) REFERENCES PRODUCT_COMPANY (PRODUCT_COMPANY_ID),
     FOREIGN KEY (SOURCE_ID) REFERENCES SOURCE (SOURCE_ID)
 );
--- 6. 밀키트 가격 테이블
-CREATE TABLE KIT_TOTAL_PRICE
-(
-    KIT_TOTAL_PRICE_ID VARCHAR(50) PRIMARY KEY, -- 밀키트가격PK
-    MEALKIT_ID         VARCHAR(50),             -- 밀키트FK
-    PURCHASER_PRICE    INT,                     -- 구매가
-    SALES_PRICE        INT,                     -- 판매가
-    FOREIGN KEY (MEALKIT_ID) REFERENCES MEALKIT (MEALKIT_ID)
-);
+
 -- 7. 밀키트 재료 가격 테이블
 CREATE TABLE KIT_SOURCE_PRICE
 (
     KIT_SOURCE_PRICE_ID VARCHAR(50) PRIMARY KEY, -- 밀키트재료가격PK
     MEALKIT_ID          VARCHAR(50),             -- 밀키트FK
     SOURCE_PRICE_ID     VARCHAR(50),             -- 가격FK
-    QUENTITY            INT,                     -- 개수
+    QUANTITY            INT,                     -- 개수
     FOREIGN KEY (MEALKIT_ID) REFERENCES MEALKIT (MEALKIT_ID),
     FOREIGN KEY (SOURCE_PRICE_ID) REFERENCES SOURCE_PRICE (SOURCE_PRICE_ID)
 );
@@ -107,7 +100,7 @@ CREATE TABLE PRODUCT_ORDER
 (
     PRODUCT_ORDER_ID    VARCHAR(50) PRIMARY KEY,            -- 발주PK
     KIT_SOURCE_PRICE_ID VARCHAR(50),                        -- 밀키트재료가격FK
-    QUENTITY            INT,                                -- 개수
+    QUANTITY            INT,                                -- 개수
     PRODUCT_ORDER_DATE  DATETIME DEFAULT CURRENT_TIMESTAMP, -- 주문 일자
     STATUS_ID           INT,                                -- 상태FK
     FOREIGN KEY (KIT_SOURCE_PRICE_ID) REFERENCES KIT_SOURCE_PRICE (KIT_SOURCE_PRICE_ID),
@@ -129,7 +122,7 @@ CREATE TABLE KIT_ORDER
     KIT_ORDER_ID       VARCHAR(50) PRIMARY KEY,            -- 주문PK
     KIT_COMPANY_ID     VARCHAR(50),                        -- 밀키트판매업체FK
     MEALKIT_ID         VARCHAR(50),                        -- 밀키트FK
-    QUENTITY           INT,                                -- 개수
+    QUANTITY           INT,                                -- 개수
     PRODUCT_ORDER_DATE DATETIME DEFAULT CURRENT_TIMESTAMP, -- 주문 일자
     STATUS_ID          INT,                                -- 상태FK
     FOREIGN KEY (KIT_COMPANY_ID) REFERENCES KIT_COMPANY (KIT_COMPANY_ID),
@@ -164,6 +157,7 @@ CREATE TABLE USER
     ROLE_ID       INT,                     -- 권한FK
     FOREIGN KEY (ROLE_ID) REFERENCES ROLE (ROLE_ID)
 );
+
 INSERT INTO MEALKIT (MEALKIT_ID, NAME)
 VALUES (UUID(), '불고기 밀키트'),
        (UUID(), '김치찌개 밀키트'),

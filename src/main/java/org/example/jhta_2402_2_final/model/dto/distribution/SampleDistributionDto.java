@@ -6,4 +6,10 @@ import lombok.Data;
 @Data
 public class SampleDistributionDto {
 
+
+    private String kitSourcePriceId;
+    private String mealKitId;
+    private String sourcePriceId;
+    private int quantity;
+
 }

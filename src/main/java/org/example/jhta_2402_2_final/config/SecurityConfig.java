@@ -1,5 +1,6 @@
 package org.example.jhta_2402_2_final.config;
 
+import org.example.jhta_2402_2_final.model.enums.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,8 +34,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
         httpSecurity.authorizeHttpRequests((auth)->auth
-                .requestMatchers("/","/member/**","/test","/adminMain/**","/distribution/**")
+                .requestMatchers("/","/member/**","/test","/adminMain/**","/sales/**","/distribution/**")
                 .permitAll()
+                .requestMatchers("/product/role").hasAuthority("ROLE_PRODUCT_MANAGER")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/user/**").hasAnyRole("ADMIN","USER")
                 .requestMatchers("/manager/**").hasAnyRole("ADMIN","MANAGER")
