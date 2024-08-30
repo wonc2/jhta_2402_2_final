@@ -5,7 +5,6 @@ import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
 
 import java.util.List;
 import java.util.Map;
-
 @Mapper
 public interface ProductDao {
     // 리스트 가져옴

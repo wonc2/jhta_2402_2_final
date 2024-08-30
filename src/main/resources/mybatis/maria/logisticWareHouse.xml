@@ -1,12 +1,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.distribution.DistributionDao">
-    <select id="selectAllLogisticsWarehouse" resultType="com.example.model.dto.distribution.LogisticsWareHouseDto">
+    <select id="selectAllLogisticsWarehouse" resultType="LogisticsWareHouseDto">
         SELECT
-            lws.LOGISTICS_WAREHOUSE_SOURCE_PK AS PK,
-            lw.WAREHOUSE_NAME AS WarehouseName,
-            s.NAME AS SourceName,
-            pc.NAME AS ProductCompanyName,
-            lws.QUANTITY AS Quantity
+            lws.LOGISTICS_WAREHOUSE_SOURCE_PK AS logisticsWareHouseSourcePK,
+            lw.WAREHOUSE_NAME AS wareHouseName,
+            s.NAME AS sourceName,
+            pc.NAME AS productCompanyName,
+            lws.QUANTITY AS quantity
         FROM
             LOGISTICS_WAREHOUSE lw
                 JOIN

@@ -6,6 +6,7 @@
     <typeAliases>
         <typeAlias alias="UUID" type="java.util.UUID"/>
         <package name="org.example.jhta_2402_2_final.model.dto"/>
+        <package name="org.example.jhta_2402_2_final.model.dto.distribution"/>
     </typeAliases>
     <typeHandlers>
         <typeHandler handler="org.example.jhta_2402_2_final.config.UUIDTypeHandler" javaType="java.util.UUID"/>

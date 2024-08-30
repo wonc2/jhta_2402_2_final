@@ -3,9 +3,9 @@
 
 SELECT
     lws.LOGISTICS_WAREHOUSE_SOURCE_PK AS 'PK',
-        lw.WAREHOUSE_NAME AS 'Warehouse Name',
-        s.NAME AS 'Source Name',
-        pc.NAME AS 'Product Company Name',
+        lw.WAREHOUSE_NAME AS 'WarehouseName',
+        s.NAME AS 'SourceName',
+        pc.NAME AS 'ProductCompanyName',
         lws.QUANTITY AS 'Quantity'
 FROM
     LOGISTICS_WAREHOUSE lw
