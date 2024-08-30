@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <th:block th:replace="fragment/adminHeader :: head"></th:block>
+    <div th:replace="~{fragment/adminHeader :: head}"></div>
 </head>
 
 
-<th:block th:replace="fragment/adminHeader :: body"></th:block>
+<div th:replace="~{fragment/adminHeader :: body}"></div>
 <div id="layoutSidenav_content">
     <!-- 페이지마다 다른 콘텐츠 -->
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4">밀키트 주문 확인</h1>
+
+<!--            추가 모달 버튼-->
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#insertKitOrderModal">
+                    새로운 밀키트 주문 추가</button>
+            </div>
 
             <div class="card mb-4">
                 <div class="card-header">
@@ -38,57 +46,296 @@
                     <table id="datatablesSimple">
                         <thead>
                         <tr>
+                            <th>번호</th>
                             <th>주문 ID</th>
                             <th>밀키트 업체 ID</th>
                             <th>밀키트 ID</th>
                             <th>수량</th>
                             <th>주문 날짜</th>
                             <th>상태</th>
+
                         </tr>
                         </thead>
                         <tfoot>
                         <tr>
+                            <th>번호</th>
                             <th>주문 ID</th>
                             <th>밀키트 업체 ID</th>
                             <th>밀키트 ID</th>
                             <th>수량</th>
                             <th>주문 날짜</th>
                             <th>상태</th>
+
                         </tr>
                         </tfoot>
 
                         <!--tbody > tr > td-->
                         <tbody>
-                        <tr th:each="kitOrders : ${kitOrders}" >
+                        <tr th:each="kitOrders, iterStat : ${kitOrders}" >
 
+                            <td th:text="${iterStat.count}"></td>
                             <td th:text="${kitOrders.kitOrderId}"></td>
                             <td th:text="${kitOrders.kitCompanyId}"></td>
                             <td th:text="${kitOrders.mealkitId}"></td>
-                            <td th:text="${kitOrders.quentity}"></td>
+                            <td th:text="${kitOrders.quantity}"></td>
                             <td th:text="${kitOrders.productOrderDate}"></td>
                             <td th:text="${kitOrders.statusId}"></td>
 
                         </tr>
                         </tbody>
                     </table>
+
+
                 </div>
             </div>
 
-            <div class="d-flex justify-content-end">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">추가</button>
+        </div>
+
+<!--        밀키트 주문 상세-->
+        <div class="container-fluid px-4">
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    밀키트 주문 상세
+                </div>
+                <div class="card-body">
+
+                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                        <select class="datatable-selector" name="category">
+                            <option value="All">All</option>
+                            <option value="firstName">firstName</option>
+                            <option value="lastName">lastName</option>
+                            <option value="email">email</option>
+                            <option value="department">department</option>
+                            <option value="hiredate">hiredate</option>
+                        </select>
+                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+
+
+
+
+                    <table id="datatablesSimple02">
+                        <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>주문 ID</th>
+                            <th>밀키트 업체명</th>
+                            <th>밀키트명</th>
+                            <th>밀키트 가격</th>
+                            <th>개수</th>
+                            <th>총액</th>
+                            <th>주문일자</th>
+                            <th>상태</th>
+                            <th>상태 변경</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>번호</th>
+                            <th>주문 ID</th>
+                            <th>밀키트 업체명</th>
+                            <th>밀키트명</th>
+                            <th>밀키트 가격</th>
+                            <th>개수</th>
+                            <th>총액</th>
+                            <th>주문일자</th>
+                            <th>상태</th>
+                            <th>상태 변경</th>
+                        </tr>
+                        </tfoot>
+
+                        <!--tbody > tr > td-->
+                        <tbody>
+                        <tr th:each="details, iterStat : ${kitOrderDetails}" >
+
+                            <td th:text="${iterStat.count}"></td>
+                            <td th:text="${details.kitOrderId}"></td>
+                            <td th:text="${details.kitCompanyName}"></td>
+                            <td th:text="${details.mealkitName}"></td>
+                            <td th:text="${details.mealkitPrice}"></td>
+                            <td th:text="${details.quantity}"></td>
+                            <td th:text="${details.total}"></td>
+                            <td th:text="${details.orderDate}"></td>
+                            <td th:text="${details.status}"></td>
+                            <td>
+                                <!-- 상태 변경 버튼 -->
+                                <button class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#updateStatusModal"
+                                        th:attr="data-order-id=${details.kitOrderId}">
+                                    상태변경
+                                </button>
+
+                            </td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
             </div>
+
+        </div>
+
+<!--        밀키트 로그 -->
+        <div class="container-fluid px-4">
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    밀키트 주문 로그
+                </div>
+                <div class="card-body">
+
+                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                        <select class="datatable-selector" name="category">
+                            <option value="All">All</option>
+                            <option value="firstName">firstName</option>
+                            <option value="lastName">lastName</option>
+                            <option value="email">email</option>
+                            <option value="department">department</option>
+                            <option value="hiredate">hiredate</option>
+                        </select>
+                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+
+
+
+
+                    <table id="datatablesSimple03">
+                        <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>주문 ID</th>
+                            <th>밀키트 업체명</th>
+                            <th>밀키트명</th>
+                            <th>날짜</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>번호</th>
+                            <th>주문 ID</th>
+                            <th>밀키트 업체명</th>
+                            <th>밀키트명</th>
+                            <th>날짜</th>
+                            <th>상태</th>
+                        </tr>
+                        </tfoot>
+
+                        <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+
         </div>
     </main>
 </div>
 
 
+<!-- 추가 모달 -->
+<div class="modal fade" id="insertKitOrderModal" tabindex="-1" aria-labelledby="insertKitOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="insertKitOrderModalLabel">새로운 밀키트 주문 추가</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="insertKitOrderForm" th:action="@{/sales/insert}" th:method="post">
+                    <div class="mb-3">
+                        <label for="kitCompanyId" class="form-label">밀키트 업체명</label>
+                        <select class="form-control" id="kitCompanyId" name="kitCompanyId" required>
+                            <option value="" disabled selected>업체를 선택하세요</option>
+                            <option th:each="companyList : ${companyList}"
+                                    th:value="${companyList.KIT_COMPANY_ID}"
+                                    th:text="${companyList.NAME}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mealkitId" class="form-label">밀키트명</label>
+                        <select class="form-control" id="mealkitId" name="mealkitId" required>
+                            <option value="" disabled selected>밀키트를 선택하세요</option>
+                            <option th:each="mealkit : ${mealkitList}"
+                                    th:value="${mealkit.MEALKIT_ID}"
+                                    th:text="${mealkit.NAME}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">수량</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" min="1" required>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="submit" class="btn btn-primary" form="insertKitOrderForm">주문 추가</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 상태 변경 모달 (반복문 외부) -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateStatusModalLabel">상태 변경</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateStatusForm" th:action="@{/sales/update-status}" th:method="post">
+                    <input type="hidden" id="orderId" name="kitOrderId" value="">
+                    <div class="mb-3">
+                        <label for="status" class="form-label">상태</label>
+                        <select id="status" name="statusId" class="form-select" required>
+                            <option value="" disabled selected>상태를 선택하세요</option>
+                            <option value="1">처리전</option>
+                            <option value="2">처리중</option>
+                            <option value="3">처리완료</option>
+                            <option value="4">취소</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">변경</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 자바스크립트로 모달에 데이터 전달 -->
+<script>
+    document.querySelectorAll('button[data-bs-toggle="modal"]').forEach(button => {
+        button.addEventListener('click', function() {
+            const orderId = this.getAttribute('data-order-id');
+            const modal = document.querySelector('#updateStatusModal');
+            const inputOrderId = modal.querySelector('#orderId');
+            inputOrderId.value = orderId;
+        });
+    });
+</script>
 
 
-
-
-
-
-
-<th:block th:replace="fragment/adminFooter :: footer"></th:block>
+<div th:replace="~{fragment/adminFooter :: footer}"></div>
 </body>
 </html>
+
+
