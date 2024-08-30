@@ -55,8 +55,7 @@
 
                         <!--tbody > tr > td-->
                         <tbody>
-                        <tr th:each=" kitOrderProcess : ${kitOrderList}" >
-
+                        <tr th:each="kitOrderProcess : ${kitOrderList}">
                             <td th:text="${#strings.substring(kitOrderProcess.kitOrderID, 0, 8)}"></td>
                             <td th:text="${kitOrderProcess.kitCompanyName}"></td>
                             <td th:text="${kitOrderProcess.kitName}"></td>
@@ -74,12 +73,17 @@
                             <td>
                                 <button type="button" class="btn btn-info btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#empModal">
-                                        <!--th:attr="data-id=${emp.id}, data-firstname=${emp.firstName}, data-lastname=${emp.lastName}, data-email=${emp.email}, data-department=${emp.department}, data-hiredate=${emp.hireDate}">-->
-                                    재료발주넣기
+                                        data-bs-target="#kitSourceCheckAndOrderModal"
+                                        th:attr="data-kitOrderID=${#strings.substring(kitOrderProcess.kitOrderID, 0, 8)},
+                         data-kitCompanyName=${kitOrderProcess.kitCompanyName},
+                         data-kitName=${kitOrderProcess.kitName},
+                         data-quantity=${kitOrderProcess.quantity},
+                         data-kitOrderDate=${#dates.format(kitOrderProcess.kitOrderDate, 'yyyy-MM-dd')}">
+                                    재료확인/발주
                                 </button>
                             </td>
                         </tr>
+
                         </tbody>
                     </table>
                 </div>
@@ -87,8 +91,6 @@
             <div class="d-flex justify-content-end">
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">추가</button>
             </div>
-
-
 
             <!-- 재료 발주 받아 전달 준비가 된 것들 보이는 테이블-->
             <div class="card mb-4">
@@ -109,8 +111,6 @@
                         <input type="text" class="form-control" name="keyword" placeholder="Search...">
                         <button type="submit" class="btn btn-primary">검색</button>
                     </form>
-
-
 
 
                     <table id="datatablesSimple02">
@@ -151,7 +151,7 @@
                                         data-bs-toggle="modal"
                                         data-bs-target="#empModal">
                                     <!--th:attr="data-id=${emp.id}, data-firstname=${emp.firstName}, data-lastname=${emp.lastName}, data-email=${emp.email}, data-department=${emp.department}, data-hiredate=${emp.hireDate}">-->
-                                    재료 출고!
+                                    재료판매
                                 </button>
                             </td>
                         </tr>
@@ -169,46 +169,43 @@
     </main>
 </div>
 
-<!-- 수정 모달 -->
-<div class="modal fade" id="empModal" tabindex="-1" aria-labelledby="empModalLabel" aria-hidden="true">
+<!-- 재료확인/발주 modal -->
+<div class="modal fade" id="kitSourceCheckAndOrderModal" tabindex="-1" aria-labelledby="kitOrderDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="employeeForm" th:action="@{/adminMain/update}" th:method="post">
+            <!--<form id="employeeForm" th:action="@{/adminMain/update}" th:method="post">-->
+            <form id="employeeForm" th:action="@{/distribution/kitSourceCheckAndOrder}" th:method="post">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="empModalLabel">Employee Details</h5>
+                    <h5 class="modal-title" id="kitOrderDetailModalLabel">Employee Details</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="modalEmpId" class="form-label">ID</label>
-                        <input type="text" class="form-control" id="modalEmpId" name="id" readonly>
+                        <label for="modalKitOrderID" class="form-label">주문번호</label>
+                        <input type="text" class="form-control" id="modalKitOrderID" name="id" readonly>
                     </div>
                     <div class="mb-3">
-                        <label for="modalEmpFirstName" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="modalEmpFirstName" name="firstName">
+                        <label for="modalKitCompanyName" class="form-label">밀키트 회사명</label>
+                        <input type="text" class="form-control" id="modalKitCompanyName" name="firstName" readonly>
                     </div>
                     <div class="mb-3">
-                        <label for="modalEmpLastName" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="modalEmpLastName" name="lastName">
+                        <label for="modalKitName" class="form-label">밀키트명</label>
+                        <input type="text" class="form-control" id="modalKitName" name="lastName" readonly>
                     </div>
                     <div class="mb-3">
-                        <label for="modalEmpEmail" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="modalEmpEmail" name="email">
+                        <label for="modalQuantity" class="form-label">주문수량</label>
+                        <input type="email" class="form-control" id="modalQuantity" name="email" readonly>
                     </div>
                     <div class="mb-3">
-                        <label for="modalEmpDepartment" class="form-label">Department</label>
-                        <input type="text" class="form-control" id="modalEmpDepartment" name="department">
-                    </div>
-                    <div class="mb-3">
-                        <label for="modalEmpHireDate" class="form-label">Hire Date</label>
-                        <input type="date" class="form-control" id="modalEmpHireDate" name="hireDate">
+                        <label for="modalDate" class="form-label">날짜</label>
+                        <input type="text" class="form-control" id="modalDate" name="department" readonly>
                     </div>
                     <!-- CSRF Token -->
                     <!--                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-primary">재료발주요청</button>
                 </div>
             </form>
         </div>
@@ -249,7 +246,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-primary">재료발주요청</button>
                 </div>
             </form>
         </div>
@@ -271,32 +268,31 @@
 
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', () => {
-        const empModal = document.getElementById('empModal');
+        const kitSourceCheckAndOrderModal = document.getElementById('kitSourceCheckAndOrderModal');
 
-        if (empModal) {
-            empModal.addEventListener('show.bs.modal', event => {
+        if (kitSourceCheckAndOrderModal) {
+            kitSourceCheckAndOrderModal.addEventListener('show.bs.modal', event => {
                 const button = event.relatedTarget; // 클릭된 버튼
-                const empId = button.getAttribute('data-id');
-                const empFirstName = button.getAttribute('data-firstname');
-                const empLastName = button.getAttribute('data-lastname');
-                const empEmail = button.getAttribute('data-email');
-                const empDepartment = button.getAttribute('data-department');
-                const empHireDate = button.getAttribute('data-hiredate');
+                const kitOrderId = button.getAttribute('data-kitOrderID');
+                const kitCompanyName = button.getAttribute('data-kitCompanyName');
+                const kitName = button.getAttribute('data-kitName');
+                const kitQuantity = button.getAttribute('data-quantity');
+                const kitOrderDate = button.getAttribute('data-kitOrderDate');
 
-                // 폼 필드에 값 설정
-                document.getElementById('modalEmpId').value = empId;
-                document.getElementById('modalEmpFirstName').value = empFirstName;
-                document.getElementById('modalEmpLastName').value = empLastName;
-                document.getElementById('modalEmpEmail').value = empEmail;
-                document.getElementById('modalEmpDepartment').value = empDepartment;
-                document.getElementById('modalEmpHireDate').value = empHireDate;
+                // 폼 필드에 값 설정 (id 값을 넣으면 됨)
+                document.getElementById('modalKitOrderID').value = kitOrderId;
+                document.getElementById('modalKitCompanyName').value = kitCompanyName;
+                document.getElementById('modalKitName').value = kitName;
+                document.getElementById('modalQuantity').value = kitQuantity;
+                document.getElementById('modalDate').value = kitOrderDate;
 
                 // 폼의 action 속성 설정
                 const form = document.getElementById('employeeForm');
-                form.action = `/adminMain/update`;
+                form.action = '/distribution/kitSourceCheckAndOrder'; // 실제 URL로 설정
             });
         }
     });
+
 </script>
 
 

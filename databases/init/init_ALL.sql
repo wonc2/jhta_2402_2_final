@@ -158,6 +158,30 @@ CREATE TABLE USER
     FOREIGN KEY (ROLE_ID) REFERENCES ROLE (ROLE_ID)
 );
 
+
+-- 웨어하우스 관련
+-- 1. LOGISTICS_WAREHOUSE 테이블 생성
+
+CREATE TABLE `LOGISTICS_WAREHOUSE`
+(
+    `LOGISTICS_WAREHOUSE_PK` VARCHAR(50) NOT NULL,
+    `WAREHOUSE_NAME`         VARCHAR(50) NOT NULL,
+    PRIMARY KEY (`LOGISTICS_WAREHOUSE_PK`)
+);
+
+
+-- 2. LOGISTICS_WAREHOUSE_SOURCE 테이블 생성
+CREATE TABLE `LOGISTICS_WAREHOUSE_STACK`
+(
+    `LOGISTICS_WAREHOUSE_STACK_PK` VARCHAR(50) NOT NULL,
+    `SOURCE_FK`                     VARCHAR(50) NOT NULL,
+    `LOGISTICS_WAREHOUSE_FK`        VARCHAR(50) NOT NULL,
+    `QUANTITY`                      INT NULL,
+    PRIMARY KEY (`LOGISTICS_WAREHOUSE_STACK_PK`),
+    FOREIGN KEY (`SOURCE_FK`) REFERENCES `SOURCE` (`SOURCE_ID`),
+    FOREIGN KEY (`LOGISTICS_WAREHOUSE_FK`) REFERENCES `LOGISTICS_WAREHOUSE` (`LOGISTICS_WAREHOUSE_PK`)
+);
+
 INSERT INTO MEALKIT (MEALKIT_ID, NAME)
 VALUES (UUID(), '불고기 밀키트'),
        (UUID(), '김치찌개 밀키트'),
@@ -263,5 +287,5 @@ VALUES (1, 'ADMIN'),
 INSERT INTO USER (USER_PK, USER_NAME, USER_ID, USER_PASSWORD, USER_EMAIL, USER_TEL, ROLE_ID)
 VALUES (UUID(), '김철수', 'chulsoo', 'password123', 'chulsoo@example.com', '010-1234-5678', 1),
        (UUID(), '이영희', 'younghee', 'password456', 'younghee@example.com', '010-2345-6789', 2),
-       ('2fc622e6-64fe-11ef-9a4b-0242ac110002', '신가현', 'admin', '$2a$10$Oe87iYbNOD1PZ/Fav.N6Weijo4/dhwnBCluJg6qBUxf.OkNCtYv1C', 'younghee@example.com', '010-2345-6789', 1),
+       ('2fc622e6-64fe-11ef-9a4b-0242ac110002', '신가현', 'admin', '$2a$10$Oe87iYbNOD1PZ/Fav.N6Weijo4/dhwnBCluJg6qBUxf.OkNCtYv1C', 'younghee@example.com', '010-2345-6789', ROLE_ADMIN),
        (UUID(), '박영수', 'youngsoo', 'password789', 'youngsoo@example.com', '010-3456-7890', 3);

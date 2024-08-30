@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <th:block th:replace="fragment/adminHeader :: head"></th:block>
+    <!-- 추가적인 CSS 및 JavaScript 파일 링크 -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+    <script>
+        // JavaScript 함수: 버튼 클릭 시 모달을 띄우기
+        function showModal(logisticsWareHouseSourcePK) {
+            // 모달의 데이터를 설정하는 함수
+            // 예를 들어, logisticsWareHouseSourcePK 값을 모달의 특정 요소에 표시하거나 사용할 수 있습니다.
+            console.log("Clicked logisticsWareHouseSourcePK: " + logisticsWareHouseSourcePK);
+
+            // 모달을 띄우는 방법
+            var myModal = new bootstrap.Modal(document.getElementById('orderModal'));
+            myModal.show();
+        }
+    </script>
+</head>
+<body>
+<th:block th:replace="fragment/adminHeader :: body"></th:block>
+<div id="layoutSidenav_content">
+    <!-- 페이지마다 다른 콘텐츠 -->
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4 mb-4">창고 재고 확인</h1>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    창고 재고 확인
+                </div>
+                <div class="card-body">
+                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                        <select class="datatable-selector" name="category">
+                            <option value="All">All</option>
+                            <option value="sourceName">재료명</option>
+                            <option value="productCompanyName">업체명</option>
+                        </select>
+                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+
+                    <table id="datatablesSimple">
+                        <thead>
+                        <tr>
+                            <th>창고이름</th>
+                            <th>재료명</th>
+                            <th>제공업체</th>
+                            <th>수량</th>
+                            <th>상세</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>창고이름</th>
+                            <th>재료명</th>
+                            <th>제공업체</th>
+                            <th>수량</th>
+                            <th>상세</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        <tr th:each="items : ${warehouseList}">
+                            <td th:text="${items.wareHouseName}"></td>
+                            <td th:text="${items.sourceName}"></td>
+                            <td th:text="${items.productCompanyName}"></td>
+                            <td th:text="${items.quantity}"></td>
+                            <td>
+                                <!-- 버튼 클릭 시 showModal 함수 호출 -->
+                                <button class="btn btn-primary" type="button" onclick="showModal('${items.logisticsWareHouseSourcePK}')">상세</button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="orderModalLabel">발주</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- 모달 바디안에 들어갈 내용 여기에 !! -->
+                            <!-- 발주 폼) 구매번호 - 주문자 - 주문처타입 - 주문처 - 발주처 - 카테고리 - 제품 - 갯수 -->
+                            <form>
+                                <div class="container">
+                                    <div class="mb-3 row align-items-center">
+                                        <label class="col-sm-3 col-form-label">카테고리</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-select" id="category" name="category" required>
+                                                <option>선택</option>
+                                                <option value="1">농산물</option>
+                                                <option value="2">축산물</option>
+                                                <option value="3">수산물</option>
+                                                <option value="4">...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 row align-items-center">
+                                        <label class="col-sm-3 col-form-label">제품</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-select" id="product" name="product" required>
+                                                <option>선택</option>
+                                                <option value="1">고등어</option>
+                                                <option value="2">문어</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 row align-items-center">
+                                        <label class="col-sm-3 col-form-label">갯수</label>
+                                        <div class="col-sm-9">
+                                            <input type="number" id="count" class="form-control" min="1" max="99" value="1" step="1" name="count">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <!-- 가격 자동 계산 해서 보여줌 readonly -->
+                            <div class="mb-3 row align-items-center">
+                                <label class="col-sm-3 col-form-label">가격</label>
+                                <div class="col-sm-9">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" value="4500000" readonly aria-label="price" name="price" id="price">
+                                        <span class="input-group-text">₩</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 모달 바디 끝 -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                            <button type="button" class="btn btn-primary" id="orderBtn">주문</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal div end -->
+
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">추가</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<th:block th:replace="fragment/adminFooter :: footer"></th:block>
+</body>
+</html>

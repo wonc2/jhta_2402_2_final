@@ -6,7 +6,8 @@
             s.NAME as 'sourceName',
             PRICE as 'sourcePrice',
             pc.NAME as 'companyName',
-            pc.ADDRESS as 'companyAddress'
+            pc.ADDRESS as 'companyAddress',
+            pc.product_company_ID as companyId
         from SOURCE_PRICE sp
         join SOURCE s ON s.source_id = sp.source_id
         join PRODUCT_COMPANY pc ON pc.product_company_id = sp.product_company_id
@@ -15,8 +16,11 @@
         </if>
     </select>
 
-    <insert id="insertSource" parameterType="Map">
-
+    <insert id="insertCompanySource" parameterType="Map">
+        INSERT INTO
+            SOURCE_PRICE (SOURCE_PRICE_ID, PRODUCT_COMPANY_ID, SOURCE_ID, PRICE)
+        VALUES
+            (UUID(), #{companyId}, #{sourceId}, #{sourcePrice})
     </insert>
     <!-- Select 에 뿌리는용 -->
     <select id="getAllSources" resultType="SourceDto">

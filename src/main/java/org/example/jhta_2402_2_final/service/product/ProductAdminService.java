@@ -33,8 +33,7 @@ public class ProductAdminService {
     public List<StatusDto> getAllStatus() {
         return productDao.getAllStatus();
     }
-    public int production(ProductDto productDto){
+    public int production(ProductDto productDto) {
         return 0;
-//        return productDao.insertProduct(productDto);
     }
 }

@@ -6,6 +6,7 @@ import org.example.jhta_2402_2_final.service.distribution.KitOrderProcessService
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -25,8 +26,16 @@ public class KitOrderProcessController {
         List<Map<String, Object>> kitOrderList = kitOrderProcessService.findAllOrder();
         model.addAttribute("kitOrderList", kitOrderList);
 
+        List<Map<String, Object>> kitSourceList = kitOrderProcessService.findKitSource();
+        model.addAttribute("kitSourceList", kitSourceList);
+
         return "distribution/KitOrderProcessMainPage";
     }
+
+    /*@PostMapping("/kitSourceOrder{}")*/
+
+
+
 
 
 

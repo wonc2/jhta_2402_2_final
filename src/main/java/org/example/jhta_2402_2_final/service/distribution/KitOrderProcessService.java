@@ -15,4 +15,7 @@ public class KitOrderProcessService {
     public List<Map<String, Object>> findAllOrder() {
         return kitOrderProcessDao.findAllOrder();
     }
+
+    public List<Map<String, Object>> findKitSource() { return kitOrderProcessDao.findKitSource();
+    }
 }
