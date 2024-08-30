@@ -21,10 +21,6 @@ public class ProductAdminController {
     private final ProductAdminService productAdminService;
 
     @GetMapping("/main")
-    public String productMainPage() {
-        return "product/productMainPage";
-    }
-    @GetMapping("/adminMain")
     public String productMainPage(Model model, @RequestParam Map<String, Object> params) {
         // 모든 검색 조건 params 에 담김
 
