@@ -35,5 +35,6 @@ public class ProductAdminService {
     }
     public int production(ProductDto productDto){
         return 0;
+//        return productDao.insertProduct(productDto);
     }
 }
