@@ -34,7 +34,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
         httpSecurity.authorizeHttpRequests((auth)->auth
-                .requestMatchers("/","/member/**","/test","/adminMain/**","/sales/**","/distribution/**")
+                .requestMatchers("/","/member/**","/test","/adminMain/**","/sales/**","/distribution/**","/wareHouse/**")
                 .permitAll()
                 .requestMatchers("/product/role").hasAuthority("ROLE_PRODUCT_MANAGER")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
