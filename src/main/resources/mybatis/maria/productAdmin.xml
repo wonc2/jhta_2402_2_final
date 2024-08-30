@@ -61,4 +61,7 @@
     <select id="getAllStatus" resultType="StatusDto">
         select STATUS_ID as 'statusId', STATUS as 'statusName' from STATUS
     </select>
+    <insert id="insertProductCompany" parameterType="ProductCompanyDto">
+        INSERT INTO PRODUCT_COMPANY (PRODUCT_COMPANY_ID,NAME,ADDRESS) VALUES(UUID(),#{productCompanyName},#{productCompanyAddress})
+    </insert>
 </mapper>

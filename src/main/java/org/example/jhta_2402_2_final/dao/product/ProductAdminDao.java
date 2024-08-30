@@ -12,6 +12,6 @@ public interface ProductAdminDao {
     List<Map<String, Object>> findAll();
     List<Map<String, Object>> getProductListByParams(Map<String, Object> params);
     List<ProductCompanyDto> getAllCompanies();
-
     List<StatusDto> getAllStatus();
+    int insertProductCompany(ProductCompanyDto productCompanyDto);
 }
