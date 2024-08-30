@@ -9,4 +9,6 @@ import java.util.Map;
 public interface KitOrderProcessDao {
 
     List<Map<String, Object>> findAllOrder();
+
+    List<Map<String, Object>> findKitSource();
 }

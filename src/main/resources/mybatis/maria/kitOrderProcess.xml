@@ -19,4 +19,22 @@
                 JOIN
             STATUS S ON KO.STATUS_ID = S.STATUS_ID;
     </select>
+
+    <select id="findKitSource" resultType="Map">
+        SELECT
+            S.NAME AS 재료이름,
+            SP.PRICE AS 재료가격,
+            KSP.QUANTITY AS 수량
+        FROM
+            MEALKIT MK
+                JOIN
+            KIT_SOURCE_PRICE KSP ON MK.MEALKIT_ID = KSP.MEALKIT_ID
+                JOIN
+            SOURCE_PRICE SP ON KSP.SOURCE_PRICE_ID = SP.SOURCE_PRICE_ID
+                JOIN
+            SOURCE S ON SP.SOURCE_ID = S.SOURCE_ID
+        WHERE
+            MK.NAME = '비빔밥 밀키트';
+    </select>
+
 </mapper>
