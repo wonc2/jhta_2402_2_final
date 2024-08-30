@@ -13,10 +13,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductDao productDao;
-
     // 주문번호(productOrderId), 생산업체명(productCompanyName), 생산품(sourceName), 생산품가격(sourcePrice),
     // 갯수(quantity), 총주문가격(totalPrice), 주문일자(productOrderDate), 상태(productOrderStatus)
-    // 아직 dto 안만들어서 map 으로 내리는중
+    // 아직 dto 안만들어서 map 으로 내리는중-
 
     public List<Map<String, Object>> findAll(){
         return productDao.findAll();

@@ -39,4 +39,8 @@ public class ProductController {
 
         return "product/productAdminMainPage";
     }
+    @GetMapping("/role")
+    public String role(){
+        return "product/roletest";
+    }
 }

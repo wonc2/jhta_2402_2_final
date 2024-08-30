@@ -8,7 +8,7 @@ public interface MemberDao {
     MemberDto findById(String userId);
     int signin(MemberDto memberDto);
     int insertUser(MemberDto memberDto);
-    int insertRole(MemberDto memberDto);
+    int insertRole(String id);
     MemberDto selectUserWithRole(String username);
     boolean checkUserIdExists(String userId);
 
