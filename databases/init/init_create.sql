@@ -106,6 +106,5 @@ CREATE TABLE USER (
                       USER_PASSWORD VARCHAR(128) NOT NULL, -- 유저 비밀번호
                       USER_EMAIL VARCHAR(50) NOT NULL, -- 유저 이메일
                       USER_TEL VARCHAR(50) NOT NULL, -- 전화번호
-                      ROLE_ID INT, -- 권한FK
-                      FOREIGN KEY (ROLE_ID) REFERENCES ROLE(ROLE_ID)
+                      ROLE_NAME VARCHAR(50) -- 권한FK
 );

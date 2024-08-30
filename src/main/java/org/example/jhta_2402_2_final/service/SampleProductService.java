@@ -3,7 +3,7 @@ package org.example.jhta_2402_2_final.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.SampleProductDao;
-import org.example.jhta_2402_2_final.model.dto.ProductDto;
+import org.example.jhta_2402_2_final.model.dto.product.ProductDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,8 +20,6 @@ public class SampleProductService {
     public int insertNewProduct(ProductDto productDto){
         ProductDto productDto1 = ProductDto.builder()
                 .productName(productDto.getProductName())
-                .productCost(productDto.getProductCost())
-                .productSize(productDto.getProductSize())
                 .build();
         return sampleProductDao.insertNewProduct(productDto1);
 

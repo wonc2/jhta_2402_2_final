@@ -1,4 +1,4 @@
-package org.example.jhta_2402_2_final.model.dto;
+package org.example.jhta_2402_2_final.model.dto.sales;
 
 import lombok.Data;
 
@@ -11,7 +11,7 @@ public class KitOrderDto {
     private UUID kitOrderId;
     private String kitCompanyId;
     private String mealkitId;
-    private int quentity;
+    private int quantity;
     private LocalDate productOrderDate;
     private int statusId;
 }

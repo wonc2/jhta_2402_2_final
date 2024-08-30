@@ -58,6 +58,7 @@ public class MemberController {
     @PostMapping("/signin")
     public String signinProcess(@ModelAttribute MemberDto memberDto) {
         int result = memberService.insertUser(memberDto);
+        int result2 = memberService.insertRole(memberDto.getUserId());
         return "redirect:/login";
     }
 

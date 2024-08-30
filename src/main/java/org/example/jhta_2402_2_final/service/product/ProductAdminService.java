@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.product.ProductAdminDao;
 import org.example.jhta_2402_2_final.model.dto.common.StatusDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
+import org.example.jhta_2402_2_final.model.dto.product.ProductDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,5 +32,8 @@ public class ProductAdminService {
     }
     public List<StatusDto> getAllStatus() {
         return productDao.getAllStatus();
+    }
+    public int production(ProductDto productDto){
+        return productDao.insertProduct(productDto);
     }
 }

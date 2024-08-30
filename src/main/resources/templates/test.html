@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <th:block th:replace="fragment/adminHeader :: head"></th:block>
+    <div th:replace="~{fragment/adminHeader :: head}"></div>
 </head>
 
 
-<th:block th:replace="fragment/adminHeader :: body"></th:block>
+<div th:replace="~{fragment/adminHeader :: body}"></div>
 <div id="layoutSidenav_content">
 
     <h2>템플릿 적용 이곳에 자유롭게 작성</h2>
@@ -23,6 +23,6 @@
 
 
 
-<th:block th:replace="fragment/adminFooter :: footer"></th:block>
+<div th:replace="~{fragment/adminFooter :: footer}"></div>
 </body>
 </html>
