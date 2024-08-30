@@ -22,8 +22,26 @@
         VALUES
             (UUID(), #{companyId}, #{sourceId}, #{sourcePrice})
     </insert>
-    <!-- Select 에 뿌리는용 -->
+
+    <insert id="addSource" parameterType="String">
+        INSERT INTO
+            SOURCE (SOURCE_ID, NAME)
+        VALUES
+            (UUID(), #{sourceName})
+    </insert>
+
+
+    <select id="getCompanyIdByName" parameterType="String" resultType="String">
+        SELECT PRODUCT_COMPANY_ID as 'companyId' FROM PRODUCT_COMPANY WHERE NAME = #{companyName}
+    </select>
+    <select id="getSourceIdByName" parameterType="String" resultType="String">
+        SELECT SOURCE_ID as 'sourceId' FROM SOURCE WHERE NAME = #{sourceName}
+    </select>
     <select id="getAllSources" resultType="SourceDto">
         SELECT SOURCE_ID as 'sourceId', NAME as 'sourceName' FROM SOURCE
+    </select>
+
+    <select id="duplicationSource" resultType="int" parameterType="String">
+        SELECT COUNT(*) FROM SOURCE WHERE NAME = #{sourceName}
     </select>
 </mapper>

@@ -31,7 +31,7 @@ public class ProductCompanyRestController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("{companyName}")
+    @PostMapping("{companyName}/produce")
     public ResponseEntity<List<Map<String, Object>>> addSource(@PathVariable String companyName, @RequestBody Map<String ,Object> dataMap){
         // http://localhost:8080/api/product/company/농심공장
         //  {
@@ -40,9 +40,28 @@ public class ProductCompanyRestController {
         //    "sourcePrice": 12345
         // }
 
+//        List<Map<String, Object>> companySourceList = productCompanyService.insertCompanySource(companyName, dataMap);
+//        return ResponseEntity.ok().body(companySourceList);
+        return null;
+    }
+
+    @PostMapping("{companyName}/insert")
+    public ResponseEntity<List<Map<String, Object>>> insert(@PathVariable String companyName, @RequestBody Map<String ,Object> dataMap){
+        // http://localhost:8080/api/product/company/농심공장/insert
+        //  {
+        //    "sourceName": "버터",
+        //    "sourcePrice": 12345
+        // }
+
         List<Map<String, Object>> companySourceList = productCompanyService.insertCompanySource(companyName, dataMap);
         return ResponseEntity.ok().body(companySourceList);
     }
+
+    @PutMapping("{companyName}")
+    public ResponseEntity<Map<String, Object>> updateSource(@PathVariable String companyName, @RequestBody Map<String ,Object> dataMap){
+        return null;
+    }
+
 
 
         // 할일 list

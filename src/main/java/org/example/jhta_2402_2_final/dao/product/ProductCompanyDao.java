@@ -13,4 +13,9 @@ public interface ProductCompanyDao {
     List<SourceDto> getAllSources();
 
     void insertCompanySource(Map<String, Object> dataMap);
+    void addSource(String sourceName);
+
+    int duplicationSource(String sourceName);
+    String getCompanyIdByName(String companyName);
+    String getSourceIdByName(String sourceName);
 }
