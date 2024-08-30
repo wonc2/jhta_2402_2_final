@@ -1,15 +1,83 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.example.jhta_2402_2_final.dao.SalesDao">
+<mapper namespace="org.example.jhta_2402_2_final.dao.sales.SalesDao">
 
+<!--    그냥 디비 가져오기-->
     <select id="findAll" resultType="KitOrderDto">
         SELECT KIT_ORDER_ID AS KitOrderId,
                KIT_COMPANY_ID AS KitCompanyId,
                MEALKIT_ID AS MealKitId,
-               QUENTITY,
+               QUANTITY,
                PRODUCT_ORDER_DATE AS ProductOrderDate,
                STATUS_ID AS StatusId
         FROM KIT_ORDER;
     </select>
+
+<!--    조인해서 상세정보까지 가져오기-->
+    <select id="findAllDetail" resultType="KitOrderDetailDto">
+        SELECT
+            o.KIT_ORDER_ID AS kitOrderId,
+            c.NAME AS kitCompanyName,
+            m.NAME AS mealkitName,
+            m.PRICE AS mealkitPrice,
+            o.QUANTITY AS quantity,
+            (o.QUANTITY * m.PRICE) AS total,
+            o.PRODUCT_ORDER_DATE AS orderDate,
+            s.STATUS AS status
+        FROM
+            KIT_ORDER o
+                JOIN
+            KIT_COMPANY c ON o.KIT_COMPANY_ID = c.KIT_COMPANY_ID
+                JOIN
+            MEALKIT m ON o.MEALKIT_ID = m.MEALKIT_ID
+                JOIN
+            STATUS s ON o.STATUS_ID = s.STATUS_ID
+    </select>
+
+<!--    새로운 주문 추가-->
+    <insert id="insert">
+        INSERT INTO KIT_ORDER (KIT_ORDER_ID, KIT_COMPANY_ID, MEALKIT_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
+        VALUES (uuid(), #{kitCompanyId}, #{mealkitId}, #{quantity}, NOW(), 1)
+    </insert>
+
+
+<!--    밀키트 업체 이름과 pk값 가져오기-->
+    <select id="findAllIdAndName">
+        select KIT_COMPANY_ID as kitCompanyId,
+               NAME
+        from KIT_COMPANY;
+    </select>
+
+    <!-- Result Map 정의 -->
+    <resultMap id="kitCompanyResultMap" type="map">
+        <id property="KIT_COMPANY_ID" column="KIT_COMPANY_ID"/>
+        <result property="NAME" column="NAME"/>
+    </resultMap>
+
+    <!-- 쿼리 정의 -->
+    <select id="getKitCompanyIdAndNames" resultMap="kitCompanyResultMap">
+        SELECT KIT_COMPANY_ID, NAME
+        FROM KIT_COMPANY
+    </select>
+
+    <!-- Result Map 정의 -->
+    <resultMap id="mealkitResultMap" type="map">
+        <id property="MEALKIT_ID" column="MEALKIT_ID"/>
+        <result property="NAME" column="NAME"/>
+    </resultMap>
+
+    <!-- 쿼리 정의 -->
+    <select id="getMealkitIdAndNames" resultMap="mealkitResultMap">
+        SELECT MEALKIT_ID, NAME
+        FROM MEALKIT
+    </select>
+
+
+    <!-- 상태 업데이트 쿼리 -->
+    <update id="updateKitOrderStatus" parameterType="map">
+        UPDATE KIT_ORDER
+        SET STATUS_ID = #{statusId}
+        WHERE KIT_ORDER_ID = #{kitOrderId}
+    </update>
 
 
 </mapper>

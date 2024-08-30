@@ -12,7 +12,7 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 @ResponseBody
-@RequestMapping("/api/test/product")
+@RequestMapping("/api/product")
 public class SampleProductController {
 
     private final SampleProductService sampleProductService;

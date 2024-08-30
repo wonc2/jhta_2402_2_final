@@ -38,25 +38,12 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
-                        주문 현황
+                        현황
                     </div>
                     <div class="card-body">
                             <div class="d-flex justify-content-end ms-auto mb-3"  style="width: 500px;">
-                                <select class="datatable-selector" id="productCompanyId">
-                                    <option value="" selected>생산업체 선택</option>
-                                    <option th:each="company : ${companies}"
-                                            th:value="${company.productCompanyId}"
-                                            th:text="${company.productCompanyName}"
-                                            th:selected="${company.productCompanyId.toString() == params['productCompanyId']}">
-                                    </option>
-                                </select>
-                                <select class="datatable-selector" id="statusId">
-                                    <option value="" selected>주문 상태</option>
-                                    <option th:each="st : ${status}"
-                                            th:value="${st.statusId}"
-                                            th:text="${st.statusName}"
-                                            th:selected="${st.statusId.toString() == params['statusId']}">
-                                    </option>
+                                <select class="datatable-selector">
+                                    <option value="" selected>검색 옵션</option>
                                 </select>
 <!--                                <input type="text" class="form-control" placeholder="검색어">-->
                                 <button class="btn btn-primary btn-sm" onclick="performSearch()">검색</button>
@@ -65,33 +52,27 @@
                         <table id="datatablesSimple">
                             <thead>
                             <tr>
-                                <th>주문번호</th>
+                                <th>생산품번호</th>
                                 <th>생산업체명</th>
-                                <th>생산품</th>
+                                <th>생산지주소</th>
+                                <th>생산품명</th>
                                 <th>생산품가격</th>
-                                <th>개수</th>
-                                <th>가격</th>
-                                <th>주문일자</th>
-                                <th>상태</th>
-                                <th>주문 승인 | 주문 거절</th>
+                                <th>생산품 수정 | 생산품 삭제</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="product : ${productList}">
-                                <td th:text="${#strings.substring(product.productOrderId, 0, 8)}"></td>
-                                <td th:text="${product.productCompanyName}"></td>
-                                <td th:text="${product.sourceName}"></td>
-                                <td th:text="${product.sourcePrice}"></td>
-                                <td th:text="${product.quantity}"></td>
-                                <td th:text="${product.totalPrice}"></td>
-                                <td th:text="${product.productOrderDate}"></td>
-                                <td th:text="${product.productOrderStatus}"></td>
+                            <tr th:each="source : ${productSourceList}">
+                                <td th:text="${#strings.substring(source.companySourceId, 0, 8)}"></td>
+                                <td th:text="${source.companyName}"></td>
+                                <td th:text="${source.companyAddress}"></td>
+                                <td th:text="${source.sourceName}"></td>
+                                <td th:text="${source.sourcePrice}"></td>
                                 <td>
                                     <button type="button" class="btn btn-info btn-sm"
-                                            th:attr="data-id=${product.productOrderId}" data-action="approve">승인</button>
+                                             data-action="approve">수정</button>
                                     |
                                     <button type="button" class="btn btn-danger btn-sm"
-                                            th:attr="data-id=${product.productOrderId}" data-action="cancel">거절</button>
+                                             data-action="cancel">삭제</button>
                                 </td>
                             </tr>
                             </tbody>
@@ -125,7 +106,7 @@
                             <div class="d-flex justify-content-end">
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#orderModal">
-                                    주문 모달
+                                    생산
                                 </button>
                             </div>
                         </div>
@@ -135,7 +116,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="orderModalLabel">발주</h1>
+                                        <h1 class="modal-title fs-5" id="orderModalLabel">생산</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                     </div>
@@ -146,26 +127,14 @@
                                         <form>
                                             <div class="container">
                                                 <div class="mb-3 row align-items-center">
-                                                    <label class="col-sm-3 col-form-label">카테고리</label>
-                                                    <div class="col-sm-9">
-                                                        <select class="form-select" id="category" name="category"
-                                                                required>
-                                                            <option>선택</option>
-                                                            <option value="1">농산물</option>
-                                                            <option value="2">축산물</option>
-                                                            <option value="3">수산물</option>
-                                                            <option value="4">...</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">제품</label>
                                                     <div class="col-sm-9">
-                                                        <select class="form-select" id="product" name="product"
-                                                                required>
-                                                            <option>선택</option>
-                                                            <option value="1">고등어</option>
-                                                            <option value="2">문어</option>
+                                                        <select class="datatable-selector" id="sourceId">
+                                                            <option value="" disabled selected>생산할 제품 선택</option>
+                                                            <option th:each="source : ${sources}"
+                                                                    th:value="${source.sourceId}"
+                                                                    th:text="${source.sourceName}">
+                                                            </option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -173,30 +142,30 @@
                                                     <label class="col-sm-3 col-form-label">갯수</label>
                                                     <div class="col-sm-9">
                                                         <input type="number" id="count" class="form-control"
-                                                               min="1" max="99" value="1" step="1" name="count">
+                                                               min="1" max="50000" value="1" step="1" name="count">
                                                     </div>
                                                 </div>
                                             </div>
                                         </form>
 
-                                        <!-- 가격 자동 계산 해서 보여줌 readonly -->
-                                        <div class="mb-3 row align-items-center">
-                                            <label class="col-sm-3 col-form-label">가격</label>
-                                            <div class="col-sm-9">
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" value="4500000" readonly
-                                                           aria-label="price" name="price" id="price">
-                                                    <span class="input-group-text">₩</span>
-                                                </div>
-                                            </div>
-                                        </div>
+<!--                                        &lt;!&ndash; 가격 자동 계산 해서 보여줌 readonly &ndash;&gt;-->
+<!--                                        <div class="mb-3 row align-items-center">-->
+<!--                                            <label class="col-sm-3 col-form-label">가격</label>-->
+<!--                                            <div class="col-sm-9">-->
+<!--                                                <div class="input-group">-->
+<!--                                                    <input type="text" class="form-control" value="4500000" readonly-->
+<!--                                                           aria-label="price" name="price" id="price">-->
+<!--                                                    <span class="input-group-text">₩</span>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
 
                                         <!-- 모달 바디 끝 -->
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기
                                         </button>
-                                        <button type="button" class="btn btn-primary" id="orderBtn">주문</button>
+                                        <button type="button" class="btn btn-primary" id="orderBtn">생산</button>
                                     </div>
                                 </div>
                             </div>
@@ -223,78 +192,6 @@
 </body>
 <th:block th:replace="~{fragment/footer}"></th:block>
 <script>
-
-    // ajax 테스트 세이브 tbody 안에 내용 지우고 사용
-    /*let myDataTable;
-
-    document.addEventListener('DOMContentLoaded', () => {
-        // 초기 로딩 시 필터 없이 전체 데이터를 가져옴
-        fetchProductData();
-    });
-
-    function fetchProductData(queryString = '') {
-        // API에서 데이터를 비동기적으로 가져오기
-        fetch(`/api/product/selectAll/params${queryString}`)
-            .then(response => response.json())
-            .then(data => {
-                const tableBody = document.querySelector('#myCustomTable tbody');
-                tableBody.innerHTML = ''; // 테이블 내용을 초기화
-
-                // API에서 받은 데이터를 사용하여 테이블 행을 생성
-                data.forEach(product => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                    <td>${product.productOrderId ? product.productOrderId.substring(0, 8) : ''}</td>
-                    <td>${product.productCompanyName || ''}</td>
-                    <td>${product.sourceName || ''}</td>
-                    <td>${product.sourcePrice || ''}</td>
-                    <td>${product.quantity || ''}</td>
-                    <td>${product.totalPrice || ''}</td>
-                    <td>${product.productOrderDate || ''}</td>
-                    <td>${product.productOrderStatus || ''}</td>
-                    <td>
-                        <button type="button" class="btn btn-info btn-sm" data-id="${product.productOrderId}" data-action="approve">승인</button>
-                        |
-                        <button type="button" class="btn btn-danger btn-sm" data-id="${product.productOrderId}" data-action="cancel">거절</button>
-                    </td>
-                `;
-                    tableBody.appendChild(row);
-                });
-
-                // 기존 DataTable 인스턴스가 존재하면 파괴
-                if (myDataTable) {
-                    myDataTable.destroy();
-                    // 테이블을 다시 초기화
-                    // myDataTable = new simpleDatatables.DataTable(document.getElementById('myCustomTable'));
-                }
-
-
-                // Simple-DataTables 초기화
-                new simpleDatatables.DataTable(document.getElementById('myCustomTable'));
-            })
-            .catch(error => console.error('Error loading data:', error));
-    }*/
-
-
-    // 검색 파라미터 모아서 Map 으로 날리기
-    function performSearch() {
-        let productCompanyId = document.getElementById('productCompanyId').value;
-        let statusId = document.getElementById('statusId').value;
-        const params = new URLSearchParams();
-
-        // 선택 안하면 쿼리에 안들어감
-        if (productCompanyId) {
-            params.append('productCompanyId', productCompanyId);
-        }
-        if (statusId) {
-            params.append('statusId', statusId);
-        }
-
-        const queryString = params.toString();
-        const baseUrl = '/product/main';
-
-        window.location.href = queryString ? `${baseUrl}?${queryString}` : baseUrl;
-    }
 
     const ctx = document.getElementById('salesProductChart');
     new Chart(ctx, {
