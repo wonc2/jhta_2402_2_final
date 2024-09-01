@@ -3,9 +3,9 @@
 
 SELECT
     lws.LOGISTICS_WAREHOUSE_SOURCE_PK AS 'PK',
-        lw.WAREHOUSE_NAME AS 'Warehouse Name',
-        s.NAME AS 'Source Name',
-        pc.NAME AS 'Product Company Name',
+        lw.WAREHOUSE_NAME AS 'WarehouseName',
+        s.NAME AS 'SourceName',
+        pc.NAME AS 'ProductCompanyName',
         lws.QUANTITY AS 'Quantity'
 FROM
     LOGISTICS_WAREHOUSE lw
@@ -19,3 +19,30 @@ FROM
     PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
 ORDER BY
     lw.WAREHOUSE_NAME, s.NAME;
+
+
+
+
+
+SELECT
+    pol.PRODUCT_ORDER_DATE AS "날짜",
+    s.STATUS AS "상태",
+    po.QUENTITY AS "양",
+    src.NAME AS "재료명",
+    pc.NAME AS "제공해준 업체명"
+FROM
+    PRODUCT_ORDER_LOG pol
+        JOIN
+    PRODUCT_ORDER po ON pol.PRODUCT_ORDER_ID = po.PRODUCT_ORDER_ID
+        JOIN
+    KIT_SOURCE_PRICE ksp ON po.KIT_SOURCE_PRICE_ID = ksp.KIT_SOURCE_PRICE_ID
+        JOIN
+    SOURCE_PRICE sp ON ksp.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+        JOIN
+    SOURCE src ON sp.SOURCE_ID = src.SOURCE_ID
+        JOIN
+    PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+        JOIN
+    STATUS s ON pol.STATUS_ID = s.STATUS_ID
+ORDER BY
+    pol.PRODUCT_ORDER_DATE DESC;

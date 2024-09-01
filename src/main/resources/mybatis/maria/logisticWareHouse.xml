@@ -1,0 +1,51 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.jhta_2402_2_final.dao.distribution.DistributionDao">
+    <select id="selectAllLogisticsWarehouse" resultType="LogisticsWareHouseDto">
+        SELECT
+            lw.WAREHOUSE_NAME AS wareHouseName,
+            s.NAME AS sourceName,
+            pc.NAME AS productCompanyName,
+            SUM(lws.QUANTITY) AS quantity
+        FROM
+            LOGISTICS_WAREHOUSE lw
+                JOIN LOGISTICS_WAREHOUSE_SOURCE lws ON lw.LOGISTICS_WAREHOUSE_PK = lws.LOGISTICS_WAREHOUSE_FK
+                JOIN SOURCE s ON lws.SOURCE_FK = s.SOURCE_ID
+                JOIN SOURCE_PRICE sp ON s.SOURCE_ID = sp.SOURCE_ID
+                JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+        GROUP BY
+            lw.WAREHOUSE_NAME,
+            s.NAME,
+            pc.NAME
+        ORDER BY
+            lw.WAREHOUSE_NAME,
+            s.NAME
+    </select>
+
+    <select id="getProductOrderLogDetails" parameterType="String" resultType="LogisticsWareHouseDetailDto">
+        SELECT
+            pol.PRODUCT_ORDER_DATE AS "logDate",
+            s.STATUS AS "status",
+            po.QUENTITY AS "quantity",
+            src.NAME AS "sourceName",
+            pc.NAME AS "productCompany"
+        FROM
+            PRODUCT_ORDER_LOG pol
+                JOIN
+            PRODUCT_ORDER po ON pol.PRODUCT_ORDER_ID = po.PRODUCT_ORDER_ID
+                JOIN
+            KIT_SOURCE_PRICE ksp ON po.KIT_SOURCE_PRICE_ID = ksp.KIT_SOURCE_PRICE_ID
+                JOIN
+            SOURCE_PRICE sp ON ksp.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+                JOIN
+            SOURCE src ON sp.SOURCE_ID = src.SOURCE_ID
+                JOIN
+            PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+                JOIN
+            STATUS s ON pol.STATUS_ID = s.STATUS_ID
+        WHERE
+            src.SOURCE_ID = #{sourceId}
+        ORDER BY
+            pol.PRODUCT_ORDER_DATE DESC
+    </select>
+
+</mapper>

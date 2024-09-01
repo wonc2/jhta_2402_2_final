@@ -3,10 +3,12 @@ package org.example.jhta_2402_2_final.controller.product;
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.model.dto.common.StatusDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
+import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyInsertDto;
 import org.example.jhta_2402_2_final.service.product.ProductAdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -19,19 +21,29 @@ import java.util.Map;
 public class ProductAdminController {
 
     private final ProductAdminService productAdminService;
+
     @GetMapping("/main")
     public String productMainPage(Model model, @RequestParam Map<String, Object> params) {
         // 모든 검색 조건 params 에 담김
 
-        List<Map<String, Object>> productList = productAdminService.getProductListByParams(params);
-        List<ProductCompanyDto> companies = productAdminService.getAllCompanies();
-        List<StatusDto> status = productAdminService.getAllStatus();
-
-        model.addAttribute("productList",productList);
-        model.addAttribute("companies", companies);
-        model.addAttribute("status", status);
-        model.addAttribute("params", params);
+//        List<Map<String, Object>> productList = productAdminService.getProductListByParams(params);
+//        List<ProductCompanyDto> companies = productAdminService.getAllCompanies();
+//        List<StatusDto> status = productAdminService.getAllStatus();
+//
+//        model.addAttribute("productList",productList);
+//        model.addAttribute("companies", companies);
+//        model.addAttribute("status", status);
+//        model.addAttribute("params", params);
 
         return "product/productAdminMainPage";
+    }
+    @GetMapping("/role")
+    public String role(){
+        return "product/roletest";
+    }
+    @PostMapping("/insertProductCompany")
+    public String insertProductCompany(ProductCompanyInsertDto productCompanyInsertDto){
+        productAdminService.insertProductCompany(productCompanyInsertDto);
+        return "redirect :/product/admin/main";
     }
 }

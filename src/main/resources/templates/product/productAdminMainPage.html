@@ -41,34 +41,34 @@
                         주문 현황
                     </div>
                     <div class="card-body">
-                            <div class="d-flex justify-content-end ms-auto mb-3"  style="width: 700px;">
-                                <select class="datatable-selector" id="productCompanyId">
-                                    <option value="" selected>생산업체 선택</option>
-                                    <option th:each="company : ${companies}"
-                                            th:value="${company.productCompanyId}"
-                                            th:text="${company.productCompanyName}"
-                                            th:selected="${company.productCompanyId.toString() == params['productCompanyId']}">
-                                    </option>
-                                </select>
-                                <select class="datatable-selector" id="statusId">
-                                    <option value="" selected>주문 상태</option>
-                                    <option th:each="st : ${status}"
-                                            th:value="${st.statusId}"
-                                            th:text="${st.statusName}"
-                                            th:selected="${st.statusId.toString() == params['statusId']}">
-                                    </option>
-                                </select>
-                                <select class="datatable-selector">
-                                    <option value="" selected>생산품</option>
-                                    <option>추가예정</option>
-                                </select>
-                                <select class="datatable-selector">
-                                    <option value="" selected>주문일자</option>
-                                    <option>추가예정</option>
-                                </select>
-<!--                                <input type="text" class="form-control" placeholder="검색어">-->
-                                <button class="btn btn-primary btn-sm" onclick="performSearch()">검색</button>
-                            </div>
+                        <div class="d-flex justify-content-end ms-auto mb-3" style="width: 700px;">
+                            <select class="datatable-selector" id="productCompanyId">
+                                <option value="" selected>생산업체 선택</option>
+                                <option th:each="company : ${companies}"
+                                        th:value="${company.productCompanyId}"
+                                        th:text="${company.productCompanyName}"
+                                        th:selected="${company.productCompanyId.toString() == params['productCompanyId']}">
+                                </option>
+                            </select>
+                            <select class="datatable-selector" id="statusId">
+                                <option value="" selected>주문 상태</option>
+                                <option th:each="st : ${status}"
+                                        th:value="${st.statusId}"
+                                        th:text="${st.statusName}"
+                                        th:selected="${st.statusId.toString() == params['statusId']}">
+                                </option>
+                            </select>
+                            <select class="datatable-selector">
+                                <option value="" selected>생산품</option>
+                                <option>추가예정</option>
+                            </select>
+                            <select class="datatable-selector">
+                                <option value="" selected>주문일자</option>
+                                <option>추가예정</option>
+                            </select>
+                            <!--                                <input type="text" class="form-control" placeholder="검색어">-->
+                            <button class="btn btn-primary btn-sm" onclick="performSearch()">검색</button>
+                        </div>
 
                         <table id="datatablesSimple">
                             <thead>
@@ -96,115 +96,109 @@
                                 <td th:text="${product.productOrderStatus}"></td>
                                 <td>
                                     <button type="button" class="btn btn-info btn-sm"
-                                            th:attr="data-id=${product.productOrderId}" data-action="approve">승인</button>
+                                            th:attr="data-id=${product.productOrderId}" data-action="approve">승인
+                                    </button>
                                     |
                                     <button type="button" class="btn btn-danger btn-sm"
-                                            th:attr="data-id=${product.productOrderId}" data-action="cancel">거절</button>
+                                            th:attr="data-id=${product.productOrderId}" data-action="cancel">거절
+                                    </button>
                                 </td>
                             </tr>
                             </tbody>
                         </table>
-
-<!--                        &lt;!&ndash; 수정 모달 &ndash;&gt;-->
-<!--                        <div class="modal fade" id="productUpdateModal" tabindex="-1"-->
-<!--                             aria-labelledby="productUpdateModalLabel" aria-hidden="true">-->
-<!--                            <div class="modal-dialog">-->
-<!--                                <div class="modal-content">-->
-<!--                                    <form id="productUpdate" th:action="@{/}" th:method="post">-->
-<!--                                        <div class="modal-header">-->
-<!--                                            <h5 class="modal-title" id="productUpdateModalLabel">product Update</h5>-->
-<!--                                            <button type="button" class="btn-close" data-bs-dismiss="modal"-->
-<!--                                                    aria-label="Close"></button>-->
-<!--                                        </div>-->
-
-<!--                                        <div class="modal-footer">-->
-<!--                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">-->
-<!--                                                Close-->
-<!--                                            </button>-->
-<!--                                            <button type="submit" class="btn btn-primary">Save</button>-->
-<!--                                        </div>-->
-<!--                                    </form>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-
                         <div class="card-body-bottom">
                             <!-- Button trigger modal -->
                             <div class="d-flex justify-content-end">
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                        data-bs-target="#orderModal">
-                                    주문 모달
+                                        data-bs-target="#insertModal">
+                                    생산 업체 등록
                                 </button>
                             </div>
                         </div>
                         <!-- Modal -->
-                        <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel"
+                        <div class="modal fade" id="insertModal" tabindex="-1" aria-labelledby="insertModalLabel"
                              aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="orderModalLabel">발주</h1>
+                                        <h1 class="modal-title fs-5" id="insertModalLabel">등록</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <!-- 모달 바디안에 들어갈 내용 여기에 !! -->
-
-                                        <!-- 발주 폼) 구매번호 - 주문자 - 주문처타입 - 주문처 - 발주처 - 카테고리 - 제품 - 갯수 -->
-                                        <form>
+                                        <form action="/product/admin/insertProductCompany"
+                                              th:action="@{/product/admin/insertProductCompany}" method="post"
+                                              id="insertProductCompanyForm">
                                             <div class="container">
                                                 <div class="mb-3 row align-items-center">
-                                                    <label class="col-sm-3 col-form-label">카테고리</label>
+                                                    <label class="col-sm-3 col-form-label">생산업체 ID</label>
                                                     <div class="col-sm-9">
-                                                        <select class="form-select" id="category" name="category"
-                                                                required>
-                                                            <option>선택</option>
-                                                            <option value="1">농산물</option>
-                                                            <option value="2">축산물</option>
-                                                            <option value="3">수산물</option>
-                                                            <option value="4">...</option>
-                                                        </select>
+                                                        <input class="form-control" id="inputUserId" type="text"
+                                                               name="userId" placeholder="아이디"/>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row align-items-center">
-                                                    <label class="col-sm-3 col-form-label">제품</label>
+                                                    <label class="col-sm-3 col-form-label">비밀번호</label>
                                                     <div class="col-sm-9">
-                                                        <select class="form-select" id="product" name="product"
-                                                                required>
-                                                            <option>선택</option>
-                                                            <option value="1">고등어</option>
-                                                            <option value="2">문어</option>
-                                                        </select>
+                                                        <input class="form-control" id="inputPassword" name="userPassword"
+                                                               type="password" placeholder="Create a password"/>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row align-items-center">
-                                                    <label class="col-sm-3 col-form-label">갯수</label>
+                                                    <label class="col-sm-3 col-form-label">비밀번호 확인</label>
                                                     <div class="col-sm-9">
-                                                        <input type="number" id="count" class="form-control"
-                                                               min="1" max="99" value="1" step="1" name="count">
+                                                        <input class="form-control" id="inputPasswordConfirm" name="password"
+                                                               type="password" placeholder="Create a password"/>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">생산업체 명</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" id="inputProductCompanyName"
+                                                               name="productCompanyName" type="text" placeholder="이름"/>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">사업자 명</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" id="inputUserName"
+                                                               name="userName" type="text" placeholder="이름"/>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">이메일</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" id="inputEmail"
+                                                               name="userEmail" type="text"
+                                                               placeholder="example@example.com"/>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">전화번호</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" id="inputTel"
+                                                               name="userTel" type="text"
+                                                               placeholder="010-0000-0000"/>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">주소</label>
+                                                    <div class="col-sm-9">
+                                                        <input class="form-control" id="inputProductCompanyAdress"
+                                                               name="productCompanyAddress" type="text"
+                                                               placeholder="주소"/>
                                                     </div>
                                                 </div>
                                             </div>
                                         </form>
-
-                                        <!-- 가격 자동 계산 해서 보여줌 readonly -->
-                                        <div class="mb-3 row align-items-center">
-                                            <label class="col-sm-3 col-form-label">가격</label>
-                                            <div class="col-sm-9">
-                                                <div class="input-group">
-                                                    <input type="text" class="form-control" value="4500000" readonly
-                                                           aria-label="price" name="price" id="price">
-                                                    <span class="input-group-text">₩</span>
-                                                </div>
-                                            </div>
-                                        </div>
-
                                         <!-- 모달 바디 끝 -->
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기
                                         </button>
-                                        <button type="button" class="btn btn-primary" id="orderBtn">주문</button>
+                                        <button type="button" class="btn btn-primary" id="btn-insertProductCompany">등록
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -342,5 +336,10 @@
             }
         }
     });
+    $(document).ready(function () {
+        $("#btn-insertProductCompany").on("click", function () {
+            $("#insertProductCompanyForm").submit();
+        })
+    })
 </script>
 </html>

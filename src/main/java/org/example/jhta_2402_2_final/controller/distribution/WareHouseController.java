@@ -25,14 +25,15 @@ public class WareHouseController {
     private final LogisticsWareHouseService logisticsWareHouseService;
 
 
-    @ResponseBody
-    @GetMapping("selectAll")
+
+    @GetMapping("/selectAll")
     public String selectAll(Model model) {
 
         List<LogisticsWareHouseDto> list = logisticsWareHouseService.selectAllLogisticsWarehouse();
+
         model.addAttribute("warehouseList",list);
 
-        return "index.html";
+        return "distribution/wareHouseList";
     }
 
 
