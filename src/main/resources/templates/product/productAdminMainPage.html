@@ -41,35 +41,39 @@
                         주문 현황
                     </div>
                     <div class="card-body">
-                        <div class="d-flex justify-content-end ms-auto mb-3" style="width: 700px;">
-                            <select class="datatable-selector" id="productCompanyId">
-                                <option value="" selected>생산업체 선택</option>
-                                <option th:each="company : ${companies}"
-                                        th:value="${company.productCompanyId}"
-                                        th:text="${company.productCompanyName}"
-                                        th:selected="${company.productCompanyId.toString() == params['productCompanyId']}">
-                                </option>
-                            </select>
-                            <select class="datatable-selector" id="statusId">
-                                <option value="" selected>주문 상태</option>
-                                <option th:each="st : ${status}"
-                                        th:value="${st.statusId}"
-                                        th:text="${st.statusName}"
-                                        th:selected="${st.statusId.toString() == params['statusId']}">
-                                </option>
-                            </select>
-                            <select class="datatable-selector">
-                                <option value="" selected>생산품</option>
-                                <option>추가예정</option>
-                            </select>
-                            <select class="datatable-selector">
-                                <option value="" selected>주문일자</option>
-                                <option>추가예정</option>
-                            </select>
-                            <!--                                <input type="text" class="form-control" placeholder="검색어">-->
-                            <button class="btn btn-primary btn-sm" onclick="performSearch()">검색</button>
+                        <div class="card-body-product-upside">
+                            <div>
+                                <button class="btn btn-primary order" id="productTableChange">주문 현황</button>
+                            </div>
+                            <div class="d-flex justify-content-end ms-auto mb-3" style="width: 700px;">
+                                <select class="datatable-selector" id="productCompanyId">
+                                    <option value="" selected>생산업체 선택</option>
+                                    <option th:each="company : ${companies}"
+                                            th:value="${company.productCompanyId}"
+                                            th:text="${company.productCompanyName}"
+                                            th:selected="${company.productCompanyId.toString() == params['productCompanyId']}">
+                                    </option>
+                                </select>
+                                <select class="datatable-selector" id="statusId">
+                                    <option value="" selected>주문 상태</option>
+                                    <option th:each="st : ${status}"
+                                            th:value="${st.statusId}"
+                                            th:text="${st.statusName}"
+                                            th:selected="${st.statusId.toString() == params['statusId']}">
+                                    </option>
+                                </select>
+                                <select class="datatable-selector">
+                                    <option value="" selected>생산품</option>
+                                    <option>추가예정</option>
+                                </select>
+                                <select class="datatable-selector">
+                                    <option value="" selected>주문일자</option>
+                                    <option>추가예정</option>
+                                </select>
+                                <!--                                <input type="text" class="form-control" placeholder="검색어">-->
+                                <button class="btn btn-primary btn-sm" onclick="performSearch()">검색</button>
+                            </div>
                         </div>
-
                         <table id="datatablesSimple">
                             <thead>
                             <tr>
@@ -109,6 +113,8 @@
                         <div class="card-body-bottom">
                             <!-- Button trigger modal -->
                             <div class="d-flex justify-content-end">
+                                <button type="button" class="checkProductBtn btn btn-outline-primary">업체별 생산품 확인
+                                </button>
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#insertModal">
                                     생산 업체 등록
@@ -141,14 +147,16 @@
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">비밀번호</label>
                                                     <div class="col-sm-9">
-                                                        <input class="form-control" id="inputPassword" name="userPassword"
+                                                        <input class="form-control" id="inputPassword"
+                                                               name="userPassword"
                                                                type="password" placeholder="Create a password"/>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">비밀번호 확인</label>
                                                     <div class="col-sm-9">
-                                                        <input class="form-control" id="inputPasswordConfirm" name="password"
+                                                        <input class="form-control" id="inputPasswordConfirm"
+                                                               name="password"
                                                                type="password" placeholder="Create a password"/>
                                                     </div>
                                                 </div>
@@ -339,6 +347,18 @@
     $(document).ready(function () {
         $("#btn-insertProductCompany").on("click", function () {
             $("#insertProductCompanyForm").submit();
+        })
+    })
+    $(document).ready(function (){
+        var productTableChangeClassName;
+        $("#productTableChange").on("click",function (){
+            productTableChangeClassName = $("#productTableChange").attr('class');
+            if(productTableChangeClassName.includes("order")){
+                $("#productTableChange").removeClass().addClass("btn btn-danger production").text("상품 현황");
+            }
+            if(productTableChangeClassName.includes("production")){
+                $("#productTableChange").removeClass().addClass("btn btn-primary order").text("주문 현황");
+            }
         })
     })
 </script>
