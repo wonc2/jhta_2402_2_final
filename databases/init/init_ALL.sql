@@ -79,6 +79,17 @@ CREATE TABLE SOURCE_PRICE
     FOREIGN KEY (SOURCE_ID) REFERENCES SOURCE (SOURCE_ID)
 );
 
+-- 7. 밀키트 재료 테이블
+CREATE TABLE KIT_SOURCE (
+                            KIT_SOURCE_ID VARCHAR(50) PRIMARY KEY, -- 키트 재료 PK
+                            MEALKIT_ID VARCHAR(50), -- 밀키트 FK
+                            SOURCE_ID VARCHAR(50), -- 재료 FK
+                            QUANTITY INT(11) DEFAULT 1, -- 수량, 기본값 1
+                            FOREIGN KEY (MEALKIT_ID) REFERENCES MEALKIT(MEALKIT_ID),
+                            FOREIGN KEY (SOURCE_ID) REFERENCES SOURCE(SOURCE_ID),
+                            CONSTRAINT unique_mealkit_source UNIQUE (MEALKIT_ID, SOURCE_ID)
+);
+
 -- 8. 상태 테이블
 CREATE TABLE STATUS
 (
@@ -148,16 +159,7 @@ CREATE TABLE USER
     FOREIGN KEY (ROLE_ID) REFERENCES ROLE (ROLE_ID)
 );
 
--- 15. 밀키트 재료 테이블
-CREATE TABLE KIT_SOURCE (
-    KIT_SOURCE_ID VARCHAR(50) PRIMARY KEY, -- 키트 재료 PK
-    MEALKIT_ID VARCHAR(50), -- 밀키트 FK
-    SOURCE_ID VARCHAR(50), -- 재료 FK
-    QUANTITY INT(11) DEFAULT 1, -- 수량, 기본값 1
-    FOREIGN KEY (MEALKIT_ID) REFERENCES MEALKIT(MEALKIT_ID),
-    FOREIGN KEY (SOURCE_ID) REFERENCES SOURCE(SOURCE_ID),
-    CONSTRAINT unique_mealkit_source UNIQUE (MEALKIT_ID, SOURCE_ID)
-);
+
 
 
 
