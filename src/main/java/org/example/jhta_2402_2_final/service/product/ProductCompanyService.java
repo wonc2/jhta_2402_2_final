@@ -59,4 +59,17 @@ public class ProductCompanyService {
         productCompanyDao.deleteSourceFromCompany(companySourceId);
         return findAll(companyName);
     }
+
+    /* 생산 창고 리스트 다 가져옴 */
+    public List<Map<String, Object>> getWarehouseSources(String companyName) {
+        // { "produceDate", "sourceWarehouseId", "sourceQuantity", "totalPrice", "sourceName", "sourcePrice" }
+        return productCompanyDao.getWarehouseSources(companyName);
+    }
+
+    /* 등록된 상품 생산 -> 창고에 적재 */
+    @Transactional
+    public List<Map<String, Object>> produceSource(String companyName, Map<String ,Object> paramData) {
+        productCompanyDao.produceSource(paramData);
+        return productCompanyDao.getWarehouseSources(companyName);
+    }
 }
