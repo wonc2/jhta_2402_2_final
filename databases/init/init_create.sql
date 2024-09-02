@@ -1,5 +1,3 @@
-
-
 -- 1. 밀키트 테이블 생성
 CREATE TABLE MEALKIT (
                          MEALKIT_ID VARCHAR(50) PRIMARY KEY, -- 밀키트PK
@@ -31,14 +29,7 @@ CREATE TABLE SOURCE_PRICE (
                               FOREIGN KEY (PRODUCT_COMPANY_ID) REFERENCES PRODUCT_COMPANY(PRODUCT_COMPANY_ID),
                               FOREIGN KEY (SOURCE_ID) REFERENCES SOURCE(SOURCE_ID)
 );
--- 6. 밀키트 가격 테이블
-CREATE TABLE KIT_TOTAL_PRICE (
-                                 KIT_TOTAL_PRICE_ID VARCHAR(50) PRIMARY KEY, -- 밀키트가격PK
-                                 MEALKIT_ID VARCHAR(50), -- 밀키트FK
-                                 PURCHASER_PRICE INT, -- 구매가
-                                 SALES_PRICE INT, -- 판매가
-                                 FOREIGN KEY (MEALKIT_ID) REFERENCES MEALKIT(MEALKIT_ID)
-);
+
 -- 7. 밀키트 재료 가격 테이블
 CREATE TABLE KIT_SOURCE_PRICE (
                                   KIT_SOURCE_PRICE_ID VARCHAR(50) PRIMARY KEY, -- 밀키트재료가격PK

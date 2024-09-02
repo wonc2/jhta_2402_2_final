@@ -36,7 +36,7 @@
 <!--    새로운 주문 추가-->
     <insert id="insert">
         INSERT INTO KIT_ORDER (KIT_ORDER_ID, KIT_COMPANY_ID, MEALKIT_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
-        VALUES (uuid(), #{kitCompanyId}, #{mealkitId}, #{quantity}, NOW(), 1)
+        VALUES (#{kitOrderId}, #{kitCompanyId}, #{mealkitId}, #{quantity}, NOW(), #{statusId})
     </insert>
 
 
@@ -79,5 +79,86 @@
         WHERE KIT_ORDER_ID = #{kitOrderId}
     </update>
 
+
+
+<!--밀키트별 필요한 재료 셀렉-->
+    <select id="findAllKitSourceDetail" resultType="KitSourceDetailDto">
+        SELECT
+            ks.KIT_SOURCE_ID AS kitSourceId,
+            m.NAME AS mealkitName,
+            s.NAME AS sourceName,
+            ks.QUANTITY AS quantity
+        FROM
+            KIT_SOURCE ks
+                JOIN
+            MEALKIT m ON ks.MEALKIT_ID = m.MEALKIT_ID
+                JOIN
+            SOURCE s ON ks.SOURCE_ID = s.SOURCE_ID
+
+        ORDER BY mealkitName
+    </select>
+
+
+<!--    재료명, pk 가져오기-->
+    <resultMap id="sourceMap" type="java.util.HashMap">
+        <result column="SOURCE_ID" property="sourceId"/>
+        <result column="NAME" property="name"/>
+    </resultMap>
+    <select id="getSourceIdAndNames" resultMap="sourceMap">
+        SELECT
+            SOURCE_ID,
+            NAME
+        FROM
+            SOURCE
+    </select>
+
+
+<!--    -->
+
+    <!-- 밀키트를 데이터베이스에 삽입 -->
+    <insert id="insertMealkit" >
+        INSERT INTO MEALKIT (MEALKIT_ID, NAME, PRICE)
+        VALUES (uuid(), #{mealkitName}, 1000)
+    </insert>
+
+
+    <!-- 밀키트 이름으로 밀키트 아이디를 조회 -->
+    <select id="getMealkitIdByName" parameterType="String" resultType="String">
+        SELECT MEALKIT_ID
+        FROM MEALKIT
+        WHERE NAME = #{name}
+    </select>
+
+    <!-- 밀키트와 재료 매핑 -->
+    <insert id="insertKitSources" parameterType="map">
+        INSERT INTO KIT_SOURCE (KIT_SOURCE_ID, MEALKIT_ID, SOURCE_ID, QUANTITY)
+        VALUES (uuid(), #{mealkitId}, #{sourceId}, #{quantity})
+    </insert>
+
+    <!-- KitOrderLog 조회 쿼리 -->
+    <select id="selectKitOrderLogs" resultType="KitOrderLogDto">
+        SELECT
+            kol.KIT_ORDER_LOG_ID AS kitOrderLogId,
+            kol.KIT_ORDER_ID AS kitOrderId,
+            kc.NAME AS companyName,
+            mk.NAME AS mealkitName,
+            s.STATUS,
+            kol.PRODUCT_ORDER_DATE AS productOrderDate
+        FROM
+            KIT_ORDER_LOG kol
+                JOIN
+            KIT_ORDER ko ON kol.KIT_ORDER_ID = ko.KIT_ORDER_ID
+                JOIN
+            KIT_COMPANY kc ON ko.KIT_COMPANY_ID = kc.KIT_COMPANY_ID
+                JOIN
+            MEALKIT mk ON ko.MEALKIT_ID = mk.MEALKIT_ID
+                JOIN
+            STATUS s ON kol.STATUS_ID = s.STATUS_ID
+    </select>
+
+    <insert id="insertLog">
+        INSERT INTO KIT_ORDER_LOG (KIT_ORDER_LOG_ID, KIT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE)
+        VALUES (uuid(), #{kitOrderId}, #{statusId}, NOW())
+    </insert>
 
 </mapper>
