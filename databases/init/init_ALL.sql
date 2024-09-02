@@ -95,7 +95,7 @@ CREATE TABLE KIT_ORDER_LOG (
                                KIT_ORDER_LOG_ID VARCHAR(50) PRIMARY KEY, -- 주문로그PK
                                KIT_ORDER_ID VARCHAR(50), -- 주문FK
                                STATUS_ID INT, -- 상태FK
-                               LOG_DATE DATETIME DEFAULT CURRENT_TIMESTAMP, -- 날짜
+                               PRODUCT_ORDER_DATE DATETIME DEFAULT CURRENT_TIMESTAMP, -- 날짜
                                FOREIGN KEY (KIT_ORDER_ID) REFERENCES KIT_ORDER(KIT_ORDER_ID),
                                FOREIGN KEY (STATUS_ID) REFERENCES STATUS(STATUS_ID)
 );
