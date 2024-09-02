@@ -42,7 +42,7 @@
             sw.QUANTITY as sourceQuantity,
             DATE_FORMAT(sw.produce_date, '%Y-%m-%d') as produceDate,
             s.name as sourceName
-        FROM wonc_test.SOURCE_WAREHOUSE sw
+        FROM SOURCE_WAREHOUSE sw
         JOIN SOURCE_PRICE sp on sp.SOURCE_PRICE_ID = sw.SOURCE_PRICE_ID
         JOIN SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
         JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
