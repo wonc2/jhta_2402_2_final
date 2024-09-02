@@ -79,16 +79,6 @@ CREATE TABLE SOURCE_PRICE
     FOREIGN KEY (SOURCE_ID) REFERENCES SOURCE (SOURCE_ID)
 );
 
--- 7. 밀키트 재료 가격 테이블
-CREATE TABLE KIT_SOURCE_PRICE
-(
-    KIT_SOURCE_PRICE_ID VARCHAR(50) PRIMARY KEY, -- 밀키트재료가격PK
-    MEALKIT_ID          VARCHAR(50),             -- 밀키트FK
-    SOURCE_PRICE_ID     VARCHAR(50),             -- 가격FK
-    QUANTITY            INT,                     -- 개수
-    FOREIGN KEY (MEALKIT_ID) REFERENCES MEALKIT (MEALKIT_ID),
-    FOREIGN KEY (SOURCE_PRICE_ID) REFERENCES SOURCE_PRICE (SOURCE_PRICE_ID)
-);
 -- 8. 상태 테이블
 CREATE TABLE STATUS
 (
@@ -99,11 +89,11 @@ CREATE TABLE STATUS
 CREATE TABLE PRODUCT_ORDER
 (
     PRODUCT_ORDER_ID    VARCHAR(50) PRIMARY KEY,            -- 발주PK
-    KIT_SOURCE_PRICE_ID VARCHAR(50),                        -- 밀키트재료가격FK
+    KIT_SOURCE_ID VARCHAR(50),                        -- 밀키트재료FK
     QUANTITY            INT,                                -- 개수
     PRODUCT_ORDER_DATE  DATETIME DEFAULT CURRENT_TIMESTAMP, -- 주문 일자
     STATUS_ID           INT,                                -- 상태FK
-    FOREIGN KEY (KIT_SOURCE_PRICE_ID) REFERENCES KIT_SOURCE_PRICE (KIT_SOURCE_PRICE_ID),
+    FOREIGN KEY (KIT_SOURCE_ID) REFERENCES KIT_SOURCE(KIT_SOURCE_ID),
     FOREIGN KEY (STATUS_ID) REFERENCES STATUS (STATUS_ID)
 );
 -- 10. 생산주문(발주) 로그 테이블
@@ -157,6 +147,18 @@ CREATE TABLE USER
     ROLE_NAME       VARCHAR(50) NOT NULL,                     -- 권한FK
     FOREIGN KEY (ROLE_ID) REFERENCES ROLE (ROLE_ID)
 );
+
+-- 15. 밀키트 재료 테이블
+CREATE TABLE KIT_SOURCE (
+    KIT_SOURCE_ID VARCHAR(50) PRIMARY KEY, -- 키트 재료 PK
+    MEALKIT_ID VARCHAR(50), -- 밀키트 FK
+    SOURCE_ID VARCHAR(50), -- 재료 FK
+    QUANTITY INT(11) DEFAULT 1, -- 수량, 기본값 1
+    FOREIGN KEY (MEALKIT_ID) REFERENCES MEALKIT(MEALKIT_ID),
+    FOREIGN KEY (SOURCE_ID) REFERENCES SOURCE(SOURCE_ID),
+    CONSTRAINT unique_mealkit_source UNIQUE (MEALKIT_ID, SOURCE_ID)
+);
+
 
 
 -- 웨어하우스 관련
@@ -287,5 +289,5 @@ VALUES (1, 'ADMIN'),
 INSERT INTO USER (USER_PK, USER_NAME, USER_ID, USER_PASSWORD, USER_EMAIL, USER_TEL, ROLE_NAME)
 VALUES (UUID(), '김철수', 'chulsoo', 'password123', 'chulsoo@example.com', '010-1234-5678', 1),
        (UUID(), '이영희', 'younghee', 'password456', 'younghee@example.com', '010-2345-6789', 2),
-       ('2fc622e6-64fe-11ef-9a4b-0242ac110002', '신가현', 'admin', '$2a$10$Oe87iYbNOD1PZ/Fav.N6Weijo4/dhwnBCluJg6qBUxf.OkNCtYv1C', 'younghee@example.com', '010-2345-6789', ROLE_ADMIN),
+       ('2fc622e6-64fe-11ef-9a4b-0242ac110002', '신가현', 'admin', '$2a$10$Oe87iYbNOD1PZ/Fav.N6Weijo4/dhwnBCluJg6qBUxf.OkNCtYv1C', 'younghee@example.com', '010-2345-6789', 1),
        (UUID(), '박영수', 'youngsoo', 'password789', 'youngsoo@example.com', '010-3456-7890', 3);
