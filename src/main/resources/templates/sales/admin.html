@@ -12,12 +12,79 @@
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4">밀키트 주문 확인</h1>
 
-<!--            추가 모달 버튼-->
+            <!--            밀키트 추가 모달 버튼-->
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#insertMealkitModal">
+                    밀키트 추가</button>
+            </div>
+
+
+<!--           주문 추가 모달 버튼-->
             <div class="d-flex justify-content-end mb-3">
                 <button class="btn btn-primary"
                         data-bs-toggle="modal"
                         data-bs-target="#insertKitOrderModal">
                     새로운 밀키트 주문 추가</button>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    밀키트별 필요 재료 확인
+                </div>
+                <div class="card-body">
+
+                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                        <select class="datatable-selector" name="category">
+                            <option value="All">All</option>
+                            <option value="firstName">firstName</option>
+                            <option value="lastName">lastName</option>
+                            <option value="email">email</option>
+                            <option value="department">department</option>
+                            <option value="hiredate">hiredate</option>
+                        </select>
+                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+
+
+
+
+                    <table id="datatablesSimple04">
+                        <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>밀키트명</th>
+                            <th>재료명</th>
+                            <th>개수</th>
+
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>번호</th>
+                            <th>밀키트명</th>
+                            <th>재료명</th>
+                            <th>개수</th>
+                        </tr>
+                        </tfoot>
+
+                        <!--tbody > tr > td-->
+                        <tbody>
+                        <tr th:each="kitSource, iterStat : ${kitSourceDetails}" >
+
+                            <td th:text="${iterStat.count}"></td>
+                            <td th:text="${kitSource.mealkitName}"></td>
+                            <td th:text="${kitSource.sourceName}"></td>
+                            <td th:text="${kitSource.quantity}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
             </div>
 
             <div class="card mb-4">
@@ -162,10 +229,11 @@
                             <td th:text="${details.status}"></td>
                             <td>
                                 <!-- 상태 변경 버튼 -->
-                                <button class="btn btn-primary" data-bs-toggle="modal"
+                                <button class="btn btn-primary change-status-btn"
+                                        data-bs-toggle="modal"
                                         data-bs-target="#updateStatusModal"
                                         th:attr="data-order-id=${details.kitOrderId}">
-                                    상태변경
+                                    상태 변경
                                 </button>
 
                             </td>
@@ -249,7 +317,7 @@
 </div>
 
 
-<!-- 추가 모달 -->
+<!-- 주문 추가 모달 -->
 <div class="modal fade" id="insertKitOrderModal" tabindex="-1" aria-labelledby="insertKitOrderModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -293,7 +361,7 @@
     </div>
 </div>
 
-<!-- 상태 변경 모달 (반복문 외부) -->
+<!-- 상태 변경 모달 -->
 <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -321,16 +389,84 @@
     </div>
 </div>
 
-<!-- 자바스크립트로 모달에 데이터 전달 -->
+<!-- 밀키트 추가 모달 -->
+<div class="modal fade" id="insertMealkitModal" tabindex="-1" aria-labelledby="insertMealkitModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="insertMealkitModalLabel">밀키트 추가</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="mealkitForm" th:method="post" th:action="@{/sales/insert-mealkit}">
+                    <div class="mb-3">
+                        <label for="mealkitName" class="form-label">밀키트 이름</label>
+                        <input type="text" class="form-control" id="mealkitName" name="mealkitName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sourceList" class="form-label">재료 선택</label>
+                        <div id="sourceList">
+                            <div th:each="map : ${sourceList}">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                           th:id="'source-' + ${map.sourceId}"
+                                           th:name="sourceIds"
+                                           th:value="${map.sourceId}"
+                                           onclick="toggleQuantityInput(this)">
+                                    <label class="form-check-label" th:for="'source-' + ${map.sourceId}">
+                                        <span th:text="${map.name}">재료 이름</span>
+                                    </label>
+                                    <!-- 수량 입력 필드 -->
+                                    <input type="number" class="form-control mt-2"
+                                           th:id="'quantity-' + ${map.sourceId}"
+                                           th:name="quantities"
+                                           placeholder="수량" min="1" style="width: 100px; display: none;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        <button type="submit" class="btn btn-primary">저장</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 자바스크립트 코드 -->
 <script>
-    document.querySelectorAll('button[data-bs-toggle="modal"]').forEach(button => {
-        button.addEventListener('click', function() {
-            const orderId = this.getAttribute('data-order-id');
-            const modal = document.querySelector('#updateStatusModal');
-            const inputOrderId = modal.querySelector('#orderId');
-            inputOrderId.value = orderId;
+    document.addEventListener('DOMContentLoaded', function () {
+        var updateStatusModal = document.getElementById('updateStatusModal');
+
+        updateStatusModal.addEventListener('show.bs.modal', function (event) {
+            // 모달을 트리거한 버튼을 가져옴
+            var button = event.relatedTarget;
+            // data-order-id 속성에서 kitOrderId를 가져옴
+            var kitOrderId = button.getAttribute('data-order-id');
+
+            // 모달 내의 hidden input에 kitOrderId 값을 설정
+            var modalOrderIdInput = updateStatusModal.querySelector('#orderId');
+            modalOrderIdInput.value = kitOrderId;
         });
     });
+
+</script>
+
+
+<!--밀키트 재료 추가 -->
+<script>
+    function toggleQuantityInput(checkbox) {
+        const sourceId = checkbox.value;
+        const quantityInput = document.querySelector(`#quantity-${sourceId}`);
+        if (checkbox.checked) {
+            quantityInput.style.display = 'block';
+        } else {
+            quantityInput.style.display = 'none';
+            quantityInput.value = '0'; // 체크박스가 해제되면 수량 필드 값도 초기화
+        }
+    }
 </script>
 
 
