@@ -154,7 +154,7 @@ CREATE TABLE USER
     USER_PASSWORD VARCHAR(255) NOT NULL,    -- 유저 비밀번호
     USER_EMAIL    VARCHAR(50) NOT NULL,    -- 유저 이메일
     USER_TEL      VARCHAR(50) NOT NULL,    -- 전화번호
-    ROLE_ID       INT,                     -- 권한FK
+    ROLE_NAME       VARCHAR(50) NOT NULL,                     -- 권한FK
     FOREIGN KEY (ROLE_ID) REFERENCES ROLE (ROLE_ID)
 );
 
@@ -282,9 +282,9 @@ VALUES (UUID(), (SELECT KIT_ORDER_ID FROM KIT_ORDER WHERE QUENTITY = 20), 1),
 INSERT INTO ROLE (ROLE_ID, ROLE_NAME)
 VALUES (1, 'ADMIN'),
        (2, 'KIT_MANAGER'),
-       (3, 'FARM_MANAGER');
+       (3, 'ROLE_PRODUCT_MANAGER');
 
-INSERT INTO USER (USER_PK, USER_NAME, USER_ID, USER_PASSWORD, USER_EMAIL, USER_TEL, ROLE_ID)
+INSERT INTO USER (USER_PK, USER_NAME, USER_ID, USER_PASSWORD, USER_EMAIL, USER_TEL, ROLE_NAME)
 VALUES (UUID(), '김철수', 'chulsoo', 'password123', 'chulsoo@example.com', '010-1234-5678', 1),
        (UUID(), '이영희', 'younghee', 'password456', 'younghee@example.com', '010-2345-6789', 2),
        ('2fc622e6-64fe-11ef-9a4b-0242ac110002', '신가현', 'admin', '$2a$10$Oe87iYbNOD1PZ/Fav.N6Weijo4/dhwnBCluJg6qBUxf.OkNCtYv1C', 'younghee@example.com', '010-2345-6789', ROLE_ADMIN),
