@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDetailDto;
 import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDto;
+import org.example.jhta_2402_2_final.model.dto.sales.KitOrderLogDto;
 import org.example.jhta_2402_2_final.model.dto.sales.KitSourceDetailDto;
 
 import java.util.List;
@@ -47,4 +48,9 @@ public interface SalesDao {
     void insertKitSources(@Param("mealkitId") String mealkitId,
                           @Param("sourceId") String sourceId,
                           @Param("quantity") Integer quantity);
+
+    //로그 셀렉
+    List<KitOrderLogDto> selectKitOrderLogs();
+
+    void insertLog(UUID kitOrderId, int statusId);
 }

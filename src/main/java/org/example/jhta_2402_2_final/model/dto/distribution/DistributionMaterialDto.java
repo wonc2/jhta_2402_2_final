@@ -9,9 +9,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DistributionBestSupplierDto {
+public class DistributionMaterialDto {
     private String sourceId;
     private String materialName;
+    private int price;
+    private String supplierName;
     private int lowestPrice;
     private String bestSupplierName;
 }

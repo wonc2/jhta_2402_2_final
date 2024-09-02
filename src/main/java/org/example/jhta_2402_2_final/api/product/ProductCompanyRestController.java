@@ -16,39 +16,49 @@ import java.util.Map;
 public class ProductCompanyRestController {
     private final ProductCompanyService productCompanyService;
 
-    // todo: 임시값 companyName = userDetails.getUsername() or userDetails.memberDto.getUserId() 로 받아올것
+    // todo: Mapping add, produce 로 전부 나누기
+    // todo: 임시값 companyName = userDetails.getUsername() or userDetails.memberDto.getUserId() 로 받아올것... 왜 안받아와지지??????
     private final String companyName = "농심공장";
 
-    @GetMapping()
+    @GetMapping("add")
     public ResponseEntity<Map<String, Object>> getSourcesByCompanyName(@AuthenticationPrincipal CustomUserDetails userDetails){
         // String companyName = userDetails.getUsername(); 구현후에 이거 사용
         Map<String, Object> responseData  = productCompanyService.findAll(companyName);
         return ResponseEntity.ok().body(responseData);
     }
 
-    @PostMapping("produce")
-    public ResponseEntity<Map<String, Object>> produce(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String ,Object> dataMap){
-        // String companyName = userDetails.getUsername(); 구현후에 이거 사용
-        return null;
-    }
-
     @PostMapping("add")
-    public ResponseEntity<Map<String, Object>> addSourceToCompany(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String ,Object> dataMap){
-        // jsonBody: { "sourceName": "버터", "sourcePrice": 5000 }
+    public ResponseEntity<Map<String, Object>> addSourceToCompany(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String ,Object> paramData){
         // String companyName = userDetails.getUsername(); 구현후에 이거 사용
-        Map<String, Object> responseData = productCompanyService.addSourceToCompany(companyName, dataMap);
+        // jsonBody: { "sourceName": "버터", "sourcePrice": 5000 }
+        Map<String, Object> responseData = productCompanyService.addSourceToCompany(companyName, paramData);
         return ResponseEntity.ok().body(responseData);
     }
 
-    @PutMapping()
-    public ResponseEntity<Map<String, Object>> updateSource(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String ,Object> dataMap){
+    @PutMapping("add/{companySourceId}")
+    public ResponseEntity<Map<String, Object>> updateSource(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String ,Object> paramData){
         // String companyName = userDetails.getUsername(); 구현후에 이거 사용
         return null;
     }
 
-    @DeleteMapping("{companySourceId}")
+    @DeleteMapping("add/{companySourceId}")
     public ResponseEntity<Map<String, Object>> deleteSourceFromCompany(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String companySourceId){
         Map<String, Object> responseData = productCompanyService.deleteSourceFromCompany(companyName, companySourceId);
+        return ResponseEntity.ok().body(responseData);
+    }
+
+    @GetMapping("produce")
+    public ResponseEntity<List<Map<String, Object>>> getWarehouseSources(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String ,Object> paramData){
+        // String companyName = userDetails.getUsername(); 구현후에 이거 사용
+        List<Map<String, Object>> responseData = productCompanyService.getWarehouseSources(companyName);
+        return ResponseEntity.ok().body(responseData);
+    }
+
+    @PostMapping("produce")
+    public ResponseEntity<List<Map<String, Object>>> produce(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String ,Object> paramData){
+        // String companyName = userDetails.getUsername(); 구현후에 이거 사용
+        // jsonBody: { "sourcePriceId": "sourcePriceUUID 넣어야함", "sourceQuantity": 30 }
+        List<Map<String, Object>> responseData = productCompanyService.produceSource(companyName, paramData);
         return ResponseEntity.ok().body(responseData);
     }
 

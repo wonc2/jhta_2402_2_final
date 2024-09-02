@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.jhta_2402_2_final.model.dto.Employee;
 import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDetailDto;
 import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDto;
+import org.example.jhta_2402_2_final.model.dto.sales.KitOrderLogDto;
 import org.example.jhta_2402_2_final.model.dto.sales.KitSourceDetailDto;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.mybatis.logging.Logger;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @RequestMapping("/sales")
@@ -52,12 +54,21 @@ public class SalesController {
         List<Map<String,String>> sourceList = salesService.getSourceIdAndNames();
         model.addAttribute("sourceList", sourceList);
 
+        //로그
+        List<KitOrderLogDto> kitOrderLogs = salesService.getKitOrderLogs();
+        model.addAttribute("kitOrderLogs", kitOrderLogs);
+
         return "sales/admin";
     }
 
     @PostMapping("/insert")
     public String insert(@ModelAttribute KitOrderDto kitOrderDto) {
         salesService.createKitOrder(kitOrderDto);
+
+        UUID kitOrderId = kitOrderDto.getKitOrderId();
+        int statusId = kitOrderDto.getStatusId();
+
+        salesService.createKitOrderLog(kitOrderId, statusId);
         return "redirect:/sales";
     }
 
@@ -67,6 +78,7 @@ public class SalesController {
             @RequestParam("statusId") int statusId) {
 
         salesService.updateKitOrderStatus(kitOrderId, statusId);
+        salesService.createKitOrderLog(UUID.fromString(kitOrderId), statusId);
 
         return "redirect:/sales";
     }

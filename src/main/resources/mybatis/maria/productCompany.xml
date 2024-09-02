@@ -24,9 +24,30 @@
             (UUID(), #{companyId}, #{sourceId}, #{sourcePrice})
     </insert>
     <delete id="deleteSourceFromCompany" parameterType="Map">
---         DELETE FROM SOURCE_PRICE WHERE SOURCE_ID = #{sourceId} AND PRODUCT_COMPANY_ID = #{companyId} AND PRICE = #{sourcePrice}
         DELETE FROM SOURCE_PRICE WHERE SOURCE_PRICE_ID = #{companySourceId}
     </delete>
+
+    <!-- 생산품 실제 생산 -->
+    <insert id="produceSource" parameterType="map">
+        INSERT into SOURCE_WAREHOUSE (SOURCE_WAREHOUSE_ID, QUANTITY, PRODUCE_DATE, SOURCE_PRICE_ID)
+        VALUES (UUID(), #{sourceQuantity}, NOW(), #{sourcePriceId})
+    </insert>
+
+    <!-- 생산한 제품 리스트 가져옴 -->
+    <select id="getWarehouseSources" resultType="map" parameterType="String">
+        SELECT
+            sw.source_warehouse_id as sourceWarehouseId,
+            sp.PRICE as sourcePrice,
+            (sp.price * sw.quantity) as totalPrice,
+            sw.QUANTITY as sourceQuantity,
+            DATE_FORMAT(sw.produce_date, '%Y-%m-%d') as produceDate,
+            s.name as sourceName
+        FROM wonc_test.SOURCE_WAREHOUSE sw
+        JOIN SOURCE_PRICE sp on sp.SOURCE_PRICE_ID = sw.SOURCE_PRICE_ID
+        JOIN SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
+        JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+        WHERE pc.NAME = #{companyName}
+    </select>
 
 
     <!-- 모든 재료 리스트 -->

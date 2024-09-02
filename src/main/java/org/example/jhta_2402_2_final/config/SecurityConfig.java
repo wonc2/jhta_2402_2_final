@@ -33,7 +33,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
         httpSecurity.authorizeHttpRequests((auth)->auth
-                .requestMatchers("/","/member/**","/test","/adminMain/**","/sales/**","/distribution/**","/wareHouse/**")
+                .requestMatchers("/","/member/**","/test","/adminMain/**","/sales/**","/distribution/**","/wareHouse/**","/distributionOrder/**")
                 .permitAll()
                 .requestMatchers("/product/role").hasAuthority("ROLE_PRODUCT_MANAGER")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
