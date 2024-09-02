@@ -24,9 +24,11 @@ public class DistributionOrderService {
         return distributionSourcePriceDao.getBestSuppliers();
     }
 
-    public List<DistributionMaterialDto> getOrderDetails() {
-        return distributionSourcePriceDao.getOrderDetails();
+    public List<DistributionMaterialDto> getOrderDetails(String orderKeyword) {
+        log.info("Fetching order details for keyword: {}", orderKeyword);
+        return distributionSourcePriceDao.getOrderDetailsByKeyword(orderKeyword);
     }
+
 
     public List<DistributionMaterialDto> getAllSourcePrices() {
         return distributionSourcePriceDao.getAllSourcePrices();
