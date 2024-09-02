@@ -18,7 +18,6 @@
             sp.SOURCE_ID = #{kitId}
     </select>
 
-
     <!-- 각 재료별 최저가 제공 업체를 조회하는 쿼리 -->
     <select id="getBestSuppliers" resultType="DistributionMaterialDto">
         SELECT
@@ -37,14 +36,33 @@
     <!-- 주문 내역을 조회하는 쿼리 -->
     <select id="getOrderDetails" resultType="DistributionMaterialDto">
         SELECT
+        KO.KIT_ORDER_ID AS orderId,
+        M.NAME AS materialName,
+        KO.QUANTITY AS quantity, <!-- 수량 추가 -->
+        M.PRICE AS price,
+        KO.ORDER_DATE AS orderDate, <!-- 주문 날짜 추가 -->
+        KC.NAME AS supplierName
+        FROM
+        KIT_ORDER KO
+        JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
+        JOIN MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
+    </select>
+
+    <!-- 주문 내역을 조회하는 쿼리 (키워드 기반) -->
+    <select id="getOrderDetailsByKeyword" parameterType="String" resultType="DistributionMaterialDto">
+        SELECT
             KO.KIT_ORDER_ID AS orderId,
-            M.NAME AS mealkitName,
+            M.NAME AS materialName,
+            KO.QUANTITY AS quantity,
             M.PRICE AS price,
+            KO.ORDER_DATE AS orderDate,
             KC.NAME AS supplierName
         FROM
             KIT_ORDER KO
                 JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
                 JOIN MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
+        WHERE
+            M.NAME LIKE CONCAT('%', #{orderKeyword}, '%')
     </select>
 
     <!-- 전체 소스 가격 리스트를 조회하는 쿼리 -->
@@ -59,7 +77,6 @@
                 JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
                 JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
     </select>
-
 
     <!-- 카테고리와 키워드에 따른 소스 가격 리스트를 조회하는 쿼리 -->
     <select id="findSourcePricesByCategoryAndKeyword" resultType="DistributionMaterialDto">
@@ -86,6 +103,5 @@
             </otherwise>
         </choose>
     </select>
-
 
 </mapper>

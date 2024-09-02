@@ -24,9 +24,7 @@ public class DistributionOrderService {
         return distributionSourcePriceDao.getBestSuppliers();
     }
 
-    public List<DistributionMaterialDto> getOrderDetails() {
-        return distributionSourcePriceDao.getOrderDetails();
-    }
+
 
     public List<DistributionMaterialDto> getAllSourcePrices() {
         return distributionSourcePriceDao.getAllSourcePrices();
