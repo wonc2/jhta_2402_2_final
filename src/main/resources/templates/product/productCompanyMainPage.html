@@ -49,7 +49,7 @@
                                 <button class="btn btn-primary btn-sm" onclick="performSearch()">검색</button>
                             </div>
 
-                        <table id="datatablesSimple">
+                        <table id="dataTable" class="table table-striped table-bordered">
                             <thead>
                             <tr>
                                 <th>생산품번호</th>
@@ -61,20 +61,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="source : ${productSourceList}">
-                                <td th:text="${#strings.substring(source.companySourceId, 0, 8)}"></td>
-                                <td th:text="${source.companyName}"></td>
-                                <td th:text="${source.companyAddress}"></td>
-                                <td th:text="${source.sourceName}"></td>
-                                <td th:text="${source.sourcePrice}"></td>
-                                <td>
-                                    <button type="button" class="btn btn-info btn-sm"
-                                             data-action="approve">수정</button>
-                                    |
-                                    <button type="button" class="btn btn-danger btn-sm"
-                                             data-action="cancel">삭제</button>
-                                </td>
-                            </tr>
+                            <!-- 내용이 비어있고, DataTables가 JSON 데이터를 로드하여 채움 -->
                             </tbody>
                         </table>
 
@@ -102,40 +89,27 @@
 <!--                        </div>-->
 
                         <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#productionModal">생산
-                            </button>
+<!--                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"-->
+<!--                                    data-bs-target="#produceProductModal">생산-->
+<!--                            </button>-->
                             <button type="button" class="btn btn-primary me-2 mx-2" data-bs-toggle="modal"
-                                    data-bs-target="#productRegistrationModal">생산품 등록
+                                    data-bs-target="#addSourceModal">생산품 등록
                             </button>
                         </div>
 
                         <!-- 생산 모달 -->
-                        <div class="modal fade" id="productionModal" tabindex="-1" aria-labelledby="productionModalLabel"
+                        <div class="modal fade" id="produceProductModal" tabindex="-1" aria-labelledby="produceProductModalLabel"
                              aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="productionModalLabel">생산</h1>
+                                        <h1 class="modal-title fs-5" id="produceProductModalLabel">생산</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <form>
                                             <div class="container">
-                                                <div class="mb-3 row align-items-center">
-                                                    <label class="col-sm-3 col-form-label">생산품</label>
-                                                    <div class="col-sm-9">
-                                                        <select class="datatable-selector" id="productId">
-                                                            <option value="" disabled selected>생산품 선택</option>
-                                                            <!-- 여기에 업체에서 등록한 생산품과 가격? 이 나와야함 -->
-                                                            <option th:each="source : ${sources}"
-                                                                    th:value="${source.sourceId}"
-                                                                    th:text="${source.sourceName}">
-                                                            </option>
-                                                        </select>
-                                                    </div>
-                                                </div>
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">갯수</label>
                                                     <div class="col-sm-9">
@@ -161,7 +135,7 @@
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기
                                         </button>
-                                        <button type="button" class="btn btn-primary" id="productBtn">생산</button>
+                                        <button type="button" class="btn btn-primary" id="produceSourceBtn">생산</button>
                                     </div>
                                 </div>
                             </div>
@@ -169,47 +143,45 @@
                         <!-- 생산품 등록 모달 끝 -->
 
                         <!-- 생산품 등록 모달 -->
-                        <div class="modal fade" id="productRegistrationModal" tabindex="-1" aria-labelledby="productRegistrationModalLabel"
-                             aria-hidden="true">
+                        <div class="modal fade" id="addSourceModal" tabindex="-1" aria-labelledby="addSourceModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="productRegistrationModalLabel">생산품 등록</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
+                                        <h1 class="modal-title fs-5" id="addSourceModalLabel">생산품 등록</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="sourceInsertForm" th:action="@{/product/company/농심공장/insert}" method="post">
+                                        <form id="addSourceForm" th:action="@{/product/company/농심공장/insert}" method="post">
                                             <div class="container">
                                                 <!-- 제품 선택 및 자동완성 -->
                                                 <div class="mb-3 row align-items-center">
-                                                    <label for="sourceInsert" class="col-sm-3 col-form-label">제품</label>
+                                                    <label for="addSourceSelect" class="col-sm-3 col-form-label">제품</label>
                                                     <div class="col-sm-9">
-                                                        <input list="products" id="sourceInsert" name="sourceName" class="form-control" placeholder="제품을 입력하거나 선택하세요" required>
-                                                        <datalist id="products">
-                                                            <!-- Thymeleaf 사용 시 -->
-                                                            <option th:each="source : ${sources}"
-                                                                    th:value="${source.sourceName}">
-                                                            </option>
-                                                        </datalist>
+                                                        <!-- 셀렉트 박스 -->
+                                                        <select id="addSourceSelect" class="form-select addSource" name="sourceId">
+                                                            <option value="directInput">직접입력</option>
+                                                        </select>
+                                                        <!-- 인풋 필드 -->
+                                                        <input type="text" id="addSourceInput" class="form-control mt-2 addSource" placeholder="제품을 입력하세요">
                                                     </div>
                                                 </div>
 
                                                 <!-- 가격 입력 -->
                                                 <div class="mb-3 row align-items-center">
-                                                    <label for="price" class="col-sm-3 col-form-label">가격</label>
+                                                    <label for="sourcePrice" class="col-sm-3 col-form-label">가격</label>
                                                     <div class="col-sm-9">
-                                                        <input type="number" id="price" class="form-control"
-                                                               min="1" max="50000" value="1" step="1" name="sourcePrice" required>
+                                                        <div class="input-group">
+                                                            <input type="number" id="sourcePrice" class="form-control" min="50" max="100000" value="50" step="50" name="sourcePrice" required>
+                                                            <span class="input-group-text">₩</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기
-                                        </button>
-                                        <button type="button" class="btn btn-primary" id="btn-registration">등록</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                        <button type="button" class="btn btn-primary" id="addSourceBtn">등록</button>
                                     </div>
                                 </div>
                             </div>
@@ -236,11 +208,129 @@
 </body>
 <th:block th:replace="~{fragment/footer}"></th:block>
 <script>
-    $(document).ready(function () {
-        $("#btn-registration").on("click", function () {
-            $("#sourceInsertForm").submit();
-        })
-    })
+    $(document).ready(function() {
+
+        // tbody 리스트
+        let table = $('#dataTable').DataTable({
+            searching: false,
+            ajax: {
+                url: '/api/product/company',
+                dataSrc: 'companySourceList'
+            },
+            columns: [
+                { data: 'companySourceId' },
+                { data: 'companyName' },
+                { data: 'companyAddress' },
+                { data: 'sourceName' },
+                { data: 'sourcePrice' },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return '<button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button> | ' +
+                            '<button type="button" class="btn btn-info btn-sm" data-action="approve">가격 수정</button> | ' +
+                            '<button type="button" class="btn btn-danger btn-sm" data-action="cancel">등록 삭제</button>';
+                    }
+                }
+            ],
+            columnDefs: [
+                { targets: 0, visible: false },  // 첫 번째 열 숨기기
+            ],
+            pagingType: 'simple_numbers', // 또는 'full_numbers'로 페이지네이션 스타일 설정 가능
+            language: {
+                paginate: {
+                    next: '>', // 다음 페이지 버튼
+                    previous: '<' // 이전 페이지 버튼
+                }
+            }
+        });
+
+        /* 생산품 등록 관련 스크립트 */
+        // 생산품 등록 셀렉트 리스트
+        $.ajax({
+            url: '/api/product/company',  // API URL
+            type: 'GET',
+            contentType: 'application/json',
+            success: function(response) {
+                const sources = response.sources;
+                const selectBox = $('#addSourceSelect');
+
+                sources.forEach(function(source) {
+                    const option = $('<option>', {
+                        value: source.sourceId,
+                        text: source.sourceName
+                    });
+                    selectBox.append(option);
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error occurred while fetching sources:', error);
+            }
+        });
+        // 처음에 인풋 필드를 활성화하고 셀렉트 박스는 기본 상태로 둠
+        // $('#addSourceInput').prop('disabled', false);
+        // $('#addSourceSelect').prop('disabled', false);
+
+        // 셀렉트 박스 변경 이벤트
+        $('#addSourceSelect').on('change', function() {
+            if ($(this).val() !== "directInput") {
+                $('#addSourceInput').val('').prop('disabled', true);  // 인풋 필드 비활성화 및 초기화
+                $('#addSourceSelect').prop('disabled', false);  // 셀렉트 박스 활성화
+            } else {
+                $('#addSourceInput').prop('disabled', false).focus();  // 인풋 필드 활성화 및 포커스
+            }
+        });
+        $('#addSourceBtn').on('click', function() {
+            let data = {
+                sourcePrice: $('#sourcePrice').val()
+            };
+
+            if ($('#addSourceInput').prop('disabled')) {
+                // 셀렉트 박스가 활성화된 경우 (옵션 선택)
+                data.sourceId = $('#addSourceSelect').val();
+            } else {
+                // 인풋 필드가 활성화된 경우 (직접 입력)
+                data.sourceName = $('#addSourceInput').val();
+            }
+
+            $.ajax({
+                url: '/api/product/company/add',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    $('#addSourceModal').modal('hide');
+                    table.ajax.reload(null, false);  // 데이터 유지하면서 테이블 새로고침
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error occurred:', error);
+                }
+            });
+        });
+        /* - 생산품 등록 스크립트 끝 -*/
+
+        // Delete
+        $('#dataTable').on('click', 'button[data-action="cancel"]', function() {
+            // 선택된 행의 데이터를 가져옴
+            const row = $(this).closest('tr');
+            const data = table.row(row).data();
+
+            const companySourceId = data.companySourceId;
+
+            // 삭제 확인 메시지
+            if (confirm('정말로 이 항목을 삭제하시겠습니까?')) {
+                $.ajax({
+                    url: `/api/product/company/${companySourceId}`,
+                    type: 'DELETE',
+                    success: function(response) {
+                        table.ajax.reload(null, false);  // 테이블 새로고침
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error occurred while deleting:', error);
+                    }
+                });
+            }
+        });
+    });
 
     const ctx = document.getElementById('salesProductChart');
     new Chart(ctx, {
