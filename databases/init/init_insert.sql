@@ -1,80 +1,121 @@
 -- 1. 밀키트 테이블 데이터 삽입
-INSERT INTO MEALKIT (MEALKIT_ID, NAME, PRICE) VALUES
-                                                  ('mealkit-001', '비빔밥', 15000),
-                                                  ('mealkit-002', '된장찌개', 12000),
-                                                  ('mealkit-003', '김치찌개', 13000);
+INSERT INTO MEALKIT (MEALKIT_ID, NAME) VALUES
+    (UUID(), '비빔밥'),
+    (UUID(), '된장찌개'),
+    (UUID(), '김치찌개');
 
 -- 2. 밀키트 판매 업체 테이블 데이터 삽입
 INSERT INTO KIT_COMPANY (KIT_COMPANY_ID, NAME, ADDRESS) VALUES
-                                                            ('company-001', '한식명가', '서울시 강남구'),
-                                                            ('company-002', '정통한식', '서울시 종로구'),
-                                                            ('company-003', '맛있는집', '서울시 송파구');
+    (UUID(), '한식명가', '서울시 강남구'),
+    (UUID(), '정통한식', '서울시 종로구'),
+    (UUID(), '맛있는집', '서울시 송파구');
 
 -- 3. 생산업체 테이블 데이터 삽입
 INSERT INTO PRODUCT_COMPANY (PRODUCT_COMPANY_ID, NAME, ADDRESS) VALUES
-                                                                    ('product-001', '농협', '서울시 중구'),
-                                                                    ('product-002', '한림', '서울시 서초구'),
-                                                                    ('product-003', '동서식품', '서울시 강북구');
+    (UUID(), '농협', '서울시 중구'),
+    (UUID(), '한림', '서울시 서초구'),
+    (UUID(), '동서식품', '서울시 강북구');
 
 -- 4. 재료 테이블 데이터 삽입
 INSERT INTO SOURCE (SOURCE_ID, NAME) VALUES
-                                         ('source-001', '쌀'),
-                                         ('source-002', '김치'),
-                                         ('source-003', '된장'),
-                                         ('source-004', '두부'),
-                                         ('source-005', '소고기');
-
--- 5. 생산업체별 재료 가격 테이블 데이터 삽입
-INSERT INTO SOURCE_PRICE (SOURCE_PRICE_ID, PRODUCT_COMPANY_ID, SOURCE_ID, PRICE) VALUES
-                                                                                     ('price-001', 'product-001', 'source-001', 5000),
-                                                                                     ('price-002', 'product-001', 'source-002', 3000),
-                                                                                     ('price-003', 'product-002', 'source-003', 2000),
-                                                                                     ('price-004', 'product-003', 'source-004', 2500),
-                                                                                     ('price-005', 'product-003', 'source-005', 10000);
-
--- 6. 밀키트 재료 테이블 데이터 삽입
-INSERT INTO KIT_SOURCE (KIT_SOURCE_ID, MEALKIT_ID, SOURCE_ID, QUANTITY) VALUES
-                                                                            ('kit-source-001', 'mealkit-001', 'source-001', 1),
-                                                                            ('kit-source-002', 'mealkit-001', 'source-002', 2),
-                                                                            ('kit-source-003', 'mealkit-002', 'source-003', 1),
-                                                                            ('kit-source-004', 'mealkit-003', 'source-004', 3),
-                                                                            ('kit-source-005', 'mealkit-003', 'source-005', 2);
-
--- 7. 상태 테이블 데이터 삽입
+    (UUID(), '쌀'),
+    (UUID(), '김치'),
+    (UUID(), '된장'),
+    (UUID(), '두부'),
+    (UUID(), '소고기');
+-- 5. 상태 테이블 데이터 삽입
 INSERT INTO STATUS (STATUS_ID, STATUS) VALUES
-                                           (1, '처리전'),
-                                           (2, '처리중'),
-                                           (3, '처리완료'),
-                                           (4, '취소');
+    (1, '처리전'),
+    (2, '처리중'),
+    (3, '처리완료'),
+    (4, '취소');
+
+-- 6. 생산업체별 재료 가격 테이블 데이터 삽입
+INSERT INTO SOURCE_PRICE (SOURCE_PRICE_ID, PRODUCT_COMPANY_ID, SOURCE_ID, PRICE) VALUES
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '농협'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '쌀'), 5000),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '농협'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '김치'), 3000),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '농협'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '된장'), 3000),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '농협'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '두부'), 1000),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '농협'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '소고기'), 4000),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '한림'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '쌀'), 4500),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '한림'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '김치'), 2500),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '한림'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '된장'), 2500),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '한림'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '두부'), 1100),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '한림'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '소고기'), 3700),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '동서식품'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '쌀'), 5100),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '동서식품'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '김치'), 2700),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '동서식품'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '된장'), 2800),
+    (UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '동서식품'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '두부'), 800),
+(UUID(), (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = '동서식품'), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '소고기'), 4100);
+
+-- 7. 밀키트 재료 테이블 데이터 삽입
+INSERT INTO KIT_SOURCE (KIT_SOURCE_ID, MEALKIT_ID, SOURCE_ID, QUANTITY) VALUES
+    (UUID(), (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '비빔밥' ), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '쌀'), 1),
+    (UUID(), (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '비빔밥' ), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '김치'), 1),
+    (UUID(), (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '비빔밥' ), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '된장'), 1),
+    (UUID(), (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '된장찌개' ), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '된장'), 1),
+    (UUID(), (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '된장찌개' ), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '두부'), 1),
+    (UUID(), (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '된장찌개' ), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '소고기'), 1),
+    (UUID(), (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '김치찌개' ), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '김치'), 1),
+    (UUID(), (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '김치찌개' ), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '두부'), 1),
+    (UUID(), (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '김치찌개' ), (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '소고기'), 1);
 
 -- 8. 생산주문(발주) 테이블 데이터 삽입
-INSERT INTO PRODUCT_ORDER (PRODUCT_ORDER_ID, KIT_SOURCE_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID) VALUES
-                                                                                                         ('order-001', 'kit-source-001', 10, '2024-09-01 10:00:00', 1),
-                                                                                                         ('order-002', 'kit-source-003', 5, '2024-09-02 11:00:00', 2);
+
+INSERT INTO PRODUCT_ORDER (PRODUCT_ORDER_ID, KIT_SOURCE_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
+VALUES
+    -- 1. 비빔밥에 대한 발주
+    (UUID(), (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '비빔밥') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '쌀')), 100, '2024-08-15 00:00:00', (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리전')),
+    (UUID(), (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '비빔밥') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '김치')), 100, '2024-08-15 00:00:00', (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리전')),
+    (UUID(), (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '비빔밥') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '된장')), 100, '2024-08-15 00:00:00', (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리중')),
+    -- 2. 된장찌개에 대한 발주
+    (UUID(), (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '된장찌개') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '된장')), 200, '2024-08-16 00:00:00', (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리중')),
+    (UUID(), (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '된장찌개') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '두부')), 200, '2024-08-16 00:00:00', (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리완료')),
+    (UUID(), (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '된장찌개') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '소고기')), 200, '2024-08-16 00:00:00', (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리완료')),
+    -- 3. 김치찌개에 대한 발주
+    (UUID(), (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '김치찌개') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '김치')), 100, '2024-08-17 00:00:00', (SELECT STATUS_ID FROM STATUS WHERE STATUS = '취소')),
+    (UUID(), (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '김치찌개') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '두부')), 100, '2024-08-17 00:00:00', (SELECT STATUS_ID FROM STATUS WHERE STATUS = '취소')),
+    (UUID(), (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '김치찌개') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '소고기')), 100, '2024-08-17 00:00:00', (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리전'));
 
 -- 9. 생산주문(발주) 로그 테이블 데이터 삽입
-INSERT INTO PRODUCT_ORDER_LOG (PRODUCT_ORDER_LOG_ID, PRODUCT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE) VALUES
-                                                                                                          ('order-log-001', 'order-001', 1, '2024-09-01 10:00:00'),
-                                                                                                          ('order-log-002', 'order-002', 2, '2024-09-02 11:00:00');
-
+INSERT INTO PRODUCT_ORDER_LOG (PRODUCT_ORDER_LOG_ID, PRODUCT_ORDER_ID, STATUS_ID, LOG_DATE)
+VALUES
+    -- 1. 비빔밥 발주 로그 삽입
+    (UUID(), (SELECT PRODUCT_ORDER_ID FROM PRODUCT_ORDER WHERE KIT_SOURCE_ID = (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '비빔밥') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '쌀')) AND QUANTITY = 100 AND PRODUCT_ORDER_DATE = '2024-08-15 00:00:00'), (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리전'), '2024-08-15 00:00:00'),
+    (UUID(), (SELECT PRODUCT_ORDER_ID FROM PRODUCT_ORDER WHERE KIT_SOURCE_ID = (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '비빔밥') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '김치')) AND QUANTITY = 100 AND PRODUCT_ORDER_DATE = '2024-08-15 00:00:00'), (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리전'), '2024-08-15 00:00:00'),
+    (UUID(), (SELECT PRODUCT_ORDER_ID FROM PRODUCT_ORDER WHERE KIT_SOURCE_ID = (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '비빔밥') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '된장')) AND QUANTITY = 100 AND PRODUCT_ORDER_DATE = '2024-08-15 00:00:00'), (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리중'), '2024-08-15 00:00:00'),
+    -- 2. 된장찌개 발주 로그 삽입
+    (UUID(), (SELECT PRODUCT_ORDER_ID FROM PRODUCT_ORDER WHERE KIT_SOURCE_ID = (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '된장찌개') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '된장')) AND QUANTITY = 200 AND PRODUCT_ORDER_DATE = '2024-08-16 00:00:00'), (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리중'), '2024-08-16 00:00:00'),
+    (UUID(), (SELECT PRODUCT_ORDER_ID FROM PRODUCT_ORDER WHERE KIT_SOURCE_ID = (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '된장찌개') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '두부')) AND QUANTITY = 200 AND PRODUCT_ORDER_DATE = '2024-08-16 00:00:00'), (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리완료'), '2024-08-16 00:00:00'),
+    (UUID(), (SELECT PRODUCT_ORDER_ID FROM PRODUCT_ORDER WHERE KIT_SOURCE_ID = (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '된장찌개') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '소고기')) AND QUANTITY = 200 AND PRODUCT_ORDER_DATE = '2024-08-16 00:00:00'), (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리완료'), '2024-08-16 00:00:00'),
+    -- 3. 김치찌개 발주 로그 삽입
+    (UUID(), (SELECT PRODUCT_ORDER_ID FROM PRODUCT_ORDER WHERE KIT_SOURCE_ID = (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '김치찌개') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '김치')) AND QUANTITY = 100 AND PRODUCT_ORDER_DATE = '2024-08-17 00:00:00'), (SELECT STATUS_ID FROM STATUS WHERE STATUS = '취소'), '2024-08-17 00:00:00'),
+    (UUID(), (SELECT PRODUCT_ORDER_ID FROM PRODUCT_ORDER WHERE KIT_SOURCE_ID = (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '김치찌개') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '두부')) AND QUANTITY = 100 AND PRODUCT_ORDER_DATE = '2024-08-17 00:00:00'), (SELECT STATUS_ID FROM STATUS WHERE STATUS = '취소'), '2024-08-17 00:00:00'),
+    (UUID(), (SELECT PRODUCT_ORDER_ID FROM PRODUCT_ORDER WHERE KIT_SOURCE_ID = (SELECT KIT_SOURCE_ID FROM KIT_SOURCE WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '김치찌개') AND SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = '소고기')) AND QUANTITY = 100 AND PRODUCT_ORDER_DATE = '2024-08-17 00:00:00'), (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리전'), '2024-08-17 00:00:00');
 -- 10. 밀키트 주문 테이블 데이터 삽입
-INSERT INTO KIT_ORDER (KIT_ORDER_ID, KIT_COMPANY_ID, MEALKIT_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID) VALUES
-                                                                                                              ('kit-order-001', 'company-001', 'mealkit-001', 20, '2024-09-01 09:00:00', 1),
-                                                                                                              ('kit-order-002', 'company-002', 'mealkit-003', 15, '2024-09-02 10:00:00', 2);
 
+INSERT INTO KIT_ORDER (KIT_ORDER_ID, KIT_COMPANY_ID, MEALKIT_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
+VALUES
+    -- 1. 비빔밥에 대한 주문
+    (UUID(), (SELECT KIT_COMPANY_ID FROM KIT_COMPANY WHERE NAME = '한식명가'), (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '비빔밥'), 100, '2024-08-15 00:00:00', (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리중')),
+    -- 2. 된장찌개에 대한 주문
+    (UUID(), (SELECT KIT_COMPANY_ID FROM KIT_COMPANY WHERE NAME = '정통한식'), (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '된장찌개'), 200, '2024-08-16 00:00:00', (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리완료')),
+    -- 3. 김치찌개에 대한 주문
+    (UUID(), (SELECT KIT_COMPANY_ID FROM KIT_COMPANY WHERE NAME = '맛있는집'), (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '김치찌개'), 150, '2024-08-17 00:00:00', (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리전'));
 -- 11. 밀키트 주문로그 테이블 데이터 삽입
-INSERT INTO KIT_ORDER_LOG (KIT_ORDER_LOG_ID, KIT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE) VALUES
-                                                                                              ('kit-order-log-001', 'kit-order-001', 1, '2024-09-01 09:00:00'),
-                                                                                              ('kit-order-log-002', 'kit-order-002', 2, '2024-09-02 10:00:00');
 
+INSERT INTO KIT_ORDER_LOG (KIT_ORDER_LOG_ID, KIT_ORDER_ID, STATUS_ID, LOG_DATE)
+VALUES
+    -- 1. 비빔밥 주문의 상태 변경 로그
+    (UUID(), (SELECT KIT_ORDER_ID FROM KIT_ORDER WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '비빔밥') AND KIT_COMPANY_ID = (SELECT KIT_COMPANY_ID FROM KIT_COMPANY WHERE NAME = '한식명가') AND QUANTITY = 100 AND PRODUCT_ORDER_DATE = '2024-08-15 00:00:00'), (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리중'), '2024-08-15 12:00:00'),
+    -- 2. 된장찌개 주문의 상태 변경 로그
+    (UUID(), (SELECT KIT_ORDER_ID FROM KIT_ORDER WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '된장찌개') AND KIT_COMPANY_ID = (SELECT KIT_COMPANY_ID FROM KIT_COMPANY WHERE NAME = '정통한식') AND QUANTITY = 200 AND PRODUCT_ORDER_DATE = '2024-08-16 00:00:00'), (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리완료'), '2024-08-16 15:00:00'),
+    -- 3. 김치찌개 주문의 상태 변경 로그
+    (UUID(), (SELECT KIT_ORDER_ID FROM KIT_ORDER WHERE MEALKIT_ID = (SELECT MEALKIT_ID FROM MEALKIT WHERE NAME = '김치찌개') AND KIT_COMPANY_ID = (SELECT KIT_COMPANY_ID FROM KIT_COMPANY WHERE NAME = '맛있는집') AND QUANTITY = 150 AND PRODUCT_ORDER_DATE = '2024-08-17 00:00:00'), (SELECT STATUS_ID FROM STATUS WHERE STATUS = '처리전'), '2024-08-17 09:00:00');
 
+-- 12. 권한 테이블 데이터 삽입
 INSERT INTO ROLE (ROLE_ID, ROLE_NAME)
 VALUES (1, 'ROLE_ADMIN'),
-       (2, 'ROLE_KIT_MANAGER'),
-       (3, 'ROLE_PRODUCT_MANAGER');
-
-INSERT INTO USER (USER_PK, USER_NAME, USER_ID, USER_PASSWORD, USER_EMAIL, USER_TEL, ROLE_ID)
-VALUES (UUID(), '김철수', 'chulsoo', 'password123', 'chulsoo@example.com', '010-1234-5678', 1),
-       (UUID(), '이영희', 'younghee', 'password456', 'younghee@example.com', '010-2345-6789', 2),
-       (UUID(), '박영수', 'youngsoo', 'password789', 'youngsoo@example.com', '010-3456-7890', 3),
-       (UUID(), 'Admin', 'admin', '$2a$12$o9M5nC6PUyvUpy2uY71vJuzinkjUjl2YAGASLOnefnPAM/nIvNLN2', 'admin@example.com', '010-0000-1313', 1);
+       (2, 'ROLE_LOGISTICS_MANAGER'),
+       (3, 'ROLE_SALES_MANAGER'),
+       (4, 'ROLE_PRODUCT_MANAGER');
