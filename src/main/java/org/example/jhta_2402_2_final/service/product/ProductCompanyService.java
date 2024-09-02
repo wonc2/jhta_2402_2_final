@@ -17,28 +17,46 @@ public class ProductCompanyService {
     private final ProductCompanyDao productCompanyDao;
     /* Company */
 
-    public List<Map<String, Object>> getSourcesByCompanyName(String companyName) {
-        return productCompanyDao.getSourcesByCompanyName(companyName); // values: { 'companySourceId', 'sourceName', 'sourcePrice', 'companyName', 'companyAddress' }
+    /* 필요한 리스트 전부 가져옴 */
+    public Map<String, Object> findAll(String companyName){
+        // todo: responseData, productList -> dto
+        Map<String,Object> responseData = new HashMap<>();
+        // productList values: { companySourceId, sourceName, sourcePrice, companyName, companyAddress, companyId }
+        responseData.put("companySourceList",productCompanyDao.getSourcesByCompanyName(companyName));
+        responseData.put("sources", productCompanyDao.getAllSources());
+        // responseData values: { Map, SourceDto }
+        return responseData;
     }
 
-
-    // Select 에 뿌리는 용
-    public List<SourceDto> getAllSources(){
-        return productCompanyDao.getAllSources();
-    }
-
-    /* Insert 회사별 생산품 리스트 */
+    /*  생산업체 생산품 목록에 등록 (실제 생산 x, 생산품 등록임) */
     @Transactional
-    public List<Map<String, Object>> insertCompanySource(String companyName, Map<String ,Object> dataMap) {
-        String sourceName = (String) dataMap.get("sourceName");
-        if (productCompanyDao.duplicationSource((String) dataMap.get("sourceName")) < 1) productCompanyDao.addSource(sourceName);
-        String sourceId = productCompanyDao.getSourceIdByName(sourceName);
-        String companyId = productCompanyDao.getCompanyIdByName(companyName);
+    public Map<String, Object> addSourceToCompany(String companyName, Map<String ,Object> paramData) {
+        // todo: paramData -> dto
 
-        dataMap.put("sourceId", sourceId);
-        dataMap.put("companyId", companyId);
+        paramData.put("companyId", productCompanyDao.getCompanyIdByName(companyName));
+        // sourceId 값 있으면 스킵 -> 없으면 직접입력임 중복값 있으면 해당 sourceId 가져옴 -> 둘다 없을시 입력한 재료 SOURCE 테이블에 등록
+        String sourceName = (String) paramData.get("sourceName");
+        if (paramData.get("sourceId") == null) {
+            String sourceId = productCompanyDao.getSourceIdByName(sourceName);
+            if (sourceId != null) paramData.put("sourceId", sourceId);
+            else {
+                sourceId = UUID.randomUUID().toString();
+                productCompanyDao.addSource(sourceId, sourceName);
+                paramData.put("sourceId", sourceId);
+            }
+        }
+        // 회사 생산품 목록에 등록
+        // paramData: { companyId, sourceId, sourceName, sourcePrice }
+        // 필요값: { companyId, sourceId, sourcePrice }
+        productCompanyDao.addSourceToCompany(paramData);
 
-        productCompanyDao.insertCompanySource(dataMap); // params: #{companyId}, #{sourceId}, #{sourcePrice})
-        return productCompanyDao.getSourcesByCompanyName(companyName);
+        return findAll(companyName);
+    }
+
+    @Transactional
+    public Map<String, Object> deleteSourceFromCompany(String companyName, String companySourceId) {
+        // 필요값: { companyId, sourceId, sourcePrice } sourcePrice 는 없어도 될듯?
+        productCompanyDao.deleteSourceFromCompany(companySourceId);
+        return findAll(companyName);
     }
 }
