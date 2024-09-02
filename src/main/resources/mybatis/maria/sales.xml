@@ -161,4 +161,21 @@
         VALUES (uuid(), #{kitOrderId}, #{statusId}, NOW())
     </insert>
 
+<!--    업체별 밀키트 재고 확인-->
+    <select id="selectKitStorage" resultType="KitStorageDto">
+        SELECT
+            KS.KIT_STORAGE_ID as kitStorageId,
+            KC.NAME AS companyName,
+            MK.NAME AS mealkitName,
+            KS.QUANTITY
+        FROM
+            KIT_STORAGE KS
+                JOIN
+            KIT_COMPANY KC ON KS.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
+                JOIN
+            MEALKIT MK ON KS.MEALKIT_ID = MK.MEALKIT_ID
+
+        order by KC.NAME
+    </select>
+
 </mapper>

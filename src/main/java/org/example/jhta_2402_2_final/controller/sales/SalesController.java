@@ -3,10 +3,7 @@ package org.example.jhta_2402_2_final.controller.sales;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jhta_2402_2_final.model.dto.Employee;
-import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDetailDto;
-import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDto;
-import org.example.jhta_2402_2_final.model.dto.sales.KitOrderLogDto;
-import org.example.jhta_2402_2_final.model.dto.sales.KitSourceDetailDto;
+import org.example.jhta_2402_2_final.model.dto.sales.*;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.mybatis.logging.Logger;
 import org.mybatis.logging.LoggerFactory;
@@ -57,6 +54,8 @@ public class SalesController {
         //로그
         List<KitOrderLogDto> kitOrderLogs = salesService.getKitOrderLogs();
         model.addAttribute("kitOrderLogs", kitOrderLogs);
+
+
 
         return "sales/admin";
     }
