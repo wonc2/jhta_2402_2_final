@@ -51,7 +51,7 @@
                             <th>재료명</th>
                             <th>제공업체</th>
                             <th>수량</th>
-                            <th>상세</th>
+
                         </tr>
                         </thead>
                         <tfoot>
@@ -60,7 +60,7 @@
                             <th>재료명</th>
                             <th>제공업체</th>
                             <th>수량</th>
-                            <th>상세</th>
+
                         </tr>
                         </tfoot>
                         <tbody>
@@ -69,10 +69,10 @@
                             <td th:text="${items.sourceName}"></td>
                             <td th:text="${items.productCompanyName}"></td>
                             <td th:text="${items.quantity}"></td>
-                            <td>
-                                <!-- 버튼 클릭 시 showModal 함수 호출 -->
+                           <!-- <td>
+                                 버튼 클릭 시 showModal 함수 호출
                                 <button class="btn btn-primary" type="button" onclick="showModal('${items.logisticsWareHouseSourcePK}')">상세</button>
-                            </td>
+                            </td>-->
                         </tr>
                         </tbody>
                     </table>
