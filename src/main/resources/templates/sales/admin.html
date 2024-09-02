@@ -297,13 +297,13 @@
                         </tfoot>
 
                         <tbody>
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                        <tr th:each="log, iterStat : ${kitOrderLogs}">
+                            <td th:text="${iterStat.count}"></td>
+                            <td th:text="${log.kitOrderId}"></td>
+                            <td th:text="${log.companyName}"></td>
+                            <td th:text="${log.mealkitName}"></td>
+                            <td th:text="${log.status}"></td>
+                            <td th:text="${log.productOrderDate}"></td>
                         </tr>
                         </tbody>
                     </table>

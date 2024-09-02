@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.sales.SalesDao;
 import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDetailDto;
 import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDto;
+import org.example.jhta_2402_2_final.model.dto.sales.KitOrderLogDto;
 import org.example.jhta_2402_2_final.model.dto.sales.KitSourceDetailDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,11 @@ public class SalesService {
     }
 
     public int createKitOrder(KitOrderDto kitOrderDto) {
+
+        UUID newKitOrderId = UUID.randomUUID();
+        kitOrderDto.setKitOrderId(newKitOrderId);
+        kitOrderDto.setStatusId(1);
+        System.out.println("kitOrderDto =>>>>>>>>> " + kitOrderDto);
         return salesDao.insert(kitOrderDto);
     }
 
@@ -91,5 +97,14 @@ public class SalesService {
                 sourceIdIndex++;
             }
         }
+    }
+
+    //로그
+    public List<KitOrderLogDto> getKitOrderLogs() {
+        return salesDao.selectKitOrderLogs();
+    }
+
+    public void createKitOrderLog(UUID kitOrderId, int statusId) {
+        salesDao.insertLog(kitOrderId, statusId);
     }
 }

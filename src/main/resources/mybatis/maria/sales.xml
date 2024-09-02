@@ -36,7 +36,7 @@
 <!--    새로운 주문 추가-->
     <insert id="insert">
         INSERT INTO KIT_ORDER (KIT_ORDER_ID, KIT_COMPANY_ID, MEALKIT_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
-        VALUES (uuid(), #{kitCompanyId}, #{mealkitId}, #{quantity}, NOW(), 1)
+        VALUES (#{kitOrderId}, #{kitCompanyId}, #{mealkitId}, #{quantity}, NOW(), #{statusId})
     </insert>
 
 
@@ -133,6 +133,32 @@
     <insert id="insertKitSources" parameterType="map">
         INSERT INTO KIT_SOURCE (KIT_SOURCE_ID, MEALKIT_ID, SOURCE_ID, QUANTITY)
         VALUES (uuid(), #{mealkitId}, #{sourceId}, #{quantity})
+    </insert>
+
+    <!-- KitOrderLog 조회 쿼리 -->
+    <select id="selectKitOrderLogs" resultType="KitOrderLogDto">
+        SELECT
+            kol.KIT_ORDER_LOG_ID AS kitOrderLogId,
+            kol.KIT_ORDER_ID AS kitOrderId,
+            kc.NAME AS companyName,
+            mk.NAME AS mealkitName,
+            s.STATUS,
+            kol.PRODUCT_ORDER_DATE AS productOrderDate
+        FROM
+            KIT_ORDER_LOG kol
+                JOIN
+            KIT_ORDER ko ON kol.KIT_ORDER_ID = ko.KIT_ORDER_ID
+                JOIN
+            KIT_COMPANY kc ON ko.KIT_COMPANY_ID = kc.KIT_COMPANY_ID
+                JOIN
+            MEALKIT mk ON ko.MEALKIT_ID = mk.MEALKIT_ID
+                JOIN
+            STATUS s ON kol.STATUS_ID = s.STATUS_ID
+    </select>
+
+    <insert id="insertLog">
+        INSERT INTO KIT_ORDER_LOG (KIT_ORDER_LOG_ID, KIT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE)
+        VALUES (uuid(), #{kitOrderId}, #{statusId}, NOW())
     </insert>
 
 </mapper>
