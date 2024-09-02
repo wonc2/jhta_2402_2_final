@@ -143,6 +143,21 @@ CREATE TABLE USER (
                       ROLE_NAME VARCHAR(50) -- 권한FK
 );
 
+-- 15. 밀키트 업체 별 창고 테이블
+CREATE TABLE KIT_STORAGE (
+                             KIT_STORAGE_ID VARCHAR(50) PRIMARY KEY,    -- 창고번호 PK
+                             KIT_COMPANY_ID VARCHAR(50),                   -- 판매업체 FK
+                             MEALKIT_ID VARCHAR(50),                       -- 밀키트 FK
+                             QUANTITY INT,                      -- 재고 개수
+
+    -- 판매업체와 밀키트의 조합을 유니크하게 설정
+                             CONSTRAINT unique_company_mealkit UNIQUE (KIT_COMPANY_ID, MEALKIT_ID),
+
+    -- 외래키 설정
+                             FOREIGN KEY (KIT_COMPANY_ID) REFERENCES KIT_COMPANY(KIT_COMPANY_ID),
+                             FOREIGN KEY (MEALKIT_ID) REFERENCES MEALKIT(MEALKIT_ID)
+);
+
 
 -- 웨어하우스 관련
 -- 1. LOGISTICS_WAREHOUSE 테이블 생성

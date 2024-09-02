@@ -2,10 +2,7 @@ package org.example.jhta_2402_2_final.dao.sales;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDetailDto;
-import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDto;
-import org.example.jhta_2402_2_final.model.dto.sales.KitOrderLogDto;
-import org.example.jhta_2402_2_final.model.dto.sales.KitSourceDetailDto;
+import org.example.jhta_2402_2_final.model.dto.sales.*;
 
 import java.util.List;
 import java.util.Map;
@@ -53,4 +50,7 @@ public interface SalesDao {
     List<KitOrderLogDto> selectKitOrderLogs();
 
     void insertLog(UUID kitOrderId, int statusId);
+
+    //창고
+    List<KitStorageDto> selectKitStorage();
 }
