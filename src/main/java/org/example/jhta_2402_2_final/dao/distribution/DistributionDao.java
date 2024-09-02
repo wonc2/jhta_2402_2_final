@@ -22,4 +22,6 @@ public interface DistributionDao {
 
     int updateKitOrderStatus();
     int updateStackFirstRecord(Map<String,Object> map);
+
+    int deleteZeroQuantityRecords();
 }

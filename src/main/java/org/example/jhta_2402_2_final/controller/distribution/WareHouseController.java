@@ -53,6 +53,7 @@ public class WareHouseController {
 
         logisticsWareHouseService.updateKitOrderStatus();
 
+        logisticsWareHouseService.deleteZeroQuantityRecords();
 
         List<LogisticsWareHouseDto> list = logisticsWareHouseService.selectAllLogisticsWarehouse();
 

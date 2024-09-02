@@ -39,5 +39,9 @@ public class LogisticsWareHouseService {
     public int updateStackFirstRecord(Map<String, Object> params) {
         return distributionDao.updateStackFirstRecord(params);
     }
+
+    public int deleteZeroQuantityRecords(){
+        return distributionDao.deleteZeroQuantityRecords();
+    }
 }
 

@@ -142,5 +142,10 @@
         )
     </update>
 
+
+    <delete id="deleteZeroQuantityRecords">
+        DELETE FROM LOGISTICS_WAREHOUSE_STACK
+        WHERE QUANTITY <![CDATA[<=]]> 0
+    </delete>
 </mapper>
 
