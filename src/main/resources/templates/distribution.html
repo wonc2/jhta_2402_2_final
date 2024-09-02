@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>생산업체별 재료 가격표</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+<h1>생산업체별 재료 가격표</h1>
+<div class="container mt-4">
+    <form id="filterForm">
+        <div class="mb-3">
+            <label for="category" class="form-label">카테고리</label>
+            <select class="form-select" id="category" name="category">
+                <option value="productCompanyName">제공업체명</option>
+                <option value="sourceName">재료명</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="keyword" class="form-label">키워드</label>
+            <input type="text" class="form-control" id="keyword" name="keyword">
+        </div>
+        <button type="submit" class="btn btn-primary">검색</button>
+    </form>
+</div>
+<div class="container mt-4">
+    <button id="findBestPrice" class="btn btn-info">최저가 찾기</button>
+</div>
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>제공업체</th>
+        <th>재료명</th>
+        <th>가격</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="price : ${sourcePricesList}">
+        <td th:text="${price.supplierName}"></td>
+        <td th:text="${price.materialName}"></td>
+        <td th:text="${price.price}"></td>
+    </tr>
+    </tbody>
+</table>
+<script>
+    $(document).ready(function() {
+        $('#filterForm').submit(function(event) {
+            event.preventDefault(); // 폼의 기본 제출 동작 방지
+
+            var category = $('#category').val();
+            var keyword = $('#keyword').val();
+
+            $.ajax({
+                url: '/api/distributionOrder/findSourcePricesByCategoryAndKeyword', // 수정된 백엔드 URL
+                type: 'GET',
+                data: { category: category, keyword: keyword },
+                success: function(response) {
+                    // 응답을 테이블에 업데이트
+                    var tableBody = $('table tbody');
+                    tableBody.empty(); // 기존 데이터를 제거
+
+                    $.each(response, function(index, price) {
+                        var row = '<tr>' +
+                            '<td>' + price.supplierName + '</td>' +
+                            '<td>' + price.materialName + '</td>' +
+                            '<td>' + price.price + '</td>' +
+                            '</tr>';
+                        tableBody.append(row);
+                    });
+                },
+                error: function() {
+                    alert('데이터를 가져오는 데 실패했습니다.');
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#findBestPrice').click(function() {
+            $.ajax({
+                url: '/api/distributionOrder/getBestSuppliers', // 수정된 백엔드 URL
+                type: 'GET',
+                success: function(response) {
+                    // 응답을 테이블에 업데이트
+                    var tableBody = $('table tbody');
+                    tableBody.empty(); // 기존 데이터를 제거
+
+                    $.each(response, function(index, price) {
+                        var row = '<tr>' +
+                            '<td>' + price.bestSupplierName + '</td>' +
+                            '<td>' + price.materialName + '</td>' +
+                            '<td>' + price.lowestPrice + '</td>' +
+                            '</tr>';
+                        tableBody.append(row);
+                    });
+                },
+                error: function() {
+                    alert('최저가를 찾는 데 실패했습니다.');
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
