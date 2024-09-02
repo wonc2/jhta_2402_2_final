@@ -2,24 +2,25 @@ package org.example.jhta_2402_2_final.dao.distribution;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.example.jhta_2402_2_final.model.dto.distribution.DistributionOrderDetailDto;
-import org.example.jhta_2402_2_final.model.dto.distribution.DistributionSourcePriceDto;
-import org.example.jhta_2402_2_final.model.dto.distribution.DistributionBestSupplierDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.DistributionMaterialDto;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Mapper
+@Repository
 public interface DistributionSourcePriceDao {
+    List<DistributionMaterialDto> getMaterialWithBestSupplier();
 
-    // 특정 밀키트에 대한 소스 가격 정보를 가져오는 메서드
-    List<DistributionSourcePriceDto> getSourcePricesForKit(@Param("kitId") String kitId);
+    List<DistributionMaterialDto> getSourcePricesForKit(@Param("kitId") String kitId);
 
-    // 각 재료의 최저가 제공 업체 정보를 가져오는 메서드
-    List<DistributionBestSupplierDto> getBestSuppliers();
+    List<DistributionMaterialDto> getBestSuppliers();
 
-    // 주문 내역을 가져오는 메서드
-    List<DistributionOrderDetailDto> getOrderDetails();
+    List<DistributionMaterialDto> getOrderDetails();
 
-    // 전체 가격 리스트를 가져오는 메서드 추가
-    List<DistributionSourcePriceDto> getAllSourcePrices();
+    List<DistributionMaterialDto> getAllSourcePrices();
+
+    List<DistributionMaterialDto> findSourcePricesByCategoryAndKeyword(String category, String keyword);
+
+    List<DistributionMaterialDto> getOrderDetailsByKeyword(@Param("orderKeyword") String orderKeyword);
 }

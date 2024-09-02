@@ -10,17 +10,21 @@ import java.util.UUID;
 @Mapper
 public interface ProductCompanyDao {
     // 생산업체에 등록된 생산품 리스트 가져옴
-    List<Map<String, Object>> getSourcesByCompanyName(String productCompanyName);
+    List<Map<String, Object>> getSourcesByCompanyName(String companyName);
     // 모든 재료 리스트
     List<SourceDto> getAllSources();
 
     // 생산업체 생산품 Create, Update, Delete
-    void addSourceToCompany(Map<String, Object> paramData);
-    void deleteSourceFromCompany(String companySourceId);
+    int addSourceToCompany(Map<String, Object> paramData);
+    int deleteSourceFromCompany(String companySourceId);
 
     // Source 중복체크겸 id 가져오기 (return: null 이면 중복 없으므로 재료 테이블에 추가 -> addSource)
     String getSourceIdByName(String sourceName);
-    void addSource(String sourceId, String sourceName);
-
     String getCompanyIdByName(String companyName);
+    int addSource(String sourceId, String sourceName);
+
+    // 생산 창고 리스트
+    List<Map<String, Object>> getWarehouseSources(String companyName);
+    // 제품 생산
+    int produceSource(Map<String, Object> paramData);
 }

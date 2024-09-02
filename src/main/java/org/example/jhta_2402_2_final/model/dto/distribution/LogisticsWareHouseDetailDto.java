@@ -12,13 +12,13 @@ import java.util.Date;
 @Builder
 public class LogisticsWareHouseDetailDto {
 
+    private String logPk; //나중에 UUID로 할 때는 UUID로 바꿔야함
     private Date logDate;
-    private String status;
     private int quantity;
+    private String sourcePk; //나중에 UUID로 할 때는 UUID로 바꿔야함
     private String sourceName;
     private String productCompany;
 
     
-
 
 }

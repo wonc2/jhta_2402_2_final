@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragment/head}"></head>
+
+<th:block th:replace="fragment/adminHeader :: body"></th:block>
+<div id="layoutSidenav_content">
+    <main>
+        <!-- 생산업체별 재료 가격표 -->
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">생산업체별 재료 가격표</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">각 농장의 재료 단가 조회하기</li>
+            </ol>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                </div>
+                <div class="card-body">
+                    <!-- AJAX 기반 필터 폼 -->
+                    <form id="filterForm" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                        <select class="form-select" id="category" name="category">
+                            <option value="productCompanyName">제공업체명</option>
+                            <option value="sourceName">재료명</option>
+                        </select>
+                        <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Search...">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                        <button type="button" id="findBestPrice" class="btn btn-info">최저가 찾기</button>
+                    </form>
+                    <table id="datatablesSimple" class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>생산업체</th>
+                            <th>재료명</th>
+                            <th>가격</th>
+                            <th>주문하기</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- 필터링된 결과가 여기에 표시됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 생산업체로 주문 넣기 -->
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">생산업체로 주문 넣기</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">각 농장에 주문을 넣습니다</li>
+            </ol>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                </div>
+                <div class="card-body">
+                    <!-- 주문 내역서 조회 폼 -->
+                    <form id="orderDetailsForm" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                        <input type="text" class="form-control" id="orderKeyword" name="orderKeyword" placeholder="주문 내역 조회...">
+                        <button type="submit" class="btn btn-primary">조회</button>
+                    </form>
+                    <table id="orderDetailsTable" class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>품목</th>
+                            <th>수량</th>
+                            <th>가격</th>
+                            <th>주문 날짜</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- 주문 내역이 여기에 표시됩니다 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // 필터 폼 제출 시
+        $('#filterForm').submit(function (event) {
+            event.preventDefault(); // 기본 제출 동작 방지
+
+            var category = $('#category').val();
+            var keyword = $('#keyword').val();
+
+            $.ajax({
+                url: '/distributionOrder/source-prices', // Spring 컨트롤러의 매핑 URL
+                type: 'GET',
+                data: {category: category, keyword: keyword},
+                success: function (response) {
+                    // 테이블에 응답 데이터 업데이트
+                    var tableBody = $('#datatablesSimple tbody');
+                    tableBody.empty(); // 기존 데이터 제거
+
+                    $.each(response, function (index, price) {
+                        var row = '<tr>' +
+                            '<td>' + price.supplierName + '</td>' +
+                            '<td>' + price.materialName + '</td>' +
+                            '<td>' + price.price + '</td>' +
+                            '<td><button class="btn btn-success orderButton" data-id="' + price.sourceId + '">주문하기</button></td>' +
+                            '</tr>';
+                        tableBody.append(row);
+                    });
+                },
+                error: function () {
+                    alert('데이터를 가져오는 데 실패했습니다.');
+                }
+            });
+        });
+
+        // 최저가 찾기 버튼 클릭 시
+        $('#findBestPrice').click(function () {
+            $.ajax({
+                url: '/distributionOrder/best-suppliers', // Spring 컨트롤러의 매핑 URL
+                type: 'GET',
+                success: function (response) {
+                    // 테이블에 응답 데이터 업데이트
+                    var tableBody = $('#datatablesSimple tbody');
+                    tableBody.empty(); // 기존 데이터 제거
+
+                    $.each(response, function (index, price) {
+                        var row = '<tr>' +
+                            '<td>' + price.bestSupplierName + '</td>' +
+                            '<td>' + price.materialName + '</td>' +
+                            '<td>' + price.lowestPrice + '</td>' +
+                            '<td><button class="btn btn-success orderButton" data-id="' + price.sourceId + '">주문하기</button></td>' +
+                            '</tr>';
+                        tableBody.append(row);
+                    });
+                },
+                error: function () {
+                    alert('최저가를 찾는 데 실패했습니다.');
+                }
+            });
+        });
+
+        // 주문 내역서 조회 폼 제출 시
+        $('#orderDetailsForm').submit(function (event) {
+            event.preventDefault(); // 기본 제출 동작 방지
+
+            var orderKeyword = $('#orderKeyword').val();
+
+            $.ajax({
+                url: '/distributionOrder/order-details', // Spring 컨트롤러의 매핑 URL
+                type: 'GET',
+                data: {orderKeyword: orderKeyword},
+                success: function (response) {
+                    // 테이블에 응답 데이터 업데이트
+                    var tableBody = $('#orderDetailsTable tbody');
+                    tableBody.empty(); // 기존 데이터 제거
+
+                    $.each(response, function (index, order) {
+                        var row = '<tr>' +
+                            '<td>' + order.itemName + '</td>' +
+                            '<td>' + order.quantity + '</td>' +
+                            '<td>' + order.price + '</td>' +
+                            '<td>' + order.orderDate + '</td>' +
+                            '</tr>';
+                        tableBody.append(row);
+                    });
+                },
+                error: function () {
+                    alert('주문 내역을 가져오는 데 실패했습니다.');
+                }
+            });
+        });
+
+        // 주문하기 버튼 클릭 시
+        $(document).on('click', '.orderButton', function () {
+            var sourceId = $(this).data('id');
+
+            $.ajax({
+                url: '/distributionOrder/order', // Spring 컨트롤러의 매핑 URL
+                type: 'POST',
+                data: {sourceId: sourceId},
+                success: function () {
+                    alert('주문이 성공적으로 완료되었습니다.');
+                },
+                error: function () {
+                    alert('주문을 처리하는 데 실패했습니다.');
+                }
+            });
+        });
+    });
+</script>
+
+</html>
