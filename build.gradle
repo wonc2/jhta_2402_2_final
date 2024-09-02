@@ -24,6 +24,8 @@ repositories {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/org.webjars.bower/jquery
+    implementation("org.webjars.bower:jquery:3.7.1")
 //    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'

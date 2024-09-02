@@ -3,11 +3,10 @@ package org.example.jhta_2402_2_final.controller.product;
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.model.dto.common.SourceDto;
 import org.example.jhta_2402_2_final.service.product.ProductCompanyService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,12 @@ public class ProductCompanyController {
         model.addAttribute("sources", sources);
 
         return "product/productCompanyMainPage";
+    }
+
+    @PostMapping("{companyName}/insert")
+    public String insert(@PathVariable String companyName, @RequestParam Map<String ,Object> dataMap){
+        productCompanyService.insertCompanySource(companyName, dataMap);
+        return "redirect:/product/company/" + companyName;
     }
 
     // 생산품 상세조회?  /main/{productCompanyName}/{companySourceId}

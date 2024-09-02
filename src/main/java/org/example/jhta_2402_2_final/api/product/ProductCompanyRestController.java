@@ -30,15 +30,41 @@ public class ProductCompanyRestController {
 
         return ResponseEntity.ok().body(response);
     }
-    @PostMapping("{companyName}")
-    public ResponseEntity<Map<String, Object>> addSource(@RequestParam UUID sourceId, @RequestParam int sourcePrice){
-         productCompanyService.insertCompanySource(sourceId, sourcePrice);
-        // 1번 productCompanyService.getCompanyIdByCompanyName();
-        // 2번 sourceId 넣고 인서트
+
+    @PostMapping("{companyName}/produce")
+    public ResponseEntity<List<Map<String, Object>>> addSource(@PathVariable String companyName, @RequestBody Map<String ,Object> dataMap){
+        // http://localhost:8080/api/product/company/농심공장
+        //  {
+        //    "companyId": "65151a22-649e-11ef-838c-0242ac120002", <<- ${companyId}
+        //    "sourceId": "65155d6e-649e-11ef-838c-0242ac120002", <<- ${sourceId}
+        //    "sourcePrice": 12345
+        // }
+
+//        List<Map<String, Object>> companySourceList = productCompanyService.insertCompanySource(companyName, dataMap);
+//        return ResponseEntity.ok().body(companySourceList);
         return null;
     }
 
-    // 할일 list
+    @PostMapping("{companyName}/insert")
+    public ResponseEntity<List<Map<String, Object>>> insert(@PathVariable String companyName, @RequestBody Map<String ,Object> dataMap){
+        // http://localhost:8080/api/product/company/농심공장/insert
+        //  {
+        //    "sourceName": "버터",
+        //    "sourcePrice": 12345
+        // }
+
+        List<Map<String, Object>> companySourceList = productCompanyService.insertCompanySource(companyName, dataMap);
+        return ResponseEntity.ok().body(companySourceList);
+    }
+
+    @PutMapping("{companyName}")
+    public ResponseEntity<Map<String, Object>> updateSource(@PathVariable String companyName, @RequestBody Map<String ,Object> dataMap){
+        return null;
+    }
+
+
+
+        // 할일 list
     // 생산품 상세조회?  /main/{productCompanyName}/{companySourceId}
     // 생산품 등록 Post (1. 셀렉트로 source list가져와서 그중에서 고르고 + 2. 가격 등록)
     // 생산품 수정 Put (일단 가격 ?)

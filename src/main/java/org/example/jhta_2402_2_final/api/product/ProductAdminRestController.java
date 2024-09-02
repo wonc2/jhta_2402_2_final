@@ -20,6 +20,7 @@ public class ProductAdminRestController {
     @GetMapping("selectAll")
     public ResponseEntity<List<Map<String, Object>>> selectAll(){
         // http://localhost:8080/api/product/admin/selectAll
+
         List<Map<String, Object>> proudcts = productAdminService.findAll();
         return ResponseEntity.ok().body(proudcts);
     }
@@ -27,11 +28,12 @@ public class ProductAdminRestController {
     @GetMapping("selectAll/params")
     public ResponseEntity<Map<String, Object>> getProductListByParams(@RequestParam Map<String, Object> params){
         // http://localhost:8080/api/product/admin/selectAll/params?productCompanyId=&statusId=
-        Map<String, Object> response = new HashMap<>();
+
         List<Map<String, Object>> products = productAdminService.getProductListByParams(params);
         List<ProductCompanyDto> companies = productAdminService.getAllCompanies();
         List<StatusDto> status = productAdminService.getAllStatus();
 
+        Map<String, Object> response = new HashMap<>();
         response.put("products", products);
         response.put("companies", companies);
         response.put("status", status);

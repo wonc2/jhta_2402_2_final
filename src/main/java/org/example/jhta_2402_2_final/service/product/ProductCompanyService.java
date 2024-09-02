@@ -27,9 +27,18 @@ public class ProductCompanyService {
         return productCompanyDao.getAllSources();
     }
 
+    /* Insert 회사별 생산품 리스트 */
     @Transactional
-    public void insertCompanySource(UUID sourceId, int sourcePrice) {
-        Map<String, Object> params = new HashMap<>();
-        productCompanyDao.insertCompanySource(params);
+    public List<Map<String, Object>> insertCompanySource(String companyName, Map<String ,Object> dataMap) {
+        String sourceName = (String) dataMap.get("sourceName");
+        if (productCompanyDao.duplicationSource((String) dataMap.get("sourceName")) < 1) productCompanyDao.addSource(sourceName);
+        String sourceId = productCompanyDao.getSourceIdByName(sourceName);
+        String companyId = productCompanyDao.getCompanyIdByName(companyName);
+
+        dataMap.put("sourceId", sourceId);
+        dataMap.put("companyId", companyId);
+
+        productCompanyDao.insertCompanySource(dataMap); // params: #{companyId}, #{sourceId}, #{sourcePrice})
+        return productCompanyDao.getSourcesByCompanyName(companyName);
     }
 }
