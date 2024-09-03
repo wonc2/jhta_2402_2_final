@@ -1,4 +1,3 @@
-
 -- 1. 밀키트 테이블 생성
 CREATE TABLE MEALKIT (
                          MEALKIT_ID VARCHAR(50) PRIMARY KEY, -- 밀키트PK
@@ -48,11 +47,11 @@ CREATE TABLE STATUS (
 -- 8. 생산주문(발주) 테이블
 CREATE TABLE PRODUCT_ORDER (
                                PRODUCT_ORDER_ID VARCHAR(50) PRIMARY KEY, -- 발주PK
-                               KIT_SOURCE_PRICE_ID VARCHAR(50), -- 생산품가격FK
+                               SOURCE_PRICE_ID VARCHAR(50), -- 생산품가격FK
                                QUANTITY INT NOT NULL , -- 개수
                                PRODUCT_ORDER_DATE DATETIME DEFAULT CURRENT_TIMESTAMP,  -- 주문 일자
                                STATUS_ID INT, -- 상태FK
-                               FOREIGN KEY (KIT_SOURCE_PRICE_ID) REFERENCES KIT_SOURCE_PRICE(KIT_SOURCE_PRICE_ID),
+                               FOREIGN KEY (SOURCE_PRICE_ID) REFERENCES SOURCE_PRICE(SOURCE_PRICE_ID),
                                FOREIGN KEY (STATUS_ID) REFERENCES STATUS(STATUS_ID)
 );
 -- 9. 생산주문(발주) 로그 테이블
