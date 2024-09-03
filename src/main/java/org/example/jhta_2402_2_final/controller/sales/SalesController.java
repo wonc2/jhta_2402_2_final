@@ -76,6 +76,7 @@ public class SalesController {
     public String changeKitOrderStatus(
             @RequestParam("kitOrderId") String kitOrderId,
             @RequestParam("statusId") int statusId) {
+        System.out.println("kitOrderId>>>>>>>>"+kitOrderId);
 
         salesService.updateKitOrderStatus(kitOrderId, statusId);
         salesService.createKitOrderLog(UUID.fromString(kitOrderId), statusId);

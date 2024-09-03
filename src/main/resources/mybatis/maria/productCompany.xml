@@ -4,11 +4,12 @@
     <!-- 생산 업체의 현재 생산품 리스트 가져옴 -->
     <select id="getSourcesByCompanyName" resultType="Map" parameterType="String">
         select
-            sp.SOURCE_PRICE_ID as 'companySourceId',
-            s.NAME as 'sourceName',
-            PRICE as 'sourcePrice',
-            pc.NAME as 'companyName',
-            pc.product_company_ID as companyId
+        sp.SOURCE_PRICE_ID as 'companySourceId',
+        s.NAME as 'sourceName',
+        PRICE as 'sourcePrice',
+        COALESCE((SELECT SUM(quantity)
+            FROM SOURCE_WAREHOUSE sw
+            WHERE sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID), 0) AS totalQuantity
         from SOURCE_PRICE sp
         join SOURCE s ON s.source_id = sp.source_id
         join PRODUCT_COMPANY pc ON pc.product_company_id = sp.product_company_id
@@ -24,6 +25,9 @@
         VALUES
             (UUID(), #{companyId}, #{sourceId}, #{sourcePrice})
     </insert>
+    <update id="sourcePriceUpdate" parameterType="map">
+        UPDATE SOURCE_PRICE SET price = #{sourcePrice} WHERE source_price_id = #{companySourceId};
+    </update>
     <delete id="deleteSourceFromCompany" parameterType="Map">
         DELETE FROM SOURCE_PRICE WHERE SOURCE_PRICE_ID = #{companySourceId}
     </delete>
@@ -38,8 +42,6 @@
     <select id="getWarehouseSources" resultType="map" parameterType="String">
         SELECT
             sw.source_warehouse_id as sourceWarehouseId,
-            sp.PRICE as sourcePrice,
-            (sp.price * sw.quantity) as totalPrice,
             sw.QUANTITY as sourceQuantity,
             DATE_FORMAT(sw.produce_date, '%Y-%m-%d') as produceDate,
             s.name as sourceName
@@ -48,6 +50,24 @@
         JOIN SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
         JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         WHERE pc.NAME = #{companyName}
+    </select>
+
+    <!-- 주문 주문 주문 주문 주문 -->
+    <select id="getProductOrderList" resultType="map">
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
+                P_C.NAME AS productCompanyName,
+            S.NAME AS sourceName,
+            S_P.PRICE AS sourcePrice,
+            P_O_T.QUANTITY AS quantity,
+            (S_P.PRICE * P_O_T.QUANTITY) AS totalPrice,
+            P_O_T.PRODUCT_ORDER_DATE AS productOrderDate,
+            ST.STATUS AS status
+        FROM PRODUCT_ORDER_TEST P_O_T
+                 JOIN SOURCE_PRICE S_P ON P_O_T.SOURCE_PRICE_ID = S_P.SOURCE_PRICE_ID
+                 JOIN PRODUCT_COMPANY P_C ON P_C.PRODUCT_COMPANY_ID = S_P.PRODUCT_COMPANY_ID
+                 JOIN SOURCE S ON S_P.SOURCE_ID = S.SOURCE_ID
+                 JOIN STATUS ST ON ST.STATUS_ID = P_O_T.STATUS_ID
     </select>
 
 
@@ -65,5 +85,13 @@
     </insert>
     <select id="getCompanyIdByName" parameterType="String" resultType="String">
         select product_company_id from PRODUCT_COMPANY where NAME = #{companyName}
+    </select>
+
+    <select id="checkDuplicateCompanySource" parameterType="map" resultType="boolean">
+        SELECT COUNT(*)
+        FROM SOURCE_PRICE sp
+        JOIN SOURCE s on sp.SOURCE_ID = s.SOURCE_ID
+        JOIN PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+        WHERE pc.PRODUCT_COMPANY_ID = #{companyId} and (s.SOURCE_ID = #{sourceId} or s.NAME = #{sourceName})
     </select>
 </mapper>

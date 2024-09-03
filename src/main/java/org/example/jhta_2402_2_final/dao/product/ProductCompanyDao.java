@@ -27,4 +27,8 @@ public interface ProductCompanyDao {
     List<Map<String, Object>> getWarehouseSources(String companyName);
     // 제품 생산
     int produceSource(Map<String, Object> paramData);
+
+    int sourcePriceUpdate(Map<String, Object> paramData);
+
+    boolean checkDuplicateCompanySource(Map<String, Object> paramData);
 }

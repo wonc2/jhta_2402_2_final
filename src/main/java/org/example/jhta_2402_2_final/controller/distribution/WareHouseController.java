@@ -8,10 +8,7 @@ import org.example.jhta_2402_2_final.model.dto.distribution.LogisticsWareHouseDt
 import org.example.jhta_2402_2_final.service.distribution.LogisticsWareHouseService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.math.BigDecimal;
@@ -32,12 +29,13 @@ public class WareHouseController {
     public String selectAll(Model model) {
 
         // 프러덕트 오더 테이블에서 스테이터스가 3인 경우 창고에 적재하고 3 -> 5로 바꿈
-        logisticsWareHouseService.insertWarehouseStackForCompletedOrders();
-        logisticsWareHouseService.updateProductOrderStatus();
-
+        int result = logisticsWareHouseService.insertWarehouseStackForCompletedOrders();
+        if (result > 0) {
+            logisticsWareHouseService.updateProductOrderStatus();
+        }
 
         // 밀키트 오더 테이블에서 스테이터스가 3인 경우 창고에서 차감하고 3->6으로 바꿈
-        List<Map<String, Object>> requiredStackList = logisticsWareHouseService.selectRequiredStack();
+       /* List<Map<String, Object>> requiredStackList = logisticsWareHouseService.selectRequiredStack();
         if (!requiredStackList.isEmpty()) {
             for (Map<String, Object> list : requiredStackList) {
                 String sourceFk = (String) list.get("sourceFk");
@@ -51,8 +49,8 @@ public class WareHouseController {
 
                 logisticsWareHouseService.updateStackFirstRecord(params);
             }
-        logisticsWareHouseService.updateKitOrderStatus();
-        }
+            //logisticsWareHouseService.updateKitOrderStatus();
+        }*/
 
 
         logisticsWareHouseService.deleteZeroQuantityRecords();
@@ -62,6 +60,14 @@ public class WareHouseController {
         model.addAttribute("warehouseList", list);
 
         return "distribution/wareHouseList";
+    }
+
+    @GetMapping("/selectLog")
+    @ResponseBody
+    public List<Map<String, Object>> getWarehouseLog(@RequestParam String sourceUUID) {
+        // sourceUUID를 이용해 데이터베이스에서 관련 데이터를 조회합니다.
+        // 예시로 List<Map<String, Object>> 타입의 데이터를 반환한다고 가정합니다.
+        return logisticsWareHouseService.selectKitOrderLogDetailsBySourceId(sourceUUID);
     }
 
 
