@@ -53,4 +53,19 @@ public interface SalesDao {
 
     //창고
     List<KitStorageDto> selectKitStorage();
+
+    //처리 완료된 애들만
+    List<KitOrderDetailDto> findAllCompleted();
+
+    // 주문 id값으로 주문 정보를 가져옴
+    KitOrderDto selectKitOrderById(String kitOrderId);
+
+    //밀키트 아이디와 업체 아이디로 창고 정보를 가져옴
+    KitStorageDto selectKitStorageById(String kitCompanyId, String mealkitId);
+
+    //창고를 업데이트함
+    void updateKitStorage(UUID kitStorageId, int quantity);
+
+    //재고가 없으면 인서트함
+    void insertKitStorage(UUID kitStorageId, String kitCompanyId, String mealkitId, int quantity);
 }
