@@ -51,7 +51,7 @@ public class WareHouseController {
 
                 logisticsWareHouseService.updateStackFirstRecord(params);
             }
-        logisticsWareHouseService.updateKitOrderStatus();
+        //logisticsWareHouseService.updateKitOrderStatus();
         }
 
 
