@@ -17,7 +17,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@RestController
 public class ProductCompanyService {
     private final ProductCompanyDao productCompanyDao;
     private final ProductCompanyUtil productCompanyUtil;
