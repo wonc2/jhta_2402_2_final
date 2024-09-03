@@ -80,7 +80,26 @@
     </update>
 
 
+
+
     <insert id="insertWarehouseStackForCompletedOrders">
+        SELECT
+            UUID() AS LOGISTICS_WAREHOUSE_STACK_PK,
+            S.SOURCE_ID AS SOURCE_FK,
+            LW.LOGISTICS_WAREHOUSE_PK AS LOGISTICS_WAREHOUSE_FK,
+            SUM(PO.QUANTITY * KS.QUANTITY) AS QUANTITY
+        FROM
+            PRODUCT_ORDER PO
+                JOIN KIT_SOURCE KS ON PO.KIT_SOURCE_ID = KS.KIT_SOURCE_ID
+                JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+                JOIN LOGISTICS_WAREHOUSE LW ON LW.WAREHOUSE_NAME = 'Shin_WAREHOUSE'
+        WHERE
+            PO.STATUS_ID = 3
+        GROUP BY
+            S.SOURCE_ID, LW.LOGISTICS_WAREHOUSE_PK
+    </insert>
+
+    <insert id="insertWarehouseStackForCompletedOrders/////////">
         INSERT INTO LOGISTICS_WAREHOUSE_STACK (LOGISTICS_WAREHOUSE_STACK_PK, SOURCE_FK, LOGISTICS_WAREHOUSE_FK, QUANTITY)
         SELECT
             UUID() AS LOGISTICS_WAREHOUSE_STACK_PK,
