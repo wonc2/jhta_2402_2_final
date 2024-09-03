@@ -9,21 +9,43 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
     <script>
         // JavaScript 함수: 버튼 클릭 시 모달을 띄우기
-        function showModal(logisticsWareHouseSourcePK) {
-            // 모달의 데이터를 설정하는 함수
+        function showModal(logisticsWareHouseSourcePK, sourceName) {
             // 예를 들어, logisticsWareHouseSourcePK 값을 모달의 특정 요소에 표시하거나 사용할 수 있습니다.
             console.log("Clicked logisticsWareHouseSourcePK: " + logisticsWareHouseSourcePK);
 
-            // 모달을 띄우는 방법
-            var myModal = new bootstrap.Modal(document.getElementById('orderModal'));
-            myModal.show();
+            // AJAX를 이용해 서버에서 데이터를 가져옴
+            $.ajax({
+                url: '/warehouse/log', // 서버의 엔드포인트
+                method: 'GET',
+                data: { sourceName: sourceName }, // 소스명을 서버로 전달
+                success: function(response) {
+                    // 서버로부터 받은 데이터를 모달에 채움
+                    $('#orderModal .modal-body tbody').empty(); // 기존 데이터를 지움
+                    response.forEach(function(item) {
+                        $('#orderModal .modal-body tbody').append(
+                            `<tr>
+                                <td>${item.productCompanyName}</td>
+                                <td>${item.sourceName}</td>
+                                <td>${item.quantity}</td>
+                                <td>${item.date}</td>
+                                <td>${item.status}</td>
+                            </tr>`
+                        );
+                    });
+                    // 모달을 띄움
+                    var myModal = new bootstrap.Modal(document.getElementById('orderModal'));
+                    myModal.show();
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
         }
     </script>
 </head>
 <body>
 <th:block th:replace="fragment/adminHeader :: body"></th:block>
 <div id="layoutSidenav_content">
-    <!-- 페이지마다 다른 콘텐츠 -->
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4">창고 재고 확인</h1>
@@ -51,7 +73,6 @@
                             <th>재료명</th>
                             <th>수량</th>
                             <th>상세</th>
-
                         </tr>
                         </thead>
                         <tfoot>
@@ -60,7 +81,6 @@
                             <th>재료명</th>
                             <th>수량</th>
                             <th>상세</th>
-
                         </tr>
                         </tfoot>
                         <tbody>
@@ -69,8 +89,8 @@
                             <td th:text="${items.sourceName}"></td>
                             <td th:text="${items.quantity}"></td>
                             <td>
-<!--                                 버튼 클릭 시 showModal 함수 호출-->
-                                <button class="btn btn-primary" type="button" onclick="showModal('${items.logisticsWareHouseSourcePK}')">상세</button>
+                                <!-- 버튼 클릭 시 showModal 함수 호출 -->
+                                <button class="btn btn-primary" type="button" onclick="showModal('${items.logisticsWareHouseSourcePK}', '${items.sourceName}')">상세</button>
                             </td>
                         </tr>
                         </tbody>
@@ -98,71 +118,10 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr th:each="items : ${warehouseList}">
-                                  <!--  <td th:text="${items.wareHouseName}"></td>
-                                    <td th:text="${items.sourceName}"></td>
-                                    <td th:text="${items.quantity}"></td> -->
-                                    <td>신혁 농가</td>
-                                    <td>김치</td>
-                                    <td>400</td>
-                                    <td>2024-01-01</td>
-                                    <td>입/출고</td>
-                                </tr>
+                                <!-- 여기에서 AJAX로 데이터를 채움 -->
                                 </tbody>
                             </table>
-
-
-                            <!-- 모달 바디안에 들어갈 내용 여기에 !! -->
-                            <!-- 발주 폼) 구매번호 - 주문자 - 주문처타입 - 주문처 - 발주처 - 카테고리 - 제품 - 갯수 -->
-<!--                            <form>-->
-<!--                                <div class="container">-->
-<!--                                    <div class="mb-3 row align-items-center">-->
-<!--                                        <label class="col-sm-3 col-form-label">카테고리</label>-->
-<!--                                        <div class="col-sm-9">-->
-<!--                                            <select class="form-select" id="category" name="category" required>-->
-<!--                                                <option>선택</option>-->
-<!--                                                <option value="1">농산물</option>-->
-<!--                                                <option value="2">축산물</option>-->
-<!--                                                <option value="3">수산물</option>-->
-<!--                                                <option value="4">...</option>-->
-<!--                                            </select>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                    <div class="mb-3 row align-items-center">-->
-<!--                                        <label class="col-sm-3 col-form-label">제품</label>-->
-<!--                                        <div class="col-sm-9">-->
-<!--                                            <select class="form-select" id="product" name="product" required>-->
-<!--                                                <option>선택</option>-->
-<!--                                                <option value="1">고등어</option>-->
-<!--                                                <option value="2">문어</option>-->
-<!--                                            </select>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                    <div class="mb-3 row align-items-center">-->
-<!--                                        <label class="col-sm-3 col-form-label">갯수</label>-->
-<!--                                        <div class="col-sm-9">-->
-<!--                                            <input type="number" id="count" class="form-control" min="1" max="99" value="1" step="1" name="count">-->
-<!--                                        </div>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </form>-->
-
-<!--                            &lt;!&ndash; 가격 자동 계산 해서 보여줌 readonly &ndash;&gt;-->
-<!--                            <div class="mb-3 row align-items-center">-->
-<!--                                <label class="col-sm-3 col-form-label">가격</label>-->
-<!--                                <div class="col-sm-9">-->
-<!--                                    <div class="input-group">-->
-<!--                                        <input type="text" class="form-control" value="4500000" readonly aria-label="price" name="price" id="price">-->
-<!--                                        <span class="input-group-text">₩</span>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-                            <!-- 모달 바디 끝 -->
                         </div>
-                       <!-- <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                            <button type="button" class="btn btn-primary" id="orderBtn">주문</button>
-                        </div>-->
                     </div>
                 </div>
             </div>

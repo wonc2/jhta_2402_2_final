@@ -44,7 +44,7 @@
                         <ul class="dropdown-menu" aria-labelledby="viewListDropDown">
                             <li><a class="dropdown-item" data-value="companySourceList">생산 현황 </a></li>
                             <li><a class="dropdown-item" data-value="warehouseList">창고 현황 </a></li>
-                            <li><a class="dropdown-item" data-value="orderStatus">주문 현황 </a></li>
+                            <li><a class="dropdown-item" data-value="orderList">주문 현황 </a></li>
                         </ul>
                     </div>
                     <div class="card-body">
@@ -52,20 +52,11 @@
                             <table id="companySourceTable" class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <th>등록 번호</th> <!-- hidden -->
-                                    <th>생산업체명</th> <!-- 뺄것 -->
-                                    <th>생산지주소</th> <!-- 뺄것 -->
+                                    <th>등록 번호</th>
                                     <th>생산품명</th>
                                     <th>생산품가격</th>
-                                    <!-- 현재 총 창고 재고량 -->
+                                    <th>현재 창고 재고량</th>
                                     <th>생산 | 생산품 수정 | 생산품 삭제</th>
-                                    <!--
-                                    1. 등록번호
-                                    2. 생산품명
-                                    3. 생산품 가격
-                                    4. 현재 총 창고 재고량
-                                    5. 버튼들
-                                    -->
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -85,8 +76,6 @@
                                     <th>생산번호</th>
                                     <th>생산품명</th>
                                     <th>생산량</th>
-                                    <th>생산품가격</th> <!-- 뺄것 -->
-                                    <th>총주문가</th>   <!-- 뺄것 -->
                                     <th>생산일자</th>
                                 </tr>
                                 </thead>
@@ -95,45 +84,63 @@
                             </table>
                         </div>
 
-<!--                        <div id="orderTableContainer" style="display:none;">-->
-<!--                            <table id="orderTable" class="table table-bordered">-->
-<!--                                <thead>-->
-<!--                                <tr>-->
-<!--                                    <th>주문번호</th>-->
-<!--                                    <th>주문한 제품</th>-->
-<!--                                    <th>갯수</th>-->
-<!--                                    <th>주문한곳</th>-->
-<!--                                    <th>총주문가</th>-->
-<!--                                    <th>주문일자</th>-->
-<!--                                </tr>-->
-<!--                                </thead>-->
-<!--                                <tbody>-->
-<!--                                </tbody>-->
-<!--                            </table>-->
-<!--                        </div>-->
+                        <div id="orderTableContainer" style="display:none;">
+                            <table id="orderTable" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>주문번호</th>
+                                    <th>주문한 재료</th>
+                                    <th>재료 가격</th>
+                                    <th>주문한 갯수</th>
+                                    <th>총 주문 가격</th>
+                                    <th>주문 일자</th>
+                                    <th>주문 처리 상태</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
 
-                        <!--                        &lt;!&ndash; 수정 모달 &ndash;&gt;-->
-                        <!--                        <div class="modal fade" id="productUpdateModal" tabindex="-1"-->
-                        <!--                             aria-labelledby="productUpdateModalLabel" aria-hidden="true">-->
-                        <!--                            <div class="modal-dialog">-->
-                        <!--                                <div class="modal-content">-->
-                        <!--                                    <form id="productUpdate" th:action="@{/}" th:method="post">-->
-                        <!--                                        <div class="modal-header">-->
-                        <!--                                            <h5 class="modal-title" id="productUpdateModalLabel">product Update</h5>-->
-                        <!--                                            <button type="button" class="btn-close" data-bs-dismiss="modal"-->
-                        <!--                                                    aria-label="Close"></button>-->
-                        <!--                                        </div>-->
+                        <!-- 업데이트(update) 모달 -->
+                        <div class="modal fade" id="updateSourceModal" tabindex="-1" aria-labelledby="updateSourceModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="updateSourceModalLabel">가격 수정</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="updateSourceForm">
+                                            <div class="container">
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">생산품명</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control" id="updateSourceName" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">가격</label>
+                                                    <div class="col-sm-9">
+                                                        <div class="input-group">
+                                                            <input type="number" id="updateSourcePrice" class="form-control" min="50" max="100000" value="50" step="50" required>
+                                                            <span class="input-group-text">₩</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="updateCompanySourceId" name="sourcePriceId">
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                        <button type="button" class="btn btn-primary" id="updateSourceBtn">수정</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 업데이트 모달 끝 -->
 
-                        <!--                                        <div class="modal-footer">-->
-                        <!--                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">-->
-                        <!--                                                Close-->
-                        <!--                                            </button>-->
-                        <!--                                            <button type="submit" class="btn btn-primary">Save</button>-->
-                        <!--                                        </div>-->
-                        <!--                                    </form>-->
-                        <!--                                </div>-->
-                        <!--                            </div>-->
-                        <!--                        </div>-->
 
                         <!-- 생산(produce) 모달 -->
                         <div class="modal fade" id="produceSourceModal" tabindex="-1" aria-labelledby="produceSourceModalLabel" aria-hidden="true">
