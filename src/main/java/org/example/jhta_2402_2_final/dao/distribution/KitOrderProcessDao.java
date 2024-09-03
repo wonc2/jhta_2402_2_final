@@ -18,6 +18,13 @@ public interface KitOrderProcessDao {
     // 주문번호(id)를 파라미터로 해서 마이바티스 매핑 후 레시피 조회
     List<Map<String, Object>> findKitRecipe(@Param("kitOrderId") String kitOrderId);
 
+    // 주문 내역을 조회하는 쿼리 (키워드 기반)
+    List<Map<String, Object>> findOrdersByKeyword(@Param("orderKeyword") String orderKeyword);
+
+    int saveOrder(KitOrderProcessDto dto);
+
+    List<Map<String, Object>> findAllOrders();
+
 
 
 

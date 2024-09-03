@@ -36,8 +36,38 @@
 
 
 
-    <update id="requestKitSourceOrder">
+    <insert id="requestKitSourceOrder" parameterType="KitOrderProcessDto">
+        INSERT INTO KIT_ORDER_PROCESS (
+            KIT_ORDER_ID,
+            KIT_COMPANY_NAME,
+            KIT_NAME,
+            QUANTITY,
+            ORDER_DATE,
+            STATUS
+        ) VALUES (
+                     #{kitOrderUid},
+                     #{kitCompanyName},
+                     #{kitName},
+                     #{quantity},
+                     #{kitOrderDate},
+                     #{status}
+                 )
+    </insert>
 
-    </update>
-
+    <select id="findOrdersByKeyword" parameterType="String" resultType="Map">
+        SELECT
+            KO.KIT_ORDER_ID AS 'kitOrderID',
+                KC.NAME AS 'kitCompanyName',
+                M.NAME AS 'kitName',
+                KO.QUANTITY AS 'quantity',
+                KO.PRODUCT_ORDER_DATE AS 'kitOrderDate',
+                S.STATUS AS 'status'
+        FROM
+            KIT_ORDER KO
+                JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
+                JOIN MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
+                JOIN STATUS S ON KO.STATUS_ID = S.STATUS_ID
+        WHERE
+            M.NAME LIKE CONCAT('%', #{orderKeyword}, '%')
+    </select>
 </mapper>
