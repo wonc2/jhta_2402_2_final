@@ -4,3 +4,31 @@
 .checkProductBtn{
     margin-right : 20px;
 }
+.productTableAreaTitle{
+    display: flex;
+    background-color: #eaeaee;
+    padding: 8px;
+    border:2px solid #ccc;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    align-items: center;
+    .tableicon{
+        font-size: 32px;
+    }
+    #productTableChange{
+        margin-left:15px;
+    }
+}
+.productTableAreaTable{
+    padding : 15px;
+    border-left: 2px solid #ccc;
+    border-right: 2px solid #ccc;
+    border-bottom: 2px solid #ccc;
+    td{
+        border:1px solid #ccc;
+    }
+    th{
+        border:1px solid #ccc;
+        background-color: #eeeeee;
+    }
+}

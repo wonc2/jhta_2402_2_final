@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.MemberDao;
 import org.example.jhta_2402_2_final.dao.product.ProductAdminDao;
 import org.example.jhta_2402_2_final.model.dto.MemberDto;
+import org.example.jhta_2402_2_final.model.dto.common.SourcePriceViewDto;
 import org.example.jhta_2402_2_final.model.dto.common.StatusDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyInsertDto;
@@ -41,6 +42,9 @@ public class ProductAdminService {
     }
     public int production(ProductDto productDto) {
         return 0;
+    }
+    public List<SourcePriceViewDto> getProductSourceList(){
+        return productDao.getProductSourceList();
     }
     public int insertProductCompany(ProductCompanyInsertDto productCompanyInsertDto){
         MemberDto memberDto = MemberDto.builder()

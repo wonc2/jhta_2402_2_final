@@ -3,8 +3,21 @@
     <!-- Admin Product 페이지 리스트 필요 컬럼 -->
     <!--  po.주문번호(PRODUCT_ORDER_PK), 생산업체명(pc.NAME), 생산품(s.NAME), 생산품가격(sp.PRICE),
           갯수 (po.QUANTITY), 총주문가격(po.QUANTITY * sp.PRICE), 주문일자(po.DATE), 상태(s.NAME)  -->
+    <select id="getProductSourceList" resultType="SourcePriceViewDto">
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
+            P_C.NAME AS productCompanyName,
+            S.NAME AS sourceName,
+            S_P.PRICE AS sourcePrice
+        FROM
+            SOURCE_PRICE S_P
+                JOIN PRODUCT_COMPANY P_C ON P_C.PRODUCT_COMPANY_ID = S_P.PRODUCT_COMPANY_ID
+                JOIN SOURCE S ON S.SOURCE_ID = S_P.SOURCE_ID
+    </select>
+
 
     <!-- 리스트 전부 다 가져옴 -->
+
     <select id="findAll" resultType="Map">
         SELECT
             po.PRODUCT_ORDER_ID AS 'productOrderId',

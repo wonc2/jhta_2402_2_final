@@ -43,7 +43,10 @@
                     <div class="card-body">
                         <div class="card-body-product-upside">
                             <div>
-                                <button class="btn btn-primary order" id="productTableChange">주문 현황</button>
+                                <button class="btn btn-primary order" id="productTableChange2" name="productTableStatus"
+                                        value="order">주문 현황
+                                </button>
+                                <p>현재 테이블 상태: <span th:text="${productionTableStatus}">default</span></p>
                             </div>
                             <div class="d-flex justify-content-end ms-auto mb-3" style="width: 700px;">
                                 <select class="datatable-selector" id="productCompanyId">
@@ -75,7 +78,7 @@
                             </div>
                         </div>
                         <table id="datatablesSimple">
-                            <thead>
+                            <thead id="productAdminTableTHead2">
                             <tr>
                                 <th>주문번호</th>
                                 <th>생산업체명</th>
@@ -88,7 +91,7 @@
                                 <th>주문 승인 | 주문 거절</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="productAdminTableTBody2">
                             <tr th:each="product : ${productList}">
                                 <td th:text="${#strings.substring(product.productOrderId, 0, 8)}"></td>
                                 <td th:text="${product.productCompanyName}"></td>
@@ -113,8 +116,6 @@
                         <div class="card-body-bottom">
                             <!-- Button trigger modal -->
                             <div class="d-flex justify-content-end">
-                                <button type="button" class="checkProductBtn btn btn-outline-primary">업체별 생산품 확인
-                                </button>
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#insertModal">
                                     생산 업체 등록
@@ -212,6 +213,67 @@
                             </div>
                         </div>
                         <!-- Modal div end -->
+                    </div>
+                </div>
+                <div class="productTableArea">
+                    <div class="productTableAreaTitle">
+                        <i class="bi bi-table tableicon"></i>
+                        <button class="btn btn-primary order" id="productTableChange" name="productTableStatus" value="order">주문 현황</button>
+                    </div>
+                    <div class="productTableAreaTable">
+                        <div class="productTableAreaTableTop">
+
+                        </div>
+                            <table class="table">
+                                <thead id="productAdminTableTHead">
+                                <tr>
+                                    <th>주문번호</th>
+                                    <th>생산업체명</th>
+                                    <th>생산품</th>
+                                    <th>생산품가격</th>
+                                    <th>개수</th>
+                                    <th>가격</th>
+                                    <th>주문일자</th>
+                                    <th>상태</th>
+                                    <th>주문 승인 | 주문 거절</th>
+                                </tr>
+                                </thead>
+                                <tbody id="productAdminTableTBody">
+                                <tr>
+                                    <td>1</td>
+                                    <td>태훈농장</td>
+                                    <td>김치</td>
+                                    <td>900</td>
+                                    <td>100</td>//
+                                    <td>90000</td>
+                                    <td>2024-07-15</td>
+                                    <td>진행전</td>
+                                    <td><button>승인</button><button>거절</button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>태훈농장</td>
+                                    <td>김치</td>
+                                    <td>900</td>
+                                    <td>100</td>
+                                    <td>90000</td>
+                                    <td>2024-07-16</td>
+                                    <td>진행전</td>
+                                    <td><button>승인</button><button>거절</button></td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>태훈농장</td>
+                                    <td>김치</td>
+                                    <td>900</td>
+                                    <td>100</td>
+                                    <td>90000</td>
+                                    <td>2024-07-17</td>
+                                    <td>진행전</td>
+                                    <td><button>승인</button><button>거절</button></td>
+                                </tr>
+                                </tbody>
+                            </table>
                     </div>
                 </div>
             </div>
@@ -349,16 +411,56 @@
             $("#insertProductCompanyForm").submit();
         })
     })
-    $(document).ready(function (){
+    $(document).ready(function () {
         var productTableChangeClassName;
-        $("#productTableChange").on("click",function (){
+        $("#productTableChange").on("click", function () {
             productTableChangeClassName = $("#productTableChange").attr('class');
-            if(productTableChangeClassName.includes("order")){
+            if (productTableChangeClassName.includes("order")) {
                 $("#productTableChange").removeClass().addClass("btn btn-danger production").text("상품 현황");
+                $("#productTableChange").val("production");
             }
-            if(productTableChangeClassName.includes("production")){
+            ;
+            if (productTableChangeClassName.includes("production")) {
                 $("#productTableChange").removeClass().addClass("btn btn-primary order").text("주문 현황");
+                $("#productTableChange").val("order");
             }
+            ;
+            $.ajax({
+                url: "/product/admin/main/data/sourcePriceList",
+                method: "get",
+                dataType: "json",
+                data: {
+                    productTableStatus: $("#productTableChange").val()
+                },
+                success: function (data) {
+                    console.log(data);
+                    $("#productAdminTableTHead").empty();
+                    $("#productAdminTableTHead").append(
+                        "<tr>" +
+                        "<th>" + "번호" + "</th>" +
+                        "<th>" + "생산 업체 명" + "</th>" +
+                        "<th>" + "상품 명" + "</th>" +
+                        "<th>" + "상품 가격" + "</th>" +
+                        "</tr>"
+                    )
+                    $("#productAdminTableTBody").empty();
+                    data.forEach(function (item) {
+                        $("#productAdminTableTBody").append(
+                            "<tr>" +
+                            "<td>" + item.rowNum + "</td>" +
+                            "<td>" + item.productCompanyName + "</td>" +
+                            "<td>" + item.sourceName + "</td>" +
+                            "<td>" + item.sourcePrice + "</td>" +
+                            "</tr>"
+                        )
+                    })
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error: " + error);
+                    console.log("Status: " + status);
+                    console.dir(xhr); // 서버에서 반환한 상세 오류 확인
+                }
+            });
         })
     })
 </script>
