@@ -38,20 +38,22 @@ public class WareHouseController {
 
         // 밀키트 오더 테이블에서 스테이터스가 3인 경우 창고에서 차감하고 3->6으로 바꿈
         List<Map<String, Object>> requiredStackList = logisticsWareHouseService.selectRequiredStack();
-        for (Map<String, Object> list : requiredStackList) {
-            String sourceFk = (String) list.get("sourceFk");
-            BigDecimal  totalQuantity = (BigDecimal) list.get("totalQuantity");
-            int quantity =totalQuantity.intValue();
-            System.out.println("ddddddddddddddd>>>>>>>>>>"+sourceFk);
-            System.out.println("ddddddddddddddddd >>>>>>" +quantity);
-            Map<String, Object> params = new HashMap<>();
-            params.put("sourceFk", sourceFk);
-            params.put("quantity", quantity);
+        if (!requiredStackList.isEmpty()) {
+            for (Map<String, Object> list : requiredStackList) {
+                String sourceFk = (String) list.get("sourceFk");
+                BigDecimal totalQuantity = (BigDecimal) list.get("totalQuantity");
+                int quantity = totalQuantity.intValue();
+                System.out.println("ddddddddddddddd>>>>>>>>>>" + sourceFk);
+                System.out.println("ddddddddddddddddd >>>>>>" + quantity);
+                Map<String, Object> params = new HashMap<>();
+                params.put("sourceFk", sourceFk);
+                params.put("quantity", quantity);
 
-            logisticsWareHouseService.updateStackFirstRecord(params);
+                logisticsWareHouseService.updateStackFirstRecord(params);
+            }
+        logisticsWareHouseService.updateKitOrderStatus();
         }
 
-        logisticsWareHouseService.updateKitOrderStatus();
 
         logisticsWareHouseService.deleteZeroQuantityRecords();
 
