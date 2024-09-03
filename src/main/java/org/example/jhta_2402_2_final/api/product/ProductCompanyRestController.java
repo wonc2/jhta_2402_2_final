@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public class ProductCompanyRestController {
     @ModelAttribute("companyName")
     public String getCompanyName(@AuthenticationPrincipal CustomUserDetails userDetails) {
         // return userDetails.getMemberDto().getUserName();
-        return "농심공장";
+        return "농협";
     }
 
     @GetMapping("add")
@@ -36,7 +37,10 @@ public class ProductCompanyRestController {
     }
 
     @PutMapping("add/{companySourceId}")
-    public ResponseEntity<Map<String, Object>> updateSource(@ModelAttribute("companyName") String companyName, @RequestBody Map<String ,Object> paramData){
+    public ResponseEntity<List<Map<String, Object>>> updateSource(@ModelAttribute("companyName") String companyName,
+                                                            @PathVariable String companySourceId,
+                                                            @RequestBody Map<String ,Object> paramData){
+        List<Map<String, Object>> responseData = productCompanyService.sourcePriceUpdate(companyName, companySourceId, paramData);
         return null;
     }
 
@@ -56,6 +60,19 @@ public class ProductCompanyRestController {
     public ResponseEntity<List<Map<String, Object>>> produce(@ModelAttribute("companyName") String companyName, @RequestBody Map<String ,Object> paramData){
         // RequestBody: { "sourcePriceId": "sourcePriceUUID 넣어야함", "sourceQuantity": 30 }
         List<Map<String, Object>> responseData = productCompanyService.produceSource(companyName, paramData);
+        return ResponseEntity.ok().body(responseData);
+    }
+
+    @GetMapping("order")
+    public ResponseEntity<Map<String, Object>> getOrderList(@ModelAttribute("companyName") String companyName){
+//        return ResponseEntity.ok().body(responseData);
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("id", "id");
+        responseData.put("price", "price");
+        responseData.put("quantity", "price");
+        responseData.put("totalPrice", "price");
+        responseData.put("orderDate", "price");
+        responseData.put("orderStatus", "price");
         return ResponseEntity.ok().body(responseData);
     }
 
