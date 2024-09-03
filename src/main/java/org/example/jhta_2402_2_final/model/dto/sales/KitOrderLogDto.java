@@ -12,5 +12,5 @@ public class KitOrderLogDto {
     private String companyName;
     private String mealkitName;
     private String status;
-    private LocalDate productOrderDate;
+    private String productOrderDate;
 }

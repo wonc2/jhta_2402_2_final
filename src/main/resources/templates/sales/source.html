@@ -10,10 +10,10 @@
     <!-- 페이지마다 다른 콘텐츠 -->
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4 mb-4">밀키트 업체별 밀키트 재고 확인</h1>
+            <h1 class="mt-4 mb-4">생산 업체별 재료 가격 확인</h1>
             <div class="card mb-4">
                 <div class="card-header">
-                    밀키트 업체별 밀키트 재고 확인
+                    생산 업체별 재료 가격 확인
                 </div>
                 <div class="card-body">
 
@@ -37,38 +37,38 @@
                         <thead>
                         <tr>
                             <th>번호</th>
-                            <th>창고 ID</th>
-                            <th>밀키트 업체명</th>
-                            <th>밀키트 명</th>
-                            <th>재고</th>
+                            <th>가격 ID</th>
+                            <th>생산업체명</th>
+                            <th>재료</th>
+                            <th>가격</th>
                         </tr>
                         </thead>
                         <tfoot>
                         <tr>
                             <th>번호</th>
-                            <th>창고 ID</th>
-                            <th>밀키트 업체명</th>
-                            <th>밀키트 명</th>
-                            <th>재고</th>
+                            <th>가격 ID</th>
+                            <th>생산업체명</th>
+                            <th>재료</th>
+                            <th>가격</th>
                         </tr>
                         </tfoot>
                         <!--tbody > tr > td-->
                         <tbody>
-                        <tr th:each="storage, iterStat : ${storage}" >
+                        <tr th:each="sourcePrice, iterStat : ${sourcePrice}" >
                             <td th:text="${iterStat.count}"></td>
-                            <td th:text="${storage.kitStorageId}"></td>
-                            <td th:text="${storage.companyName}"></td>
-                            <td th:text="${storage.mealkitName}"></td>
-                            <td th:text="${storage.quantity}"></td>
+                            <td th:text="${sourcePrice.sourcePriceId}"></td>
+                            <td th:text="${sourcePrice.companyName}"></td>
+                            <td th:text="${sourcePrice.sourceName}"></td>
+                            <td th:text="${sourcePrice.price}"></td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <div class="card mb-5">
+            <div class="card mb-4">
                 <div class="card-header">
-                    처리 완료된 주문 확인
+                    재료 최저가 확인
                 </div>
                 <div class="card-body">
 
@@ -92,43 +92,36 @@
                         <thead>
                         <tr>
                             <th>번호</th>
-                            <th>주문 ID</th>
-                            <th>밀키트 업체명</th>
-                            <th>밀키트명</th>
-                            <th>밀키트 가격</th>
-                            <th>개수</th>
-                            <th>총액</th>
-                            <th>주문일자</th>
+                            <th>가격 ID</th>
+                            <th>생산업체명</th>
+                            <th>재료</th>
+                            <th>가격</th>
                         </tr>
                         </thead>
                         <tfoot>
                         <tr>
                             <th>번호</th>
-                            <th>주문 ID</th>
-                            <th>밀키트 업체명</th>
-                            <th>밀키트명</th>
-                            <th>밀키트 가격</th>
-                            <th>개수</th>
-                            <th>총액</th>
-                            <th>주문일자</th>
+                            <th>가격 ID</th>
+                            <th>생산업체명</th>
+                            <th>재료</th>
+                            <th>가격</th>
                         </tr>
                         </tfoot>
                         <!--tbody > tr > td-->
                         <tbody>
-                        <tr th:each="completed, iterStat : ${allCompleted}" >
+                        <tr th:each="min, iterStat : ${minSourcePrice}" >
                             <td th:text="${iterStat.count}"></td>
-                            <td th:text="${completed.kitOrderId}"></td>
-                            <td th:text="${completed.companyName}"></td>
-                            <td th:text="${completed.mealkitName}"></td>
-                            <td th:text="${completed.mealkitPrice}"></td>
-                            <td th:text="${completed.quantity}"></td>
-                            <td th:text="${completed.total}"></td>
-                            <td th:text="${completed.productOrderDate}"></td>
+                            <td th:text="${min.sourcePriceId}"></td>
+                            <td th:text="${min.companyName}"></td>
+                            <td th:text="${min.sourceName}"></td>
+                            <td th:text="${min.price}"></td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+
+
 
         </div>
     </main>

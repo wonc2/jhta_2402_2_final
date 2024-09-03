@@ -179,25 +179,28 @@
     </select>
 
 <!--    주문 처리 완료된 애들만 모아 보기-->
-    <select id="findAllCompleted" resultType="KitOrderDetailDto">
+    <select id="findAllCompleted" resultType="KitCompletedDto">
         SELECT
-            o.KIT_ORDER_ID AS kitOrderId,
-            c.NAME AS kitCompanyName,
-            m.NAME AS mealkitName,
-            m.PRICE AS mealkitPrice,
-            o.QUANTITY AS quantity,
-            (o.QUANTITY * m.PRICE) AS total,
-            o.PRODUCT_ORDER_DATE AS orderDate,
-            s.STATUS AS status
+            kol.KIT_ORDER_LOG_ID AS kitOrderLogId,
+            kol.KIT_ORDER_ID AS kitOrderId,
+            kc.NAME AS companyName,
+            mk.NAME AS mealkitName,
+            mk.PRICE as mealkitPrice,
+            ko.QUANTITY,
+            (mk.PRICE * ko.QUANTITY) as total,
+            kol.PRODUCT_ORDER_DATE AS productOrderDate
         FROM
-            KIT_ORDER o
+            KIT_ORDER_LOG kol
                 JOIN
-            KIT_COMPANY c ON o.KIT_COMPANY_ID = c.KIT_COMPANY_ID
+            KIT_ORDER ko ON kol.KIT_ORDER_ID = ko.KIT_ORDER_ID
                 JOIN
-            MEALKIT m ON o.MEALKIT_ID = m.MEALKIT_ID
+            KIT_COMPANY kc ON ko.KIT_COMPANY_ID = kc.KIT_COMPANY_ID
                 JOIN
-            STATUS s ON o.STATUS_ID = s.STATUS_ID
-        where o.STATUS_ID = 3
+            MEALKIT mk ON ko.MEALKIT_ID = mk.MEALKIT_ID
+                JOIN
+            STATUS s ON kol.STATUS_ID = s.STATUS_ID
+
+        where kol.STATUS_ID = 3
     </select>
 
     <!-- 주문 정보 조회 -->
@@ -233,4 +236,37 @@
         INSERT INTO KIT_STORAGE (KIT_STORAGE_ID, KIT_COMPANY_ID, MEALKIT_ID, QUANTITY)
         VALUES (#{kitStorageId}, #{kitCompanyId}, #{mealkitId}, #{quantity})
     </insert>
+
+
+<!--    생산 업체별 재료 가격 셀렉-->
+    <select id="selectAllSourcePrice" resultType="SourcePriceDto">
+        SELECT
+            sp.SOURCE_PRICE_ID as sourcePriceId,
+            pc.name AS companyName,
+            s.name AS sourceName,
+            sp.PRICE
+        FROM
+            SOURCE_PRICE sp
+                JOIN
+            PRODUCT_COMPANY pc ON sp.product_company_id = pc.product_company_id
+                JOIN
+            SOURCE s ON sp.source_id = s.source_id;
+    </select>
+
+
+<!--    최소 재료값-->
+    <select id="selectMinSourcePrice" resultType="SourcePriceDto">
+        SELECT
+            sp.SOURCE_PRICE_ID as sourcePriceId,
+            pc.name AS companyName,
+            s.name AS sourceName,
+            MIN(sp.PRICE) as price
+        FROM
+            SOURCE_PRICE sp
+                JOIN
+            PRODUCT_COMPANY pc ON sp.product_company_id = pc.product_company_id
+                JOIN
+            SOURCE s ON sp.source_id = s.source_id
+        group by s.name
+    </select>
 </mapper>
