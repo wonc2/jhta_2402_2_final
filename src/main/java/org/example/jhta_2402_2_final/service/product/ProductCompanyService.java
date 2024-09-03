@@ -2,10 +2,13 @@ package org.example.jhta_2402_2_final.service.product;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.product.ProductCompanyDao;
+import org.example.jhta_2402_2_final.exception.types.DuplicateCompanySource;
 import org.example.jhta_2402_2_final.model.dto.common.SourceDto;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +25,7 @@ public class ProductCompanyService {
     public Map<String, Object> findAll(String companyName){
         productCompanyUtil.getCompanyId(companyName);
         Map<String,Object> responseData = new HashMap<>();
-        // productList values: { companySourceId, sourceName, sourcePrice, companyName, companyAddress, companyId }
+        // productList values: { companySourceId, sourceName, sourcePrice, totalQuantity }
         responseData.put("companySourceList",productCompanyDao.getSourcesByCompanyName(companyName));
         responseData.put("sources", productCompanyDao.getAllSources());
         // responseData values: { List<Map>, List<SourceDto> }
@@ -32,11 +35,18 @@ public class ProductCompanyService {
     /*  생산업체 생산품 목록에 등록 (실제 생산 x, 생산품 등록임) */
     @Transactional
     public Map<String, Object> addSourceToCompany(String companyName, Map<String ,Object> paramData) {
-        paramData.put("companyId", productCompanyDao.getCompanyIdByName(companyName));
-        // sourceId 값 있으면 스킵 -> 없으면 직접입력임 중복값 있으면 해당 sourceId 가져옴 -> 둘다 없을시 입력한 재료 SOURCE 테이블에 등록
+        String companyId = productCompanyDao.getCompanyIdByName(companyName);
         String sourceName = (String) paramData.get("sourceName");
-        if (paramData.get("sourceId") == null) {
-            String sourceId = productCompanyDao.getSourceIdByName(sourceName);
+        String sourceId = (String) paramData.get("sourceId");
+        paramData.put("companyId", companyId);
+
+        if (productCompanyDao.checkDuplicateCompanySource(paramData)){
+            throw new DuplicateCompanySource("이미 등록된 제품 입니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        // sourceId 값 있으면 스킵 -> 없으면 직접입력임 중복값 있으면 해당 sourceId 가져옴 -> 둘다 없을시 입력한 재료 SOURCE 테이블에 등록
+        if (sourceId == null) {
+            sourceId = productCompanyDao.getSourceIdByName(sourceName);
             if (sourceId != null) paramData.put("sourceId", sourceId);
             else {
                 sourceId = UUID.randomUUID().toString();
@@ -60,7 +70,7 @@ public class ProductCompanyService {
 
     /* 생산 창고 리스트 다 가져옴 */
     public List<Map<String, Object>> getWarehouseSources(String companyName) {
-        // { "produceDate", "sourceWarehouseId", "sourceQuantity", "totalPrice", "sourceName", "sourcePrice" }
+        // { "produceDate", "sourceWarehouseId", "sourceQuantity", "sourceName" }
         return productCompanyDao.getWarehouseSources(companyName);
     }
 
@@ -68,6 +78,12 @@ public class ProductCompanyService {
     @Transactional
     public List<Map<String, Object>> produceSource(String companyName, Map<String ,Object> paramData) {
         productCompanyDao.produceSource(paramData);
+        return productCompanyDao.getWarehouseSources(companyName);
+    }
+
+    public List<Map<String, Object>> sourcePriceUpdate(String companyName, String companySourceId, Map<String, Object> paramData) {
+        paramData.put("companySourceId", companySourceId);
+        productCompanyDao.sourcePriceUpdate(paramData);
         return productCompanyDao.getWarehouseSources(companyName);
     }
 }
