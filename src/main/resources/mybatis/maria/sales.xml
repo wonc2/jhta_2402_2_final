@@ -260,13 +260,22 @@
             sp.SOURCE_PRICE_ID as sourcePriceId,
             pc.name AS companyName,
             s.name AS sourceName,
-            MIN(sp.PRICE) as price
+            sp.PRICE as price
         FROM
             SOURCE_PRICE sp
                 JOIN
             PRODUCT_COMPANY pc ON sp.product_company_id = pc.product_company_id
                 JOIN
             SOURCE s ON sp.source_id = s.source_id
-        group by s.name
+                JOIN
+            (
+                SELECT
+                    source_id,
+                    MIN(price) AS min_price
+                FROM
+                    SOURCE_PRICE
+                GROUP BY
+                    source_id
+            ) sp_min ON sp.source_id = sp_min.source_id AND sp.price = sp_min.min_price
     </select>
 </mapper>
