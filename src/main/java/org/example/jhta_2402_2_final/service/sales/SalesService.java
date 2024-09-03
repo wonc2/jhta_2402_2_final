@@ -106,12 +106,12 @@ public class SalesService {
     }
 
     // 창고 테이블 가져오기
-    public List<KitStorageDto> getKitStorages() {
+    public List<KitCompletedDto> getKitStorages() {
         return salesDao.selectKitStorage();
     }
 
     // 처리 완료된 애들만 가져오기
-    public List<KitOrderDetailDto> getAllCompleted(){
+    public List<KitOrderLogDto> getAllCompleted(){
         return salesDao.findAllCompleted();
     }
 
@@ -140,6 +140,16 @@ public class SalesService {
         }
 
 
+    }
+
+    //생산 업체별 재료 가격
+    public List<SourcePriceDto> getAllSourcePrice() {
+        return salesDao.selectAllSourcePrice();
+    }
+
+    //최소값
+    public List<SourcePriceDto> getMinSourcePrice() {
+        return salesDao.selectMinSourcePrice();
     }
 }
 
