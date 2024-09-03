@@ -32,9 +32,6 @@
                         <button type="submit" class="btn btn-primary">검색</button>
                     </form>
 
-
-
-
                     <table id="datatablesSimple">
                         <thead>
                         <tr>
@@ -46,7 +43,8 @@
                             <th>총 예상 판매가</th>
                             <th>주문일자</th>
                             <th>진행상태</th>
-                            <th>재료발주넣기</th>
+                            <th>재료재고확인/발주</th>
+                            <th>재료출고</th>
                         </tr>
                         </thead>
 
@@ -76,8 +74,17 @@
                          data-kitName=${kitOrderProcess.kitName},
                          data-quantity=${kitOrderProcess.quantity},
                          data-kitOrderDate=${#dates.format(kitOrderProcess.kitOrderDate, 'yyyy-MM-dd')}">
-                                    재료확인/발주
+                                    재고확인/발주
                                 </button>
+                            </td>
+                            <td>
+                                <form th:action="@{/distribution/kitOrderRelease}" method="post">
+                                    <input type="hidden" name="kitOrderId" th:value="${kitOrderProcess.kitOrderID}"/>
+                                    <button type="submit" class="btn btn-info btn-sm">
+                                        판매
+                                    </button>
+                                </form>
+
                             </td>
                         </tr>
 
@@ -170,7 +177,6 @@
 <div class="modal fade" id="kitSourceCheckAndOrderModal" tabindex="-1" aria-labelledby="kitOrderDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <!--<form id="employeeForm" th:action="@{/adminMain/update}" th:method="post">-->
             <form id="employeeForm" th:action="@{/distribution/kitSourceCheckAndOrder}" th:method="post">
                 <div class="modal-header">
                     <h5 class="modal-title" id="kitOrderDetailModalLabel">주문 상세</h5>
@@ -189,14 +195,19 @@
                         <label for="modalKitName" class="form-label">밀키트명</label>
                         <input type="text" class="form-control" id="modalKitName" name="modalKitName" readonly>
                     </div>
+                    <div class="mb-3">
+                        <label for="modalQuantity" class="form-label">주문수량</label>
+                        <input type="text" class="form-control" id="modalQuantity" name="modalQuantity" readonly>
+                    </div>
 
-                    <!-- 재료 목록 확인할 수 있는 것 추가하고 싶음 -->
+                    <!-- 재료 목록 확인할 수 있는 테이블 -->
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                             <tr>
                                 <th>재료명</th>
-                                <th>필요 수량</th>
+                                <th>필요수량</th>
+                                <th>창고 재고 수량</th>
                             </tr>
                             </thead>
                             <tbody id="ingredientsList">
@@ -206,24 +217,19 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="modalQuantity" class="form-label">주문수량</label>
-                        <input type="email" class="form-control" id="modalQuantity" name="modalQuantity" readonly>
-                    </div>
-                    <div class="mb-3">
                         <label for="modalDate" class="form-label">날짜</label>
                         <input type="text" class="form-control" id="modalDate" name="modalDate" readonly>
                     </div>
-                    <!-- CSRF Token -->
-                    <!--                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />-->
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="submit" class="btn btn-primary">재료발주요청</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 
 
 <!-- 추가 모달 -->
@@ -306,6 +312,7 @@
                                 const row = `<tr>
                                             <td>${ingredient['재료명']}</td>
                                             <td>${ingredient['필요수량']}</td>
+                                            <td>${ingredient['창고재고수량']}</td>
                                          </tr>`;
                                 ingredientsList.innerHTML += row;
                             });
@@ -327,9 +334,7 @@
                 });
         }
     });
+
 </script>
-
-
-
 
 </html>

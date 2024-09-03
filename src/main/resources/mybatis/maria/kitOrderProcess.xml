@@ -20,7 +20,7 @@
             STATUS S ON KO.STATUS_ID = S.STATUS_ID;
     </select>
 
-    <select id="findKitRecipe" resultType="Map">
+    <!--<select id="findKitRecipe" resultType="Map">
         SELECT
             S.NAME AS 재료명,
             KS.QUANTITY AS 필요수량
@@ -32,12 +32,68 @@
             SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
         WHERE
             KO.KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')
+    </select>-->
+
+    <select id="findKitRecipeWithStock" resultType="Map">
+        /*SELECT
+            S.NAME AS 재료명,
+            KS.QUANTITY * #{orderQuantity} AS 필요수량,
+            IFNULL(LWS.QUANTITY, 0) AS 창고재고수량
+        FROM
+            KIT_SOURCE KS
+                JOIN
+            SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+                LEFT JOIN
+            LOGISTICS_WAREHOUSE_STACK LWS ON KS.SOURCE_ID = LWS.SOURCE_FK
+        WHERE
+            KS.MEALKIT_ID = #{mealkitId}*/
+        SELECT
+            S.NAME AS 재료명,
+            KS.QUANTITY * #{orderQuantity} AS 필요수량,
+            IFNULL(SUM(LWS.QUANTITY), 0) AS 창고재고수량
+        FROM
+            KIT_SOURCE KS
+                JOIN
+            SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+                LEFT JOIN
+            LOGISTICS_WAREHOUSE_STACK LWS ON KS.SOURCE_ID = LWS.SOURCE_FK
+        WHERE
+            KS.MEALKIT_ID = #{mealkitId}
+        GROUP BY
+            S.NAME, KS.QUANTITY;
+
     </select>
 
+    <select id="findMealKitByKitOrderId" resultType="String">
+        SELECT MEALKIT_ID
+        FROM KIT_ORDER
+        WHERE KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')
+    </select>
 
+    <select id="findOrderQuantityByKitOrderId" resultType="Integer">
+        SELECT QUANTITY
+        FROM KIT_ORDER
+        WHERE KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')
+    </select>
 
-    <update id="requestKitSourceOrder">
-
+    <update id="updateWarehouseStock">
+        UPDATE LOGISTICS_WAREHOUSE_STACK
+        SET QUANTITY = QUANTITY + #{quantityChange}
+        WHERE SOURCE_FK = #{sourceId}
     </update>
+
+    <update id="updateOrderStatus">
+        UPDATE KIT_ORDER
+        SET STATUS_ID = #{status}
+        WHERE KIT_ORDER_ID = #{kitOrderId}
+    </update>
+
+
+
+
+
+    <!--<update id="requestKitSourceOrder">
+
+    </update>-->
 
 </mapper>
