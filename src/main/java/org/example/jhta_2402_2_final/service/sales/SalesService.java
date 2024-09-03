@@ -151,5 +151,10 @@ public class SalesService {
     public List<SourcePriceDto> getMinSourcePrice() {
         return salesDao.selectMinSourcePrice();
     }
+
+    //밀키트 별 최소 가격
+    public List<KitPriceDto> getMinKitPrice(){
+        return salesDao.selectMinKitPrice();
+    }
 }
 

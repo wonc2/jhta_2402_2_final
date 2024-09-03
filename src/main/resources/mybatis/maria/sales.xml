@@ -278,4 +278,51 @@
                     source_id
             ) sp_min ON sp.source_id = sp_min.source_id AND sp.price = sp_min.min_price
     </select>
+
+
+    <select id="selectMinKitPrice" resultType="KitPriceDto">
+        WITH MealkitDetails AS (
+            SELECT
+                m.MEALKIT_ID AS mealkitId,
+                m.name AS mealkitName,
+                s.name AS sourceName,
+                MIN(sp.price) AS minPrice,
+                ks.QUANTITY AS quantity,
+                (MIN(sp.price) * ks.QUANTITY) AS total
+            FROM
+                MEALKIT m
+                    JOIN
+                KIT_SOURCE ks ON m.MEALKIT_ID = ks.MEALKIT_ID
+                    JOIN
+                SOURCE s ON ks.SOURCE_ID = s.source_id
+                    JOIN
+                SOURCE_PRICE sp ON s.source_id = sp.source_id
+            GROUP BY
+                m.MEALKIT_ID, m.name, s.name, ks.QUANTITY
+        ),
+             MealkitTotal AS (
+                 SELECT
+                     mealkitId,
+                     mealkitName,
+                     SUM(total) AS mealkitPrice
+                 FROM
+                     MealkitDetails
+                 GROUP BY
+                     mealkitId, mealkitName
+             )
+        SELECT
+            d.mealkitId,
+            d.mealkitName,
+            d.sourceName,
+            d.minPrice,
+            d.quantity,
+            d.total,
+            t.mealkitPrice
+        FROM
+            MealkitDetails d
+                JOIN
+            MealkitTotal t ON d.mealkitId = t.mealkitId
+        ORDER BY
+            d.mealkitId, d.sourceName
+    </select>
 </mapper>

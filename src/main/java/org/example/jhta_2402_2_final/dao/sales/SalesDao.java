@@ -75,5 +75,8 @@ public interface SalesDao {
     //최소 재료 값 셀렉
     List<SourcePriceDto> selectMinSourcePrice();
 
+    //밀키트 별 재료별 최소값, 수량 이거로 밀키트 가격 설정 할거
+    List<KitPriceDto> selectMinKitPrice();
+
 
 }

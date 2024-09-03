@@ -2,6 +2,7 @@ package org.example.jhta_2402_2_final.controller.sales;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.jhta_2402_2_final.model.dto.sales.KitPriceDto;
 import org.example.jhta_2402_2_final.model.dto.sales.SourcePriceDto;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.springframework.stereotype.Controller;
@@ -29,6 +30,11 @@ public class SourcePriceController {
         //최소 가격 셀렉
         List<SourcePriceDto> minSourcePrice = salesService.getMinSourcePrice();
         model.addAttribute("minSourcePrice",minSourcePrice);
+
+        //밀키트 별 최소 가격
+        List<KitPriceDto> minKitPrice = salesService.getMinKitPrice();
+        model.addAttribute("minKitPrice",minKitPrice);
+
         return "sales/source";
     }
 }
