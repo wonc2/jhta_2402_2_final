@@ -39,13 +39,12 @@
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
                         <button class="btn btn-secondary dropdown-toggle ms-2" type="button" id="viewListDropDown" data-bs-toggle="dropdown" aria-expanded="false">
-                            생산품 등록
+                            생산 현황
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="viewListDropDown">
+                            <li><a class="dropdown-item" data-value="companySourceList">생산 현황 </a></li>
                             <li><a class="dropdown-item" data-value="warehouseList">창고 현황 </a></li>
                             <li><a class="dropdown-item" data-value="orderStatus">주문 현황 </a></li>
-                            <li><a class="dropdown-item" data-value="produceStatus">생산 현황 </a></li>
-                            <li><a class="dropdown-item" data-value="companySourceList">생산품 등록 </a></li>
                         </ul>
                     </div>
                     <div class="card-body">
@@ -53,12 +52,20 @@
                             <table id="companySourceTable" class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <th>식별번호</th> <!-- hidden -->
-                                    <th>생산업체명</th>
-                                    <th>생산지주소</th>
+                                    <th>등록 번호</th> <!-- hidden -->
+                                    <th>생산업체명</th> <!-- 뺄것 -->
+                                    <th>생산지주소</th> <!-- 뺄것 -->
                                     <th>생산품명</th>
                                     <th>생산품가격</th>
+                                    <!-- 현재 총 창고 재고량 -->
                                     <th>생산 | 생산품 수정 | 생산품 삭제</th>
+                                    <!--
+                                    1. 등록번호
+                                    2. 생산품명
+                                    3. 생산품 가격
+                                    4. 현재 총 창고 재고량
+                                    5. 버튼들
+                                    -->
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -78,8 +85,8 @@
                                     <th>생산번호</th>
                                     <th>생산품명</th>
                                     <th>생산량</th>
-                                    <th>생산품가격</th>
-                                    <th>총주문가</th>
+                                    <th>생산품가격</th> <!-- 뺄것 -->
+                                    <th>총주문가</th>   <!-- 뺄것 -->
                                     <th>생산일자</th>
                                 </tr>
                                 </thead>
@@ -87,6 +94,23 @@
                                 </tbody>
                             </table>
                         </div>
+
+<!--                        <div id="orderTableContainer" style="display:none;">-->
+<!--                            <table id="orderTable" class="table table-bordered">-->
+<!--                                <thead>-->
+<!--                                <tr>-->
+<!--                                    <th>주문번호</th>-->
+<!--                                    <th>주문한 제품</th>-->
+<!--                                    <th>갯수</th>-->
+<!--                                    <th>주문한곳</th>-->
+<!--                                    <th>총주문가</th>-->
+<!--                                    <th>주문일자</th>-->
+<!--                                </tr>-->
+<!--                                </thead>-->
+<!--                                <tbody>-->
+<!--                                </tbody>-->
+<!--                            </table>-->
+<!--                        </div>-->
 
                         <!--                        &lt;!&ndash; 수정 모달 &ndash;&gt;-->
                         <!--                        <div class="modal fade" id="productUpdateModal" tabindex="-1"-->
@@ -217,18 +241,7 @@
         </footer>
     </div>
 </div>
-<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">-->
-<!--<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>-->
-
-<!-- DataTables with Bootstrap 5 integration CSS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
-
-<!-- DataTables JS -->
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
-
-<!-- DataTables with Bootstrap 5 integration JS -->
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
 </body>
 <th:block th:replace="~{fragment/footer}"></th:block>
-<script th:src="@{/js/productCompany.js}" ></script>
+<script th:inline="javascript" th:src="@{/js/productCompany.js}"></script>
 </html>

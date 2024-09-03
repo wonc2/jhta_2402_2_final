@@ -178,4 +178,59 @@
         order by KC.NAME
     </select>
 
+<!--    주문 처리 완료된 애들만 모아 보기-->
+    <select id="findAllCompleted" resultType="KitOrderDetailDto">
+        SELECT
+            o.KIT_ORDER_ID AS kitOrderId,
+            c.NAME AS kitCompanyName,
+            m.NAME AS mealkitName,
+            m.PRICE AS mealkitPrice,
+            o.QUANTITY AS quantity,
+            (o.QUANTITY * m.PRICE) AS total,
+            o.PRODUCT_ORDER_DATE AS orderDate,
+            s.STATUS AS status
+        FROM
+            KIT_ORDER o
+                JOIN
+            KIT_COMPANY c ON o.KIT_COMPANY_ID = c.KIT_COMPANY_ID
+                JOIN
+            MEALKIT m ON o.MEALKIT_ID = m.MEALKIT_ID
+                JOIN
+            STATUS s ON o.STATUS_ID = s.STATUS_ID
+        where o.STATUS_ID = 3
+    </select>
+
+    <!-- 주문 정보 조회 -->
+    <select id="selectKitOrderById" resultType="KitOrderDto">
+        SELECT KIT_ORDER_ID as kitOrderId,
+               KIT_COMPANY_ID as kitCompanyId,
+               MEALKIT_ID as mealkitId,
+               QUANTITY,
+               STATUS_ID as statusId
+        FROM KIT_ORDER
+        WHERE KIT_ORDER_ID = #{kitOrderId}
+    </select>
+
+    <!-- 창고 정보 조회 -->
+    <select id="selectKitStorageById" resultType="KitStorageDto">
+        SELECT KIT_STORAGE_ID as kitStorageId,
+               KIT_COMPANY_ID as kitCompanyId,
+               MEALKIT_ID as mealkitId,
+               QUANTITY
+        FROM KIT_STORAGE
+        WHERE KIT_COMPANY_ID = #{kitCompanyId} AND MEALKIT_ID = #{mealkitId}
+    </select>
+
+    <!-- 창고 재고 업데이트 -->
+    <update id="updateKitStorage">
+        UPDATE KIT_STORAGE
+        SET QUANTITY = QUANTITY + #{quantity}
+        WHERE KIT_STORAGE_ID = #{kitStorageId}
+    </update>
+
+    <!-- 창고에 새로운 재고 추가 -->
+    <insert id="insertKitStorage">
+        INSERT INTO KIT_STORAGE (KIT_STORAGE_ID, KIT_COMPANY_ID, MEALKIT_ID, QUANTITY)
+        VALUES (#{kitStorageId}, #{kitCompanyId}, #{mealkitId}, #{quantity})
+    </insert>
 </mapper>

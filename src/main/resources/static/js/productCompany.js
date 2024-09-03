@@ -1,3 +1,11 @@
+// const csrfToken = $('meta[name="_csrf"]').attr('content');
+// const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+//
+// console.log(csrfToken);
+// console.log(csrfHeader);
+
+
+
 $(document).ready(function () {
     updateSourceSelectList();
     getCompanySourceTable();
@@ -14,19 +22,20 @@ $(document).ready(function () {
 
     // 생산품 등록 스크립트( 생산품 등록하고 업데이트된 리스트 가져옴 )
     $('#addSourceBtn').on('click', function () {
-        let data = { sourcePrice: $('#sourcePrice').val() };
-
-        if ($('#addSourceInput').prop('disabled')) {
-            data.sourceId = $('#addSourceSelect').val();
-        } else {
-            data.sourceName = $('#addSourceInput').val();
-        }
+        let data = {
+            sourcePrice: $('#sourcePrice').val(),
+            sourceId: $('#addSourceInput').prop('disabled') ? $('#addSourceSelect').val() : null,
+            sourceName: $('#addSourceInput').prop('disabled') ? null : $('#addSourceInput').val()
+        };
 
         $.ajax({
             url: '/api/product/company/add',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data),
+            // beforeSend: function (xhr) {
+            //     xhr.setRequestHeader(csrfHeader, csrfToken);
+            // },
             success: function () {
                 $('#addSourceModal').modal('hide');
                 $('#companySourceTable').DataTable().ajax.reload(null, false);
