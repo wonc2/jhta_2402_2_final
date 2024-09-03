@@ -13,7 +13,7 @@ import java.util.UUID;
 public class LogisticsWareHouseDto {
 
 //    진짜 LogisticsWareHouse 테이블에서 select하면 나오는 값들,
-    private UUID logisticsWareHouseSourcePK;
+    private String logisticsWareHouseSourcePK;
     private String sourceUUID;
     private String logisticsWareHouseUUID;
     private int quantity;

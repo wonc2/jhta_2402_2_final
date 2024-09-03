@@ -13,6 +13,7 @@ DROP TABLE IF EXISTS MEALKIT;
 DROP TABLE IF EXISTS STATUS;
 DROP TABLE IF EXISTS SOURCE;
 DROP TABLE IF EXISTS ROLE;
+DROP TABLE IF EXISTS SOURCE_WAREHOUSE;
 
 -- 1. 밀키트 테이블 생성
 CREATE TABLE MEALKIT (
@@ -115,6 +116,21 @@ CREATE TABLE USER (
                       ROLE_NAME VARCHAR(50) NOT NULL -- 권한FK
 );
 
+-- 15. 밀키트 업체 별 창고 테이블
+CREATE TABLE KIT_STORAGE (
+                             KIT_STORAGE_ID VARCHAR(50) PRIMARY KEY,    -- 창고번호 PK
+                             KIT_COMPANY_ID VARCHAR(50),                   -- 판매업체 FK
+                             MEALKIT_ID VARCHAR(50),                       -- 밀키트 FK
+                             QUANTITY INT,                      -- 재고 개수
+
+    -- 판매업체와 밀키트의 조합을 유니크하게 설정
+                             CONSTRAINT unique_company_mealkit UNIQUE (KIT_COMPANY_ID, MEALKIT_ID),
+
+    -- 외래키 설정
+                             FOREIGN KEY (KIT_COMPANY_ID) REFERENCES KIT_COMPANY(KIT_COMPANY_ID),
+                             FOREIGN KEY (MEALKIT_ID) REFERENCES MEALKIT(MEALKIT_ID)
+);
+
 
 -- 웨어하우스 관련
 -- 1. LOGISTICS_WAREHOUSE 테이블 생성
@@ -134,6 +150,17 @@ CREATE TABLE `LOGISTICS_WAREHOUSE_STACK`
     `QUANTITY`                      INT NULL,
     FOREIGN KEY (`SOURCE_ID`) REFERENCES `SOURCE` (`SOURCE_ID`),
     FOREIGN KEY (`LOGISTICS_WAREHOUSE_ID`) REFERENCES `LOGISTICS_WAREHOUSE` (`LOGISTICS_WAREHOUSE_ID`)
+);
+
+-- 농장별 생산 재고 테이블
+CREATE TABLE `SOURCE_WAREHOUSE`
+(
+    `SOURCE_WAREHOUSE_ID`   VARCHAR(50),
+    `QUANTITY`              INT,
+    `PRODUCE_DATE`          DATETIME,
+    `SOURCE_PRICE_ID`       VARCHAR(50),
+    PRIMARY KEY(`SOURCE_WAREHOUSE_ID`),
+    FOREIGN KEY (`SOURCE_PRICE_ID`) REFERENCES `SOURCE_PRICE` (`SOURCE_PRICE_ID`)
 );
 
 -- 1. 밀키트 테이블 데이터 삽입

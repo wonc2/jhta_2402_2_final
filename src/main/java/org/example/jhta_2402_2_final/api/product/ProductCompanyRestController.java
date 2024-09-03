@@ -16,55 +16,52 @@ import java.util.Map;
 public class ProductCompanyRestController {
     private final ProductCompanyService productCompanyService;
 
-    // todo: Mapping add, produce 로 전부 나누기
-    // todo: 임시값 companyName = userDetails.getUsername() or userDetails.memberDto.getUserId() 로 받아올것... 왜 안받아와지지??????
-    private final String companyName = "농심공장";
+    @ModelAttribute("companyName")
+    public String getCompanyName(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        // return userDetails.getMemberDto().getUserName();
+        return "농심공장";
+    }
 
     @GetMapping("add")
-    public ResponseEntity<Map<String, Object>> getSourcesByCompanyName(@AuthenticationPrincipal CustomUserDetails userDetails){
-        // String companyName = userDetails.getUsername(); 구현후에 이거 사용
+    public ResponseEntity<Map<String, Object>> getSourcesByCompanyName(@ModelAttribute("companyName") String companyName){
         Map<String, Object> responseData  = productCompanyService.findAll(companyName);
         return ResponseEntity.ok().body(responseData);
     }
 
     @PostMapping("add")
-    public ResponseEntity<Map<String, Object>> addSourceToCompany(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String ,Object> paramData){
-        // String companyName = userDetails.getUsername(); 구현후에 이거 사용
-        // jsonBody: { "sourceName": "버터", "sourcePrice": 5000 }
+    public ResponseEntity<Map<String, Object>> addSourceToCompany(@ModelAttribute("companyName") String companyName, @RequestBody Map<String ,Object> paramData){
+        // RequestBody: { "sourceName": "버터", "sourcePrice": 5000 }
         Map<String, Object> responseData = productCompanyService.addSourceToCompany(companyName, paramData);
         return ResponseEntity.ok().body(responseData);
     }
 
     @PutMapping("add/{companySourceId}")
-    public ResponseEntity<Map<String, Object>> updateSource(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String ,Object> paramData){
-        // String companyName = userDetails.getUsername(); 구현후에 이거 사용
+    public ResponseEntity<Map<String, Object>> updateSource(@ModelAttribute("companyName") String companyName, @RequestBody Map<String ,Object> paramData){
         return null;
     }
 
     @DeleteMapping("add/{companySourceId}")
-    public ResponseEntity<Map<String, Object>> deleteSourceFromCompany(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String companySourceId){
+    public ResponseEntity<Map<String, Object>> deleteSourceFromCompany(@ModelAttribute("companyName") String companyName, @PathVariable String companySourceId){
         Map<String, Object> responseData = productCompanyService.deleteSourceFromCompany(companyName, companySourceId);
         return ResponseEntity.ok().body(responseData);
     }
 
     @GetMapping("produce")
-    public ResponseEntity<List<Map<String, Object>>> getWarehouseSources(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String ,Object> paramData){
-        // String companyName = userDetails.getUsername(); 구현후에 이거 사용
+    public ResponseEntity<List<Map<String, Object>>> getWarehouseSources(@ModelAttribute("companyName") String companyName){
         List<Map<String, Object>> responseData = productCompanyService.getWarehouseSources(companyName);
         return ResponseEntity.ok().body(responseData);
     }
 
     @PostMapping("produce")
-    public ResponseEntity<List<Map<String, Object>>> produce(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody Map<String ,Object> paramData){
-        // String companyName = userDetails.getUsername(); 구현후에 이거 사용
-        // jsonBody: { "sourcePriceId": "sourcePriceUUID 넣어야함", "sourceQuantity": 30 }
+    public ResponseEntity<List<Map<String, Object>>> produce(@ModelAttribute("companyName") String companyName, @RequestBody Map<String ,Object> paramData){
+        // RequestBody: { "sourcePriceId": "sourcePriceUUID 넣어야함", "sourceQuantity": 30 }
         List<Map<String, Object>> responseData = productCompanyService.produceSource(companyName, paramData);
         return ResponseEntity.ok().body(responseData);
     }
 
 
 
-    // todo
+    /* 할일 list */
 
     // 실제생산 리스트? 생산품중 생산중인 리스트 ?
     // 실제생산 수정

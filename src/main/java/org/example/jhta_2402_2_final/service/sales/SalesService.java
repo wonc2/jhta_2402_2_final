@@ -2,10 +2,7 @@ package org.example.jhta_2402_2_final.service.sales;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.sales.SalesDao;
-import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDetailDto;
-import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDto;
-import org.example.jhta_2402_2_final.model.dto.sales.KitOrderLogDto;
-import org.example.jhta_2402_2_final.model.dto.sales.KitSourceDetailDto;
+import org.example.jhta_2402_2_final.model.dto.sales.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -106,5 +103,9 @@ public class SalesService {
 
     public void createKitOrderLog(UUID kitOrderId, int statusId) {
         salesDao.insertLog(kitOrderId, statusId);
+    }
+
+    public List<KitStorageDto> getKitStorages() {
+        return salesDao.selectKitStorage();
     }
 }
