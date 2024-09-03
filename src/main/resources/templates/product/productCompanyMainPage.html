@@ -38,79 +38,102 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
-                        현황
+                        <button class="btn btn-secondary dropdown-toggle ms-2" type="button" id="viewListDropDown" data-bs-toggle="dropdown" aria-expanded="false">
+                            생산 현황
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="viewListDropDown">
+                            <li><a class="dropdown-item" data-value="companySourceList">생산 현황 </a></li>
+                            <li><a class="dropdown-item" data-value="warehouseList">창고 현황 </a></li>
+                            <li><a class="dropdown-item" data-value="orderStatus">주문 현황 </a></li>
+                        </ul>
                     </div>
                     <div class="card-body">
-                            <div class="d-flex justify-content-end ms-auto mb-3"  style="width: 500px;">
-                                <select id="datatableSelector" class="datatable-selector">
-                                    <option value="companySourceList" selected>생산품 등록</option>
-                                    <option value="warehouseList">창고 현황</option>
-                                </select>
-<!--                                <input type="text" class="form-control" placeholder="검색어">-->
-                                <button class="btn btn-primary btn-sm" onclick="performSearch()">검색</button>
+                        <div id="companySourceTableContainer">
+                            <table id="companySourceTable" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>등록 번호</th> <!-- hidden -->
+                                    <th>생산업체명</th> <!-- 뺄것 -->
+                                    <th>생산지주소</th> <!-- 뺄것 -->
+                                    <th>생산품명</th>
+                                    <th>생산품가격</th>
+                                    <!-- 현재 총 창고 재고량 -->
+                                    <th>생산 | 생산품 수정 | 생산품 삭제</th>
+                                    <!--
+                                    1. 등록번호
+                                    2. 생산품명
+                                    3. 생산품 가격
+                                    4. 현재 총 창고 재고량
+                                    5. 버튼들
+                                    -->
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary me-2 mx-2" data-bs-toggle="modal"
+                                        data-bs-target="#addSourceModal">생산품 등록
+                                </button>
                             </div>
+                        </div>
 
-                        <table id="dataTable" class="table table-striped table-bordered">
-                            <thead>
-                            <tr>
-                                <th>생산품번호</th>
-                                <th>생산업체명</th>
-                                <th>생산지주소</th>
-                                <th>생산품명</th>
-                                <th>생산품가격</th>
-                                <th>생산 | 생산품 수정 | 생산품 삭제</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <!-- 내용이 비어있고, DataTables가 JSON 데이터를 로드하여 채움 -->
-                            </tbody>
-                        </table>
-<!--                        <table id="dataTable2" class="table table-striped table-bordered">-->
-<!--                            <thead>-->
-<!--                            <tr>-->
-<!--                                <th>생산번호</th>-->
-<!--                                <th>생산품명</th>-->
-<!--                                <th>생산가격</th>-->
-<!--                                <th>생산갯수</th>-->
-<!--                                <th>생산가격</th>-->
-<!--                                <th>총가격</th>-->
-<!--                                <th>생산일자</th>-->
-<!--                                <th>생산 | 생산품 수정 | 생산품 삭제</th>-->
-<!--                            </tr>-->
-<!--                            </thead>-->
-<!--                            <tbody>-->
-<!--                            &lt;!&ndash; 내용이 비어있고, DataTables가 JSON 데이터를 로드하여 채움 &ndash;&gt;-->
-<!--                            </tbody>-->
-<!--                        </table>-->
+                        <div id="warehouseTableContainer" style="display:none;">
+                            <table id="warehouseTable" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>생산번호</th>
+                                    <th>생산품명</th>
+                                    <th>생산량</th>
+                                    <th>생산품가격</th> <!-- 뺄것 -->
+                                    <th>총주문가</th>   <!-- 뺄것 -->
+                                    <th>생산일자</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
 
-<!--                        &lt;!&ndash; 수정 모달 &ndash;&gt;-->
-<!--                        <div class="modal fade" id="productUpdateModal" tabindex="-1"-->
-<!--                             aria-labelledby="productUpdateModalLabel" aria-hidden="true">-->
-<!--                            <div class="modal-dialog">-->
-<!--                                <div class="modal-content">-->
-<!--                                    <form id="productUpdate" th:action="@{/}" th:method="post">-->
-<!--                                        <div class="modal-header">-->
-<!--                                            <h5 class="modal-title" id="productUpdateModalLabel">product Update</h5>-->
-<!--                                            <button type="button" class="btn-close" data-bs-dismiss="modal"-->
-<!--                                                    aria-label="Close"></button>-->
-<!--                                        </div>-->
-
-<!--                                        <div class="modal-footer">-->
-<!--                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">-->
-<!--                                                Close-->
-<!--                                            </button>-->
-<!--                                            <button type="submit" class="btn btn-primary">Save</button>-->
-<!--                                        </div>-->
-<!--                                    </form>-->
-<!--                                </div>-->
-<!--                            </div>-->
+<!--                        <div id="orderTableContainer" style="display:none;">-->
+<!--                            <table id="orderTable" class="table table-bordered">-->
+<!--                                <thead>-->
+<!--                                <tr>-->
+<!--                                    <th>주문번호</th>-->
+<!--                                    <th>주문한 제품</th>-->
+<!--                                    <th>갯수</th>-->
+<!--                                    <th>주문한곳</th>-->
+<!--                                    <th>총주문가</th>-->
+<!--                                    <th>주문일자</th>-->
+<!--                                </tr>-->
+<!--                                </thead>-->
+<!--                                <tbody>-->
+<!--                                </tbody>-->
+<!--                            </table>-->
 <!--                        </div>-->
 
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary me-2 mx-2" data-bs-toggle="modal"
-                                    data-bs-target="#addSourceModal">생산품 등록
-                            </button>
-                        </div>
+                        <!--                        &lt;!&ndash; 수정 모달 &ndash;&gt;-->
+                        <!--                        <div class="modal fade" id="productUpdateModal" tabindex="-1"-->
+                        <!--                             aria-labelledby="productUpdateModalLabel" aria-hidden="true">-->
+                        <!--                            <div class="modal-dialog">-->
+                        <!--                                <div class="modal-content">-->
+                        <!--                                    <form id="productUpdate" th:action="@{/}" th:method="post">-->
+                        <!--                                        <div class="modal-header">-->
+                        <!--                                            <h5 class="modal-title" id="productUpdateModalLabel">product Update</h5>-->
+                        <!--                                            <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+                        <!--                                                    aria-label="Close"></button>-->
+                        <!--                                        </div>-->
+
+                        <!--                                        <div class="modal-footer">-->
+                        <!--                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">-->
+                        <!--                                                Close-->
+                        <!--                                            </button>-->
+                        <!--                                            <button type="submit" class="btn btn-primary">Save</button>-->
+                        <!--                                        </div>-->
+                        <!--                                    </form>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
 
                         <!-- 생산(produce) 모달 -->
                         <div class="modal fade" id="produceSourceModal" tabindex="-1" aria-labelledby="produceSourceModalLabel" aria-hidden="true">
@@ -220,221 +243,5 @@
 </div>
 </body>
 <th:block th:replace="~{fragment/footer}"></th:block>
-<script>
-    $(document).ready(function() {
-        updateSourceSelectList();
-
-        // tbody 리스트
-        let table = $('#dataTable').DataTable({
-            searching: false,
-            ajax: {
-                url: '/api/product/company/add',
-                dataSrc: 'companySourceList'
-            },
-            columns: [
-                { data: 'companySourceId' },
-                { data: 'companyName' },
-                { data: 'companyAddress' },
-                { data: 'sourceName' },
-                { data: 'sourcePrice' },
-                {
-                    data: null,
-                    render: function (data, type, row) {
-                        return '<button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button> | ' +
-                            '<button type="button" class="btn btn-info btn-sm" data-action="approve">가격 수정</button> | ' +
-                            '<button type="button" class="btn btn-danger btn-sm" data-action="cancel">등록 삭제</button>';
-                    }
-                }
-            ],
-            columnDefs: [
-                { targets: 0, visible: false },  // 첫 번째 열 숨기기
-            ],
-            pagingType: 'simple_numbers', // 또는 'full_numbers'로 페이지네이션 스타일 설정 가능
-            language: {
-                paginate: {
-                    next: '>', // 다음 페이지 버튼
-                    previous: '<' // 이전 페이지 버튼
-                }
-            }
-        });
-
-        /* 생산품 등록 관련 스크립트 */
-
-        // 셀렉트 박스 변경 이벤트
-        $('#addSourceSelect').on('change', function() {
-            if ($(this).val() !== "directInput") {
-                $('#addSourceInput').val('').prop('disabled', true);  // 인풋 필드 비활성화 및 초기화
-                $('#addSourceSelect').prop('disabled', false);  // 셀렉트 박스 활성화
-            } else {
-                $('#addSourceInput').prop('disabled', false).focus();  // 인풋 필드 활성화 및 포커스
-            }
-        });
-        $('#addSourceBtn').on('click', function() {
-            let data = {
-                sourcePrice: $('#sourcePrice').val()
-            };
-
-            if ($('#addSourceInput').prop('disabled')) {
-                // 셀렉트 박스가 활성화된 경우 (옵션 선택)
-                data.sourceId = $('#addSourceSelect').val();
-            } else {
-                // 인풋 필드가 활성화된 경우 (직접 입력)
-                data.sourceName = $('#addSourceInput').val();
-            }
-
-            $.ajax({
-                url: '/api/product/company/add',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function(response) {
-                    $('#addSourceModal').modal('hide');
-                    table.ajax.reload(null, false);  // 데이터 유지하면서 테이블 새로고침
-                    updateSourceSelectList();
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error occurred:', error);
-                }
-            });
-        });
-        /* - 생산품 등록 스크립트 끝 -*/
-
-        // Delete
-        $('#dataTable').on('click', 'button[data-action="cancel"]', function() {
-            // 선택된 행의 데이터를 가져옴
-            const row = $(this).closest('tr');
-            const data = table.row(row).data();
-
-            const companySourceId = data.companySourceId;
-
-            // 삭제 확인 메시지
-            if (confirm('정말로 이 항목을 삭제하시겠습니까?')) {
-                $.ajax({
-                    url: `/api/product/company/add/${companySourceId}`,
-                    type: 'DELETE',
-                    success: function(response) {
-                        table.ajax.reload(null, false);  // 테이블 새로고침
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error occurred while deleting:', error);
-                    }
-                });
-            }
-        });
-
-        /* 생산 스크립트 */
-        $('#dataTable').on('click', 'button[data-action="produce"]', function() {
-            // Get the data for the row
-            const row = $(this).closest('tr');
-            const data = table.row(row).data();
-
-            $('#produceSourceName').val(data.sourceName);
-            $('#produceSourcePrice').val(data.sourcePrice);
-            $('#sourcePriceId').val(data.companySourceId);
-
-            $('#produceSourceModal').modal('show');
-        });
-        $('#produceSourceBtn').on('click', function() {
-            const sourceQuantity = $('#sourceQuantity').val();
-            const sourcePriceId = $('#sourcePriceId').val();
-
-            // Create the request payload
-            const data = {
-                sourceQuantity: sourceQuantity,
-                sourcePriceId: sourcePriceId
-            };
-
-            // Make the AJAX request to the server
-            $.ajax({
-                url: '/api/product/company/produce',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function(response) {
-                    $('#produceSourceModal').modal('hide');
-                    alert('생산 요청이 완료되었습니다.');
-                    table.ajax.reload(null, false);  // Reload the table
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error occurred:', error);
-                    alert('생산 요청 중 오류가 발생했습니다.');
-                }
-            });
-        });
-        /* 생산 스크립트 끝 */
-    }); // -- document.ready 끝 --
-
-    // 생산품 등록 select list 업데이트 하는 메서드
-    function updateSourceSelectList() {
-        $.ajax({
-            url: '/api/product/company/add',  // API URL
-            type: 'GET',
-            contentType: 'application/json',
-            success: function(response) {
-                const sources = response.sources;
-                const selectBox = $('#addSourceSelect');
-
-                // 기존 옵션들 제거
-                selectBox.empty();
-
-                // 기본 옵션 추가
-                selectBox.append($('<option>', {
-                    value: 'directInput',
-                    text: '직접입력'
-                }));
-
-                // 새로운 옵션들 추가
-                sources.forEach(function(source) {
-                    const option = $('<option>', {
-                        value: source.sourceId,
-                        text: source.sourceName
-                    });
-                    selectBox.append(option);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error('Error occurred while fetching sources:', error);
-            }
-        });
-    }
-
-    const ctx = document.getElementById('salesProductChart');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['감자', '삼겹살', '김치', '고구마', '고등어', '문어'],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-    const ctx2 = document.getElementById('salesProductPriceChart');
-    new Chart(ctx2, {
-        type: 'bar',
-        data: {
-            labels: ['감자', '삼겹살', '김치', '고구마', '고등어', '문어'],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-</script>
+<script th:inline="javascript" th:src="@{/js/productCompany.js}"></script>
 </html>

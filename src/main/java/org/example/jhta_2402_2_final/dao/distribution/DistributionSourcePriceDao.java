@@ -21,6 +21,6 @@ public interface DistributionSourcePriceDao {
     List<DistributionMaterialDto> getAllSourcePrices();
 
     List<DistributionMaterialDto> findSourcePricesByCategoryAndKeyword(String category, String keyword);
-
-    List<DistributionMaterialDto> getOrderDetailsByKeyword(@Param("orderKeyword") String orderKeyword);
 }
+
+

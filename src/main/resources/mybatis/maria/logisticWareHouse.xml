@@ -1,6 +1,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.distribution.DistributionDao">
-    <select id="selectAllLogisticsWarehouse" resultType="LogisticsWareHouseDto">
+    <select id="selectAllLogisticsWarehouse/////" resultType="LogisticsWareHouseDto">
         SELECT
             lw.WAREHOUSE_NAME AS wareHouseName,
             s.NAME AS sourceName,
@@ -16,6 +16,26 @@
             lw.WAREHOUSE_NAME,
             s.NAME,
             pc.NAME
+        ORDER BY
+            lw.WAREHOUSE_NAME,
+            s.NAME
+    </select>
+
+    <select id="selectAllLogisticsWarehouse" resultType="LogisticsWareHouseDto">
+
+        SELECT
+            lw.WAREHOUSE_NAME AS wareHouseName,
+            s.NAME AS sourceName,
+            SUM(lws.QUANTITY) AS quantity
+        FROM
+            LOGISTICS_WAREHOUSE lw
+                JOIN LOGISTICS_WAREHOUSE_STACK lws ON lw.LOGISTICS_WAREHOUSE_PK = lws.LOGISTICS_WAREHOUSE_FK
+                JOIN SOURCE s ON lws.SOURCE_FK = s.SOURCE_ID
+
+        GROUP BY
+            lw.WAREHOUSE_NAME,
+            s.NAME
+
         ORDER BY
             lw.WAREHOUSE_NAME,
             s.NAME
@@ -142,5 +162,10 @@
         )
     </update>
 
+
+    <delete id="deleteZeroQuantityRecords">
+        DELETE FROM LOGISTICS_WAREHOUSE_STACK
+        WHERE QUANTITY <![CDATA[<=]]> 0
+    </delete>
 </mapper>
 

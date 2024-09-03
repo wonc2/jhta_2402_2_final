@@ -6,6 +6,6 @@ import java.util.UUID;
 
 @Getter
 public class SourceDto {
-    private UUID sourceId;
+    private String sourceId; // -> uuid
     private String sourceName;
 }
