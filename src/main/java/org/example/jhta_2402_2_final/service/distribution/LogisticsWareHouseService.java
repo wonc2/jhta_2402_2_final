@@ -43,5 +43,9 @@ public class LogisticsWareHouseService {
     public int deleteZeroQuantityRecords(){
         return distributionDao.deleteZeroQuantityRecords();
     }
+
+    public List<Map<String,Object>>selectKitOrderLogDetailsBySourceId(String sourceId){
+        return distributionDao.selectKitOrderLogDetailsBySourceId(sourceId);
+    }
 }
 
