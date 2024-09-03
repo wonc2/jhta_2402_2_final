@@ -39,21 +39,21 @@
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
                         <button class="btn btn-secondary dropdown-toggle ms-2" type="button" id="viewListDropDown" data-bs-toggle="dropdown" aria-expanded="false">
-                            창고 현황
+                            생산품 등록
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="viewListDropDown">
                             <li><a class="dropdown-item" data-value="warehouseList">창고 현황 </a></li>
-                            <li><a class="dropdown-item" data-value="orderStatus">주문 현황</a></li>
-                            <li><a class="dropdown-item" data-value="produceStatus">생산 현황</a></li>
-                            <li><a class="dropdown-item" data-value="companySourceList">생산품 등록</a></li>
+                            <li><a class="dropdown-item" data-value="orderStatus">주문 현황 </a></li>
+                            <li><a class="dropdown-item" data-value="produceStatus">생산 현황 </a></li>
+                            <li><a class="dropdown-item" data-value="companySourceList">생산품 등록 </a></li>
                         </ul>
                     </div>
                     <div class="card-body">
                         <div id="companySourceTableContainer">
-                            <table id="companySourceTable" class="table table-striped table-bordered">
+                            <table id="companySourceTable" class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <th>생산업체번호</th> <!-- hidden -->
+                                    <th>식별번호</th> <!-- hidden -->
                                     <th>생산업체명</th>
                                     <th>생산지주소</th>
                                     <th>생산품명</th>
@@ -64,10 +64,15 @@
                                 <tbody>
                                 </tbody>
                             </table>
+                            <div class="d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary me-2 mx-2" data-bs-toggle="modal"
+                                        data-bs-target="#addSourceModal">생산품 등록
+                                </button>
+                            </div>
                         </div>
 
                         <div id="warehouseTableContainer" style="display:none;">
-                            <table id="warehouseTable" class="table table-striped table-bordered">
+                            <table id="warehouseTable" class="table table-bordered">
                                 <thead>
                                 <tr>
                                     <th>생산번호</th>
@@ -83,34 +88,28 @@
                             </table>
                         </div>
 
-<!--                        &lt;!&ndash; 수정 모달 &ndash;&gt;-->
-<!--                        <div class="modal fade" id="productUpdateModal" tabindex="-1"-->
-<!--                             aria-labelledby="productUpdateModalLabel" aria-hidden="true">-->
-<!--                            <div class="modal-dialog">-->
-<!--                                <div class="modal-content">-->
-<!--                                    <form id="productUpdate" th:action="@{/}" th:method="post">-->
-<!--                                        <div class="modal-header">-->
-<!--                                            <h5 class="modal-title" id="productUpdateModalLabel">product Update</h5>-->
-<!--                                            <button type="button" class="btn-close" data-bs-dismiss="modal"-->
-<!--                                                    aria-label="Close"></button>-->
-<!--                                        </div>-->
+                        <!--                        &lt;!&ndash; 수정 모달 &ndash;&gt;-->
+                        <!--                        <div class="modal fade" id="productUpdateModal" tabindex="-1"-->
+                        <!--                             aria-labelledby="productUpdateModalLabel" aria-hidden="true">-->
+                        <!--                            <div class="modal-dialog">-->
+                        <!--                                <div class="modal-content">-->
+                        <!--                                    <form id="productUpdate" th:action="@{/}" th:method="post">-->
+                        <!--                                        <div class="modal-header">-->
+                        <!--                                            <h5 class="modal-title" id="productUpdateModalLabel">product Update</h5>-->
+                        <!--                                            <button type="button" class="btn-close" data-bs-dismiss="modal"-->
+                        <!--                                                    aria-label="Close"></button>-->
+                        <!--                                        </div>-->
 
-<!--                                        <div class="modal-footer">-->
-<!--                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">-->
-<!--                                                Close-->
-<!--                                            </button>-->
-<!--                                            <button type="submit" class="btn btn-primary">Save</button>-->
-<!--                                        </div>-->
-<!--                                    </form>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary me-2 mx-2" data-bs-toggle="modal"
-                                    data-bs-target="#addSourceModal">생산품 등록
-                            </button>
-                        </div>
+                        <!--                                        <div class="modal-footer">-->
+                        <!--                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">-->
+                        <!--                                                Close-->
+                        <!--                                            </button>-->
+                        <!--                                            <button type="submit" class="btn btn-primary">Save</button>-->
+                        <!--                                        </div>-->
+                        <!--                                    </form>-->
+                        <!--                                </div>-->
+                        <!--                            </div>-->
+                        <!--                        </div>-->
 
                         <!-- 생산(produce) 모달 -->
                         <div class="modal fade" id="produceSourceModal" tabindex="-1" aria-labelledby="produceSourceModalLabel" aria-hidden="true">
@@ -218,6 +217,17 @@
         </footer>
     </div>
 </div>
+<!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.css">-->
+<!--<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>-->
+
+<!-- DataTables with Bootstrap 5 integration CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
+
+<!-- DataTables JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+
+<!-- DataTables with Bootstrap 5 integration JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
 </body>
 <th:block th:replace="~{fragment/footer}"></th:block>
 <script th:src="@{/js/productCompany.js}" ></script>
