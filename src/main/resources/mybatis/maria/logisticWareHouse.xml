@@ -1,85 +1,72 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.distribution.DistributionDao">
     <select id="selectAllLogisticsWarehouse/////" resultType="LogisticsWareHouseDto">
-        SELECT
-            lw.WAREHOUSE_NAME AS wareHouseName,
-            s.NAME AS sourceName,
-            pc.NAME AS productCompanyName,
-            SUM(lws.QUANTITY) AS quantity
-        FROM
-            LOGISTICS_WAREHOUSE lw
-                JOIN LOGISTICS_WAREHOUSE_STACK lws ON lw.LOGISTICS_WAREHOUSE_ID = lws.LOGISTICS_WAREHOUSE_ID
-                JOIN SOURCE s ON lws.SOURCE_ID = s.SOURCE_ID
-                JOIN SOURCE_PRICE sp ON s.SOURCE_ID = sp.SOURCE_ID
-                JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
-        GROUP BY
-            lw.WAREHOUSE_NAME,
-            s.NAME,
-            pc.NAME
-        ORDER BY
-            lw.WAREHOUSE_NAME,
-            s.NAME
+        SELECT lw.WAREHOUSE_NAME AS wareHouseName,
+               s.NAME            AS sourceName,
+               pc.NAME           AS productCompanyName,
+               SUM(lws.QUANTITY) AS quantity
+        FROM LOGISTICS_WAREHOUSE lw
+                 JOIN LOGISTICS_WAREHOUSE_STACK lws ON lw.LOGISTICS_WAREHOUSE_ID = lws.LOGISTICS_WAREHOUSE_ID
+                 JOIN SOURCE s ON lws.SOURCE_ID = s.SOURCE_ID
+                 JOIN SOURCE_PRICE sp ON s.SOURCE_ID = sp.SOURCE_ID
+                 JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+        GROUP BY lw.WAREHOUSE_NAME,
+                 s.NAME,
+                 pc.NAME
+        ORDER BY lw.WAREHOUSE_NAME,
+                 s.NAME
     </select>
 
     <select id="selectAllLogisticsWarehouse" resultType="LogisticsWareHouseDto">
 
-        SELECT
-            lw.WAREHOUSE_NAME AS wareHouseName,
-            s.NAME AS sourceName,
-            SUM(lws.QUANTITY) AS quantity
-        FROM
-            LOGISTICS_WAREHOUSE lw
-                JOIN LOGISTICS_WAREHOUSE_STACK lws ON lw.LOGISTICS_WAREHOUSE_ID = lws.LOGISTICS_WAREHOUSE_ID
-                JOIN SOURCE s ON lws.SOURCE_ID = s.SOURCE_ID
+        SELECT lw.WAREHOUSE_NAME AS wareHouseName,
+               s.NAME            AS sourceName,
+               SUM(lws.QUANTITY) AS quantity
+        FROM LOGISTICS_WAREHOUSE lw
+                 JOIN LOGISTICS_WAREHOUSE_STACK lws ON lw.LOGISTICS_WAREHOUSE_ID = lws.LOGISTICS_WAREHOUSE_ID
+                 JOIN SOURCE s ON lws.SOURCE_ID = s.SOURCE_ID
 
-        GROUP BY
-            lw.WAREHOUSE_NAME,
-            s.NAME
+        GROUP BY lw.WAREHOUSE_NAME,
+                 s.NAME
 
-        ORDER BY
-            lw.WAREHOUSE_NAME,
-            s.NAME
+        ORDER BY lw.WAREHOUSE_NAME,
+                 s.NAME
     </select>
 
     <!-- 쿼리 정의 -->
     <select id="selectProductOrderLogs" resultType="LogisticsWareHouseDetailDto">
-        SELECT
-            POL.PRODUCT_ORDER_LOG_ID as logPk,
-            POL.PRODUCT_ORDER_DATE AS logDate,
-            PO.QUANTITY AS quantity,
-            S.NAME AS sourceName,
-            S.SOURCE_ID AS sourcePk,
-            PC.NAME AS productCompany
-        FROM
-            PRODUCT_ORDER_LOG POL
-                JOIN
-            PRODUCT_ORDER PO ON POL.PRODUCT_ORDER_ID = PO.PRODUCT_ORDER_ID
-                JOIN
-            KIT_SOURCE KS ON PO. SOURCE_PRICE_ID = KS.KIT_SOURCE_ID
-                JOIN
-            SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
-                JOIN
-            SOURCE_PRICE SP ON S.SOURCE_ID = SP.SOURCE_ID
-                JOIN
-            PRODUCT_COMPANY PC ON SP.PRODUCT_COMPANY_ID = PC.PRODUCT_COMPANY_ID
-        WHERE
-            POL.STATUS_ID = 3
+        SELECT POL.PRODUCT_ORDER_LOG_ID as logPk,
+               POL.PRODUCT_ORDER_DATE   AS logDate,
+               PO.QUANTITY              AS quantity,
+               S.NAME                   AS sourceName,
+               S.SOURCE_ID              AS sourcePk,
+               PC.NAME                  AS productCompany
+        FROM PRODUCT_ORDER_LOG POL
+                 JOIN
+             PRODUCT_ORDER PO ON POL.PRODUCT_ORDER_ID = PO.PRODUCT_ORDER_ID
+                 JOIN
+             KIT_SOURCE KS ON PO.SOURCE_PRICE_ID = KS.KIT_SOURCE_ID
+                 JOIN
+             SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+                 JOIN
+             SOURCE_PRICE SP ON S.SOURCE_ID = SP.SOURCE_ID
+                 JOIN
+             PRODUCT_COMPANY PC ON SP.PRODUCT_COMPANY_ID = PC.PRODUCT_COMPANY_ID
+        WHERE POL.STATUS_ID = 3
     </select>
 
 
     <update id="updateProductOrderStatus" parameterType="int">
         UPDATE PRODUCT_ORDER
-        SET STATUS_ID = 5
+        SET STATUS_ID = 7
         WHERE STATUS_ID = 3
     </update>
 
     <update id="updateKitOrderStatus" parameterType="int">
         UPDATE KIT_ORDER
-        SET STATUS_ID = 6
+        SET STATUS_ID = 8
         WHERE STATUS_ID = 3
     </update>
-
-
 
 
     <insert id="insertWarehouseStackForCompletedOrders">
@@ -90,74 +77,68 @@
                LW.LOGISTICS_WAREHOUSE_ID      AS LOGISTICS_WAREHOUSE_ID,
                SUM(PO.QUANTITY * KS.QUANTITY) AS QUANTITY
         FROM PRODUCT_ORDER PO
-                 JOIN KIT_SOURCE KS ON PO.SOURCE_PRICE_ID = KS.KIT_SOURCE_ID
+                 JOIN SOURCE_PRICE SP ON PO.SOURCE_PRICE_ID = SP.SOURCE_PRICE_ID
+                 JOIN KIT_SOURCE KS ON SP.SOURCE_ID = KS.SOURCE_ID
                  JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
                  JOIN LOGISTICS_WAREHOUSE LW ON LW.WAREHOUSE_NAME = 'Shin_WAREHOUSE'
         WHERE PO.STATUS_ID = 3
         GROUP BY S.SOURCE_ID, LW.LOGISTICS_WAREHOUSE_ID
+
     </insert>
 
     <insert id="insertWarehouseStackForCompletedOrders/////////">
-        INSERT INTO LOGISTICS_WAREHOUSE_STACK (LOGISTICS_WAREHOUSE_STACK_ID, SOURCE_ID, LOGISTICS_WAREHOUSE_ID, QUANTITY)
-        SELECT
-            UUID() AS LOGISTICS_WAREHOUSE_STACK_PK,
-            S.SOURCE_ID AS SOURCE_FK,
-            LW.LOGISTICS_WAREHOUSE_ID AS LOGISTICS_WAREHOUSE_FK,
-            SUM(PO.QUANTITY) AS QUANTITY
-        FROM
-            PRODUCT_ORDER PO
-                JOIN
-            KIT_SOURCE KS ON PO.SOURCE_PRICE_ID = KS.KIT_SOURCE_ID
-                JOIN
-            SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
-                JOIN
-            LOGISTICS_WAREHOUSE LW ON LW.WAREHOUSE_NAME = 'Shin_WAREHOUSE'
-        WHERE
-            PO.STATUS_ID = 3
-        GROUP BY
-            S.SOURCE_ID, LW.LOGISTICS_WAREHOUSE_ID
+        INSERT INTO LOGISTICS_WAREHOUSE_STACK (LOGISTICS_WAREHOUSE_STACK_ID, SOURCE_ID, LOGISTICS_WAREHOUSE_ID,
+                                               QUANTITY)
+        SELECT UUID()                    AS LOGISTICS_WAREHOUSE_STACK_PK,
+               S.SOURCE_ID               AS SOURCE_FK,
+               LW.LOGISTICS_WAREHOUSE_ID AS LOGISTICS_WAREHOUSE_FK,
+               SUM(PO.QUANTITY)          AS QUANTITY
+        FROM PRODUCT_ORDER PO
+                 JOIN
+             KIT_SOURCE KS ON PO.SOURCE_PRICE_ID = KS.KIT_SOURCE_ID
+                 JOIN
+             SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+                 JOIN
+             LOGISTICS_WAREHOUSE LW ON LW.WAREHOUSE_NAME = 'Shin_WAREHOUSE'
+        WHERE PO.STATUS_ID = 3
+        GROUP BY S.SOURCE_ID, LW.LOGISTICS_WAREHOUSE_ID
     </insert>
 
 
-  <!--  <select id="selectRequiredStack" resultType="map">
-        SELECT
-            S.SOURCE_ID AS sourceFk,
-            S.NAME AS sourceName,
-            SUM(KO.QUANTITY * KS.QUANTITY) AS totalQuantity
-        FROM
-            KIT_ORDER KO
-                JOIN
-            MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID
-                JOIN
-            KIT_SOURCE KS ON MK.MEALKIT_ID = KS.MEALKIT_ID
-                JOIN
-            SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
-        WHERE
-            KO.STATUS_ID = 1
-        GROUP BY
-            S.SOURCE_ID, S.NAME
-    </select>
-    -->
-
+    <!--  <select id="selectRequiredStack" resultType="map">
+          SELECT
+              S.SOURCE_ID AS sourceFk,
+              S.NAME AS sourceName,
+              SUM(KO.QUANTITY * KS.QUANTITY) AS totalQuantity
+          FROM
+              KIT_ORDER KO
+                  JOIN
+              MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID
+                  JOIN
+              KIT_SOURCE KS ON MK.MEALKIT_ID = KS.MEALKIT_ID
+                  JOIN
+              SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+          WHERE
+              KO.STATUS_ID = 1
+          GROUP BY
+              S.SOURCE_ID, S.NAME
+      </select>
+      -->
 
 
     <select id="selectRequiredStack" resultType="map">
-        SELECT
-            S.SOURCE_ID AS sourceFk,
-            S.NAME AS sourceName,
-            SUM(KO.QUANTITY * KS.QUANTITY) AS totalQuantity
-        FROM
-            KIT_ORDER KO
-                JOIN
-            MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID
-                JOIN
-            KIT_SOURCE KS ON MK.MEALKIT_ID = KS.MEALKIT_ID
-                JOIN
-            SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
-        WHERE
-            KO.STATUS_ID = 3
-        GROUP BY
-            S.SOURCE_ID, S.NAME
+        SELECT S.SOURCE_ID                    AS sourceFk,
+               S.NAME                         AS sourceName,
+               SUM(KO.QUANTITY * KS.QUANTITY) AS totalQuantity
+        FROM KIT_ORDER KO
+                 JOIN
+             MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID
+                 JOIN
+             KIT_SOURCE KS ON MK.MEALKIT_ID = KS.MEALKIT_ID
+                 JOIN
+             SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+        WHERE KO.STATUS_ID = 3
+        GROUP BY S.SOURCE_ID, S.NAME
     </select>
 
 
@@ -172,39 +153,54 @@
         UPDATE LOGISTICS_WAREHOUSE_STACK
         SET QUANTITY = QUANTITY - #{quantity}
         WHERE SOURCE_ID = #{sourceFk}
-          AND LOGISTICS_WAREHOUSE_STACK_ID = (
-            SELECT MIN(LOGISTICS_WAREHOUSE_STACK_ID)
-            FROM LOGISTICS_WAREHOUSE_STACK
-            WHERE SOURCE_ID = #{sourceFk}
-        )
+          AND LOGISTICS_WAREHOUSE_STACK_ID = (SELECT MIN(LOGISTICS_WAREHOUSE_STACK_ID)
+                                              FROM LOGISTICS_WAREHOUSE_STACK
+                                              WHERE SOURCE_ID = #{sourceFk})
     </update>
 
 
     <delete id="deleteZeroQuantityRecords">
-        DELETE FROM LOGISTICS_WAREHOUSE_STACK
+        DELETE
+        FROM LOGISTICS_WAREHOUSE_STACK
         WHERE QUANTITY <![CDATA[<=]]> 0
     </delete>
 
     <select id="selectKitOrderLogDetailsBySourceId" parameterType="String" resultType="map">
         SELECT
-        KOL.KIT_ORDER_ID AS kitOrderId,                            <!-- KIT_ORDER_LOG의 프라이머리 키 -->
-        KOL.PRODUCT_ORDER_DATE AS productOrderDate,                 <!-- 날짜 -->
-        S.NAME AS sourceName,                                      <!-- 재료 이름 -->
-        S.SOURCE_ID AS sourceFk,                                   <!-- 재료 ID -->
-        SUM(KO.QUANTITY * KS.QUANTITY) AS totalQuantity            <!-- 필요한 총 재료 수량 -->
+            KOL.KIT_ORDER_ID as kitOrderId,
+            MK.NAME AS mealkitName,
+            S.NAME AS sourceName,
+            S.SOURCE_ID as sourceId,
+            (KO.QUANTITY * KS.QUANTITY) AS totalQuantity,
+            KOL.PRODUCT_ORDER_DATE as orderDate
         FROM
-        KIT_ORDER_LOG KOL
-        JOIN KIT_ORDER KO ON KOL.KIT_ORDER_ID = KO.KIT_ORDER_ID
-        JOIN MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID
-        JOIN KIT_SOURCE KS ON MK.MEALKIT_ID = KS.MEALKIT_ID
-        JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+            KIT_ORDER_LOG KOL
+                JOIN KIT_ORDER KO ON KOL.KIT_ORDER_ID = KO.KIT_ORDER_ID
+                JOIN MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID
+                JOIN KIT_SOURCE KS ON MK.MEALKIT_ID = KS.MEALKIT_ID
+                JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
         WHERE
-        KOL.STATUS_ID = 3
-        AND S.SOURCE_ID = #{sourceId}                             <!-- 동적으로 할당되는 source_id -->
-        GROUP BY
-        KOL.KIT_ORDER_ID, KOL.PRODUCT_ORDER_DATE, S.NAME, S.SOURCE_ID
+            KO.STATUS_ID = 3
+          AND S.SOURCE_ID = #{sourceId} -- 동적으로 받을 source_id
+
     </select>
 
+    <!--
+       SELECT
+    MK.NAME AS mealkitName,
+    S.NAME AS sourceName,
+    (KO.QUANTITY * KS.QUANTITY) AS totalQuantity,
+    KOL.PRODUCT_ORDER_DATE
+FROM
+    KIT_ORDER_LOG KOL
+    JOIN KIT_ORDER KO ON KOL.KIT_ORDER_ID = KO.KIT_ORDER_ID
+    JOIN MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID
+    JOIN KIT_SOURCE KS ON MK.MEALKIT_ID = KS.MEALKIT_ID
+    JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+WHERE
+    KO.STATUS_ID = 3;
+
+    -->
 
 </mapper>
 
