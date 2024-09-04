@@ -55,8 +55,6 @@ public class SalesController {
         List<KitOrderLogDto> kitOrderLogs = salesService.getKitOrderLogs();
         model.addAttribute("kitOrderLogs", kitOrderLogs);
 
-
-
         return "sales/admin";
     }
 
