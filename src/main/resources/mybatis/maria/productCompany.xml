@@ -99,6 +99,10 @@
         select product_company_id from PRODUCT_COMPANY where NAME = #{companyName}
     </select>
 
+    <select id="getSourceQuantityFromWarehouse" parameterType="String" resultType="int">
+        select quantity from SOURCE_WAREHOUSE WHERE SOURCE_PRICE_ID = #{sourcePriceId}
+    </select>
+
     <select id="checkDuplicateCompanySource" parameterType="map" resultType="boolean">
         SELECT COUNT(*)
         FROM SOURCE_PRICE sp

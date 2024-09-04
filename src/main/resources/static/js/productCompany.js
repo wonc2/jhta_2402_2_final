@@ -153,11 +153,11 @@
             $('#orderIdView').val(data.orderId.substring(0, 8));
             $('#orderId').val(data.orderId);
             $('#orderSourceName').val(data.sourceName);
-            $('#orderSourcePriceId').val(data.sourcePriceId);
+            $('#orderSourcePrice').val(data.sourcePrice);
             $('#orderQuantity').val(data.quantity);
             $('#orderTotalPrice').val(data.totalPrice);
             $('#orderDate').val(data.orderDate);
-            $('#orderSourceId').val(data.sourceId);
+            $('#orderSourcePriceId').val(data.sourcePriceId);
 
             $('#orderProcessModal').modal('show');
         });
@@ -186,7 +186,7 @@
                 },
                 error: function (xhr, status, error) {
                     console.error('Error occurred:', error);
-                    alert('주문 처리 도중 오류가 발생했습니다.');
+                    alert('주문 처리 도중 오류가 발생했습니다. 재고가 모자랄수도?');
                 }
             });
         });

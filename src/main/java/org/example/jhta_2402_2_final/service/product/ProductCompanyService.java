@@ -100,7 +100,9 @@ public class ProductCompanyService {
     public List<Map<String, Object>> orderProcess(String companyName, Map<String, Object> paramData) {
         // 필요값: { orderId, orderStatus }
         productCompanyDao.orderProcess(paramData); // 주문처리서 상태 업데이트
-        // // 필요값: { quantity, sourceId }
+
+        if (productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId")) < 0) throw new RuntimeException("적재량이 모자람~");
+        // // 필요값: { sourceQuantity, sourcePriceId }
         productCompanyDao.produceSource(paramData); // 이름 바꾸는게 좋을듯? 적재 <-> 입고 둘다함
 
         return getProductOrderList(companyName, paramData);
