@@ -167,22 +167,30 @@
     </delete>
 
     <select id="selectKitOrderLogDetailsBySourceId" parameterType="String" resultType="map">
+
         SELECT
-            KOL.KIT_ORDER_ID as kitOrderId,
+            KOL.KIT_ORDER_ID AS kitOrderId,
             MK.NAME AS mealkitName,
             S.NAME AS sourceName,
-            S.SOURCE_ID as sourceId,
+            S.SOURCE_ID AS sourceId,
             (KO.QUANTITY * KS.QUANTITY) AS totalQuantity,
-            KOL.PRODUCT_ORDER_DATE as orderDate
+            KOL.PRODUCT_ORDER_DATE AS orderDate,
+            KC.NAME AS companyName,  -- KIT_COMPANY의 회사명 추가
+            KOL.STATUS_ID as status
         FROM
             KIT_ORDER_LOG KOL
                 JOIN KIT_ORDER KO ON KOL.KIT_ORDER_ID = KO.KIT_ORDER_ID
                 JOIN MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID
                 JOIN KIT_SOURCE KS ON MK.MEALKIT_ID = KS.MEALKIT_ID
                 JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+                JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID  -- KIT_COMPANY 테이블 조인
         WHERE
             KO.STATUS_ID = 3
-          AND S.SOURCE_ID = #{sourceId} -- 동적으로 받을 source_id
+          AND S.SOURCE_ID = #{sourceId}
+
+
+
+
 
     </select>
 

@@ -68,6 +68,7 @@ CREATE TABLE KIT_ORDER (
                            KIT_ORDER_ID VARCHAR(50) PRIMARY KEY, -- 주문PK
                            KIT_COMPANY_ID VARCHAR(50), -- 밀키트판매업체FK
                            MEALKIT_ID VARCHAR(50), -- 밀키트FK
+                           PRICE    INT,  -- 밀키트 가격
                            QUANTITY INT, -- 개수
                            PRODUCT_ORDER_DATE DATETIME DEFAULT CURRENT_TIMESTAMP, -- 주문 일자
                            STATUS_ID INT, -- 상태FK

@@ -165,7 +165,7 @@
             const orderId = $('#orderId').val();
             const orderStatus = $('#orderStatusSelect').val();
             const sourcePriceId =  $('#orderSourcePriceId').val();
-            const orderQuantity = parseInt($('#orderQuantity').val(), 10) * -1;
+            const orderQuantity = $('#orderQuantity').val();
 
             const data = {
                 orderId: orderId,

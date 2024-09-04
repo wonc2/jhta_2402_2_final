@@ -39,8 +39,11 @@ public interface KitOrderProcessDao {
     // 창고 수량 차감
     void updateWarehouseStock(@Param("sourceId") String sourceId, @Param("quantityChange") int quantityChange);
 
-    // 주문 상태 변경
+    // 밀키트 주문 상태 변경(KIT_ORDER 테이블)
     void updateOrderStatus(@Param("kitOrderId") String kitOrderId, @Param("status") int status);
+
+    // 밀키트 주문로그 테이블의 상태 변경(KIT_ORDER_LOG 테이블)
+    void updateOrderLogStatus(@Param("kitOrderId") String kitOrderId, @Param("status") int status);
 
 
 

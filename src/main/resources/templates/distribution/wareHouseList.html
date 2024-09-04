@@ -8,47 +8,67 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
     <script>
-        function showModal(logisticsWareHouseSourcePK, sourceId) {
-            console.log("Clicked logisticsWareHouseSourcePK: " + logisticsWareHouseSourcePK);
-            console.log("sourceId: " + sourceId); // sourceId 값 확인
+        document.addEventListener('DOMContentLoaded', function() {
+            // 날짜 포맷 함수 정의
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+                const day = String(date.getDate()).padStart(2, '0'); // 날짜에 0을 추가하여 두 자리로 맞춤
 
-            // URL 인코딩
-            const encodedSourceId = encodeURIComponent(sourceId);
+                return `${year}-${month}-${day}`;
+            }
 
-            // Fetch API를 이용해 서버에서 데이터를 가져옴
-            fetch(`/wareHouse/selectLog?sourceId=${encodedSourceId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        console.error('HTTP error:', response.status, response.statusText);
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // 서버로부터 받은 데이터를 모달에 채움
-                    const tbody = document.querySelector('#orderModal .modal-body tbody');
-                    tbody.innerHTML = ''; // 기존 데이터를 지움
+            // 모달이 열릴 때 이벤트 리스너 설정
+            var LogModal = document.getElementById('LogModal');
 
-                    data.forEach(item => {
-                        tbody.innerHTML += `
+            LogModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var sourceId = button.getAttribute('data-source-id');
+                console.log("sourceId>>>>>>> " + sourceId);
+
+                if (sourceId) {
+                    const encodedSourceId = encodeURIComponent(sourceId);
+
+                    // Fetch API를 이용해 서버에서 데이터를 가져옴
+                    fetch(`/wareHouse/selectLog?sourceId=${encodedSourceId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                console.error('HTTP 오류:', response.status, response.statusText);
+                                throw new Error('네트워크 응답에 문제가 있습니다.');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // 서버로부터 받은 데이터를 모달에 채움
+                            const tbody = document.querySelector('#LogModal .modal-body tbody');
+                            tbody.innerHTML = ''; // 기존 데이터를 지움
+
+                            data.forEach(item => {
+                                const formattedDate = formatDate(item.orderDate);
+
+                                tbody.innerHTML += `
                             <tr>
-                                <td>${item.productCompanyName}</td>
+                                <td>${item.companyName}</td>
                                 <td>${item.sourceName}</td>
-                                <td>${item.quantity}</td>
-                                <td>${item.date}</td>
-                                <td>${item.status}</td>
+                                <td>${item.totalQuantity}</td>
+                                <td>${formattedDate}</td>
+
+                                <td>출고</td>
                             </tr>
                         `;
-                    });
+                            });
 
-                    // 모달을 띄움
-                    var myModal = new bootstrap.Modal(document.getElementById('orderModal'));
-                    myModal.show();
-                })
-                .catch(error => {
-                    console.error('Fetch error:', error);
-                });
-        }
+                            // 모달을 보여줌 (이 부분은 이미 처리되므로 중복 호출을 제거함)
+                        })
+                        .catch(error => {
+                            console.error('Fetch 오류:', error);
+                        });
+                } else {
+                    console.error('sourceId가 정의되지 않았습니다.');
+                }
+            });
+        });
     </script>
 </head>
 <body>
@@ -97,10 +117,16 @@
                             <td th:text="${items.sourceName}"></td>
                             <td th:text="${items.quantity}"></td>
                             <td>
-                                <button class="btn btn-primary" type="button"
-                                        onclick="showModal('[[${items.logisticsWareHouseSourcePK}]]', '[[${items.sourceUUID}]]')">
-                                    상세
+                                <button class="btn btn-primary"
+                                        type="button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#LogModal"
+                                        th:attr="data-source-id=${items.sourceUUID}"
+
+                                >
+<!-- 상세-->                          로그버튼
                                 </button>
+
                             </td>
                         </tr>
                         </tbody>
@@ -108,12 +134,12 @@
                 </div>
             </div>
 
-            <!-- Modal -->
-            <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
+            <!-- 로그 모달 Modal -->
+            <div class="modal fade" id="LogModal" tabindex="-1" aria-labelledby="LogModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="orderModalLabel">발주</h1>
+                            <h1 class="modal-title fs-5" id="LogModalLabel">발주</h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
@@ -146,4 +172,7 @@
 
 <th:block th:replace="fragment/adminFooter :: footer"></th:block>
 </body>
+
+
+
 </html>

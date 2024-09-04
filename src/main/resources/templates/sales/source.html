@@ -154,6 +154,8 @@
                             <th>수량</th>
                             <th>합계</th>
                             <th>밀키트 최저가</th>
+                            <th>현재 밀키트 가격</th>
+                            <th>밀키트 가격 변경</th>
                         </tr>
                         </thead>
                         <tfoot>
@@ -165,6 +167,8 @@
                             <th>수량</th>
                             <th>합계</th>
                             <th>밀키트 최저가</th>
+                            <th>현재 밀키트 가격</th>
+                            <th>밀키트 가격 변경</th>
                         </tr>
                         </tfoot>
                         <!--tbody > tr > td-->
@@ -176,7 +180,17 @@
                             <td th:text="${kit.minPrice}"></td>
                             <td th:text="${kit.quantity}"></td>
                             <td th:text="${kit.total}"></td>
-                            <td th:text="${kit.mealkitPrice}"></td>
+                            <td th:text="${kit.minMealkitPrice}"></td>
+                            <td th:text="${kit.currentMealkitPrice}"></td>
+
+                            <td>
+                                <button type="button" class="btn btn-info"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#priceUpdateModal"
+                                        th:attr="data-mealkit-id=${kit.mealkitId}, data-min-mealkit-price=${kit.minMealkitPrice}, data-current-mealkit-price=${kit.currentMealkitPrice}, data-mealkit-name=${kit.mealkitName}">
+                                    밀키트 가격 변경
+                                </button>
+                            </td>
                         </tr>
                         </tbody>
                     </table>
@@ -189,13 +203,63 @@
 
 
 
+<!-- 모달 -->
+<div class="modal fade" id="priceUpdateModal" tabindex="-1" aria-labelledby="priceUpdateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="priceUpdateModalLabel">밀키트 가격 변경</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="updateKitPriceForm" th:action="@{/sales/source-price/updateKitPrice}" th:method="post">
+                    <div class="mb-3">
+                        <label for="mealkitName" class="form-label">밀키트 이름</label>
+                        <input type="text" class="form-control" id="mealkitName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <input type="hidden" class="form-control" id="mealkitId" name="mealkitId" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="minMealkitPrice" class="form-label">최소 가격</label>
+                        <input type="text" class="form-control" id="minMealkitPrice" name="minPrice" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="currentMealkitPrice" class="form-label">현재 가격</label>
+                        <input type="text" class="form-control" id="currentMealkitPrice" readonly>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="submit" class="btn btn-primary" form="updateKitPriceForm">최소값으로 변경</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var priceUpdateModal = document.getElementById('priceUpdateModal');
+        priceUpdateModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var mealkitId = button.getAttribute('data-mealkit-id');
+            var minMealkitPrice = button.getAttribute('data-min-mealkit-price');
+            var currentMealkitPrice = button.getAttribute('data-current-mealkit-price');
+            var mealkitName = button.getAttribute('data-mealkit-name');
 
+            var modalMealkitId = priceUpdateModal.querySelector('#mealkitId');
+            var modalMinMealkitPrice = priceUpdateModal.querySelector('#minMealkitPrice');
+            var modalCurrentMealkitPrice = priceUpdateModal.querySelector('#currentMealkitPrice');
+            var modalMealkitName = priceUpdateModal.querySelector('#mealkitName');
 
-
-
-
-
+            modalMealkitId.value = mealkitId;
+            modalMinMealkitPrice.value = minMealkitPrice;
+            modalCurrentMealkitPrice.value = currentMealkitPrice;
+            modalMealkitName.value = mealkitName;
+        });
+    });
+</script>
 
 
 
