@@ -56,6 +56,18 @@ public class KitOrderProcessController {
         // return kitOrderProcessService.findKitRecipe(kitOrderId); // 이 리턴 부분은 바뀔수도 있을 것 같음
     }
 
+    @PostMapping("/kitOrderRelease")
+    public String completeKitOrderRelease(@RequestParam("kitOrderId") String kitOrderId) {
+        // 나중에 재고관련된 동시성 처리도 구현해야 함
+        boolean success = kitOrderProcessService.processKitOrder(kitOrderId);
+
+        if (success) {
+            return "redirect:/distribution/main?success=true";
+        } else {
+            return "redirect:/distribution/main?error=insufficientStock";
+        }
+    }
+
 
     @PostMapping("/kitSourceCheckAndOrder") // 밀키트에 필요한 재료를 다른 유통에 발주 넣는 메소드
     // 아직 미사용중
@@ -91,17 +103,7 @@ public class KitOrderProcessController {
         }
 
     // 밀키트 업체에 재료 출고하는 로직
-    @PostMapping("/kitOrderRelease")
-    public String completeKitOrderRelease(@RequestParam("kitOrderId") String kitOrderId) {
-        // 나중에 재고관련된 동시성 처리도 구현해야 함
-        boolean success = kitOrderProcessService.processKitOrder(kitOrderId);
 
-        if (success) {
-            return "redirect:/distribution/main?success=true";
-        } else {
-            return "redirect:/distribution/main?error=insufficientStock";
-        }
-    }
 
         // 모델에 추가할 데이터
         model.addAttribute("orderId", kitOrderId);

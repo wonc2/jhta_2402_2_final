@@ -98,6 +98,9 @@ public class KitOrderProcessService {
         // 5. 주문 상태를 '처리완료'로 업데이트
         kitOrderProcessDao.updateOrderStatus(kitOrderId, 3);
 
+        // 5. 주문 로그의 상태를 '처리 완료' 로 업데이트
+        kitOrderProcessDao.updateOrderLogStatus(kitOrderId, 3);
+
         return true;
 
     }
