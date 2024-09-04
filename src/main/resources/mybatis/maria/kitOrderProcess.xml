@@ -26,7 +26,8 @@
                 JOIN KIT_SOURCE KS ON KO.MEALKIT_ID = KS.MEALKIT_ID
                 JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
         WHERE
-            KO.KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')
+            KO.KIT_ORDER_ID = #{kitOrderId}
+            /*KO.KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')*/
     </select>
 
     <select id="findKitRecipeWithStock" resultType="Map">
@@ -47,13 +48,18 @@
     <select id="findMealKitByKitOrderId" resultType="String">
         SELECT MEALKIT_ID
         FROM KIT_ORDER
-        WHERE KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')
+        /*WHERE KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')*/
+        WHERE
+            KIT_ORDER_ID = #{kitOrderId}
+
     </select>
 
     <select id="findOrderQuantityByKitOrderId" resultType="Integer">
         SELECT QUANTITY
         FROM KIT_ORDER
-        WHERE KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')
+        /*WHERE KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')*/
+        WHERE
+            KIT_ORDER_ID = #{kitOrderId}
     </select>
 
     <insert id="requestKitSourceOrder" parameterType="KitOrderProcessDto">
@@ -104,4 +110,11 @@
         SET STATUS_ID = #{status}
         WHERE KIT_ORDER_ID = #{kitOrderId}
     </update>
+
+    <update id="updateOrderLogStatus">
+        UPDATE KIT_ORDER_LOG
+        SET STATUS_ID = #{status}
+        WHERE KIT_ORDER_ID = #{kitOrderId}
+    </update>
+
 </mapper>

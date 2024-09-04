@@ -136,8 +136,6 @@ public class SalesService {
         else {
             salesDao.updateKitStorage(kitStorageDto.getKitStorageId(), quantity);
         }
-
-
     }
 
     //생산 업체별 재료 가격
