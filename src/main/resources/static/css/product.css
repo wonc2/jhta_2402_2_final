@@ -32,3 +32,25 @@
         background-color: #eeeeee;
     }
 }
+.productTableAreaBottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.productTableAreaLeftEnd {
+    flex: 1;
+}
+
+.productTableAreaBottomCenter {
+    display: flex;
+    justify-content: center; /* 페이지네이션을 중앙에 배치 */
+    flex: 1;
+}
+
+.productTableAreaBottomRightEnd {
+    display: flex;
+    justify-content: flex-end; /* 버튼을 우측 끝에 배치 */
+    flex: 1;
+}
