@@ -6,6 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.catalina.Store;
 import org.example.jhta_2402_2_final.dao.distribution.KitOrderProcessDao;
 import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderProcessDto;
+import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ public class KitOrderProcessService {
 
     private final SqlSession sqlSession;
     private final KitOrderProcessDao kitOrderProcessDao;
+    private final SalesService salesService;
 
     public List<Map<String, Object>> findAllOrder() {
         return kitOrderProcessDao.findAllOrder();
@@ -97,9 +99,9 @@ public class KitOrderProcessService {
 
         // 5. 주문 상태를 '처리완료'로 업데이트
         kitOrderProcessDao.updateOrderStatus(kitOrderId, 3);
-
         // 5. 주문 로그의 상태를 '처리 완료' 로 업데이트
         kitOrderProcessDao.updateOrderLogStatus(kitOrderId, 3);
+
 
         return true;
 
