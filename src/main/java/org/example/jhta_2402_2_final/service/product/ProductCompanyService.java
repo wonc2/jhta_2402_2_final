@@ -99,7 +99,7 @@ public class ProductCompanyService {
         // 필요값: { orderId, orderStatus }
         productCompanyDao.orderProcess(paramData); // 주문처리서 상태 업데이트
 
-        if (productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId")) < 0) throw new RuntimeException("적재량이 모자람~");
+//        if (productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId")) < 0) throw new RuntimeException("적재량이 모자람~");
         // // 필요값: { sourceQuantity, sourcePriceId }
         productCompanyDao.outboundSource(paramData);
 
