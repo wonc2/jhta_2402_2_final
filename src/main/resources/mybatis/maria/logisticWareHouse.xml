@@ -21,6 +21,7 @@
 
         SELECT lw.WAREHOUSE_NAME AS wareHouseName,
                s.NAME            AS sourceName,
+               s.SOURCE_ID       AS sourceUUID,
                SUM(lws.QUANTITY) AS quantity
         FROM LOGISTICS_WAREHOUSE lw
                  JOIN LOGISTICS_WAREHOUSE_STACK lws ON lw.LOGISTICS_WAREHOUSE_ID = lws.LOGISTICS_WAREHOUSE_ID

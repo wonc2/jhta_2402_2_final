@@ -79,4 +79,6 @@ public interface SalesDao {
     List<KitPriceDto> selectMinKitPrice();
 
 
+    //밀키트 가격 수정
+    void updateKitPrice(@Param("mealkitId") String mealkitId, @Param("minPrice") int minPrice);
 }

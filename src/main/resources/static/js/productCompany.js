@@ -46,7 +46,7 @@
                     if (response.error) {
                         alert('에러 발생: ' + response.message);
                     } else {
-                        alert('알 수 없는 에러가 발생했습니다.');
+                        alert('이미 생산 목록에 등록된 상품입니다.');
                     }
                 }
             });
@@ -58,7 +58,7 @@
             const data = $('#companySourceTable').DataTable().row(row).data();
             const companySourceId = data.companySourceId;
 
-            if (confirm('정말로 이 항목을 삭제하시겠습니까?')) {
+            if (confirm('정말로 이 항목을 삭제하시겠습니까?\n -- 삭제 -> 가리기(생산중단) 버튼으로 바꿔야할듯 참조키 있으면 삭제하면 안됨 로그 날아감')) {
                 $.ajax({
                     url: `/api/product/company/add/${companySourceId}`,
                     type: 'DELETE',
@@ -142,6 +142,56 @@
             });
         });
 
+        /* Order Process */
+        // 주문 처리
+        $('#orderTable').on('click', 'button[data-action="orderProcess"]', function () {
+            const row = $(this).closest('tr');
+            const data = $('#orderTable').DataTable().row(row).data();
+
+            console.log(data);
+
+            $('#orderIdView').val(data.orderId.substring(0, 8));
+            $('#orderId').val(data.orderId);
+            $('#orderSourceName').val(data.sourceName);
+            $('#orderSourcePrice').val(data.sourcePrice);
+            $('#orderQuantity').val(data.quantity);
+            $('#orderTotalPrice').val(data.totalPrice);
+            $('#orderDate').val(data.orderDate);
+            $('#orderSourcePriceId').val(data.sourcePriceId);
+
+            $('#orderProcessModal').modal('show');
+        });
+        $('#orderProcessBtn').on('click', function () {
+            const orderId = $('#orderId').val();
+            const orderStatus = $('#orderStatusSelect').val();
+            const sourcePriceId =  $('#orderSourcePriceId').val();
+            const orderQuantity = parseInt($('#orderQuantity').val(), 10) * -1;
+
+            const data = {
+                orderId: orderId,
+                orderStatus: orderStatus,
+                sourceQuantity: orderQuantity,
+                sourcePriceId: sourcePriceId
+            };
+
+            $.ajax({
+                url: '/api/product/company/order',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function () {
+                    $('#orderProcessModal').modal('hide');
+                    alert('주문 처리가 완료되었습니다.');
+                    $('#orderTable').DataTable().ajax.reload(null, false);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error occurred:', error);
+                    alert('주문 처리 도중 오류가 발생했습니다. 재고가 모자랄수도?');
+                }
+            });
+        });
+        /* Order Process 끝 */
+
         // 드롭다운 메뉴 항목 선택 시 이벤트 처리
         $('.dropdown-menu a').on('click', function (event) {
             event.preventDefault();
@@ -224,7 +274,8 @@
                     }
                 }
             ],
-            language: {emptyTable: '데이터가 없습니다.'}
+            language: {emptyTable: '데이터가 없습니다.'},
+            lengthMenu: [ [5, 10, 25, 50], [5, 10, 25, 50] ]
         });
     }
     function getWarehouseTable(){
@@ -239,7 +290,8 @@
                 {data: 'sourceQuantity'},
                 {data: 'produceDate'}
             ],
-            language: {emptyTable: '데이터가 없습니다.'}
+            language: {emptyTable: '데이터가 없습니다.'},
+            lengthMenu: [ [5, 10, 25, 50], [5, 10, 25, 50] ]
         });
     }
     function getOrderTable(){
@@ -249,15 +301,27 @@
                 dataSrc: ''
             },
             columns: [
-                {data: 'id', render: data => data.substring(0, 8) },
-                {data: 'name'},
-                {data: 'price'},
+                {data: 'orderId', render: data => data.substring(0, 8) },
+                {data: 'sourceName'},
+                {data: 'sourcePrice'},
                 {data: 'quantity'},
                 {data: 'totalPrice'},
                 {data: 'orderDate'},
-                {data: 'orderStatus'}
+                {data: 'orderStatus'},
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        // 'orderStatus'가 '처리전'일 때만 버튼을 렌더링
+                        if (row.orderStatus === '처리전') {
+                            return `<button type="button" class="btn btn-outline-primary btn-sm" data-action="orderProcess">승인?확인?발주?</button>`;
+                        } else {
+                            return ''; // 처리 완료 상태라면 버튼을 렌더링하지 않음
+                        }
+                    }
+                }
             ],
-            language: {emptyTable: '데이터가 없습니다.'}
+            language: {emptyTable: '데이터가 없습니다.'},
+            lengthMenu: [ [5, 10, 25, 50], [5, 10, 25, 50] ]
         });
     }
 

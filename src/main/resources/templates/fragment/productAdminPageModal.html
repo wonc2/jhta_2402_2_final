@@ -1,0 +1,91 @@
+<!-- Modal -->
+<div class="modal fade" id="insertModal" tabindex="-1" aria-labelledby="insertModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="insertModalLabel">등록</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- 모달 바디안에 들어갈 내용 여기에 !! -->
+                <form action="/product/admin/insertProductCompany"
+                      th:action="@{/product/admin/insertProductCompany}" method="post"
+                      id="insertProductCompanyForm">
+                    <div class="container">
+                        <div class="mb-3 row align-items-center">
+                            <label class="col-sm-3 col-form-label">생산업체 ID</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="inputUserId" type="text"
+                                       name="userId" placeholder="아이디"/>
+                            </div>
+                        </div>
+                        <div class="mb-3 row align-items-center">
+                            <label class="col-sm-3 col-form-label">비밀번호</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="inputPassword"
+                                       name="userPassword"
+                                       type="password" placeholder="Create a password"/>
+                            </div>
+                        </div>
+                        <div class="mb-3 row align-items-center">
+                            <label class="col-sm-3 col-form-label">비밀번호 확인</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="inputPasswordConfirm"
+                                       name="password"
+                                       type="password" placeholder="Create a password"/>
+                            </div>
+                        </div>
+                        <div class="mb-3 row align-items-center">
+                            <label class="col-sm-3 col-form-label">생산업체 명</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="inputProductCompanyName"
+                                       name="productCompanyName" type="text" placeholder="이름"/>
+                            </div>
+                        </div>
+                        <div class="mb-3 row align-items-center">
+                            <label class="col-sm-3 col-form-label">사업자 명</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="inputUserName"
+                                       name="userName" type="text" placeholder="이름"/>
+                            </div>
+                        </div>
+                        <div class="mb-3 row align-items-center">
+                            <label class="col-sm-3 col-form-label">이메일</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="inputEmail"
+                                       name="userEmail" type="text"
+                                       placeholder="example@example.com"/>
+                            </div>
+                        </div>
+                        <div class="mb-3 row align-items-center">
+                            <label class="col-sm-3 col-form-label">전화번호</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="inputTel"
+                                       name="userTel" type="text"
+                                       placeholder="010-0000-0000"/>
+                            </div>
+                        </div>
+                        <div class="mb-3 row align-items-center">
+                            <label class="col-sm-3 col-form-label">주소</label>
+                            <div class="col-sm-9">
+                                <input class="form-control" id="inputProductCompanyAdress"
+                                       name="productCompanyAddress" type="text"
+                                       placeholder="주소"/>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <!-- 모달 바디 끝 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기
+                </button>
+                <button type="button" class="btn btn-primary" id="btn-insertProductCompany">등록
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal div end -->

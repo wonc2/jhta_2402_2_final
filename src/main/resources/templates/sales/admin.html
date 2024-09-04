@@ -32,7 +32,7 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
-                    밀키트별 필요 재료 확인
+                    밀키트별 필요 재료 개수 확인
                 </div>
                 <div class="card-body">
 
@@ -90,7 +90,7 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
-                    밀키트 주문 확인
+                    밀키트 주문 확인 [실제 DB]
                 </div>
                 <div class="card-body">
 
@@ -164,7 +164,7 @@
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
-                    밀키트 주문 상세
+                    밀키트 주문 상세 [보여지는거]
                 </div>
                 <div class="card-body">
 
@@ -281,8 +281,8 @@
                             <th>주문 ID</th>
                             <th>밀키트 업체명</th>
                             <th>밀키트명</th>
-                            <th>날짜</th>
                             <th>상태</th>
+                            <th>날짜</th>
                         </tr>
                         </thead>
                         <tfoot>
@@ -291,8 +291,8 @@
                             <th>주문 ID</th>
                             <th>밀키트 업체명</th>
                             <th>밀키트명</th>
-                            <th>날짜</th>
                             <th>상태</th>
+                            <th>날짜</th>
                         </tr>
                         </tfoot>
 
@@ -339,12 +339,20 @@
                     </div>
                     <div class="mb-3">
                         <label for="mealkitId" class="form-label">밀키트명</label>
-                        <select class="form-control" id="mealkitId" name="mealkitId" required>
+                        <select class="form-control" id="mealkitId" name="mealkitId" required onchange="showPrice()">
                             <option value="" disabled selected>밀키트를 선택하세요</option>
                             <option th:each="mealkit : ${mealkitList}"
                                     th:value="${mealkit.MEALKIT_ID}"
-                                    th:text="${mealkit.NAME}"></option>
+                                    th:text="${mealkit.NAME}"
+                                    th:data-price="${mealkit.PRICE}">
+                            </option>
                         </select>
+
+                    </div>
+                    <div class="mb-3">
+                        <!-- 밀키트 가격을 표시할 입력 필드 -->
+                        <label for="mealkitPrice" class="form-label">밀키트 가격</label>
+                        <input type="number" id="mealkitPrice" name="price" class="form-control" readonly placeholder="가격이 여기에 표시됩니다">
                     </div>
                     <div class="mb-3">
                         <label for="quantity" class="form-label">수량</label>
@@ -465,6 +473,24 @@
         } else {
             quantityInput.style.display = 'none';
             quantityInput.value = ''; // 체크박스가 해제되면 수량 필드 값도 초기화
+        }
+    }
+</script>
+
+
+<!--밀키트 가격 띄우기-->
+<script>
+    function showPrice() {
+        var selectElement = document.getElementById('mealkitId');
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+        var price = selectedOption.getAttribute('data-price');
+
+        var priceInput = document.getElementById('mealkitPrice');
+
+        if (price) {
+            priceInput.value = price;
+        } else {
+            priceInput.value = ""; // 초기 상태 또는 선택되지 않은 경우 빈칸 유지
         }
     }
 </script>

@@ -6,7 +6,6 @@ import org.example.jhta_2402_2_final.model.dto.sales.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -119,7 +118,6 @@ public class SalesService {
     public void updateKitStorage(String kitOrderId) {
         // kitOrderId를 통해 KIT_ORDER 정보를 가져옴
         KitOrderDto kitOrder = salesDao.selectKitOrderById(kitOrderId);
-        System.out.println("kitOrder =>>>>>>>> " + kitOrder);
 
         String kitCompanyId = kitOrder.getKitCompanyId();
         String mealkitId = kitOrder.getMealkitId();
@@ -153,6 +151,11 @@ public class SalesService {
     //밀키트 별 최소 가격
     public List<KitPriceDto> getMinKitPrice(){
         return salesDao.selectMinKitPrice();
+    }
+
+    //밀키트 가격 변경
+    public void updateKitPrice(String mealkitId, int minPrice) {
+        salesDao.updateKitPrice(mealkitId, minPrice);
     }
 }
 

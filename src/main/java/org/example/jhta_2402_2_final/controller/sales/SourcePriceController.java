@@ -8,7 +8,9 @@ import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -36,5 +38,13 @@ public class SourcePriceController {
         model.addAttribute("minKitPrice",minKitPrice);
 
         return "sales/source";
+    }
+
+    @PostMapping("/updateKitPrice")
+    public String updateKitPrice(@RequestParam("mealkitId") String mealkitId,
+                                 @RequestParam("minPrice") int minPrice){
+
+        salesService.updateKitPrice(mealkitId, minPrice);
+        return "redirect:/sales/source-price";
     }
 }

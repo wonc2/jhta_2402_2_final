@@ -28,7 +28,7 @@ public class WareHouseController {
     @GetMapping("/selectAll")
     public String selectAll(Model model) {
 
-        // 프러덕트 오더 테이블에서 스테이터스가 3인 경우 창고에 적재하고 3 -> 5로 바꿈
+        // 프러덕트 오더 테이블에서 스테이터스가 3인 경우 창고에 적재하고 3 -> 7로 바꿈
         int result = logisticsWareHouseService.insertWarehouseStackForCompletedOrders();
         if (result > 0) {
             logisticsWareHouseService.updateProductOrderStatus();
@@ -64,10 +64,10 @@ public class WareHouseController {
 
     @GetMapping("/selectLog")
     @ResponseBody
-    public List<Map<String, Object>> getWarehouseLog(@RequestParam String sourceUUID) {
+    public List<Map<String, Object>> getWarehouseLog(@RequestParam String sourceId) {
         // sourceUUID를 이용해 데이터베이스에서 관련 데이터를 조회합니다.
         // 예시로 List<Map<String, Object>> 타입의 데이터를 반환한다고 가정합니다.
-        return logisticsWareHouseService.selectKitOrderLogDetailsBySourceId(sourceUUID);
+        return logisticsWareHouseService.selectKitOrderLogDetailsBySourceId(sourceId);
     }
 
 
