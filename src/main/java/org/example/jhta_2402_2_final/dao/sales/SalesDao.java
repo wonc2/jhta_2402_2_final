@@ -52,5 +52,31 @@ public interface SalesDao {
     void insertLog(UUID kitOrderId, int statusId);
 
     //창고
-    List<KitStorageDto> selectKitStorage();
+    List<KitCompletedDto> selectKitStorage();
+
+    //처리 완료된 애들만
+    List<KitOrderLogDto> findAllCompleted();
+
+    // 주문 id값으로 주문 정보를 가져옴
+    KitOrderDto selectKitOrderById(String kitOrderId);
+
+    //밀키트 아이디와 업체 아이디로 창고 정보를 가져옴
+    KitStorageDto selectKitStorageById(String kitCompanyId, String mealkitId);
+
+    //창고를 업데이트함
+    void updateKitStorage(UUID kitStorageId, int quantity);
+
+    //재고가 없으면 인서트함
+    void insertKitStorage(UUID kitStorageId, String kitCompanyId, String mealkitId, int quantity);
+
+    // 생산업체별 재료가격 셀렉
+    List<SourcePriceDto> selectAllSourcePrice();
+
+    //최소 재료 값 셀렉
+    List<SourcePriceDto> selectMinSourcePrice();
+
+    //밀키트 별 재료별 최소값, 수량 이거로 밀키트 가격 설정 할거
+    List<KitPriceDto> selectMinKitPrice();
+
+
 }

@@ -24,4 +24,6 @@ public interface DistributionDao {
     int updateStackFirstRecord(Map<String,Object> map);
 
     int deleteZeroQuantityRecords();
+
+    List<Map<String,Object>> selectKitOrderLogDetailsBySourceId(String sourceID);
 }

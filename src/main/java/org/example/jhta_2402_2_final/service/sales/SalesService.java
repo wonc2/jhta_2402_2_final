@@ -105,7 +105,56 @@ public class SalesService {
         salesDao.insertLog(kitOrderId, statusId);
     }
 
-    public List<KitStorageDto> getKitStorages() {
+    // 창고 테이블 가져오기
+    public List<KitCompletedDto> getKitStorages() {
         return salesDao.selectKitStorage();
     }
+
+    // 처리 완료된 애들만 가져오기
+    public List<KitOrderLogDto> getAllCompleted(){
+        return salesDao.findAllCompleted();
+    }
+
+    //창고 업데이트
+    public void updateKitStorage(String kitOrderId) {
+        // kitOrderId를 통해 KIT_ORDER 정보를 가져옴
+        KitOrderDto kitOrder = salesDao.selectKitOrderById(kitOrderId);
+        System.out.println("kitOrder =>>>>>>>> " + kitOrder);
+
+        String kitCompanyId = kitOrder.getKitCompanyId();
+        String mealkitId = kitOrder.getMealkitId();
+        int quantity = kitOrder.getQuantity();
+
+        //밀키트 아이디와 판매업체 아이디로 창고 재고를 확인
+        KitStorageDto kitStorageDto = salesDao.selectKitStorageById(kitCompanyId,mealkitId);
+        UUID kiStorageId = UUID.randomUUID();
+
+        //해당 재고가 없으면 새로 추가
+        if (kitStorageDto == null) {
+            salesDao.insertKitStorage(kiStorageId, kitCompanyId, mealkitId, quantity);
+        }
+
+        //재고가 있으면 업데이트
+        else {
+            salesDao.updateKitStorage(kitStorageDto.getKitStorageId(), quantity);
+        }
+
+
+    }
+
+    //생산 업체별 재료 가격
+    public List<SourcePriceDto> getAllSourcePrice() {
+        return salesDao.selectAllSourcePrice();
+    }
+
+    //최소값
+    public List<SourcePriceDto> getMinSourcePrice() {
+        return salesDao.selectMinSourcePrice();
+    }
+
+    //밀키트 별 최소 가격
+    public List<KitPriceDto> getMinKitPrice(){
+        return salesDao.selectMinKitPrice();
+    }
 }
+

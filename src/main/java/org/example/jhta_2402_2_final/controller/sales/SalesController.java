@@ -71,13 +71,21 @@ public class SalesController {
         return "redirect:/sales";
     }
 
+    // 상태 변경
     @PostMapping("/update-status")
     public String changeKitOrderStatus(
             @RequestParam("kitOrderId") String kitOrderId,
             @RequestParam("statusId") int statusId) {
+        System.out.println("kitOrderId>>>>>>>>"+kitOrderId);
 
         salesService.updateKitOrderStatus(kitOrderId, statusId);
         salesService.createKitOrderLog(UUID.fromString(kitOrderId), statusId);
+
+        //만약 상태 아이디가 3인 경우에 재고 테이블에 해당 밀키트 추가
+        if (statusId == 3) {
+            salesService.updateKitStorage(kitOrderId);
+            return "redirect:/sales/storage";
+        }
 
         return "redirect:/sales";
     }

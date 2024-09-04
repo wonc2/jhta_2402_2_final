@@ -12,7 +12,7 @@ public interface ProductCompanyDao {
     // 생산업체에 등록된 생산품 리스트 가져옴
     List<Map<String, Object>> getSourcesByCompanyName(String companyName);
     // 모든 재료 리스트
-    List<SourceDto> getAllSources();
+    List<SourceDto> getAllSources(String companyName);
 
     // 생산업체 생산품 Create, Update, Delete
     int addSourceToCompany(Map<String, Object> paramData);
@@ -27,4 +27,14 @@ public interface ProductCompanyDao {
     List<Map<String, Object>> getWarehouseSources(String companyName);
     // 제품 생산
     int produceSource(Map<String, Object> paramData);
+
+    int sourcePriceUpdate(Map<String, Object> paramData);
+
+    boolean checkDuplicateCompanySource(Map<String, Object> paramData);
+
+    List<Map<String, Object>> getProductOrderList(Map<String, Object> paramData);
+
+    int orderProcess(Map<String, Object> paramData);
+
+    int getSourceQuantityFromWarehouse(String sourcePriceId);
 }

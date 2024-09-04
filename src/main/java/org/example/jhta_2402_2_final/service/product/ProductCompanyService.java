@@ -2,10 +2,13 @@ package org.example.jhta_2402_2_final.service.product;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.product.ProductCompanyDao;
+import org.example.jhta_2402_2_final.exception.types.DuplicateCompanySource;
 import org.example.jhta_2402_2_final.model.dto.common.SourceDto;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,9 +25,9 @@ public class ProductCompanyService {
     public Map<String, Object> findAll(String companyName){
         productCompanyUtil.getCompanyId(companyName);
         Map<String,Object> responseData = new HashMap<>();
-        // productList values: { companySourceId, sourceName, sourcePrice, companyName, companyAddress, companyId }
+        // productList values: { companySourceId, sourceName, sourcePrice, totalQuantity }
         responseData.put("companySourceList",productCompanyDao.getSourcesByCompanyName(companyName));
-        responseData.put("sources", productCompanyDao.getAllSources());
+        responseData.put("sources", productCompanyDao.getAllSources(companyName));
         // responseData values: { List<Map>, List<SourceDto> }
         return responseData;
     }
@@ -32,11 +35,18 @@ public class ProductCompanyService {
     /*  생산업체 생산품 목록에 등록 (실제 생산 x, 생산품 등록임) */
     @Transactional
     public Map<String, Object> addSourceToCompany(String companyName, Map<String ,Object> paramData) {
-        paramData.put("companyId", productCompanyDao.getCompanyIdByName(companyName));
-        // sourceId 값 있으면 스킵 -> 없으면 직접입력임 중복값 있으면 해당 sourceId 가져옴 -> 둘다 없을시 입력한 재료 SOURCE 테이블에 등록
+        String companyId = productCompanyDao.getCompanyIdByName(companyName);
         String sourceName = (String) paramData.get("sourceName");
-        if (paramData.get("sourceId") == null) {
-            String sourceId = productCompanyDao.getSourceIdByName(sourceName);
+        String sourceId = (String) paramData.get("sourceId");
+        paramData.put("companyId", companyId);
+
+        if (productCompanyDao.checkDuplicateCompanySource(paramData)){
+            throw new DuplicateCompanySource("이미 등록된 제품 입니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        // sourceId 값 있으면 스킵 -> 없으면 직접입력임 중복값 있으면 해당 sourceId 가져옴 -> 둘다 없을시 입력한 재료 SOURCE 테이블에 등록
+        if (sourceId == null) {
+            sourceId = productCompanyDao.getSourceIdByName(sourceName);
             if (sourceId != null) paramData.put("sourceId", sourceId);
             else {
                 sourceId = UUID.randomUUID().toString();
@@ -60,7 +70,7 @@ public class ProductCompanyService {
 
     /* 생산 창고 리스트 다 가져옴 */
     public List<Map<String, Object>> getWarehouseSources(String companyName) {
-        // { "produceDate", "sourceWarehouseId", "sourceQuantity", "totalPrice", "sourceName", "sourcePrice" }
+        // { "produceDate", "sourceWarehouseId", "sourceQuantity", "sourceName" }
         return productCompanyDao.getWarehouseSources(companyName);
     }
 
@@ -69,5 +79,32 @@ public class ProductCompanyService {
     public List<Map<String, Object>> produceSource(String companyName, Map<String ,Object> paramData) {
         productCompanyDao.produceSource(paramData);
         return productCompanyDao.getWarehouseSources(companyName);
+    }
+
+    public List<Map<String, Object>> sourcePriceUpdate(String companyName, String companySourceId, Map<String, Object> paramData) {
+        paramData.put("companySourceId", companySourceId);
+        productCompanyDao.sourcePriceUpdate(paramData);
+        return productCompanyDao.getWarehouseSources(companyName);
+    }
+
+    public List<Map<String, Object>> getProductOrderList(String companyName, Map<String, Object> paramData) {
+        paramData.put("companyName", companyName);
+
+        // product_order 상태 하드코딩 -> 리스트로 내려오게 해야함 ?
+
+        // values: { orderId, sourceName, sourcePrice, quantity, totalPrice, orderDate, orderStatus }
+        return productCompanyDao.getProductOrderList(paramData);
+    }
+
+    @Transactional
+    public List<Map<String, Object>> orderProcess(String companyName, Map<String, Object> paramData) {
+        // 필요값: { orderId, orderStatus }
+        productCompanyDao.orderProcess(paramData); // 주문처리서 상태 업데이트
+
+        if (productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId")) < 0) throw new RuntimeException("적재량이 모자람~");
+        // // 필요값: { sourceQuantity, sourcePriceId }
+        productCompanyDao.produceSource(paramData); // 이름 바꾸는게 좋을듯? 적재 <-> 입고 둘다함
+
+        return getProductOrderList(companyName, paramData);
     }
 }

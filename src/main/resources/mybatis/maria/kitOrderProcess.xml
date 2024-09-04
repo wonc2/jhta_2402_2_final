@@ -2,22 +2,19 @@
 <mapper namespace="org.example.jhta_2402_2_final.dao.distribution.KitOrderProcessDao">
     <select id="findAllOrder" resultType="Map">
         SELECT
-            KO.KIT_ORDER_ID AS 'kitOrderID',
-                KC.NAME AS 'kitCompanyName',
-                M.NAME AS 'kitName',
-                M.PRICE AS 'kitPrice',
-                KO.QUANTITY AS 'quantity',
-                KO.QUANTITY * M.PRICE AS 'totalPrice',
-                KO.PRODUCT_ORDER_DATE AS 'kitOrderDate',
-                S.STATUS AS 'status'
+            KO.KIT_ORDER_ID AS kitOrderID,
+            KC.NAME AS kitCompanyName,
+            M.NAME AS kitName,
+            M.PRICE AS kitPrice,
+            KO.QUANTITY AS quantity,
+            KO.QUANTITY * M.PRICE AS totalPrice,
+            KO.PRODUCT_ORDER_DATE AS kitOrderDate,
+            S.STATUS AS status
         FROM
             KIT_ORDER KO
-                JOIN
-            KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
-                JOIN
-            MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
-                JOIN
-            STATUS S ON KO.STATUS_ID = S.STATUS_ID;
+                JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
+                JOIN MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
+                JOIN STATUS S ON KO.STATUS_ID = S.STATUS_ID;
     </select>
 
     <select id="findKitRecipe" resultType="Map">
@@ -26,18 +23,83 @@
             KS.QUANTITY AS 필요수량
         FROM
             KIT_ORDER KO
-                JOIN
-            KIT_SOURCE KS ON KO.MEALKIT_ID = KS.MEALKIT_ID
-                JOIN
-            SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+                JOIN KIT_SOURCE KS ON KO.MEALKIT_ID = KS.MEALKIT_ID
+                JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
         WHERE
             KO.KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')
     </select>
 
+    <select id="findKitRecipeWithStock" resultType="Map">
+        SELECT
+            S.NAME AS 재료명,
+            KS.QUANTITY * #{orderQuantity} AS 필요수량,
+            IFNULL(SUM(LWS.QUANTITY), 0) AS 창고재고수량
+        FROM
+            KIT_SOURCE KS
+                JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+                LEFT JOIN LOGISTICS_WAREHOUSE_STACK LWS ON KS.SOURCE_ID = LWS.SOURCE_ID
+        WHERE
+            KS.MEALKIT_ID = #{mealkitId}
+        GROUP BY
+            S.NAME, KS.QUANTITY;
+    </select>
 
+    <select id="findMealKitByKitOrderId" resultType="String">
+        SELECT MEALKIT_ID
+        FROM KIT_ORDER
+        WHERE KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')
+    </select>
 
-    <update id="requestKitSourceOrder">
+    <select id="findOrderQuantityByKitOrderId" resultType="Integer">
+        SELECT QUANTITY
+        FROM KIT_ORDER
+        WHERE KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')
+    </select>
 
+    <insert id="requestKitSourceOrder" parameterType="KitOrderProcessDto">
+        INSERT INTO KIT_ORDER_PROCESS (
+            KIT_ORDER_ID,
+            KIT_COMPANY_NAME,
+            KIT_NAME,
+            QUANTITY,
+            ORDER_DATE,
+            STATUS
+        ) VALUES (
+                     #{kitOrderUid},
+                     #{kitCompanyName},
+                     #{kitName},
+                     #{quantity},
+                     #{kitOrderDate},
+                     #{status}
+                 )
+    </insert>
+
+    <select id="findOrdersByKeyword" parameterType="String" resultType="Map">
+        SELECT
+            KO.KIT_ORDER_ID AS kitOrderID,
+            KC.NAME AS kitCompanyName,
+            M.NAME AS kitName,
+            KO.QUANTITY AS quantity,
+            KO.PRODUCT_ORDER_DATE AS kitOrderDate,
+            S.STATUS AS status
+        FROM
+            KIT_ORDER KO
+                JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
+                JOIN MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
+                JOIN STATUS S ON KO.STATUS_ID = S.STATUS_ID
+        WHERE
+            M.NAME LIKE CONCAT('%', #{orderKeyword}, '%')
+    </select>
+
+    <update id="updateWarehouseStock">
+        UPDATE LOGISTICS_WAREHOUSE_STACK
+        SET QUANTITY = QUANTITY + #{quantityChange}
+        WHERE SOURCE_FK = #{sourceId}
     </update>
 
+    <update id="updateOrderStatus">
+        UPDATE KIT_ORDER
+        SET STATUS_ID = #{status}
+        WHERE KIT_ORDER_ID = #{kitOrderId}
+    </update>
 </mapper>

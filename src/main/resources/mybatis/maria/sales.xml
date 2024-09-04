@@ -178,4 +178,151 @@
         order by KC.NAME
     </select>
 
+<!--    주문 처리 완료된 애들만 모아 보기-->
+    <select id="findAllCompleted" resultType="KitCompletedDto">
+        SELECT
+            kol.KIT_ORDER_LOG_ID AS kitOrderLogId,
+            kol.KIT_ORDER_ID AS kitOrderId,
+            kc.NAME AS companyName,
+            mk.NAME AS mealkitName,
+            mk.PRICE as mealkitPrice,
+            ko.QUANTITY,
+            (mk.PRICE * ko.QUANTITY) as total,
+            kol.PRODUCT_ORDER_DATE AS productOrderDate
+        FROM
+            KIT_ORDER_LOG kol
+                JOIN
+            KIT_ORDER ko ON kol.KIT_ORDER_ID = ko.KIT_ORDER_ID
+                JOIN
+            KIT_COMPANY kc ON ko.KIT_COMPANY_ID = kc.KIT_COMPANY_ID
+                JOIN
+            MEALKIT mk ON ko.MEALKIT_ID = mk.MEALKIT_ID
+                JOIN
+            STATUS s ON kol.STATUS_ID = s.STATUS_ID
+
+        where kol.STATUS_ID = 3
+    </select>
+
+    <!-- 주문 정보 조회 -->
+    <select id="selectKitOrderById" resultType="KitOrderDto">
+        SELECT KIT_ORDER_ID as kitOrderId,
+               KIT_COMPANY_ID as kitCompanyId,
+               MEALKIT_ID as mealkitId,
+               QUANTITY,
+               STATUS_ID as statusId
+        FROM KIT_ORDER
+        WHERE KIT_ORDER_ID = #{kitOrderId}
+    </select>
+
+    <!-- 창고 정보 조회 -->
+    <select id="selectKitStorageById" resultType="KitStorageDto">
+        SELECT KIT_STORAGE_ID as kitStorageId,
+               KIT_COMPANY_ID as kitCompanyId,
+               MEALKIT_ID as mealkitId,
+               QUANTITY
+        FROM KIT_STORAGE
+        WHERE KIT_COMPANY_ID = #{kitCompanyId} AND MEALKIT_ID = #{mealkitId}
+    </select>
+
+    <!-- 창고 재고 업데이트 -->
+    <update id="updateKitStorage">
+        UPDATE KIT_STORAGE
+        SET QUANTITY = QUANTITY + #{quantity}
+        WHERE KIT_STORAGE_ID = #{kitStorageId}
+    </update>
+
+    <!-- 창고에 새로운 재고 추가 -->
+    <insert id="insertKitStorage">
+        INSERT INTO KIT_STORAGE (KIT_STORAGE_ID, KIT_COMPANY_ID, MEALKIT_ID, QUANTITY)
+        VALUES (#{kitStorageId}, #{kitCompanyId}, #{mealkitId}, #{quantity})
+    </insert>
+
+
+<!--    생산 업체별 재료 가격 셀렉-->
+    <select id="selectAllSourcePrice" resultType="SourcePriceDto">
+        SELECT
+            sp.SOURCE_PRICE_ID as sourcePriceId,
+            pc.name AS companyName,
+            s.name AS sourceName,
+            sp.PRICE
+        FROM
+            SOURCE_PRICE sp
+                JOIN
+            PRODUCT_COMPANY pc ON sp.product_company_id = pc.product_company_id
+                JOIN
+            SOURCE s ON sp.source_id = s.source_id;
+    </select>
+
+
+<!--    최소 재료값-->
+    <select id="selectMinSourcePrice" resultType="SourcePriceDto">
+        SELECT
+            sp.SOURCE_PRICE_ID as sourcePriceId,
+            pc.name AS companyName,
+            s.name AS sourceName,
+            sp.PRICE as price
+        FROM
+            SOURCE_PRICE sp
+                JOIN
+            PRODUCT_COMPANY pc ON sp.product_company_id = pc.product_company_id
+                JOIN
+            SOURCE s ON sp.source_id = s.source_id
+                JOIN
+            (
+                SELECT
+                    source_id,
+                    MIN(price) AS min_price
+                FROM
+                    SOURCE_PRICE
+                GROUP BY
+                    source_id
+            ) sp_min ON sp.source_id = sp_min.source_id AND sp.price = sp_min.min_price
+    </select>
+
+
+    <select id="selectMinKitPrice" resultType="KitPriceDto">
+        WITH MealkitDetails AS (
+            SELECT
+                m.MEALKIT_ID AS mealkitId,
+                m.name AS mealkitName,
+                s.name AS sourceName,
+                MIN(sp.price) AS minPrice,
+                ks.QUANTITY AS quantity,
+                (MIN(sp.price) * ks.QUANTITY) AS total
+            FROM
+                MEALKIT m
+                    JOIN
+                KIT_SOURCE ks ON m.MEALKIT_ID = ks.MEALKIT_ID
+                    JOIN
+                SOURCE s ON ks.SOURCE_ID = s.source_id
+                    JOIN
+                SOURCE_PRICE sp ON s.source_id = sp.source_id
+            GROUP BY
+                m.MEALKIT_ID, m.name, s.name, ks.QUANTITY
+        ),
+             MealkitTotal AS (
+                 SELECT
+                     mealkitId,
+                     mealkitName,
+                     SUM(total) AS mealkitPrice
+                 FROM
+                     MealkitDetails
+                 GROUP BY
+                     mealkitId, mealkitName
+             )
+        SELECT
+            d.mealkitId,
+            d.mealkitName,
+            d.sourceName,
+            d.minPrice,
+            d.quantity,
+            d.total,
+            t.mealkitPrice
+        FROM
+            MealkitDetails d
+                JOIN
+            MealkitTotal t ON d.mealkitId = t.mealkitId
+        ORDER BY
+            d.mealkitId, d.sourceName
+    </select>
 </mapper>
