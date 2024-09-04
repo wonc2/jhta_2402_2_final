@@ -56,7 +56,7 @@
                                     <th>생산품명</th>
                                     <th>생산품가격</th>
                                     <th>현재 창고 재고량</th>
-                                    <th>생산 | 생산품 수정 | 생산품 삭제</th>
+                                    <th>생산</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -64,7 +64,7 @@
                             </table>
                             <div class="d-flex justify-content-end">
                                 <button type="button" class="btn btn-primary me-2 mx-2" data-bs-toggle="modal"
-                                        data-bs-target="#addSourceModal">생산품 등록
+                                        data-bs-target="#addSourceModal">생산품목 등록
                                 </button>
                             </div>
                         </div>
@@ -94,7 +94,8 @@
                                     <th>주문한 갯수</th>
                                     <th>총 주문 가격</th>
                                     <th>주문 일자</th>
-                                    <th>주문 처리 상태</th>
+                                    <th>주문 상태</th>
+                                    <th>주문처리</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -230,6 +231,85 @@
                             </div>
                         </div>
                         <!-- 생산품 등록 모달 끝 -->
+
+                        <!-- 주문 처리(orderProcess) 모달 -->
+                        <div class="modal fade" id="orderProcessModal" tabindex="-1" aria-labelledby="orderProcessModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="orderProcessModalLabel">생산</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="orderProcessForm">
+                                            <div class="container">
+                                                <input type="hidden" class="form-control" id="orderId" disabled>
+                                                <input type="hidden" class="form-control" id="orderSourcePriceId" disabled>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">주문번호</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control" id="orderIdView" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">주문한 재료</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control" id="orderSourceName" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">재료 가격</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control" id="orderSourcePrice" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">갯수</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control" id="orderQuantity" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">총 주문 가격</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control" id="orderTotalPrice" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">주문 일자</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control" id="orderDate" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label class="col-sm-3 col-form-label">창고 재고량</label>
+                                                    <div class="col-sm-9">
+                                                        <input type="text" class="form-control" id="test01" value="--현재 창고 재고량 나와야함 모자라면 발주 막기--" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3 row align-items-center">
+                                                    <label for="addSourceSelect" class="col-sm-3 col-form-label">제품</label>
+                                                    <div class="col-sm-9">
+                                                        <!-- 셀렉트 박스 -->
+                                                        <select id="orderStatusSelect" class="form-select">
+                                                            <option value="2">처리중</option>
+                                                            <option value="4">취소</option>
+                                                        </select>
+                                                        <!-- 처리중 or 취소만 ? 일단 하드코딩 -->
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                        <button type="button" class="btn btn-primary" id="orderProcessBtn">확인</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 주문 처리(orderProcess) 모달 끝 -->
                     </div>
                 </div>
             </div>

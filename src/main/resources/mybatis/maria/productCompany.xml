@@ -1,6 +1,5 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.product.ProductCompanyDao">
-
     <!-- 생산 업체의 현재 생산품 리스트 가져옴 -->
     <select id="getSourcesByCompanyName" resultType="Map" parameterType="String">
         select
@@ -26,7 +25,7 @@
             (UUID(), #{companyId}, #{sourceId}, #{sourcePrice})
     </insert>
     <update id="sourcePriceUpdate" parameterType="map">
-        UPDATE SOURCE_PRICE SET price = #{sourcePrice} WHERE source_price_id = #{companySourceId};
+        UPDATE SOURCE_PRICE SET price = #{sourcePrice} WHERE source_price_id = #{companySourceId}
     </update>
     <delete id="deleteSourceFromCompany" parameterType="Map">
         DELETE FROM SOURCE_PRICE WHERE SOURCE_PRICE_ID = #{companySourceId}
@@ -55,25 +54,38 @@
     <!-- 주문 주문 주문 주문 주문 -->
     <select id="getProductOrderList" resultType="map">
         SELECT
-            ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
-                P_C.NAME AS productCompanyName,
-            S.NAME AS sourceName,
-            S_P.PRICE AS sourcePrice,
-            P_O_T.QUANTITY AS quantity,
-            (S_P.PRICE * P_O_T.QUANTITY) AS totalPrice,
-            P_O_T.PRODUCT_ORDER_DATE AS productOrderDate,
-            ST.STATUS AS status
-        FROM PRODUCT_ORDER_TEST P_O_T
-                 JOIN SOURCE_PRICE S_P ON P_O_T.SOURCE_PRICE_ID = S_P.SOURCE_PRICE_ID
-                 JOIN PRODUCT_COMPANY P_C ON P_C.PRODUCT_COMPANY_ID = S_P.PRODUCT_COMPANY_ID
-                 JOIN SOURCE S ON S_P.SOURCE_ID = S.SOURCE_ID
-                 JOIN STATUS ST ON ST.STATUS_ID = P_O_T.STATUS_ID
+            po.PRODUCT_ORDER_ID as orderId,
+            s.NAME AS sourceName,
+            sp.PRICE AS sourcePrice,
+            po.QUANTITY AS quantity,
+            (sp.PRICE * po.QUANTITY) AS totalPrice,
+            DATE_FORMAT(po.PRODUCT_ORDER_DATE, '%Y-%m-%d %h:%m') AS orderDate,
+            st.STATUS AS orderStatus,
+            sp.SOURCE_PRICE_ID as sourcePriceId
+        FROM PRODUCT_ORDER po
+        JOIN SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+        JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+        JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
+        JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
+        WHERE pc.NAME = #{companyName}
     </select>
+    <update id="orderProcess" parameterType="map">
+        update PRODUCT_ORDER set STATUS_ID = #{orderStatus} where PRODUCT_ORDER_ID = #{orderId}
+    </update>
+    <!-- 주문 끝 -->
 
 
     <!-- 모든 재료 리스트 -->
-    <select id="getAllSources" resultType="SourceDto">
-        SELECT SOURCE_ID as 'sourceId', NAME as 'sourceName' FROM SOURCE
+    <select id="getAllSources" resultType="SourceDto" parameterType="String">
+        SELECT s.SOURCE_ID as 'sourceId', s.NAME as 'sourceName'
+        FROM SOURCE s
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM SOURCE_PRICE sp
+            JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+            WHERE sp.SOURCE_ID = s.SOURCE_ID
+            AND pc.NAME = #{companyName}
+        )
     </select>
 
     <!-- 입력한 sourceName 값으로 Id 가져오기, 없으면 등록할거임 -->

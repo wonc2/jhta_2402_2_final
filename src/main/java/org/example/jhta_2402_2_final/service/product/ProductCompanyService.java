@@ -27,7 +27,7 @@ public class ProductCompanyService {
         Map<String,Object> responseData = new HashMap<>();
         // productList values: { companySourceId, sourceName, sourcePrice, totalQuantity }
         responseData.put("companySourceList",productCompanyDao.getSourcesByCompanyName(companyName));
-        responseData.put("sources", productCompanyDao.getAllSources());
+        responseData.put("sources", productCompanyDao.getAllSources(companyName));
         // responseData values: { List<Map>, List<SourceDto> }
         return responseData;
     }
@@ -85,5 +85,24 @@ public class ProductCompanyService {
         paramData.put("companySourceId", companySourceId);
         productCompanyDao.sourcePriceUpdate(paramData);
         return productCompanyDao.getWarehouseSources(companyName);
+    }
+
+    public List<Map<String, Object>> getProductOrderList(String companyName, Map<String, Object> paramData) {
+        paramData.put("companyName", companyName);
+
+        // product_order 상태 하드코딩 -> 리스트로 내려오게 해야함 ?
+
+        // values: { orderId, sourceName, sourcePrice, quantity, totalPrice, orderDate, orderStatus }
+        return productCompanyDao.getProductOrderList(paramData);
+    }
+
+    @Transactional
+    public List<Map<String, Object>> orderProcess(String companyName, Map<String, Object> paramData) {
+        // 필요값: { orderId, orderStatus }
+        productCompanyDao.orderProcess(paramData); // 주문처리서 상태 업데이트
+        // // 필요값: { quantity, sourceId }
+        productCompanyDao.produceSource(paramData); // 이름 바꾸는게 좋을듯? 적재 <-> 입고 둘다함
+
+        return getProductOrderList(companyName, paramData);
     }
 }
