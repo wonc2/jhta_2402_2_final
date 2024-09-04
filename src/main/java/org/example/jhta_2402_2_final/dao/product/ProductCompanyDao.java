@@ -37,4 +37,6 @@ public interface ProductCompanyDao {
     int orderProcess(Map<String, Object> paramData);
 
     int getSourceQuantityFromWarehouse(String sourcePriceId);
+
+    int outboundSource(Map<String, Object> paramData);
 }

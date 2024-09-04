@@ -4,11 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.product.ProductCompanyDao;
 import org.example.jhta_2402_2_final.exception.types.DuplicateCompanySource;
 import org.example.jhta_2402_2_final.model.dto.common.SourceDto;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.List;
@@ -103,7 +101,7 @@ public class ProductCompanyService {
 
         if (productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId")) < 0) throw new RuntimeException("적재량이 모자람~");
         // // 필요값: { sourceQuantity, sourcePriceId }
-        productCompanyDao.produceSource(paramData); // 이름 바꾸는게 좋을듯? 적재 <-> 입고 둘다함
+        productCompanyDao.outboundSource(paramData);
 
         return getProductOrderList(companyName, paramData);
     }

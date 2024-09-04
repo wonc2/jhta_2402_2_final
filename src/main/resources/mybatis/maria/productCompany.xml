@@ -72,6 +72,10 @@
     <update id="orderProcess" parameterType="map">
         update PRODUCT_ORDER set STATUS_ID = #{orderStatus} where PRODUCT_ORDER_ID = #{orderId}
     </update>
+    <insert id="outboundSource" parameterType="map">
+        INSERT into SOURCE_WAREHOUSE (SOURCE_WAREHOUSE_ID, QUANTITY, PRODUCE_DATE, SOURCE_PRICE_ID)
+        VALUES (UUID(), -#{sourceQuantity}, NOW(), #{sourcePriceId})
+    </insert>
     <!-- 주문 끝 -->
 
 
