@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.MemberDao;
 import org.example.jhta_2402_2_final.dao.product.ProductAdminDao;
 import org.example.jhta_2402_2_final.model.dto.MemberDto;
+import org.example.jhta_2402_2_final.model.dto.common.SourcePriceViewDto;
 import org.example.jhta_2402_2_final.model.dto.common.StatusDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyInsertDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductDto;
+import org.example.jhta_2402_2_final.model.dto.product.ProductOrderViewDto;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,12 @@ public class ProductAdminService {
     }
     public int production(ProductDto productDto) {
         return 0;
+    }
+    public List<SourcePriceViewDto> getProductSourceList(){
+        return productDao.getProductSourceList();
+    }
+    public List<ProductOrderViewDto> getProductOrderList(){
+        return productDao.getProductOrderList();
     }
     public int insertProductCompany(ProductCompanyInsertDto productCompanyInsertDto){
         MemberDto memberDto = MemberDto.builder()

@@ -20,7 +20,7 @@ public class ProductCompanyRestController {
     @ModelAttribute("companyName")
     public String getCompanyName(@AuthenticationPrincipal CustomUserDetails userDetails) {
         // return userDetails.getMemberDto().getUserName();
-        return "농협";
+        return "한림";
     }
 
     @GetMapping("add")
@@ -50,12 +50,6 @@ public class ProductCompanyRestController {
         return ResponseEntity.ok().body(responseData);
     }
 
-    @GetMapping("produce")
-    public ResponseEntity<List<Map<String, Object>>> getWarehouseSources(@ModelAttribute("companyName") String companyName){
-        List<Map<String, Object>> responseData = productCompanyService.getWarehouseSources(companyName);
-        return ResponseEntity.ok().body(responseData);
-    }
-
     @PostMapping("produce")
     public ResponseEntity<List<Map<String, Object>>> produce(@ModelAttribute("companyName") String companyName, @RequestBody Map<String ,Object> paramData){
         // RequestBody: { "sourcePriceId": "sourcePriceUUID 넣어야함", "sourceQuantity": 30 }
@@ -63,16 +57,21 @@ public class ProductCompanyRestController {
         return ResponseEntity.ok().body(responseData);
     }
 
+    @GetMapping("produce")
+    public ResponseEntity<List<Map<String, Object>>> getWarehouseSources(@ModelAttribute("companyName") String companyName){
+        List<Map<String, Object>> responseData = productCompanyService.getWarehouseSources(companyName);
+        return ResponseEntity.ok().body(responseData);
+    }
+
     @GetMapping("order")
-    public ResponseEntity<Map<String, Object>> getOrderList(@ModelAttribute("companyName") String companyName){
-//        return ResponseEntity.ok().body(responseData);
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("id", "id");
-        responseData.put("price", "price");
-        responseData.put("quantity", "price");
-        responseData.put("totalPrice", "price");
-        responseData.put("orderDate", "price");
-        responseData.put("orderStatus", "price");
+    public ResponseEntity<List<Map<String, Object>>> getOrderList(@ModelAttribute("companyName") String companyName, @RequestParam Map<String ,Object> paramData){
+        List<Map<String, Object>> responseData = productCompanyService.getProductOrderList(companyName, paramData);
+        return ResponseEntity.ok().body(responseData);
+    }
+
+    @PostMapping("order")
+    public ResponseEntity<List<Map<String, Object>>> orderProcess(@ModelAttribute("companyName") String companyName, @RequestBody Map<String ,Object> paramData){
+        List<Map<String, Object>> responseData = productCompanyService.orderProcess(companyName, paramData);
         return ResponseEntity.ok().body(responseData);
     }
 

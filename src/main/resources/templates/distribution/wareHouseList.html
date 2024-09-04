@@ -8,38 +8,46 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
     <script>
-        // JavaScript 함수: 버튼 클릭 시 모달을 띄우기
-        function showModal(logisticsWareHouseSourcePK, sourceName) {
-            // 예를 들어, logisticsWareHouseSourcePK 값을 모달의 특정 요소에 표시하거나 사용할 수 있습니다.
+        function showModal(logisticsWareHouseSourcePK, sourceId) {
             console.log("Clicked logisticsWareHouseSourcePK: " + logisticsWareHouseSourcePK);
+            console.log("sourceId: " + sourceId); // sourceId 값 확인
 
-            // AJAX를 이용해 서버에서 데이터를 가져옴
-            $.ajax({
-                url: '/warehouse/log', // 서버의 엔드포인트
-                method: 'GET',
-                data: { sourceName: sourceName }, // 소스명을 서버로 전달
-                success: function(response) {
+            // URL 인코딩
+            const encodedSourceId = encodeURIComponent(sourceId);
+
+            // Fetch API를 이용해 서버에서 데이터를 가져옴
+            fetch(`/wareHouse/selectLog?sourceId=${encodedSourceId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('HTTP error:', response.status, response.statusText);
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
                     // 서버로부터 받은 데이터를 모달에 채움
-                    $('#orderModal .modal-body tbody').empty(); // 기존 데이터를 지움
-                    response.forEach(function(item) {
-                        $('#orderModal .modal-body tbody').append(
-                            `<tr>
+                    const tbody = document.querySelector('#orderModal .modal-body tbody');
+                    tbody.innerHTML = ''; // 기존 데이터를 지움
+
+                    data.forEach(item => {
+                        tbody.innerHTML += `
+                            <tr>
                                 <td>${item.productCompanyName}</td>
                                 <td>${item.sourceName}</td>
                                 <td>${item.quantity}</td>
                                 <td>${item.date}</td>
                                 <td>${item.status}</td>
-                            </tr>`
-                        );
+                            </tr>
+                        `;
                     });
+
                     // 모달을 띄움
                     var myModal = new bootstrap.Modal(document.getElementById('orderModal'));
                     myModal.show();
-                },
-                error: function(error) {
-                    console.log('Error:', error);
-                }
-            });
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                });
         }
     </script>
 </head>
@@ -89,8 +97,10 @@
                             <td th:text="${items.sourceName}"></td>
                             <td th:text="${items.quantity}"></td>
                             <td>
-                                <!-- 버튼 클릭 시 showModal 함수 호출 -->
-                                <button class="btn btn-primary" type="button" onclick="showModal('${items.logisticsWareHouseSourcePK}', '${items.sourceName}')">상세</button>
+                                <button class="btn btn-primary" type="button"
+                                        onclick="showModal('[[${items.logisticsWareHouseSourcePK}]]', '[[${items.sourceUUID}]]')">
+                                    상세
+                                </button>
                             </td>
                         </tr>
                         </tbody>
@@ -118,7 +128,7 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <!-- 여기에서 AJAX로 데이터를 채움 -->
+                                <!-- 여기에 Fetch API로 데이터가 채워짐 -->
                                 </tbody>
                             </table>
                         </div>

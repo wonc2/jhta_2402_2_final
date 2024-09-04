@@ -1,44 +1,84 @@
 package org.example.jhta_2402_2_final.api.product;
 
 import lombok.RequiredArgsConstructor;
-import org.example.jhta_2402_2_final.model.dto.common.StatusDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
+import org.example.jhta_2402_2_final.model.dto.common.SourcePriceViewDto;
+import org.example.jhta_2402_2_final.model.dto.product.ProductOrderViewDto;
 import org.example.jhta_2402_2_final.service.product.ProductAdminService;
-import org.springframework.http.ResponseEntity;
+import org.example.jhta_2402_2_final.util.Pagination;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/product/admin")
+@RequestMapping("/api/product/admin")
 public class ProductAdminRestController {
     private final ProductAdminService productAdminService;
+    List<SourcePriceViewDto>paginatedSourcePriceList;
+    List<ProductOrderViewDto>paginatedOrderList;
+    @GetMapping("/main/data/sourcePriceList")
+    @ResponseBody
+    public List<SourcePriceViewDto> getSourcePriceList(@RequestParam(value = "productTableStatus" ,required = false) String productTableStatus,@RequestParam(value = "page" , defaultValue = "1") int page , @RequestParam(value = "pageScale" , defaultValue = "10") int pageScale, Model model){
+        if(productTableStatus.equals("production")){
+            System.out.println("productTableStatus ==" + productTableStatus + "page ==" + page);
+            List<SourcePriceViewDto>sourcePriceList = productAdminService.getProductSourceList();
+            paginatedSourcePriceList = List.of();
+            Pagination pagination = Pagination.builder()
+                    .totalContent(sourcePriceList.size())
+                    .currentPage(page)
+                    .pageScale(pageScale)
+                    .blockScale(5)
+                    .totalPage((int)Math.ceil((double)sourcePriceList.size()/pageScale))
+                    .build();
+            int currentBlock = (int) Math.ceil((double) pagination.getCurrentPage() / pagination.getBlockScale());
+            int startPage = (currentBlock - 1) * pagination.getBlockScale() + 1;
+            System.out.println("startpage=="+startPage);
+            int endPage = Math.min(startPage + pagination.getBlockScale() - 1, pagination.getTotalPage());
+            System.out.println("endpage ==" + endPage);
+            pagination.setStartPage(startPage);
+            pagination.setEndPage(endPage);
 
-    @GetMapping("selectAll")
-    public ResponseEntity<List<Map<String, Object>>> selectAll(){
-        // http://localhost:8080/api/product/admin/selectAll
-
-        List<Map<String, Object>> proudcts = productAdminService.findAll();
-        return ResponseEntity.ok().body(proudcts);
+            int start = (page-1)*pageScale;
+            int end = Math.min(page * pageScale, pagination.getTotalContent());
+            if (start < pagination.getTotalContent()) {
+                paginatedSourcePriceList = sourcePriceList.subList(start, end);
+            } else {
+                paginatedSourcePriceList = List.of(); // 잘못된 페이지의 경우 빈 리스트 반환
+            }
+        }
+            return paginatedSourcePriceList;
     }
+    @GetMapping("/main/data/productOrderList")
+    @ResponseBody
+    public List<ProductOrderViewDto> getproductOrderList(@RequestParam(value = "productTableStatus" ,required = false) String productTableStatus,@RequestParam(value = "page" , defaultValue = "1") int page , @RequestParam(value = "pageScale" , defaultValue = "10") int pageScale,Model model){
+        if(productTableStatus.equals("order")){
+            System.out.println("productTableStatus ==" + productTableStatus + "page ==" + page);
+            List<ProductOrderViewDto>productOrderList = productAdminService.getProductOrderList();
+            paginatedOrderList = List.of();
+            Pagination pagination = Pagination.builder()
+                    .totalContent(productOrderList.size())
+                    .currentPage(page)
+                    .pageScale(pageScale)
+                    .blockScale(5)
+                    .totalPage((int)Math.ceil((double)productOrderList.size()/pageScale))
+                    .build();
+            int currentBlock = (int) Math.ceil((double) pagination.getCurrentPage() / pagination.getBlockScale());
+            int startPage = (currentBlock - 1) * pagination.getBlockScale() + 1;
+            System.out.println("startpage=="+startPage);
+            int endPage = Math.min(startPage + pagination.getBlockScale() - 1, pagination.getTotalPage());
+            System.out.println("endpage ==" + endPage);
+            pagination.setStartPage(startPage);
+            pagination.setEndPage(endPage);
 
-    @GetMapping("selectAll/params")
-    public ResponseEntity<Map<String, Object>> getProductListByParams(@RequestParam Map<String, Object> params){
-        // http://localhost:8080/api/product/admin/selectAll/params?productCompanyId=&statusId=
-
-        List<Map<String, Object>> products = productAdminService.getProductListByParams(params);
-        List<ProductCompanyDto> companies = productAdminService.getAllCompanies();
-        List<StatusDto> status = productAdminService.getAllStatus();
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("products", products);
-        response.put("companies", companies);
-        response.put("status", status);
-        response.put("params", params);
-
-        return ResponseEntity.ok().body(response);
+            int start = (page-1)*pageScale;
+            int end = Math.min(page * pageScale, pagination.getTotalContent());
+            if (start < pagination.getTotalContent()) {
+                paginatedOrderList = productOrderList.subList(start, end);
+            } else {
+                paginatedOrderList = List.of(); // 잘못된 페이지의 경우 빈 리스트 반환
+            }
+        }
+            return paginatedOrderList;
     }
 }

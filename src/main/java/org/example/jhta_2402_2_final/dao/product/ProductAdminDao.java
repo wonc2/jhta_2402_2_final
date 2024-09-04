@@ -1,8 +1,10 @@
 package org.example.jhta_2402_2_final.dao.product;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.example.jhta_2402_2_final.model.dto.common.SourcePriceViewDto;
 import org.example.jhta_2402_2_final.model.dto.common.StatusDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
+import org.example.jhta_2402_2_final.model.dto.product.ProductOrderViewDto;
 
 import java.util.List;
 import java.util.Map;
@@ -14,4 +16,6 @@ public interface ProductAdminDao {
     List<ProductCompanyDto> getAllCompanies();
     List<StatusDto> getAllStatus();
     int insertProductCompany(ProductCompanyDto productCompanyDto);
+    List<SourcePriceViewDto> getProductSourceList();
+    List<ProductOrderViewDto> getProductOrderList();
 }

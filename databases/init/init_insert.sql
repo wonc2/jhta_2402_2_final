@@ -28,7 +28,9 @@ INSERT INTO STATUS (STATUS_ID, STATUS) VALUES
     (1, '처리전'),
     (2, '처리중'),
     (3, '처리완료'),
-    (4, '취소');
+    (4, '취소'),
+    (4, '입고'),
+    (4, '출고');
 
 -- 6. 생산업체별 재료 가격 테이블 데이터 삽입
 INSERT INTO SOURCE_PRICE (SOURCE_PRICE_ID, PRODUCT_COMPANY_ID, SOURCE_ID, PRICE) VALUES
