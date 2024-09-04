@@ -3,24 +3,22 @@ package org.example.jhta_2402_2_final.service.distribution;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.catalina.Store;
 import org.example.jhta_2402_2_final.dao.distribution.KitOrderProcessDao;
 import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderProcessDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @Slf4j
 public class KitOrderProcessService {
 
-    private final SqlSession sqlSession;
+    //private final SqlSession sqlSession;
     private final KitOrderProcessDao kitOrderProcessDao;
 
     public List<Map<String, Object>> findAllOrder() {
@@ -102,42 +100,9 @@ public class KitOrderProcessService {
 
     }
 
-
-    /*public String findMealKitByKitOrderId(String kitOrderId) {
-    }*/
-
-
-
-    /*public List<Map<String, Object>> findKitSource() { return kitOrderProcessDao.findKitSource();
-    }*/
-
-    /*public void requestKitSourceOrder(Map<String, Object> requestKitSourceMap) {
-        String kitOrderID = (String) requestKitSourceMap.get("modalKitOrderID"); // 수정됨
-        String kitCompanyName = (String) requestKitSourceMap.get("modalKitCompanyName"); // 수정됨
-        String kitName = (String) requestKitSourceMap.get("modalKitName"); // 수정됨
-        String quantity = (String) requestKitSourceMap.get("modalQuantity"); // 수정됨
-        String date = (String) requestKitSourceMap.get("modalDate"); // 수정됨
-
-        log.info("Kit Order ID: " + kitOrderID);
-        log.info("Kit Company Name: " + kitCompanyName);
-        log.info("Kit Name: " + kitName);
-        log.info("Quantity: " + quantity);
-        log.info("Order Date: " + date);*/
-    // kitOrderProcessDao.requestKitSourceOrder(kitOrderID, kitName, quantity, date);
-
-
     // 데이터 저장을 위한 메서드
     public void saveOrder(KitOrderProcessDto kitOrderProcessDto) {
-        try {
-            int result = kitOrderProcessDao.requestKitSourceOrder(kitOrderProcessDto);
-            if (result > 0) {
-                log.info("Order saved successfully: {}", kitOrderProcessDto);
-            } else {
-                log.warn("Order not saved: {}", kitOrderProcessDto);
-            }
-        } catch (Exception e) {
-            log.error("Error saving order: {}", kitOrderProcessDto, e);
-        }
+
     }
 
     // 주문 확인하기
@@ -155,7 +120,6 @@ public class KitOrderProcessService {
                 .collect(Collectors.toList());
     }
 
-    // 모든 주문을 조회하는 메서드
     public List<KitOrderProcessDto> findAllOrders() {
         List<Map<String, Object>> results = kitOrderProcessDao.findAllOrders();
         return results.stream()
@@ -169,7 +133,16 @@ public class KitOrderProcessService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    public KitOrderProcessService(KitOrderProcessDao kitOrderProcessDao) {
+        this.kitOrderProcessDao = kitOrderProcessDao;
+    }
+
+    public void processKitSourceOrder(KitOrderProcessDto kitOrderProcessDto) {
+        kitOrderProcessDao.requestKitSourceOrder(kitOrderProcessDto);
+    }
 }
+
 
 
 

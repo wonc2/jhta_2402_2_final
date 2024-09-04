@@ -57,21 +57,23 @@
     </select>
 
     <insert id="requestKitSourceOrder" parameterType="KitOrderProcessDto">
-        INSERT INTO KIT_ORDER_PROCESS (
-            KIT_ORDER_ID,
-            KIT_COMPANY_NAME,
-            KIT_NAME,
-            QUANTITY,
-            ORDER_DATE,
-            STATUS
+        INSERT INTO KIT_ORDER (
+        KIT_ORDER_ID,
+        KIT_COMPANY_ID,
+        MEALKIT_ID,
+        QUANTITY,
+        PRODUCT_ORDER_DATE,
+        STATUS_ID,
+        PRICE
         ) VALUES (
-                     #{kitOrderUid},
-                     #{kitCompanyName},
-                     #{kitName},
-                     #{quantity},
-                     #{kitOrderDate},
-                     #{status}
-                 )
+        #{kitOrderUid},
+        #{kitCompanyName},
+        #{kitName},
+        #{quantity},
+        #{kitOrderDate},
+        #{status},
+        0  <!-- Adjust as needed or remove if not applicable -->
+        )
     </insert>
 
     <select id="findOrdersByKeyword" parameterType="String" resultType="Map">
