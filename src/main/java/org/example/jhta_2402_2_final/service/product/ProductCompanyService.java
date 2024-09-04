@@ -98,10 +98,10 @@ public class ProductCompanyService {
     public List<Map<String, Object>> orderProcess(String companyName, Map<String, Object> paramData) {
         // 필요값: { orderId, orderStatus }
         productCompanyDao.orderProcess(paramData); // 주문처리서 상태 업데이트
-
-//        if (productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId")) < 0) throw new RuntimeException("적재량이 모자람~");
-        // // 필요값: { sourceQuantity, sourcePriceId }
+        // 필요값: { sourceQuantity, sourcePriceId }
         productCompanyDao.outboundSource(paramData);
+        // 위에서 출고 연산 수행한후 창고의 재료 재고가 < 0 일시 롤백
+        if (productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId")) < 0) throw new RuntimeException("적재량이 모자람~");
 
         return getProductOrderList(companyName, paramData);
     }

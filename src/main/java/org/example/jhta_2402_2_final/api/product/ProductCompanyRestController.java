@@ -20,7 +20,7 @@ public class ProductCompanyRestController {
     @ModelAttribute("companyName")
     public String getCompanyName(@AuthenticationPrincipal CustomUserDetails userDetails) {
         // return userDetails.getMemberDto().getUserName();
-        return "한림";
+        return "농협";
     }
 
     @GetMapping("add")
