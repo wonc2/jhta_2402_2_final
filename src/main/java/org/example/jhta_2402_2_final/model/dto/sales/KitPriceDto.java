@@ -12,5 +12,6 @@ public class KitPriceDto {
     private int minPrice;
     private int quantity;
     private int total;
-    private int mealkitPrice;
+    private int minMealkitPrice;
+    private int currentMealkitPrice;
 }

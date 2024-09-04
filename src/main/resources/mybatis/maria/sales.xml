@@ -35,8 +35,8 @@
 
 <!--    새로운 주문 추가-->
     <insert id="insert">
-        INSERT INTO KIT_ORDER (KIT_ORDER_ID, KIT_COMPANY_ID, MEALKIT_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
-        VALUES (#{kitOrderId}, #{kitCompanyId}, #{mealkitId}, #{quantity}, NOW(), #{statusId})
+        INSERT INTO KIT_ORDER (KIT_ORDER_ID, KIT_COMPANY_ID, MEALKIT_ID, PRICE, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
+        VALUES (#{kitOrderId}, #{kitCompanyId}, #{mealkitId},#{price}, #{quantity}, NOW(), #{statusId})
     </insert>
 
 
@@ -63,11 +63,12 @@
     <resultMap id="mealkitResultMap" type="map">
         <id property="MEALKIT_ID" column="MEALKIT_ID"/>
         <result property="NAME" column="NAME"/>
+        <result property="PRICE" column="PRICE"/>
     </resultMap>
 
     <!-- 쿼리 정의 -->
     <select id="getMealkitIdAndNames" resultMap="mealkitResultMap">
-        SELECT MEALKIT_ID, NAME
+        SELECT MEALKIT_ID, NAME, PRICE
         FROM MEALKIT
     </select>
 
@@ -291,12 +292,9 @@
                 (MIN(sp.price) * ks.QUANTITY) AS total
             FROM
                 MEALKIT m
-                    JOIN
-                KIT_SOURCE ks ON m.MEALKIT_ID = ks.MEALKIT_ID
-                    JOIN
-                SOURCE s ON ks.SOURCE_ID = s.source_id
-                    JOIN
-                SOURCE_PRICE sp ON s.source_id = sp.source_id
+                    JOIN KIT_SOURCE ks ON m.MEALKIT_ID = ks.MEALKIT_ID
+                    JOIN SOURCE s ON ks.SOURCE_ID = s.source_id
+                    JOIN SOURCE_PRICE sp ON s.source_id = sp.source_id
             GROUP BY
                 m.MEALKIT_ID, m.name, s.name, ks.QUANTITY
         ),
@@ -304,7 +302,7 @@
                  SELECT
                      mealkitId,
                      mealkitName,
-                     SUM(total) AS mealkitPrice
+                     SUM(total) AS minMealkitPrice
                  FROM
                      MealkitDetails
                  GROUP BY
@@ -317,12 +315,21 @@
             d.minPrice,
             d.quantity,
             d.total,
-            t.mealkitPrice
+            t.minMealkitPrice,
+            m.PRICE AS currentMealkitPrice
         FROM
             MealkitDetails d
-                JOIN
-            MealkitTotal t ON d.mealkitId = t.mealkitId
+                JOIN MealkitTotal t ON d.mealkitId = t.mealkitId
+                JOIN MEALKIT m ON d.mealkitId = m.MEALKIT_ID
         ORDER BY
-            d.mealkitId, d.sourceName
+            d.mealkitId, d.sourceName;
     </select>
+
+<!--밀키트 가격 수정-->
+    <update id="updateKitPrice">
+        UPDATE MEALKIT
+        SET PRICE = #{minPrice}
+        WHERE MEALKIT_ID = #{mealkitId}
+    </update>
+
 </mapper>
