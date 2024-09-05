@@ -16,21 +16,34 @@
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-chart-bar me-1"></i>
-                                재고 현황 차트
+                                주문 현황 차트
                             </div>
                             <div class="card-body">
-                                <canvas id="salesProductPriceChart" width="100%" height="100%"></canvas>
+                                <canvas id="orderChart" style="max-width: 1000px; max-height: 300px;"></canvas>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-6">
                         <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-area me-1"></i>
-                                생산 주문 요청 차트
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-chart-area me-1"></i>
+                                    재고 현황 차트
+                                </div>
+                                <!-- 드롭다운 버튼 -->
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="warehouseChartDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        차트 모양 선택
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="warehouseChartDropdown">
+                                        <li><a class="dropdown-item warehouse-dropdown-item" data-value="bar">막대 차트</a></li>
+                                        <li><a class="dropdown-item warehouse-dropdown-item" data-value="line">선형 차트</a></li>
+                                        <li><a class="dropdown-item warehouse-dropdown-item" data-value="doughnut">도넛 차트</a></li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="card-body">
-                                <canvas id="salesProductChart" width="100%" height="100%"></canvas>
+                                <canvas id="warehouseChart" style="max-width: 1000px; max-height: 300px;"></canvas>
                             </div>
                         </div>
                     </div>
@@ -38,18 +51,18 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
-                        <button class="btn btn-secondary dropdown-toggle ms-2" type="button" id="viewListDropDown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-secondary dropdown-toggle ms-2" type="button" id="tableDropDown" data-bs-toggle="dropdown" aria-expanded="false">
                             생산 현황
                         </button>
-                        <ul class="dropdown-menu" aria-labelledby="viewListDropDown">
-                            <li><a class="dropdown-item" data-value="companySourceList">생산 현황 </a></li>
-                            <li><a class="dropdown-item" data-value="warehouseList">창고 현황 </a></li>
-                            <li><a class="dropdown-item" data-value="orderList">주문 현황 </a></li>
+                        <ul class="dropdown-menu" aria-labelledby="tableDropDown">
+                            <li><button class="dropdown-item table-dropdown-item" data-value="companySourceList" type="button">생산 현황</button></li>
+                            <li><button class="dropdown-item table-dropdown-item" data-value="warehouseList" type="button">창고 현황</button></li>
+                            <li><button class="dropdown-item table-dropdown-item" data-value="orderList" type="button">주문 현황</button></li>
                         </ul>
                     </div>
                     <div class="card-body">
                         <div id="companySourceTableContainer">
-                            <table id="companySourceTable" class="table table-bordered">
+                            <table id="companySourceTable" class="table table-bordered" style="table-layout: fixed;">
                                 <thead>
                                 <tr>
                                     <th>등록 번호</th>
@@ -77,8 +90,8 @@
                                     <th>생산품명</th>
                                     <th>입고량</th>
                                     <th>출고량</th> <!-- 출고량 / 입고량  이렇게 나오면되나 ? -->
-<!--                                    <th>생산(입고)일자</th>-->
-<!--                                    <th>납품일자</th> &lt;!&ndash; 30 / 100 이었다가 100 / 100 되면 100 / 100 되는 순간의 납품일자로 업데이트 &ndash;&gt;-->
+                                    <!--                                    <th>생산(입고)일자</th>-->
+                                    <!--                                    <th>납품일자</th> &lt;!&ndash; 30 / 100 이었다가 100 / 100 되면 100 / 100 되는 순간의 납품일자로 업데이트 &ndash;&gt;-->
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -329,6 +342,7 @@
         </footer>
     </div>
 </div>
+<div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;"></div>
 </body>
 <th:block th:replace="~{fragment/footer}"></th:block>
 <script th:inline="javascript" th:src="@{/js/productCompany.js}"></script>

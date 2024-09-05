@@ -2,12 +2,12 @@ package org.example.jhta_2402_2_final.api.product;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.model.dto.CustomUserDetails;
+import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyChartDto;
 import org.example.jhta_2402_2_final.service.product.ProductCompanyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,8 +38,8 @@ public class ProductCompanyRestController {
 
     @PutMapping("add/{companySourceId}")
     public ResponseEntity<List<Map<String, Object>>> updateSource(@ModelAttribute("companyName") String companyName,
-                                                            @PathVariable String companySourceId,
-                                                            @RequestBody Map<String ,Object> paramData){
+                                                                  @PathVariable String companySourceId,
+                                                                  @RequestBody Map<String ,Object> paramData){
         List<Map<String, Object>> responseData = productCompanyService.sourcePriceUpdate(companyName, companySourceId, paramData);
         return null;
     }
@@ -72,6 +72,12 @@ public class ProductCompanyRestController {
     @PostMapping("order")
     public ResponseEntity<List<Map<String, Object>>> orderProcess(@ModelAttribute("companyName") String companyName, @RequestBody Map<String ,Object> paramData){
         List<Map<String, Object>> responseData = productCompanyService.orderProcess(companyName, paramData);
+        return ResponseEntity.ok().body(responseData);
+    }
+
+    @GetMapping("chart")
+    public ResponseEntity<List<ProductCompanyChartDto>> getChart(@ModelAttribute("companyName") String companyName){
+        List<ProductCompanyChartDto> responseData = productCompanyService.getChart(companyName);
         return ResponseEntity.ok().body(responseData);
     }
 

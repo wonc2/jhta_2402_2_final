@@ -7,8 +7,8 @@
         s.NAME as 'sourceName',
         PRICE as 'sourcePrice',
         COALESCE((SELECT SUM(quantity)
-            FROM SOURCE_WAREHOUSE sw
-            WHERE sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID), 0) AS totalQuantity
+        FROM SOURCE_WAREHOUSE sw
+        WHERE sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID), 0) AS totalQuantity
         from SOURCE_PRICE sp
         join SOURCE s ON s.source_id = sp.source_id
         join PRODUCT_COMPANY pc ON pc.product_company_id = sp.product_company_id
@@ -45,9 +45,9 @@
             DATE_FORMAT(sw.produce_date, '%Y-%m-%d') as produceDate,
             s.name as sourceName
         FROM SOURCE_WAREHOUSE sw
-        JOIN SOURCE_PRICE sp on sp.SOURCE_PRICE_ID = sw.SOURCE_PRICE_ID
-        JOIN SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
-        JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+                 JOIN SOURCE_PRICE sp on sp.SOURCE_PRICE_ID = sw.SOURCE_PRICE_ID
+                 JOIN SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
+                 JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         WHERE pc.NAME = #{companyName}
     </select>
 
@@ -63,10 +63,10 @@
             st.STATUS AS orderStatus,
             sp.SOURCE_PRICE_ID as sourcePriceId
         FROM PRODUCT_ORDER po
-        JOIN SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
-        JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
-        JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
-        JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
+                 JOIN SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+                 JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+                 JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
+                 JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
         WHERE pc.NAME = #{companyName}
     </select>
     <update id="orderProcess" parameterType="map">
@@ -86,9 +86,9 @@
         WHERE NOT EXISTS (
             SELECT 1
             FROM SOURCE_PRICE sp
-            JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+                     JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
             WHERE sp.SOURCE_ID = s.SOURCE_ID
-            AND pc.NAME = #{companyName}
+              AND pc.NAME = #{companyName}
         )
     </select>
 
@@ -104,14 +104,29 @@
     </select>
 
     <select id="getSourceQuantityFromWarehouse" parameterType="String" resultType="int">
-        select quantity from SOURCE_WAREHOUSE WHERE SOURCE_PRICE_ID = #{sourcePriceId}
+        select SUM(quantity) from SOURCE_WAREHOUSE WHERE SOURCE_PRICE_ID = #{sourcePriceId}
     </select>
 
     <select id="checkDuplicateCompanySource" parameterType="map" resultType="boolean">
         SELECT COUNT(*)
         FROM SOURCE_PRICE sp
-        JOIN SOURCE s on sp.SOURCE_ID = s.SOURCE_ID
-        JOIN PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+                 JOIN SOURCE s on sp.SOURCE_ID = s.SOURCE_ID
+                 JOIN PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         WHERE pc.PRODUCT_COMPANY_ID = #{companyId} and (s.SOURCE_ID = #{sourceId} or s.NAME = #{sourceName})
+    </select>
+
+
+    <!-- Chart 차트 -->
+    <select id="getChart" resultType="ProductCompanyChartDto" parameterType="String">
+        SELECT
+            SUM(quantity) as sourceQuantity,
+            s.NAME as sourceName
+        FROM SOURCE_WAREHOUSE sw
+                 join SOURCE_PRICE sp on sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+                 join SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
+                 join PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID WHERE pc.NAME = #{companyName}
+        GROUP BY sp.SOURCE_PRICE_ID
+        --         ORDER BY sourceQuantity DESC
+--         LIMIT 20
     </select>
 </mapper>

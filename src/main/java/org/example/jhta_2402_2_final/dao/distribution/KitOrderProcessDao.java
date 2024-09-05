@@ -45,6 +45,8 @@ public interface KitOrderProcessDao {
     // 밀키트 주문로그 테이블의 상태 변경(KIT_ORDER_LOG 테이블)
     void updateOrderLogStatus(@Param("kitOrderId") String kitOrderId, @Param("status") int status);
 
+    void insertOrderLogStatus(@Param("kitOrderId") String kitOrderId, @Param("status") int status);
+
 
 
 

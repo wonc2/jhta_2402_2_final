@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jhta_2402_2_final.model.dto.distribution.LogisticsWareHouseDto;
 import org.example.jhta_2402_2_final.service.distribution.LogisticsWareHouseService;
+//import org.example.jhta_2402_2_final.util.SmsUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,7 @@ import java.util.Map;
 public class WareHouseController {
 
     private final LogisticsWareHouseService logisticsWareHouseService;
-
-
+//    private final SmsUtil smsUtil;
     @GetMapping("/selectAll")
     public String selectAll(Model model) {
 
@@ -69,6 +69,11 @@ public class WareHouseController {
         // 예시로 List<Map<String, Object>> 타입의 데이터를 반환한다고 가정합니다.
         return logisticsWareHouseService.selectKitOrderLogDetailsBySourceId(sourceId);
     }
+//    @GetMapping("/sendMSG")
+//    @ResponseBody
+//    public void sendMSG() {
+//        smsUtil.sendOne();
+//    }
 
 
 }
