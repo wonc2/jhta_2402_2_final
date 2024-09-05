@@ -1,20 +1,17 @@
-const csrfToken = $('meta[name="_csrf"]').attr('content');
-const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
-
-console.log("csrfToken: " + csrfToken);
-console.log("csrfHeader: " + csrfHeader);
-
-
 /* Init Process - 페이지 처음 방문시 필요한거 전부 초기화 */
 $(document).ready(function () {
     // 생산품 등록의 재료 리스트 초기화 ( 이미 등록된건 안나옴 )
     updateSourceSelectList();
+
     // 제일 처음 보이는 테이블 초기화 ( 현재 설정: 생산품 등록 테이블 )
     getCompanySourceTable();
+
     // 차트 초기화 아무 값 없는 빈 차트
     initChart(chartType);
+
     // 위에서 초기화한 차트에 첫번째 값 넣음 이거 사용해서 계속 값 업데이트 해주면됨
     updateWarehouseChart();
+
     // 테이블 불러오고 숨김
     // 처음 페이지에 접속할때 초기화 하는 이유: 테이블 나중에 초기화하면 화면이 새로고침 비슷하게 되는 버그?가 있음.. @@:로딩 오래걸리면 로직 원래대로 변경
     getWarehouseTable();
@@ -48,9 +45,9 @@ $(document).ready(function () {
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data),
-            // beforeSend: function (xhr) {
-            //     xhr.setRequestHeader(csrfHeader, csrfToken);
-            // },
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
+            },
             success: function () {
                 $('#addSourceModal').modal('hide');
                 $('#companySourceTable').DataTable().ajax.reload(null, false);
@@ -74,6 +71,9 @@ $(document).ready(function () {
             $.ajax({
                 url: `/api/product/company/add/${companySourceId}`,
                 type: 'DELETE',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
+                },
                 success: function () {
                     $('#companySourceTable').DataTable().ajax.reload(null, false);
                 },
@@ -104,6 +104,9 @@ $(document).ready(function () {
             type: 'PUT',
             contentType: 'application/json',
             data: JSON.stringify(data),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
+            },
             success: function () {
                 $('#updateSourceModal').modal('hide');
                 alert('생산품 가격 수정이 완료되었습니다.');
@@ -120,14 +123,18 @@ $(document).ready(function () {
 
 /* Order Process - 주문 현황 테이블 스크립트 */
 $(document).ready(function () {
+    $('.orderSearch').on('change', function () {
+        $('#orderTable').DataTable().ajax.reload(function () {}, true);
+    });
+
     // 생산 모달창 -> 갯수 입력후 생산 로직 수행 @@: 이거 지금 생산 테이블에 있는데 주문 테이블로 옮겨야함
-    $('#companySourceTable').on('click', 'button[data-action="produce"]', function () {
+    $('#orderTable').on('click', 'button[data-action="produce"]', function () {
         const row = $(this).closest('tr');
-        const data = $('#companySourceTable').DataTable().row(row).data();
+        const data = $('#orderTable').DataTable().row(row).data();
 
         $('#produceSourceName').val(data.sourceName);
         $('#produceSourcePrice').val(data.sourcePrice);
-        $('#sourcePriceId').val(data.companySourceId);
+        $('#sourcePriceId').val(data.sourcePriceId);
         $('#produceSourceModal').modal('show');
     });
     $('#produceSourceBtn').on('click', function () {
@@ -144,11 +151,17 @@ $(document).ready(function () {
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
+            },
             success: function () {
-                showToast(sourceName + " 생산 요청이 완료 되었습니다: " + sourceQuantity);
-                $('#companySourceTable').DataTable().ajax.reload(null, false);
+                showToast("생산 요청이 완료 되었습니다: " + sourceName + " " + sourceQuantity + " 개");
+                $('#orderTable').DataTable().ajax.reload(null, false);
                 updateWarehouseChart();
                 $('#produceSourceModal').modal('hide');
+                setTimeout(function () {
+                    $('#sourceQuantity').val(10);
+                }, 500);
             },
             error: function (xhr, status, error) {
                 console.error('Error occurred:', error);
@@ -157,6 +170,9 @@ $(document).ready(function () {
         });
     });
 
+    $('#orderTable').on('click', 'button[data-action="orderProcessBlock"]', function () {
+        alert("재고가 모자랍니다~");
+    });
     // 주문 처리, 주문 상태 변경하고 창고에서 주문받은 재료 갯수만큼 출고하는 로직 수행
     $('#orderTable').on('click', 'button[data-action="orderProcess"]', function () {
         const row = $(this).closest('tr');
@@ -193,10 +209,15 @@ $(document).ready(function () {
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
+            },
             success: function () {
                 $('#orderProcessModal').modal('hide');
-                alert('주문 처리가 완료되었습니다.');
-                $('#orderTable').DataTable().ajax.reload(null, false);
+                showToast("주문 처리가 완료되었습니다.")
+                updateWarehouseChart();
+                $('#orderTable').DataTable().ajax.reload(function () {
+                }, false);
             },
             error: function (xhr, status, error) {
                 console.error('Error occurred:', error);
@@ -211,6 +232,8 @@ $(document).ready(function () {
     // 차트 타입 변경
     $('.warehouse-dropdown-item').on('click', function () {
         const selectedType = $(this).data('value'); // 선택된 차트 타입 가져오기
+        const selectedName = $(this).data('name'); // 선택된 차트 타입 가져오기
+        $('#warehouseChartDropdown').text(selectedName);
         chartType = selectedType; // 선택된 차트 타입 저장
         initChart(chartType); // 새로운 차트 타입으로 초기화
         updateWarehouseChart(); // 새로운 차트에 데이터 업데이트
@@ -220,9 +243,9 @@ $(document).ready(function () {
     $('.table-dropdown-item').on('click', function () {
 
         const selectedValue = $(this).data('value');
-        const selectedText = $(this).text();
+        const selectedName = $(this).data('name');
 
-        $('#viewListDropDown').text(selectedText);
+        $('#tableDropDown').text(selectedName);
 
         if (selectedValue === 'companySourceList') {
             $('#companySourceTableContainer').show();
@@ -247,8 +270,14 @@ $(document).ready(function () {
 /* 여기부턴 전역함수, 전역변수 */
 /* 여기부턴 전역함수, 전역변수 */
 /* 여기부턴 전역함수, 전역변수 */
-/* 여기부턴 전역함수, 전역변수 */
-/* 여기부턴 전역함수, 전역변수 */
+
+// csrf: ajax 로 post,put,delete 요청 하려면 csrfToken, csrfHeader 담아서 같이 보내야함
+const csrfToken = $('meta[name="_csrf"]').attr('content');
+const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
+
+// 검색 옵션들 변수 ??: 테이블별로 따로 만들어야하나
+let orderMonthOption = '';
+let orderStatusOption = '';
 
 /* 테이블 리스트 초기화 */
 
@@ -267,7 +296,7 @@ function getCompanySourceTable() {
                 data: null,
                 render: function () {
                     return `
-                            <button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button> |
+<!--                            <button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button> |-->
                             <button type="button" class="btn btn-info btn-sm" data-action="update">수정</button> |
                             <button type="button" class="btn btn-danger btn-sm" data-action="delete">삭제</button>
                         `;
@@ -278,6 +307,7 @@ function getCompanySourceTable() {
         lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]]
     });
 }
+
 function getWarehouseTable() {
     $('#warehouseTable').DataTable({
         ajax: {
@@ -300,10 +330,15 @@ function getWarehouseTable() {
         }
     });
 }
+
 function getOrderTable() {
     $('#orderTable').DataTable({
         ajax: {
             url: '/api/product/company/order',
+            data: function (d) {
+                d.orderMonthOption = $('#orderMonthSearchSelect').val() || "all"; // 기본값은 "all"
+                d.orderStatusOption = $('#orderStatusSearchSelect').val() || "all"; // 기본값은 "all"
+            },
             dataSrc: ''
         },
         columns: [
@@ -317,12 +352,18 @@ function getOrderTable() {
             {
                 data: null,
                 render: function (data, type, row) {
-                    // 'orderStatus'가 '처리전'일 때만 버튼을 렌더링
+                    let buttons = `<button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button>`;
+
+                    // 'orderStatus'가 '처리전'일 때만 발주 버튼을 활성화
                     if (row.orderStatus === '처리전') {
-                        return `<button type="button" class="btn btn-outline-primary btn-sm" data-action="orderProcess">승인?확인?발주?</button>`;
-                    } else {
-                        return ''; // 처리 완료 상태라면 버튼을 렌더링하지 않음
+                        // checkStockAmount가 0 이상일 때만 발주 로직 활성화
+                        if (row.checkStockAmount < 0) {
+                            buttons += ` | <button type="button" class="btn btn-outline-warning btn-sm" data-action="orderProcessBlock">재고부족</button>`;
+                        } else {
+                            buttons += ` | <button type="button" class="btn btn-outline-primary btn-sm" data-action="orderProcess">발주</button>`;
+                        }
                     }
+                    return buttons;
                 }
             }
         ],
