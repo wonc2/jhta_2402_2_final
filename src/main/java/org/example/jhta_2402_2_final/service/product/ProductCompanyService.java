@@ -2,8 +2,8 @@ package org.example.jhta_2402_2_final.service.product;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.product.ProductCompanyDao;
-import org.example.jhta_2402_2_final.exception.types.DuplicateCompanySource;
-import org.example.jhta_2402_2_final.model.dto.common.SourceDto;
+import org.example.jhta_2402_2_final.exception.types.addCompanySourceException;
+import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyChartDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,26 +33,29 @@ public class ProductCompanyService {
     /*  생산업체 생산품 목록에 등록 (실제 생산 x, 생산품 등록임) */
     @Transactional
     public Map<String, Object> addSourceToCompany(String companyName, Map<String ,Object> paramData) {
+        // 필요한 값 가져오기
         String companyId = productCompanyDao.getCompanyIdByName(companyName);
+        paramData.put("companyId", companyId);
         String sourceName = (String) paramData.get("sourceName");
         String sourceId = (String) paramData.get("sourceId");
-        paramData.put("companyId", companyId);
 
-        if (productCompanyDao.checkDuplicateCompanySource(paramData)){
-            throw new DuplicateCompanySource("이미 등록된 제품 입니다.", HttpStatus.BAD_REQUEST);
+        // 중복 검사
+        if (productCompanyDao.checkDuplicateCompanySource(paramData)) {
+            throw new addCompanySourceException("이미 등록된 제품 입니다.", HttpStatus.BAD_REQUEST);
         }
-
-        // sourceId 값 있으면 스킵 -> 없으면 직접입력임 중복값 있으면 해당 sourceId 가져옴 -> 둘다 없을시 입력한 재료 SOURCE 테이블에 등록
+        // 빈 값 검사
+        if (sourceId == null && (sourceName == null || sourceName.isEmpty())) {
+            throw new addCompanySourceException("빈 값 입력 안됩니다.", HttpStatus.BAD_REQUEST);
+        }
+        // 셀렉트로 sourceId 가져왔으면 if문 스킵 else -> sourceName 으로 sourceId 가져옴 없으면 SOURCE 테이블에 등록
         if (sourceId == null) {
             sourceId = productCompanyDao.getSourceIdByName(sourceName);
-            if (sourceId != null) paramData.put("sourceId", sourceId);
-            else {
+            if (sourceId == null) {
                 sourceId = UUID.randomUUID().toString();
                 productCompanyDao.addSource(sourceId, sourceName);
-                paramData.put("sourceId", sourceId);
             }
         }
-        // 회사 생산품 목록에 등록
+        paramData.put("sourceId", sourceId);
         // paramData: { companyId, sourceId, sourceName, sourcePrice }
         // 필요값: { companyId, sourceId, sourcePrice }
         productCompanyDao.addSourceToCompany(paramData);
@@ -75,6 +78,18 @@ public class ProductCompanyService {
     /* 등록된 상품 생산 -> 창고에 적재 */
     @Transactional
     public List<Map<String, Object>> produceSource(String companyName, Map<String ,Object> paramData) {
+        Object sourceQuantityObj = paramData.get("sourceQuantity");
+        if (sourceQuantityObj == null) {
+            throw new RuntimeException("값이 없습니다 ~");
+        }
+        try {
+            int sourceQuantity = Integer.parseInt(sourceQuantityObj.toString());
+            if (sourceQuantity <= 0 ) {
+                throw new RuntimeException("한 개 이상 입력해야함 ~");
+            }
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("정수만 입력하세요 ~");
+        }
         productCompanyDao.produceSource(paramData);
         return productCompanyDao.getWarehouseSources(companyName);
     }
@@ -101,8 +116,14 @@ public class ProductCompanyService {
         // 필요값: { sourceQuantity, sourcePriceId }
         productCompanyDao.outboundSource(paramData);
         // 위에서 출고 연산 수행한후 창고의 재료 재고가 < 0 일시 롤백
-        if (productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId")) < 0) throw new RuntimeException("적재량이 모자람~");
+        if (productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId")) < 0){
+            throw new RuntimeException("적재량이 모자람~");
+        }
 
         return getProductOrderList(companyName, paramData);
+    }
+
+    public List<ProductCompanyChartDto> getChart(String companyName) {
+        return productCompanyDao.getChart(companyName);
     }
 }

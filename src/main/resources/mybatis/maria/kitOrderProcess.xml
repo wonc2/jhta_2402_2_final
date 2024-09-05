@@ -109,10 +109,14 @@
         WHERE KIT_ORDER_ID = #{kitOrderId}
     </update>
 
-    <update id="updateOrderLogStatus">
-        UPDATE KIT_ORDER_LOG
-        SET STATUS_ID = #{status}
-        WHERE KIT_ORDER_ID = #{kitOrderId}
-    </update>
+<!--    <update id="updateOrderLogStatus">-->
+<!--        UPDATE KIT_ORDER_LOG-->
+<!--        SET STATUS_ID = #{status}-->
+<!--        WHERE KIT_ORDER_ID = #{kitOrderId}-->
+<!--    </update>-->
+    <insert id="insertOrderLogStatus" parameterType="Map">
+        INSERT INTO KIT_ORDER_LOG
+        VALUES (UUID(), #{kitOrderId}, #{status}, NOW())
+    </insert>
 
 </mapper>
