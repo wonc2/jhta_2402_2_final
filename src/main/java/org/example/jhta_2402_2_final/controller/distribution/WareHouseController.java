@@ -4,7 +4,10 @@ package org.example.jhta_2402_2_final.controller.distribution;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.jhta_2402_2_final.model.dto.distribution.CombineLogDTO;
+import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderDetailLogDTO;
 import org.example.jhta_2402_2_final.model.dto.distribution.LogisticsWareHouseDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDTO;
 import org.example.jhta_2402_2_final.service.distribution.LogisticsWareHouseService;
 //import org.example.jhta_2402_2_final.util.SmsUtil;
 import org.springframework.stereotype.Controller;
@@ -13,9 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -24,7 +25,7 @@ import java.util.Map;
 public class WareHouseController {
 
     private final LogisticsWareHouseService logisticsWareHouseService;
-//    private final SmsUtil smsUtil;
+    //    private final SmsUtil smsUtil;
     @GetMapping("/selectAll")
     public String selectAll(Model model) {
 
@@ -34,7 +35,7 @@ public class WareHouseController {
             logisticsWareHouseService.updateProductOrderStatus();
         }
 
-        // 밀키트 오더 테이블에서 스테이터스가 3인 경우 창고에서 차감하고 3->6으로 바꿈
+        // 밀키트 오더 테이블에서 스테이터스가 3인 경우 창고에서 차감하고 3->8으로 바꿈
        /* List<Map<String, Object>> requiredStackList = logisticsWareHouseService.selectRequiredStack();
         if (!requiredStackList.isEmpty()) {
             for (Map<String, Object> list : requiredStackList) {
@@ -64,10 +65,45 @@ public class WareHouseController {
 
     @GetMapping("/selectLog")
     @ResponseBody
-    public List<Map<String, Object>> getWarehouseLog(@RequestParam String sourceId) {
-        // sourceUUID를 이용해 데이터베이스에서 관련 데이터를 조회합니다.
-        // 예시로 List<Map<String, Object>> 타입의 데이터를 반환한다고 가정합니다.
-        return logisticsWareHouseService.selectKitOrderLogDetailsBySourceId(sourceId);
+    public List<CombineLogDTO> getWarehouseLog(@RequestParam String sourceId) {
+
+        List<KitOrderDetailLogDTO> kitOrderLogs = logisticsWareHouseService.selectKitOrderLogDetailsBySourceId(sourceId);
+        List<ProductOrderLogDTO> productOrderLogs = logisticsWareHouseService.selectProductOrderLogDetailsBySourceId(sourceId);
+
+
+        List<CombineLogDTO> combineLogs = new ArrayList<>();
+        for (KitOrderDetailLogDTO kitLog : kitOrderLogs) {
+            combineLogs.add(new CombineLogDTO(
+                    kitLog.getKitOrderId(),
+                    kitLog.getCompanyName(),
+                    kitLog.getSourceName(),
+                    kitLog.getSourceId(),
+                    kitLog.getQuantity(),
+                    kitLog.getOrderDate(),
+                    kitLog.getStatus()
+            ));
+        }
+        for (ProductOrderLogDTO productLog : productOrderLogs) {
+            combineLogs.add(new CombineLogDTO(
+                    productLog.getProductOrderId(),
+                    productLog.getCompanyName(),
+                    productLog.getSourceName(),
+                    productLog.getSourceId(),
+                    productLog.getQuantity(),
+                    productLog.getOrderDate(),
+                    productLog.getStatus()
+            ));
+        }
+
+        Collections.sort(combineLogs, new Comparator<CombineLogDTO>() {
+            @Override
+            public int compare(CombineLogDTO o1, CombineLogDTO o2) {
+                return o2.getOrderDate().compareTo(o1.getOrderDate());
+            }
+        });
+
+        return combineLogs;
+
     }
 //    @GetMapping("/sendMSG")
 //    @ResponseBody
