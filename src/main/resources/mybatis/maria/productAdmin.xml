@@ -14,6 +14,42 @@
                 JOIN PRODUCT_COMPANY P_C ON P_C.PRODUCT_COMPANY_ID = S_P.PRODUCT_COMPANY_ID
                 JOIN SOURCE S ON S.SOURCE_ID = S_P.SOURCE_ID
     </select>
+    <select id="getSourcePriceListCompanyName" resultType="SourcePriceViewDto" parameterType="String">
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
+                P_C.NAME AS productCompanyName,
+            S.NAME AS sourceName,
+            S_P.PRICE AS sourcePrice
+        FROM
+            SOURCE_PRICE S_P
+                JOIN PRODUCT_COMPANY P_C ON P_C.PRODUCT_COMPANY_ID = S_P.PRODUCT_COMPANY_ID
+                JOIN SOURCE S ON S.SOURCE_ID = S_P.SOURCE_ID
+                WHERE P_C.NAME = #{companyName}
+    </select>
+    <select id="getSourcePriceListProductName" resultType="SourcePriceViewDto" parameterType="String">
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
+                P_C.NAME AS productCompanyName,
+            S.NAME AS sourceName,
+            S_P.PRICE AS sourcePrice
+        FROM
+            SOURCE_PRICE S_P
+                JOIN PRODUCT_COMPANY P_C ON P_C.PRODUCT_COMPANY_ID = S_P.PRODUCT_COMPANY_ID
+                JOIN SOURCE S ON S.SOURCE_ID = S_P.SOURCE_ID
+                WHERE S.NAME = #{productName}
+    </select>
+    <select id="getSourcePriceListCompanyNameProductName" resultType="SourcePriceViewDto" parameterType="String">
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
+                P_C.NAME AS productCompanyName,
+            S.NAME AS sourceName,
+            S_P.PRICE AS sourcePrice
+        FROM
+            SOURCE_PRICE S_P
+                JOIN PRODUCT_COMPANY P_C ON P_C.PRODUCT_COMPANY_ID = S_P.PRODUCT_COMPANY_ID
+                JOIN SOURCE S ON S.SOURCE_ID = S_P.SOURCE_ID
+                WHERE P_C.NAME = #{companyName} AND S.NAME = #{productName}
+    </select>
     <select id="getProductOrderList" resultType="ProductOrderViewDto">
         SELECT
             ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
@@ -29,6 +65,60 @@
             JOIN PRODUCT_COMPANY P_C ON P_C.PRODUCT_COMPANY_ID = S_P.PRODUCT_COMPANY_ID
             JOIN SOURCE S ON S_P.SOURCE_ID = S.SOURCE_ID
             JOIN STATUS ST ON ST.STATUS_ID = P_O_T.STATUS_ID
+    </select>
+
+    <select id="getProductOrderListProductName" resultType="ProductOrderViewDto" parameterType="String">
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
+                P_C.NAME AS productCompanyName,
+            S.NAME AS sourceName,
+            S_P.PRICE AS sourcePrice,
+            P_O_T.QUANTITY AS quantity,
+            (S_P.PRICE * P_O_T.QUANTITY) AS totalPrice,
+            P_O_T.PRODUCT_ORDER_DATE AS productOrderDate,
+            ST.STATUS AS status
+        FROM PRODUCT_ORDER P_O_T
+                 JOIN SOURCE_PRICE S_P ON P_O_T.SOURCE_PRICE_ID = S_P.SOURCE_PRICE_ID
+                 JOIN PRODUCT_COMPANY P_C ON P_C.PRODUCT_COMPANY_ID = S_P.PRODUCT_COMPANY_ID
+                 JOIN SOURCE S ON S_P.SOURCE_ID = S.SOURCE_ID
+                 JOIN STATUS ST ON ST.STATUS_ID = P_O_T.STATUS_ID
+                 WHERE S.NAME = #{productName}
+    </select>
+
+    <select id="getProductOrderListCompanyName" resultType="ProductOrderViewDto" parameterType="String">
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
+                P_C.NAME AS productCompanyName,
+            S.NAME AS sourceName,
+            S_P.PRICE AS sourcePrice,
+            P_O_T.QUANTITY AS quantity,
+            (S_P.PRICE * P_O_T.QUANTITY) AS totalPrice,
+            P_O_T.PRODUCT_ORDER_DATE AS productOrderDate,
+            ST.STATUS AS status
+        FROM PRODUCT_ORDER P_O_T
+                 JOIN SOURCE_PRICE S_P ON P_O_T.SOURCE_PRICE_ID = S_P.SOURCE_PRICE_ID
+                 JOIN PRODUCT_COMPANY P_C ON P_C.PRODUCT_COMPANY_ID = S_P.PRODUCT_COMPANY_ID
+                 JOIN SOURCE S ON S_P.SOURCE_ID = S.SOURCE_ID
+                 JOIN STATUS ST ON ST.STATUS_ID = P_O_T.STATUS_ID
+                 WHERE P_C.NAME = #{companyName}
+    </select>
+
+    <select id="getProductOrderListCompanyNameProductName" resultType="ProductOrderViewDto" parameterType="String">
+        SELECT
+            ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
+                P_C.NAME AS productCompanyName,
+            S.NAME AS sourceName,
+            S_P.PRICE AS sourcePrice,
+            P_O_T.QUANTITY AS quantity,
+            (S_P.PRICE * P_O_T.QUANTITY) AS totalPrice,
+            P_O_T.PRODUCT_ORDER_DATE AS productOrderDate,
+            ST.STATUS AS status
+        FROM PRODUCT_ORDER P_O_T
+                 JOIN SOURCE_PRICE S_P ON P_O_T.SOURCE_PRICE_ID = S_P.SOURCE_PRICE_ID
+                 JOIN PRODUCT_COMPANY P_C ON P_C.PRODUCT_COMPANY_ID = S_P.PRODUCT_COMPANY_ID
+                 JOIN SOURCE S ON S_P.SOURCE_ID = S.SOURCE_ID
+                 JOIN STATUS ST ON ST.STATUS_ID = P_O_T.STATUS_ID
+                 WHERE P_C.NAME = #{companyName} AND S.NAME = #{productName}
     </select>
 
     <!-- 리스트 전부 다 가져옴 -->

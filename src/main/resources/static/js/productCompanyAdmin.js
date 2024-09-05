@@ -1,13 +1,13 @@
-//생산업체 등록 Script
-$(document).ready(function () {
+$(document).ready(function (){
+    getProductOrderList()
+    // getProductOrderChart()
+
+    //생산업체 등록 Script
     $("#btn-insertProductCompany").on("click", function () {
         $("#insertProductCompanyForm").submit();
     })
-})
-$(document).ready(function (){
-    getProductOrderList()
-})
-$(document).ready(function () {
+
+    //버튼으로 테이블 리스트 전환 기능
     var productTableChangeClassName;
     $("#productTableChange").on("click", function () {
         productTableChangeClassName = $("#productTableChange").attr('class');
@@ -16,13 +16,11 @@ $(document).ready(function () {
             $("#productTableChange").val("production");
             $("#productOrderTableContainer").hide()
             $("#sourcePriceTableContainer").show()
-            $('#productAdminOrderTable').DataTable().ajax.reload(null, false);
             if (!$.fn.DataTable.isDataTable('#productAdminSourceTable')) {
                 getSourcePriceList();  // warehouseTable 초기화
             } else {
-                $('#productAdminOrderTable').DataTable().ajax.reload(null, false);  // warehouseTable 재로드
+                $('#productAdminOrderTable').DataTable().ajax.reload(function () {} , true);  // warehouseTable 재로드
             }
-            $('#productAdminSourceTable').DataTable().ajax.reload(null, false);
         }
         if (productTableChangeClassName.includes("production")) {
             $("#productTableChange").removeClass().addClass("btn btn-sm btn-outline-primary order").text("주문 현황");
@@ -32,13 +30,26 @@ $(document).ready(function () {
         }
 
     })
+    // 검색 버튼 클릭 시 이벤트
+    $('#productAdminSearchBtn').on('click', function (e) {
+        var status = $("#productTableChange").val()
+        if(status === "order"){
+            $("#productAdminOrderTable").DataTable().ajax.reload(function () {} , true)
+        }else if(status === "production"){
+            $("#productAdminSourceTable").DataTable().ajax.reload(function () {} , true)
+        }
+    });
 })
-//Table List 변경 Script
+
 function getSourcePriceList() {
     $('#productAdminSourceTable').DataTable({
         ajax: {
-            url: '/api/product/admin/main/data/sourcePriceList',
-            dataSrc: ''
+            url: '/api/product/admin/main/data/sourcePriceSearchList',
+            dataSrc: '',
+            data : function (d) {
+                d.companyName = $("#productAdminSearchTextCompanyName").val()
+                d.productName = $("#productAdminSearchTextProductName").val()
+            },
         },
         columns: [
             {data: 'rowNum' },
@@ -54,8 +65,12 @@ function getSourcePriceList() {
 function getProductOrderList(){
     $('#productAdminOrderTable').DataTable({
         ajax: {
-            url: '/api/product/admin/main/data/productOrderList',
-            dataSrc: ''
+            url: '/api/product/admin/main/data/productOrderSearchList',
+            dataSrc: '',
+            data : function (d) {
+                d.companyName = $("#productAdminSearchTextCompanyName").val()
+                d.productName = $("#productAdminSearchTextProductName").val()
+            },
         },
         columns: [
             {data: 'rowNum' },
@@ -66,12 +81,6 @@ function getProductOrderList(){
             {data: 'totalPrice'},
             {data: 'productOrderDate'},
             {data: 'status'},
-            {
-                data: null,
-                render: function () {
-                    return ` <button class='btn btn-primary'>승인</button><button class='btn btn-danger'>거절</button> `;
-                }
-            }
         ],
         language: {emptyTable: '데이터가 없습니다.'},
         lengthMenu: [ [5, 10, 25, 50], [5, 10, 25, 50] ],
@@ -79,7 +88,20 @@ function getProductOrderList(){
     });
 }
 
-// const ctx = document.getElementById('salesProductChart');
+
+function  getProductOrderChart(){
+    $.ajax({
+        url : "/api/product/admin/main/data/productOrderChart" ,
+        type : "GET",
+        success : function (data){
+            console.log(data)
+        },
+        error: function (xhr, status, error) {
+            console.error('차트 데이터 가져오는데 실패함:', error);
+        }
+    })
+}
+// const ctx = document.getElementById('productOrderAdminChart');
 // new Chart(ctx, {
 //     type: 'doughnut',
 //     data: {
