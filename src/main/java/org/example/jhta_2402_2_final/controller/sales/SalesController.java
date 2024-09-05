@@ -74,7 +74,6 @@ public class SalesController {
     public String changeKitOrderStatus(
             @RequestParam("kitOrderId") String kitOrderId,
             @RequestParam("statusId") int statusId) {
-        System.out.println("kitOrderId>>>>>>>>"+kitOrderId);
 
         salesService.updateKitOrderStatus(kitOrderId, statusId);
         salesService.createKitOrderLog(UUID.fromString(kitOrderId), statusId);
@@ -93,8 +92,6 @@ public class SalesController {
             @RequestParam("mealkitName") String mealkitName,
             @RequestParam("sourceIds") List<String> sourceIds,
             @RequestParam(value = "quantities", required = false) List<Integer> quantities) {
-
-        System.out.println("quantities>>>>>>>>>>>>>"+quantities);
 
         // 서비스에서 밀키트 추가 로직 호출
         salesService.insertMealkit(mealkitName, sourceIds, quantities);

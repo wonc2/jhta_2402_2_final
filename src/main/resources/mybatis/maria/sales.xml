@@ -9,7 +9,8 @@
                QUANTITY,
                PRODUCT_ORDER_DATE AS ProductOrderDate,
                STATUS_ID AS StatusId
-        FROM KIT_ORDER;
+        FROM KIT_ORDER
+        order by ProductOrderDate DESC
     </select>
 
 <!--    조인해서 상세정보까지 가져오기-->
@@ -31,6 +32,7 @@
             MEALKIT m ON o.MEALKIT_ID = m.MEALKIT_ID
                 JOIN
             STATUS s ON o.STATUS_ID = s.STATUS_ID
+        order by orderDate DESC
     </select>
 
 <!--    새로운 주문 추가-->
@@ -155,6 +157,7 @@
             MEALKIT mk ON ko.MEALKIT_ID = mk.MEALKIT_ID
                 JOIN
             STATUS s ON kol.STATUS_ID = s.STATUS_ID
+        ORDER BY productOrderDate DESC
     </select>
 
     <insert id="insertLog">
@@ -202,6 +205,7 @@
             STATUS s ON kol.STATUS_ID = s.STATUS_ID
 
         where kol.STATUS_ID = 3
+        ORDER BY productOrderDate DESC
     </select>
 
     <!-- 주문 정보 조회 -->
