@@ -2,9 +2,9 @@
 <html lang="en">
 <head th:replace="~{fragment/head}"></head>
 <body class="sb-nav-fixed">
-<nav th:replace="~{fragment/userHeader}"></nav>
+<nav th:replace="~{fragment/indexAdminHeader}"></nav>
 <div id="layoutSidenav">
-    <div id="layoutSidenav_content_user">
+    <div id="layoutSidenav_content">
         <main>
             <div class="container-fluid px-4">
                 <h1 class="mt-4">생산 업무 관리자 페이지</h1>
@@ -45,7 +45,7 @@
                     </div>
                     <div class="card-body">
                         <div id="productOrderTableContainer">
-                            <table id="productAdminOrderTable" class="table table-bordered">
+                            <table id="productAdminOrderTable" class="table table-bordered" style="width:100%">
                                 <thead>
                                 <tr>
                                     <th>주문번호</th>

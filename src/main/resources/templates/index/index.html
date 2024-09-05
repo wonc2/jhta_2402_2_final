@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="~{fragment/head}"></head>
+<body class="sb-nav-fixed">
+<div th:replace="~{fragment/indexAdminHeader}"></div>
+<div class="container-fluid px-4">
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid px-4">
+                    <h1 class="mt-4">관리자 페이지</h1>
+                    <ol class="breadcrumb mb-4">
+                        <!--                    <li class="breadcrumb-item active">Dashboard</li>-->
+                    </ol>
+                    <div class="row">
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-bar me-1"></i>
+                                    판매 현황 차트
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="salesChart01" width="100%" height="100%"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-area me-1"></i>
+                                    판매 현황 차트
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="salesChart02" width="100%" height="100%"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-bar me-1"></i>
+                                    유통 현황 차트
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="logisticsChart1" width="100%" height="100%"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-area me-1"></i>
+                                    유통 현황 차트
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="logisticsChart2" width="100%" height="100%"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-bar me-1"></i>
+                                    생산 현황 차트
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="productChart1" width="100%" height="100%"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-area me-1"></i>
+                                    생산 현황 차트
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="productChart2" width="100%" height="100%"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-fluid px-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-table me-1"></i>
+                            <button class="btn btn-sm btn-outline-primary">**현황</button>
+                            <button class="btn btn-sm btn-outline-danger">**현황</button>
+                            <button class="btn btn-sm btn-outline-dark">**현황</button>
+                            <button class="btn btn-sm btn-outline-success">**현황</button>
+                            <button class="btn btn-sm btn-outline-warning">**현황</button>
+                            <button class="btn btn-sm btn-outline-secondary">**현황</button>
+                            </i>
+                        </div>
+                        <div class="card-body">
+                            <div id="productOrderTableContainer">
+                                <table id="productAdminOrderTable" class="table table-bordered" style="width:100%">
+                                    <thead>
+                                    <tr>
+                                        <th>주문번호</th>
+                                        <th>생산업체명</th>
+                                        <th>생산품</th>
+                                        <th>생산품가격</th>
+                                        <th>개수</th>
+                                        <th>가격</th>
+                                        <th>주문일자</th>
+                                        <th>상태</th>
+                                        <th>주문 승인 | 주문 거절</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#insertModal">
+                                        생산 업체 등록
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="sourcePriceTableContainer" style="display:none;">
+                                <table id="productAdminSourceTable" class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>생산번호</th>
+                                        <th>생산 업체명</th>
+                                        <th>상품 명</th>
+                                        <th>상품 가격</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <th:block th:replace="fragment/productAdminPageModal"></th:block>
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid px-4">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">Copyright &copy; Your Website 2023</div>
+                        <div>
+                            <a href="#">Privacy Policy</a>
+                            &middot;
+                            <a href="#">Terms &amp; Conditions</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
+<footer th:replace="~{fragment/indexAdminFooter}"></footer>
+</body>
+</html>
