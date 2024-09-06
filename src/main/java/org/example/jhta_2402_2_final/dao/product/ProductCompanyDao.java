@@ -34,7 +34,9 @@ public interface ProductCompanyDao {
 
     List<Map<String, Object>> getProductOrderList(Map<String, Object> paramData);
 
+    // 주문 처리
     int orderProcess(Map<String, Object> paramData);
+    int orderLog(Map<String, Object> paramData);
 
     int getSourceQuantityFromWarehouse(String sourcePriceId);
 
