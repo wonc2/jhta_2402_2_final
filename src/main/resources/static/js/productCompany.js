@@ -124,7 +124,8 @@ $(document).ready(function () {
 /* Order Process - 주문 현황 테이블 스크립트 */
 $(document).ready(function () {
     $('.orderSearch').on('change', function () {
-        $('#orderTable').DataTable().ajax.reload(function () {}, true);
+        $('#orderTable').DataTable().ajax.reload(function () {
+        }, true);
     });
 
     // 생산 모달창 -> 갯수 입력후 생산 로직 수행 @@: 이거 지금 생산 테이블에 있는데 주문 테이블로 옮겨야함
@@ -221,7 +222,7 @@ $(document).ready(function () {
             },
             error: function (xhr, status, error) {
                 console.error('Error occurred:', error);
-                alert('주문 처리 도중 오류가 발생했습니다. 재고가 모자랄수도?');
+                alert('발주 실패! 현재 재고가 부족함');
             }
         });
     });
@@ -357,11 +358,11 @@ function getOrderTable() {
                     // 'orderStatus'가 '처리전'일 때만 발주 버튼을 활성화
                     if (row.orderStatus === '처리전') {
                         // checkStockAmount가 0 이상일 때만 발주 로직 활성화
-                        if (row.checkStockAmount < 0) {
-                            buttons += ` | <button type="button" class="btn btn-outline-warning btn-sm" data-action="orderProcessBlock">재고부족</button>`;
-                        } else {
-                            buttons += ` | <button type="button" class="btn btn-outline-primary btn-sm" data-action="orderProcess">발주</button>`;
-                        }
+                        // if (row.checkStockAmount < 0) {
+                        //     buttons += ` | <button type="button" class="btn btn-outline-warning btn-sm" data-action="orderProcessBlock">재고부족</button>`;
+                        // } else {
+                        buttons += ` | <button type="button" class="btn btn-outline-primary btn-sm" data-action="orderProcess">발주</button>`;
+                        // }
                     }
                     return buttons;
                 }
