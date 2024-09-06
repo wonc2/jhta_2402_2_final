@@ -1,59 +1,66 @@
 package org.example.jhta_2402_2_final.controller.distribution;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.example.jhta_2402_2_final.model.dto.distribution.DistributionMaterialDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.*;
 import org.example.jhta_2402_2_final.service.distribution.DistributionOrderService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
-@Controller
-@Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/distributionOrder")
+@Controller
 public class DistributionOrderController {
 
     private final DistributionOrderService distributionOrderService;
 
-    @GetMapping
-    public String getDefaultPage(Model model) {
-        log.info("Received request to get default page");
-        List<DistributionMaterialDto> sourcePricesList = distributionOrderService.getAllSourcePrices();
-        model.addAttribute("sourcePricesList", sourcePricesList);
-        return "distribution"; // 기본 페이지에 대한 뷰 이름
+    @GetMapping("/distribution/order")
+    public String order(Model model){
+        List<KitOrderDistDto> kitOrderDtos = distributionOrderService.getAllKitOrderDto();
+        model.addAttribute("kitOrderDtos",kitOrderDtos);
+
+        List<KitOrderNameDto> kitOrderNameDtos = distributionOrderService.kitOrderNameDto();
+        model.addAttribute("kitOrderNameDtos", kitOrderNameDtos);
+
+        List<KitOrderSourceNameDto> kitOrderSourceNameDtos = distributionOrderService.kitOrderSourceNameDto();
+        model.addAttribute("kitOrderSourceNameDtos",kitOrderSourceNameDtos);
+
+        List<MinPriceSourceDto> minPriceSourceDtos = distributionOrderService.minPriceSourceDto();
+        model.addAttribute("minPriceSourceDtos", minPriceSourceDtos);
+
+        return "distribution/order";
     }
 
-    @GetMapping("source-prices")
-    public ResponseEntity<List<DistributionMaterialDto>> getSourcePrices(
-            @RequestParam("category") String category,
-            @RequestParam("keyword") String keyword) {
-        log.info("Received request to get source prices by category: {} and keyword: {}", category, keyword);
-        List<DistributionMaterialDto> sourcePricesList = distributionOrderService.getFilteredSourcePrices(category, keyword);
-        return ResponseEntity.ok(sourcePricesList); // JSON 형식으로 응답
+    @PostMapping("/distribution/sourceOrder")
+    public String placeOrder(@RequestParam("kitOrderId") String kitOrderId,
+                             @RequestParam("sourceId") UUID sourceId,
+                             @RequestParam("totalQuantity") int totalQuantity,
+                             @RequestParam("sourcePrice") int sourcePrice,
+                             @RequestParam("productCompanyId") UUID productCompanyId
+                             ) {
+
+        UUID sourcePriceId = distributionOrderService.selectSourcePriceId(sourceId, productCompanyId);
+
+
+        int result = distributionOrderService.insertProductOrder(sourcePriceId, totalQuantity);
+
+        if (result > 0) System.out.println("인서트 성공");
+        else System.out.println("인서트 실패 ");
+
+        return "redirect:/distribution/order";
     }
 
-    @GetMapping("best-suppliers")
-    public ResponseEntity<List<DistributionMaterialDto>> getBestSuppliers() {
-        log.info("Received request to get best suppliers");
-        List<DistributionMaterialDto> bestSuppliers = distributionOrderService.getBestSuppliers();
-        return ResponseEntity.ok(bestSuppliers); // JSON 형식으로 응답
-    }
 
-    @PostMapping("/send-order-summary")
-    public ResponseEntity<String> sendOrderSummary() {
-        try {
-            distributionOrderService.sendOrderSummary();
-            return ResponseEntity.ok("주문 내역서가 성공적으로 전송되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("주문 내역서를 전송하는 데 실패했습니다.");
-        }
-    }
+
+
+
+
 }

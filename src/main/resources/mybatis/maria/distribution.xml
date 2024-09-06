@@ -1,107 +1,147 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.example.jhta_2402_2_final.dao.distribution.DistributionSourcePriceDao">
+<mapper namespace="org.example.jhta_2402_2_final.dao.distribution.DistributionOrderDao">
 
-    <!-- 특정 밀키트의 재료와 가격을 조회하는 쿼리 -->
-    <select id="getSourcePricesForKit" resultType="DistributionMaterialDto">
-        SELECT
-            sp.SOURCE_ID AS sourceId,
-            s.NAME AS materialName,
-            sp.PRICE AS price,
-            pc.NAME AS supplierName
-        FROM
-            SOURCE_PRICE sp
-                JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
-                JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
-        WHERE
-            sp.SOURCE_ID = #{kitId}
-    </select>
+ <select id="selectKitOrder" resultType="KitOrderDistDto">
+     SELECT
+         KIT_ORDER_ID as kitOrderId,      -- 주문PK
+         KIT_COMPANY_ID as kitCompanyId,     -- 밀키트판매업체FK
+         MEALKIT_ID as mealkitId,         -- 밀키트FK
+         PRICE,              -- 밀키트 가격
+         QUANTITY,           -- 개수
+         PRODUCT_ORDER_DATE as orderDate, -- 주문 일자
+         STATUS_ID as statusId           -- 상태FK
+     FROM
+         KIT_ORDER
+ </select>
 
-    <!-- 각 재료별 최저가 제공 업체를 조회하는 쿼리 -->
-    <select id="getBestSuppliers" resultType="DistributionMaterialDto">
-        SELECT
-            sp.SOURCE_ID AS sourceId,
-            s.NAME AS materialName,
-            MIN(sp.PRICE) AS lowestPrice,
-            pc.NAME AS bestSupplierName
-        FROM
-            SOURCE_PRICE sp
-                JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
-                JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
-        GROUP BY
-            sp.SOURCE_ID, s.NAME, pc.NAME
-    </select>
 
-    <!-- 주문 내역을 조회하는 쿼리 -->
-    <select id="getOrderDetails" resultType="DistributionMaterialDto">
-        SELECT
-        KO.KIT_ORDER_ID AS orderId,
-        M.NAME AS materialName,
-        KO.QUANTITY AS quantity, <!-- 수량 추가 -->
-        M.PRICE AS price,
-        KO.ORDER_DATE AS orderDate, <!-- 주문 날짜 추가 -->
-        KC.NAME AS supplierName
-        FROM
-        KIT_ORDER KO
-        JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
-        JOIN MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
-    </select>
 
-    <!-- 주문 내역을 조회하는 쿼리 (키워드 기반) -->
-    <select id="getOrderDetailsByKeyword" parameterType="String" resultType="DistributionMaterialDto">
+    <select id="selectKitNameOrder" resultType="KitOrderNameDto">
         SELECT
-            KO.KIT_ORDER_ID AS orderId,
-            M.NAME AS materialName,
-            KO.QUANTITY AS quantity,
-            M.PRICE AS price,
-            KO.ORDER_DATE AS orderDate,
-            KC.NAME AS supplierName
+            KO.KIT_ORDER_ID as kitOrderId,           -- 주문PK
+            KC.NAME AS companyId,   -- 판매업체 이름
+            MK.NAME AS mealkitName,   -- 밀키트 이름
+            KO.PRICE,                  -- 밀키트 가격
+            KO.QUANTITY,               -- 밀키트 개수
+            (KO.PRICE * KO.QUANTITY) AS totalPrice,  -- 총합 (가격 * 개수)
+            KO.PRODUCT_ORDER_DATE as orderDate,     -- 주문 일자
+            S.STATUS  -- 주문 상태
         FROM
             KIT_ORDER KO
-                JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
-                JOIN MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
-        WHERE
-            M.NAME LIKE CONCAT('%', #{orderKeyword}, '%')
+                JOIN
+            KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
+                JOIN
+            MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID
+                JOIN
+            STATUS S ON KO.STATUS_ID = S.STATUS_ID;
     </select>
 
-    <!-- 전체 소스 가격 리스트를 조회하는 쿼리 -->
-    <select id="getAllSourcePrices" resultType="DistributionMaterialDto">
-        SELECT
-            sp.SOURCE_ID AS sourceId,
-            s.NAME AS materialName,
-            sp.PRICE AS price,
-            pc.NAME AS supplierName
+
+    <select id="selectSourceNameOrder" resultType="KitOrderSourceNameDto">
+        SELECT DISTINCT
+            KO.KIT_ORDER_ID AS kitOrderId,    -- 밀키트 주문 ID
+            MK.NAME AS mealkitName,           -- 밀키트 이름
+            KS.SOURCE_ID AS sourceId,         -- 재료 ID
+            S.NAME AS sourceName,             -- 재료 이름
+            KS.QUANTITY AS quantity          -- 재료 수량
         FROM
-            SOURCE_PRICE sp
-                JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
-                JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+            KIT_ORDER KO
+                JOIN
+            KIT_SOURCE KS ON KO.MEALKIT_ID = KS.MEALKIT_ID   -- KIT_ORDER와 KIT_SOURCE를 MEALKIT_ID로 조인
+                JOIN
+            MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID     -- MEALKIT 테이블에서 밀키트 이름 가져오기
+                JOIN
+            SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID         -- SOURCE 테이블에서 재료 이름 가져오기
+        ORDER BY
+            KO.KIT_ORDER_ID, sourceName;
     </select>
 
-    <!-- 카테고리와 키워드에 따른 소스 가격 리스트를 조회하는 쿼리 -->
-    <select id="findSourcePricesByCategoryAndKeyword" resultType="DistributionMaterialDto">
+    <select id="selectMinPriceSource" resultType="MinPriceSourceDto">
+        WITH RankedPrices AS (
+            SELECT
+                KS.SOURCE_ID AS sourceId,
+                SP.PRICE AS sourcePrice,
+                PC.NAME AS productCompanyName,
+                PC.PRODUCT_COMPANY_ID AS productCompanyId,
+                ROW_NUMBER() OVER (PARTITION BY KS.SOURCE_ID ORDER BY SP.PRICE) AS rn
+            FROM
+                KIT_ORDER KO
+                    JOIN KIT_SOURCE KS ON KO.MEALKIT_ID = KS.MEALKIT_ID
+                    JOIN SOURCE_PRICE SP ON KS.SOURCE_ID = SP.SOURCE_ID
+                    JOIN PRODUCT_COMPANY PC ON SP.PRODUCT_COMPANY_ID = PC.PRODUCT_COMPANY_ID
+            WHERE
+                SP.PRICE = (
+                    SELECT MIN(SP2.PRICE)
+                    FROM SOURCE_PRICE SP2
+                    WHERE SP2.SOURCE_ID = KS.SOURCE_ID
+                )
+        )
         SELECT
-        sp.SOURCE_ID AS sourceId,
-        s.NAME AS materialName,
-        sp.PRICE AS price,
-        pc.NAME AS supplierName
+            KO.KIT_ORDER_ID AS kitOrderId,
+            MK.NAME AS mealkitName,
+            KO.QUANTITY AS mealkitQuantity,
+            KS.SOURCE_ID AS sourceId,
+            S.NAME AS sourceName,
+            KS.QUANTITY AS ingredientQuantity,
+            RP.sourcePrice AS sourcePrice,
+            RP.productCompanyName AS productCompanyName,
+            RP.productCompanyId AS productCompanyId,
+            (KO.QUANTITY * KS.QUANTITY) AS totalQuantity
         FROM
-        SOURCE_PRICE sp
-        JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
-        JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
-        WHERE
-        <choose>
-            <when test="category == 'productCompanyName'">
-                pc.NAME LIKE CONCAT('%', #{keyword}, '%')
-            </when>
-            <when test="category == 'sourceName'">
-                s.NAME LIKE CONCAT('%', #{keyword}, '%')
-            </when>
-            <otherwise>
-                pc.NAME LIKE CONCAT('%', #{keyword}, '%')
-                OR s.NAME LIKE CONCAT('%', #{keyword}, '%')
-            </otherwise>
-        </choose>
+            KIT_ORDER KO
+                JOIN KIT_SOURCE KS ON KO.MEALKIT_ID = KS.MEALKIT_ID
+                JOIN MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID
+                JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+                JOIN RankedPrices RP ON KS.SOURCE_ID = RP.sourceId AND RP.rn = 1
+        ORDER BY
+            KO.KIT_ORDER_ID, S.NAME
     </select>
 
+
+    <select id="selectSourcePriceId" resultType="UUID">
+        SELECT
+            SP.SOURCE_PRICE_ID
+        FROM
+            SOURCE_PRICE SP
+        WHERE
+            SP.SOURCE_ID = #{sourceId}
+          AND SP.PRODUCT_COMPANY_ID = #{productCompanyId}
+    </select>
+
+    <insert id="insertProductOrder">
+        INSERT INTO PRODUCT_ORDER (
+            PRODUCT_ORDER_ID,
+            SOURCE_PRICE_ID,
+            QUANTITY,
+            PRODUCT_ORDER_DATE,
+            STATUS_ID
+        )
+        VALUES (
+                   UUID(),  -- 새로운 UUID 생성
+                   #{sourcePriceId},  -- 조회된 SOURCE_PRICE_ID
+                   #{quantity},  -- 주문 수량
+                   NOW(),  -- 현재 날짜 및 시간
+                   1 -- 상태 ID
+               );
+
+    </insert>
+
+    <insert id="insertProductOrderLog">
+        INSERT INTO PRODUCT_ORDER_LOG (
+            PRODUCT_ORDER_LOG_ID,
+            PRODUCT_ORDER_ID,
+            STATUS_ID,
+            PRODUCT_ORDER_DATE
+        )
+        VALUES (
+                   UUID(),
+                   #{productOrderId},
+                   (SELECT STATUS_ID
+                    FROM PRODUCT_ORDER
+                    WHERE PRODUCT_ORDER_ID = #{productOrderId}),
+                   NOW()
+               );
+</insert>
 </mapper>

@@ -62,24 +62,6 @@
             KIT_ORDER_ID = #{kitOrderId}
     </select>
 
-    <insert id="requestKitSourceOrder" parameterType="KitOrderProcessDto">
-        INSERT INTO KIT_ORDER_PROCESS (
-            KIT_ORDER_ID,
-            KIT_COMPANY_NAME,
-            KIT_NAME,
-            QUANTITY,
-            ORDER_DATE,
-            STATUS
-        ) VALUES (
-                     #{kitOrderUid},
-                     #{kitCompanyName},
-                     #{kitName},
-                     #{quantity},
-                     #{kitOrderDate},
-                     #{status}
-                 )
-    </insert>
-
     <select id="findOrdersByKeyword" parameterType="String" resultType="Map">
         SELECT
             KO.KIT_ORDER_ID AS kitOrderID,
@@ -118,5 +100,51 @@
         INSERT INTO KIT_ORDER_LOG
         VALUES (UUID(), #{kitOrderId}, #{status}, NOW())
     </insert>
+
+
+
+
+    <insert id="insertProductOrder" parameterType="ProductOrderDto">
+        INSERT INTO PRODUCT_ORDER (
+            PRODUCT_ORDER_ID,
+            SOURCE_PRICE_ID,
+            QUANTITY,
+            PRODUCT_ORDER_DATE,
+            STATUS_ID
+        ) VALUES (
+                     #{id},
+                     #{sourcePriceId},
+                     #{quantity},
+                     #{productOrderDate},
+                     #{statusId}
+                 )
+    </insert>
+
+
+    <insert id="insertProductOrderLog" parameterType="ProductOrderLogDto">
+        INSERT INTO PRODUCT_ORDER_LOG (
+            LOG_ID,
+            ORDER_ID,
+            STATUS,
+            LOG_DATE
+        ) VALUES (
+                     #{id},
+                     #{productOrderId},
+                     #{statusId},
+                     #{productOrderDate}
+                 )
+    </insert>
+
+    <update id="updateProductOrderStatus">
+        UPDATE PRODUCT_ORDER
+        SET STATUS = #{status}
+        WHERE ORDER_ID = #{id}
+    </update>
+
+    <update id="updateProductOrderLogStatus">
+        UPDATE PRODUCT_ORDER_LOG
+        SET STATUS = #{statusId}
+        WHERE ORDER_ID = #{productOrderId}
+    </update>
 
 </mapper>

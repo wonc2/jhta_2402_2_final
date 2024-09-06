@@ -182,7 +182,7 @@
 <div class="modal fade" id="kitSourceCheckAndOrderModal" tabindex="-1" aria-labelledby="kitOrderDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="employeeForm" th:action="@{/distribution/kitSourceCheckAndOrder}" th:method="post">
+            <form id="employeeForm" th:action="@{/distributionOrder/kitSourceCheckAndOrder}" th:method="post">
                 <div class="modal-header">
                     <h5 class="modal-title" id="kitOrderDetailModalLabel">주문 상세</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -281,6 +281,19 @@
 <!-- footer.html 파일을 포함합니다 -->
 <th:block th:replace="fragment/adminFooter :: footer"></th:block>
 
+<!-- 알림 Toast 추가 -->
+<div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer">
+    <div class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
+        <div class="d-flex">
+            <div class="toast-body">
+                재료 발주 요청이 성공적으로 처리되었습니다!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+
 <!-- Script block to handle modals -->
 <script th:inline="javascript">
     document.addEventListener('DOMContentLoaded', () => {
@@ -333,10 +346,40 @@
 
                     kitOrderIDInput.value = kitOrderId; // 필요한 경우 여기에 올바른 값 할당
 
-                    form.action = '/distribution/kitSourceCheckAndOrder'; // 실제 URL로 설정
+                    form.action = '/distributionOrder/kitSourceCheckAndOrder'; // 실제 URL로 설정
                 });
         }
+        form.addEventListener('submit', event => {
+            event.preventDefault(); // 기본 폼 제출 동작을 방지
+
+            const formData = new FormData(form);
+
+            fetch('/distributionOrder/kitSourceCheckAndOrder', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.text())
+                .then(data => {
+                    if (response.ok) {
+                        // 성공 시 Toast 알림 표시
+                        const toast = new bootstrap.Toast(successToast);
+                        toast.show();
+
+                        // 모달 닫기
+                        const modal = bootstrap.Modal.getInstance(kitSourceCheckAndOrderModal);
+                        modal.hide();
+
+                        // 페이지 리다이렉트
+                        window.location.href = '/distribution/kitOrderProcessMainPage'; // 원래 페이지 URL로 수정
+                    } else {
+                        // 실패 시 처리 (필요에 따라)
+                        console.error('Order failed:', data);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
     });
+
 </script>
 
 
