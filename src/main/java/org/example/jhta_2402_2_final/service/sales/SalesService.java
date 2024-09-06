@@ -6,7 +6,6 @@ import org.example.jhta_2402_2_final.model.dto.sales.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -174,8 +173,11 @@ public class SalesService {
         return salesDao.findSourcePriceId(sourceName,companyName );
     }
 
-    public int insertProductOrder(UUID sourcePriceId, int itemQuantity) {
-        return salesDao.insertProductOrder(sourcePriceId, itemQuantity);
+    //product order, product_order_log 생성
+    public void insertProductOrder(UUID sourcePriceId, int itemQuantity) {
+        UUID productOrderId = UUID.randomUUID();
+        salesDao.insertProductOrder(productOrderId, sourcePriceId, itemQuantity);
+        salesDao.insertProductOrderLog(productOrderId);
     }
 
     //product_order 테이블 상세 조회
@@ -183,16 +185,17 @@ public class SalesService {
         return salesDao.selectProductOrder();
     }
 
-
-
     public void processOrder(String[] sourceNames, String[] companyNames, int[] itemQuantities) {
         for (int i = 0; i < sourceNames.length; i++) {
             UUID sourcePriceId = findSourcePriceId(sourceNames[i], companyNames[i]);
-            int result = insertProductOrder(sourcePriceId, itemQuantities[i]);
-
-            if (result > 0) System.out.println("인서트 성공");
-            else System.out.println("인서트 실패");
+            insertProductOrder(sourcePriceId, itemQuantities[i]);
         }
     }
+
+    //product_order_log 셀렉
+    public List<ProductOrderLogDetailDto> selectProductOrderLog() {
+        return salesDao.selectProductOrderLog();
+    }
+
 }
 
