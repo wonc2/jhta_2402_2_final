@@ -105,6 +105,10 @@ public class SalesService {
         salesDao.insertLog(kitOrderId, statusId);
     }
 
+    public int insertKitOrderLogByKitOrderId(String kitOrderId){
+        return salesDao.insertKitOrderLogByKitOrderId(kitOrderId);
+    }
+
     // 창고 테이블 가져오기
     public List<KitCompletedDto> getKitStorages() {
         return salesDao.selectKitStorage();

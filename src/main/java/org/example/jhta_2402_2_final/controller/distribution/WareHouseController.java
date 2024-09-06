@@ -36,7 +36,7 @@ public class WareHouseController {
         }
 
         // 밀키트 오더 테이블에서 스테이터스가 3인 경우 창고에서 차감하고 3->8으로 바꿈
-       /* List<Map<String, Object>> requiredStackList = logisticsWareHouseService.selectRequiredStack();
+        List<Map<String, Object>> requiredStackList = logisticsWareHouseService.selectRequiredStack();
         if (!requiredStackList.isEmpty()) {
             for (Map<String, Object> list : requiredStackList) {
                 String sourceFk = (String) list.get("sourceFk");
@@ -50,8 +50,8 @@ public class WareHouseController {
 
                 logisticsWareHouseService.updateStackFirstRecord(params);
             }
-            //logisticsWareHouseService.updateKitOrderStatus();
-        }*/
+            logisticsWareHouseService.updateKitOrderStatus();
+        }
 
 
         logisticsWareHouseService.deleteZeroQuantityRecords();

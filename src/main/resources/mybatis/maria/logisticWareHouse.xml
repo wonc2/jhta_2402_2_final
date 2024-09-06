@@ -60,7 +60,7 @@
     <update id="updateProductOrderStatus" parameterType="int">
         UPDATE PRODUCT_ORDER
         SET STATUS_ID = 7
-        WHERE STATUS_ID = 3
+        WHERE STATUS_ID = 5
     </update>
 
     <update id="updateKitOrderStatus" parameterType="int">
@@ -82,7 +82,7 @@
                  JOIN KIT_SOURCE KS ON SP.SOURCE_ID = KS.SOURCE_ID
                  JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
                  JOIN LOGISTICS_WAREHOUSE LW ON LW.WAREHOUSE_NAME = 'Shin_WAREHOUSE'
-        WHERE PO.STATUS_ID = 3
+        WHERE PO.STATUS_ID = 5
         GROUP BY S.SOURCE_ID, LW.LOGISTICS_WAREHOUSE_ID
 
     </insert>

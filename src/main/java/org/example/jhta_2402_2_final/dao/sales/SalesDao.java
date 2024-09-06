@@ -51,6 +51,8 @@ public interface SalesDao {
 
     void insertLog(UUID kitOrderId, int statusId);
 
+    int insertKitOrderLogByKitOrderId(String KitOrderId);
+
     //창고
     List<KitCompletedDto> selectKitStorage();
 
