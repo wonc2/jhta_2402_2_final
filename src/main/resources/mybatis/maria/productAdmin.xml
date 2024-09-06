@@ -1,8 +1,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.product.ProductAdminDao">
-    <!-- Admin Product 페이지 리스트 필요 컬럼 -->
-    <!--  po.주문번호(PRODUCT_ORDER_PK), 생산업체명(pc.NAME), 생산품(s.NAME), 생산품가격(sp.PRICE),
-          갯수 (po.QUANTITY), 총주문가격(po.QUANTITY * sp.PRICE), 주문일자(po.DATE), 상태(s.NAME)  -->
+
     <select id="getProductSourceList" resultType="SourcePriceViewDto">
         SELECT
             ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
@@ -14,6 +12,7 @@
                 JOIN PRODUCT_COMPANY P_C ON P_C.PRODUCT_COMPANY_ID = S_P.PRODUCT_COMPANY_ID
                 JOIN SOURCE S ON S.SOURCE_ID = S_P.SOURCE_ID
     </select>
+
     <select id="getSourcePriceListCompanyName" resultType="SourcePriceViewDto" parameterType="String">
         SELECT
             ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
@@ -38,6 +37,7 @@
                 JOIN SOURCE S ON S.SOURCE_ID = S_P.SOURCE_ID
                 WHERE S.NAME = #{productName}
     </select>
+
     <select id="getSourcePriceListCompanyNameProductName" resultType="SourcePriceViewDto" parameterType="String">
         SELECT
             ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
@@ -50,6 +50,7 @@
                 JOIN SOURCE S ON S.SOURCE_ID = S_P.SOURCE_ID
                 WHERE P_C.NAME = #{companyName} AND S.NAME = #{productName}
     </select>
+
     <select id="getProductOrderList" resultType="ProductOrderViewDto">
         SELECT
             ROW_NUMBER() OVER (ORDER BY P_C.NAME) AS rowNum,
@@ -121,63 +122,20 @@
                  WHERE P_C.NAME = #{companyName} AND S.NAME = #{productName}
     </select>
 
-    <!-- 리스트 전부 다 가져옴 -->
-
-    <select id="findAll" resultType="Map">
-        SELECT
-            po.PRODUCT_ORDER_ID AS 'productOrderId',
-            pc.NAME AS 'productCompanyName',
-            s.NAME AS 'sourceName',
-            sp.PRICE AS 'sourcePrice',
-            po.QUANTITY AS 'quantity',
-            (po.QUANTITY * sp.PRICE) AS 'totalPrice',
-            po.PRODUCT_ORDER_DATE as 'productOrderDate',
-            st.STATUS as 'productOrderStatus'
-        FROM PRODUCT_ORDER po
-            JOIN KIT_SOURCE_PRICE ksr ON ksr.KIT_SOURCE_PRICE_ID = po.KIT_SOURCE_PRICE_ID
-            JOIN SOURCE_PRICE sp ON sp.SOURCE_PRICE_ID = ksr.SOURCE_PRICE_ID
-            JOIN SOURCE s ON s.SOURCE_ID = sp.SOURCE_ID
-            JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
-            JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
+    <select id="getSourceMinPriceListForChart" resultType="SourceMinPriceDto">
+        SELECT P_C.NAME AS productCompanyName , S.NAME AS productName , MIN(S_P.PRICE) AS minPrice
+        FROM SOURCE_PRICE S_P
+                 JOIN PRODUCT_COMPANY P_C ON S_P.PRODUCT_COMPANY_ID = P_C.PRODUCT_COMPANY_ID
+                 JOIN SOURCE S ON S_P.SOURCE_ID = S.SOURCE_ID
+        GROUP BY productName;
     </select>
 
-    <!-- 검색 조건 포함 (이거 기본적으로 사용) -->
-    <select id="getProductListByParams" resultType="Map" parameterType="Map">
-        SELECT
-            po.PRODUCT_ORDER_ID AS 'productOrderId',
-            pc.NAME AS 'productCompanyName',
-            s.NAME AS 'sourceName',
-            sp.PRICE AS 'sourcePrice',
-            po.QUANTITY AS 'quantity',
-            (po.QUANTITY * sp.PRICE) AS 'totalPrice',
-            po.PRODUCT_ORDER_DATE as 'productOrderDate',
-            st.STATUS as 'productOrderStatus'
-        FROM PRODUCT_ORDER po
-            JOIN KIT_SOURCE_PRICE ksr ON ksr.KIT_SOURCE_PRICE_ID = po.KIT_SOURCE_PRICE_ID
-            JOIN SOURCE_PRICE sp ON sp.SOURCE_PRICE_ID = ksr.SOURCE_PRICE_ID
-            JOIN SOURCE s ON s.SOURCE_ID = sp.SOURCE_ID
-            JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
-            JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
-        WHERE 1 = 1
-        <if test="productCompanyId != null and productCompanyId != ''">
-            AND pc.PRODUCT_COMPANY_ID = #{productCompanyId}
-        </if>
-        <if test="statusId != null and statusId != ''">
-            AND st.STATUS_ID = #{statusId}
-        </if>
-    </select>
-    <!-- Common -->
-
-    <!-- 검색 조건 셀렉트에 뿌리는용 -->
-    <select id="getAllCompanies" resultType="ProductCompanyDto">
-        select
-            PRODUCT_COMPANY_ID as 'productCompanyId',
-            NAME as 'productCompanyName',
-            ADDRESS as 'productCompanyAddress'
-        from PRODUCT_COMPANY
-    </select>
-    <select id="getAllStatus" resultType="StatusDto">
-        select STATUS_ID as 'statusId', STATUS as 'statusName' from STATUS
+    <select id="getProductOrderCount" resultType="ProductOrderCountDto">
+        SELECT P_C.NAME AS productCompanyName , COUNT(P_O.PRODUCT_ORDER_ID) AS count
+        FROM PRODUCT_ORDER P_O
+                 JOIN SOURCE_PRICE S_P ON P_O.SOURCE_PRICE_ID = S_P.SOURCE_PRICE_ID
+                 JOIN PRODUCT_COMPANY P_C ON S_P.PRODUCT_COMPANY_ID = P_C.PRODUCT_COMPANY_ID
+                 GROUP BY P_C.NAME;
     </select>
     <insert id="insertProductCompany" parameterType="ProductCompanyDto">
         INSERT INTO PRODUCT_COMPANY (PRODUCT_COMPANY_ID,NAME,ADDRESS) VALUES(UUID(),#{productCompanyName},#{productCompanyAddress})

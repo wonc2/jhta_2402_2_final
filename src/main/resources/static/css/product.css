@@ -1,21 +1,32 @@
 .checkProductBtn{
     margin-right : 20px;
 }
-.productAdminMainTableArea{
+.chartTitle{
     display: flex;
-    justify-content: space-between;
     align-items: center;
 }
-.productAdminMainTableLeft{
-    flex:1;
+.chartTitleLeft{
+    flex: 1;
+    align-items: center;
 }
-.productAdminMainTableCenter{
-    display: flex;
-    justify-content: center;
-    flex: 3;
-}
-.productAdminMainTableRight{
-    display: flex;
-    justify-content: flex-end;
+.chartTitleCenter{
     flex: 2;
+}
+.chartTitleRight{
+    flex: 2;
+}
+.tableTitle{
+    display: flex;
+    align-items: center;
+}
+.tableTitleLeft{
+    flex: 1;
+}
+.tableTitleCenter{
+    flex: 2;
+    justify-content: center;
+}
+.tableTitleRight{
+    flex: 2;
+    justify-content: flex-end;
 }

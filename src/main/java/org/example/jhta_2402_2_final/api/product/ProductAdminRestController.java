@@ -1,7 +1,9 @@
 package org.example.jhta_2402_2_final.api.product;
 
 import lombok.RequiredArgsConstructor;
+import org.example.jhta_2402_2_final.model.dto.common.SourceMinPriceDto;
 import org.example.jhta_2402_2_final.model.dto.common.SourcePriceViewDto;
+import org.example.jhta_2402_2_final.model.dto.product.ProductOrderCountDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductOrderViewDto;
 import org.example.jhta_2402_2_final.service.product.ProductAdminService;
 import org.springframework.ui.Model;
@@ -14,25 +16,26 @@ import java.util.List;
 @RequestMapping("/api/product/admin")
 public class ProductAdminRestController {
     private final ProductAdminService productAdminService;
-    List<SourcePriceViewDto>paginatedSourcePriceList;
-    List<SourcePriceViewDto>sourcePriceList;
-    List<ProductOrderViewDto>paginatedOrderList;
-    List<ProductOrderViewDto>productOrderList;
+    List<ProductOrderViewDto> productOrderList;
     List<ProductOrderViewDto>productOrderSearchList;
+    List<SourcePriceViewDto>sourcePriceList;
     List<SourcePriceViewDto>sourcePriceSearchList;
-    @GetMapping("/main/data/sourcePriceList")
-    @ResponseBody
-    public List<SourcePriceViewDto> getSourcePriceList(@RequestParam(value = "productTableStatus" ,required = false) String productTableStatus,@RequestParam(value = "page" , defaultValue = "1") int page , @RequestParam(value = "pageScale" , defaultValue = "10") int pageScale, Model model){
-            sourcePriceList = productAdminService.getProductSourceList();
-            return sourcePriceList;
-
-    }
-
-    @GetMapping("/main/data/productOrderList")
-    @ResponseBody
-    public List<ProductOrderViewDto> getproductOrderList(@RequestParam(value = "productTableStatus" ,required = false) String productTableStatus,@RequestParam(value = "page" , defaultValue = "1") int page , @RequestParam(value = "pageScale" , defaultValue = "10") int pageScale,Model model){
-            return productOrderList = productAdminService.getProductOrderList();
-    }
+    List<SourceMinPriceDto>sourceMinPriceList;
+    List<SourceMinPriceDto>sourcePriceCompanyList;
+    List<ProductOrderCountDto>productOrderCountList;
+//    @GetMapping("/main/data/sourcePriceList")
+//    @ResponseBody
+//    public List<SourcePriceViewDto> getSourcePriceList(@RequestParam(value = "productTableStatus" ,required = false) String productTableStatus,@RequestParam(value = "page" , defaultValue = "1") int page , @RequestParam(value = "pageScale" , defaultValue = "10") int pageScale, Model model){
+//            sourcePriceList = productAdminService.getProductSourceList();
+//            return sourcePriceList;
+//
+//    }
+//
+//    @GetMapping("/main/data/productOrderList")
+//    @ResponseBody
+//    public List<ProductOrderViewDto> getproductOrderList(@RequestParam(value = "productTableStatus" ,required = false) String productTableStatus,@RequestParam(value = "page" , defaultValue = "1") int page , @RequestParam(value = "pageScale" , defaultValue = "10") int pageScale,Model model){
+//            return productOrderList = productAdminService.getProductOrderList();
+//    }
     @GetMapping("/main/data/productOrderSearchList")
     @ResponseBody
     public List<ProductOrderViewDto> getproductOrderSearchList(@RequestParam(value = "productTableStatus" ,required = false) String productTableStatus,
@@ -68,9 +71,30 @@ public class ProductAdminRestController {
         }
         return sourcePriceSearchList;
     }
+
     @GetMapping("/main/data/productOrderChart")
-    @ResponseBody
-    public List<ProductOrderViewDto> getProductOrderChart(){
-        return productOrderList = productAdminService.getProductOrderList();
+    public List<ProductOrderViewDto> getProductOrderChart(@RequestParam(value = "companyName",defaultValue = "none")String companyName){
+        if(companyName.equals("none")){
+            System.out.println("없음");
+            productOrderList = productAdminService.getProductOrderList();
+        }else if(!companyName.equals("none")){
+            System.out.println("companyName = "+companyName);
+            productOrderList = productAdminService.getProductOrderListCompanyName(companyName);
+        }
+        return productOrderList;
     }
+    @GetMapping("/main/data/sourceMinPriceChart")
+    public List<SourceMinPriceDto> getSourceMinPriceChart(){
+        sourceMinPriceList = productAdminService.getSourceMinPriceListForChart();
+        return sourceMinPriceList;
+    }
+    @GetMapping("/main/data/sourcePriceCompanyChart")
+    public List<SourceMinPriceDto> getSourcePriceCompany(){
+        return sourcePriceCompanyList = productAdminService.getSourcePriceCompany();
+    }
+    @GetMapping("/main/data/productOrderCountChart")
+    public List<ProductOrderCountDto> getProductOrderCount(){
+        return productOrderCountList = productAdminService.getProductOrderCount();
+    }
+
 }
