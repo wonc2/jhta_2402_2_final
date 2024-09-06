@@ -56,5 +56,25 @@ public class LogisticsWareHouseService {
     public List<ProductOrderLogDTO> selectProductOrderLogDetailsBySourceId(String sourceId) {
         return distributionDao.selectProductOrderLogDetailsBySourceId(sourceId);
     }
+
+    public List<LogisticsWareHouseDto> selectBySourceNameLogisticsWarehouse(String keyword) {
+    return distributionDao.selectBySourceNameLogisticsWarehouse(keyword);
+    }
+
+    public List<String> selectProductOrderIdByStatus(int i) {
+    return distributionDao.selectProductOrderIdByStatus(i);
+    }
+
+    public int insertProductOrderLog(List<String> productOrderIdList) {
+    return distributionDao.insertProductOrderLog(productOrderIdList);
+    }
+
+    public List<String> selectKitOrderIdByStatus(int i) {
+    return distributionDao.selectKitOrderIdByStatus(i);
+    }
+
+    public int insertKitOrderLog(List<String> kitOrderIdList) {
+    return distributionDao.insertKitOrderLog(kitOrderIdList);
+    }
 }
 

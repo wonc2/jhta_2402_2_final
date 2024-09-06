@@ -88,7 +88,8 @@
                                 <tr>
                                     <th>입출번호</th>
                                     <th>생산품명</th>
-                                    <th>일출량</th>
+                                    <th>입출량</th>
+                                    <th>구분</th>
                                     <th>입출일</th> <!-- 출고량 / 입고량  이렇게 나오면되나 ? -->
                                     <!--                                    <th>생산(입고)일자</th>-->
                                     <!--                                    <th>납품일자</th> &lt;!&ndash; 30 / 100 이었다가 100 / 100 되면 100 / 100 되는 순간의 납품일자로 업데이트 &ndash;&gt;-->
@@ -119,6 +120,7 @@
                             <table id="orderTable" class="table table-bordered">
                                 <thead>
                                 <tr>
+<!--                                    <th>no</th>-->
                                     <th>주문번호</th>
                                     <th>주문한 재료</th>
                                     <th>재료 가격</th>
@@ -357,8 +359,8 @@
         </footer>
     </div>
 </div>
-<div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 1060;"></div>
 </body>
 <th:block th:replace="~{fragment/footer}"></th:block>
+<!--<script th:inline="javascript" th:src="@{/js/common.js}"></script>-->
 <script th:inline="javascript" th:src="@{/js/productCompany.js}"></script>
 </html>

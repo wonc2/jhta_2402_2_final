@@ -348,7 +348,7 @@ function getCompanySourceTable() {
             }
         ],
         language: {emptyTable: '데이터가 없습니다.'},
-        lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]]
+        lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]], pageLength: 10
     });
 }
 
@@ -359,13 +359,15 @@ function getWarehouseTable() {
             dataSrc: ''
         },
         columns: [
+            // {data: 'rowNum'},
             {data: 'sourceWarehouseId', render: data => data.substring(0, 8)},
             {data: 'sourceName'},
             {data: 'sourceQuantity'},
+            {data: 'type'},
             {data: 'produceDate'}
         ],
         language: {emptyTable: '데이터가 없습니다.'},
-        lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]],
+        lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]], pageLength: 10,
         initComplete: function () {
             $('#warehouseTable').css({
                 'width': '100%',
@@ -402,7 +404,7 @@ function getOrderTable() {
                 data: null,
                 render: function (data, type, row) {
                     let buttons = '';
-                        //`<button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button>`;
+                    //`<button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button>`;
 
                     // 'orderStatus'가 '처리전'일 때만 발주 버튼을 활성화
                     if (row.orderStatus === '처리전') {
@@ -418,7 +420,7 @@ function getOrderTable() {
             }
         ],
         language: {emptyTable: '데이터가 없습니다.'},
-        lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]],
+        lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]], pageLength: 10,
         initComplete: function () {
             $('#orderTable').css({
                 'width': '100%',
@@ -515,40 +517,6 @@ function updateSourceSelectList() {
         error: function (xhr, status, error) {
             console.error('Error occurred while fetching sources:', error);
         }
-    });
-}
-
-// 토스트
-function showToast(message) {
-    // 새로운 토스트 요소 생성
-    const toastId = 'toast-' + new Date().getTime(); // 고유 ID 생성
-    const toastHtml = `
-        <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-body">${message}</div>
-        </div>
-    `;
-
-    // 토스트 컨테이너에 추가
-    $('#toastContainer').append(toastHtml);
-
-    // 새로운 토스트 표시
-    const $newToast = $(`#${toastId}`);
-    $newToast.toast({
-        autohide: true,
-        delay: 5000
-    }).toast('show');
-
-    // 기존 토스트가 있으면 위치 조정
-    const $allToasts = $('#toastContainer .toast');
-    $allToasts.each((index, element) => {
-        $(element).css({
-            'margin-bottom': '10px'
-        });
-    });
-
-    // 토스트가 사라진 후 DOM에서 제거
-    $newToast.on('hidden.bs.toast', function () {
-        $(this).remove();
     });
 }
 

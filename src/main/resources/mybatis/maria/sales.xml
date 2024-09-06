@@ -165,6 +165,17 @@
         VALUES (uuid(), #{kitOrderId}, #{statusId}, NOW())
     </insert>
 
+
+    <insert id="insertKitOrderLogByKitOrderId" parameterType="String">
+        INSERT INTO KIT_ORDER_LOG (KIT_ORDER_LOG_ID, KIT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE)
+        VALUES (
+                   uuid(),
+                   #{kitOrderId},
+                   (SELECT STATUS_ID FROM KIT_ORDER WHERE KIT_ORDER_ID = #{kitOrderId}),
+                   NOW()
+               )
+    </insert>
+
 <!--    업체별 밀키트 재고 확인-->
     <select id="selectKitStorage" resultType="KitStorageDto">
         SELECT
@@ -384,7 +395,7 @@
     <!-- PRODUCT_ORDER 데이터 삽입 -->
     <insert id="insertProductOrder">
         INSERT INTO PRODUCT_ORDER (PRODUCT_ORDER_ID, SOURCE_PRICE_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
-        VALUES (UUID(), #{sourcePriceId}, #{quantity}, NOW(), 1);
+        VALUES (#{productOrderId}, #{sourcePriceId}, #{quantity}, NOW(), 1);
     </insert>
 
 
@@ -406,5 +417,44 @@
                 JOIN STATUS st ON po.STATUS_ID = st.STATUS_ID
 
         order by orderDate DESC
+    </select>
+
+<!--    product_order_log 인서트-->
+    <insert id="insertProductOrderLog">
+        INSERT INTO PRODUCT_ORDER_LOG (
+            PRODUCT_ORDER_LOG_ID,
+            PRODUCT_ORDER_ID,
+            STATUS_ID,
+            PRODUCT_ORDER_DATE
+        )
+        VALUES (
+                   UUID(),
+                   #{productOrderId},
+                   (SELECT STATUS_ID
+                    FROM PRODUCT_ORDER
+                    WHERE PRODUCT_ORDER_ID = #{productOrderId}),
+                   NOW()
+               );
+    </insert>
+
+    <select id="selectProductOrderLog" resultType="ProductOrderLogDetailDto">
+        SELECT
+            POL.PRODUCT_ORDER_LOG_ID AS productOrderLogId,
+            PO.PRODUCT_ORDER_ID AS productOrderId,
+            S.NAME AS sourceName,
+            PC.NAME AS companyName,
+            PO.QUANTITY,
+            SP.PRICE,
+            POL.PRODUCT_ORDER_DATE AS orderDate,
+            ST.STATUS AS status
+        FROM
+            PRODUCT_ORDER_LOG POL
+                JOIN PRODUCT_ORDER PO ON POL.PRODUCT_ORDER_ID = PO.PRODUCT_ORDER_ID
+                JOIN SOURCE_PRICE SP ON PO.SOURCE_PRICE_ID = SP.SOURCE_PRICE_ID
+                JOIN SOURCE S ON SP.SOURCE_ID = S.SOURCE_ID
+                JOIN PRODUCT_COMPANY PC ON SP.PRODUCT_COMPANY_ID = PC.PRODUCT_COMPANY_ID
+                JOIN STATUS ST ON POL.STATUS_ID = ST.STATUS_ID
+        ORDER BY
+            orderDate DESC;
     </select>
 </mapper>

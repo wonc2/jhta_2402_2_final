@@ -17,26 +17,29 @@
                 <button class="btn btn-primary"
                         data-bs-toggle="modal"
                         data-bs-target="#insertMealkitModal">
-                    밀키트 추가</button>
+                    밀키트 추가
+                </button>
             </div>
 
 
-<!--           주문 추가 모달 버튼-->
+            <!--           주문 추가 모달 버튼-->
             <div class="d-flex justify-content-end mb-3">
                 <button class="btn btn-primary"
                         data-bs-toggle="modal"
                         data-bs-target="#insertKitOrderModal">
-                    새로운 밀키트 주문 추가</button>
+                    새로운 밀키트 주문 추가
+                </button>
             </div>
 
-            <div class="card mb-4">
+            <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
                     밀키트별 필요 재료 개수 확인
                 </div>
                 <div class="card-body">
 
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3"
+                          style="width: 400px;">
                         <select class="datatable-selector" name="category">
                             <option value="All">All</option>
                             <option value="firstName">firstName</option>
@@ -48,8 +51,6 @@
                         <input type="text" class="form-control" name="keyword" placeholder="Search...">
                         <button type="submit" class="btn btn-primary">검색</button>
                     </form>
-
-
 
 
                     <table id="datatablesSimple04">
@@ -73,7 +74,7 @@
 
                         <!--tbody > tr > td-->
                         <tbody>
-                        <tr th:each="kitSource, iterStat : ${kitSourceDetails}" >
+                        <tr th:each="kitSource, iterStat : ${kitSourceDetails}">
 
                             <td th:text="${iterStat.count}"></td>
                             <td th:text="${kitSource.mealkitName}"></td>
@@ -87,88 +88,15 @@
                 </div>
             </div>
 
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-table me-1"></i>
-                    밀키트 주문 확인 [실제 DB]
-                </div>
-                <div class="card-body">
-
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
-                        <select class="datatable-selector" name="category">
-                            <option value="All">All</option>
-                            <option value="firstName">firstName</option>
-                            <option value="lastName">lastName</option>
-                            <option value="email">email</option>
-                            <option value="department">department</option>
-                            <option value="hiredate">hiredate</option>
-                        </select>
-                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
-                        <button type="submit" class="btn btn-primary">검색</button>
-                    </form>
-
-
-
-
-                    <table id="datatablesSimple">
-                        <thead>
-                        <tr>
-                            <th>번호</th>
-                            <th>주문 ID</th>
-                            <th>밀키트 업체 ID</th>
-                            <th>밀키트 ID</th>
-                            <th>수량</th>
-                            <th>주문 날짜</th>
-                            <th>상태</th>
-
-                        </tr>
-                        </thead>
-                        <tfoot>
-                        <tr>
-                            <th>번호</th>
-                            <th>주문 ID</th>
-                            <th>밀키트 업체 ID</th>
-                            <th>밀키트 ID</th>
-                            <th>수량</th>
-                            <th>주문 날짜</th>
-                            <th>상태</th>
-
-                        </tr>
-                        </tfoot>
-
-                        <!--tbody > tr > td-->
-                        <tbody>
-                        <tr th:each="kitOrders, iterStat : ${kitOrders}" >
-
-                            <td th:text="${iterStat.count}"></td>
-                            <td th:text="${kitOrders.kitOrderId}"></td>
-                            <td th:text="${kitOrders.kitCompanyId}"></td>
-                            <td th:text="${kitOrders.mealkitId}"></td>
-                            <td th:text="${kitOrders.quantity}"></td>
-                            <td th:text="${kitOrders.productOrderDate}"></td>
-                            <td th:text="${kitOrders.statusId}"></td>
-
-                        </tr>
-                        </tbody>
-                    </table>
-
-
-                </div>
-            </div>
-
-        </div>
-
-<!--        밀키트 주문 상세-->
-        <div class="container-fluid px-4">
-
-            <div class="card mb-4">
+            <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
                     밀키트 주문 상세 [보여지는거]
                 </div>
                 <div class="card-body">
 
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3"
+                          style="width: 400px;">
                         <select class="datatable-selector" name="category">
                             <option value="All">All</option>
                             <option value="firstName">firstName</option>
@@ -180,8 +108,6 @@
                         <input type="text" class="form-control" name="keyword" placeholder="Search...">
                         <button type="submit" class="btn btn-primary">검색</button>
                     </form>
-
-
 
 
                     <table id="datatablesSimple02">
@@ -217,7 +143,7 @@
 
                         <!--tbody > tr > td-->
                         <tbody>
-                        <tr th:each="details, iterStat : ${kitOrderDetails}" >
+                        <tr th:each="details, iterStat : ${kitOrderDetails}">
 
                             <td th:text="${iterStat.count}"></td>
                             <td th:text="${details.kitOrderId}"></td>
@@ -229,14 +155,22 @@
                             <td th:text="${details.orderDate}"></td>
                             <td th:text="${details.status}"></td>
                             <td>
-                                <button class="btn btn-secondary"
+                                <button
+                                        th:if="${details.status == '처리전'}"
+                                        class="btn btn-primary"
                                         data-bs-toggle="modal"
                                         data-bs-target="#orderDetailModal"
                                         th:attr="
                                         data-order-id=${details.kitOrderId},
                                         data-quantity=${details.quantity},
-                                        data-mealkit-name=${details.mealkitName}"
-                                        >
+                                        data-mealkit-name=${details.mealkitName}">
+                                    발주 요청
+                                </button>
+
+                                <button
+                                        th:if="${details.status != '처리전'}"
+                                        class="btn btn-secondary"
+                                        disabled>
                                     발주 요청
                                 </button>
                             </td>
@@ -259,19 +193,15 @@
                 </div>
             </div>
 
-        </div>
-
-<!--        밀키트 로그 -->
-        <div class="container-fluid px-4">
-
-            <div class="card mb-4">
+            <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
                     밀키트 주문 로그
                 </div>
                 <div class="card-body">
 
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3"
+                          style="width: 400px;">
                         <select class="datatable-selector" name="category">
                             <option value="All">All</option>
                             <option value="firstName">firstName</option>
@@ -283,8 +213,6 @@
                         <input type="text" class="form-control" name="keyword" placeholder="Search...">
                         <button type="submit" class="btn btn-primary">검색</button>
                     </form>
-
-
 
 
                     <table id="datatablesSimple03">
@@ -325,11 +253,16 @@
                 </div>
             </div>
 
+
+
         </div>
+
+
+
     </main>
 </div>
 
-<!-- HTML 부분 -->
+
 <!-- 모달 -->
 <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -387,7 +320,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
 
         // 모달이 열릴 때 이벤트 리스너 설정
         var orderDetailModal = document.getElementById('orderDetailModal');
@@ -470,12 +403,9 @@
 </script>
 
 
-
-
-
-
 <!-- 주문 추가 모달 -->
-<div class="modal fade" id="insertKitOrderModal" tabindex="-1" aria-labelledby="insertKitOrderModalLabel" aria-hidden="true">
+<div class="modal fade" id="insertKitOrderModal" tabindex="-1" aria-labelledby="insertKitOrderModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -509,7 +439,8 @@
                     <div class="mb-3">
                         <!-- 밀키트 가격을 표시할 입력 필드 -->
                         <label for="mealkitPrice" class="form-label">밀키트 가격</label>
-                        <input type="number" id="mealkitPrice" name="price" class="form-control" readonly placeholder="가격이 여기에 표시됩니다">
+                        <input type="number" id="mealkitPrice" name="price" class="form-control" readonly
+                               placeholder="가격이 여기에 표시됩니다">
                     </div>
                     <div class="mb-3">
                         <label for="quantity" class="form-label">수량</label>
@@ -527,7 +458,8 @@
 </div>
 
 <!-- 상태 변경 모달 -->
-<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -555,7 +487,8 @@
 </div>
 
 <!-- 밀키트 추가 모달 -->
-<div class="modal fade" id="insertMealkitModal" tabindex="-1" aria-labelledby="insertMealkitModalLabel" aria-hidden="true">
+<div class="modal fade" id="insertMealkitModal" tabindex="-1" aria-labelledby="insertMealkitModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -592,13 +525,14 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                        <button type="submit" class="btn btn-primary">저장</button>
+                        <button type="submit" class="btn btn-primary" form="mealkitForm">저장</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- 자바스크립트 코드 -->
 <script>

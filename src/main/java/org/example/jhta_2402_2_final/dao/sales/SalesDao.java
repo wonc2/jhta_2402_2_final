@@ -51,6 +51,8 @@ public interface SalesDao {
 
     void insertLog(UUID kitOrderId, int statusId);
 
+    int insertKitOrderLogByKitOrderId(String KitOrderId);
+
     //창고
     List<KitCompletedDto> selectKitStorage();
 
@@ -88,9 +90,15 @@ public interface SalesDao {
     //최소값을 파는 업체명과 재료명으로 sourcePriceId를 찾아옴
     UUID findSourcePriceId(String sourceName, String companyName);
 
-    //product_order 테이블에 값 추가
-    int insertProductOrder(UUID sourcePriceId, int quantity);
+    //product_order 인서트
+    int insertProductOrder(UUID productOrderId, UUID sourcePriceId, int quantity);
 
     //product_order 테이블 조회
     List<ProductOrderDetailDto> selectProductOrder();
+
+    //product_order_log 인서트
+    int insertProductOrderLog(UUID productOrderId);
+
+    //product_order_log 셀렉
+    List<ProductOrderLogDetailDto> selectProductOrderLog();
 }

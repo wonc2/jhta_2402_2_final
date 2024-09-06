@@ -135,6 +135,13 @@ public class SalesController {
         String[] companyNames = mapper.readValue(companyNamesJson, String[].class);
 
         salesService.processOrder(sourceNames, companyNames, itemQuantities);
+        int result=salesService.updateKitOrderStatus(kitOrderId, 2);
+        if (result>0){
+            salesService.insertKitOrderLogByKitOrderId(kitOrderId);
+        }else {
+            System.out.println("키트 오더 업데이트 오류뜸");
+        }
+
 
         return "redirect:/sales/product/order";
     }

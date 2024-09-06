@@ -30,4 +30,15 @@ public interface DistributionDao {
     List<KitOrderDetailLogDTO> selectKitOrderLogDetailsBySourceId(String sourceID);
 
     List<ProductOrderLogDTO> selectProductOrderLogDetailsBySourceId(String sourceId);
+
+
+    List<LogisticsWareHouseDto> selectBySourceNameLogisticsWarehouse(String keyword);
+
+    List<String> selectProductOrderIdByStatus(int i);
+
+    int insertProductOrderLog(List<String> productOrderIdList);
+
+    List<String> selectKitOrderIdByStatus(int i);
+
+    int insertKitOrderLog(List<String> kitOrderIdList);
 }

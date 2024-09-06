@@ -25,5 +25,4 @@ public class KitOrderProcessDto {
         this.kitOrderDate = kitOrderDate;
         this.status = status;
     }
-
 }

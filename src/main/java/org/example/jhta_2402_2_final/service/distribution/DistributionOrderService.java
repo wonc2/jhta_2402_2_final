@@ -2,59 +2,66 @@ package org.example.jhta_2402_2_final.service.distribution;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jhta_2402_2_final.dao.distribution.DistributionSourcePriceDao;
-import org.example.jhta_2402_2_final.model.dto.distribution.DistributionMaterialDto;
-
+import org.example.jhta_2402_2_final.dao.distribution.DistributionOrderDao;
+import org.example.jhta_2402_2_final.model.dto.distribution.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class DistributionOrderService {
 
-    private final DistributionSourcePriceDao distributionSourcePriceDao;
+    private final DistributionOrderDao distributionOrderDao;
 
 
-    public List<DistributionMaterialDto> getSourcePricesForKit(String kitId) {
-        log.info("Fetching source prices for kitId: {}", kitId);
-        return distributionSourcePriceDao.getSourcePricesForKit(kitId);
+    public List<KitOrderDistDto> getAllKitOrderDto() {
+        return distributionOrderDao.selectKitOrder();
     }
 
-    public List<DistributionMaterialDto> getBestSuppliers() {
-        return distributionSourcePriceDao.getBestSuppliers();
+    public List<KitOrderNameDto> kitOrderNameDto() {
+        return distributionOrderDao.selectKitNameOrder();
     }
 
-    public List<DistributionMaterialDto> getAllSourcePrices() {
-        return distributionSourcePriceDao.getAllSourcePrices();
+    public List<KitOrderSourceNameDto> kitOrderSourceNameDto() {
+        return distributionOrderDao.selectSourceNameOrder();
     }
 
-    public List<DistributionMaterialDto> getFilteredSourcePrices(String category, String keyword) {
-        return distributionSourcePriceDao.findSourcePricesByCategoryAndKeyword(category, keyword);
+    public List<MinPriceSourceDto> minPriceSourceDto() {
+        return distributionOrderDao.selectMinPriceSource();
     }
 
-    public void sendOrderSummary() {
-        try {
-            // 모든 주문 내역을 가져옵니다. 실제로는 필터링이 필요할 수 있습니다.
-            List<DistributionMaterialDto> orders = distributionSourcePriceDao.getAllSourcePrices();
 
-            for (DistributionMaterialDto order : orders) {
-                String orderSummary = createOrderSummary(order);
-            }
+    @Transactional
+    public void sourceOrder(String kitOrderId, String sourceId, int quantity, double sourcePrice) {
+        // 새로운 주문 ID 생성
+        String productOrderId = UUID.randomUUID().toString();
 
-            log.info("주문 내역서가 성공적으로 전송되었습니다.");
-        } catch (Exception e) {
-            log.error("주문 내역서를 전송하는 데 실패했습니다.", e);
-        }
+        // 주문 데이터를 DAO로 전달하여 삽입
+        Map<String, Object> params = new HashMap<>();
+        params.put("productOrderId", productOrderId);
+        params.put("kitOrderId", kitOrderId);
+        params.put("sourceId", sourceId);
+        params.put("quantity", quantity);
+        params.put("productOrderDate", new Date()); // 현재 날짜
+        params.put("statusId", 1); // 상태 ID 1로 설정
+
+        // DAO 호출
+        distributionOrderDao.insertProductOrder();
     }
 
-    private String createOrderSummary(DistributionMaterialDto order) {
-        // 주문 내역서를 생성합니다. 실제로는 템플릿 엔진을 사용할 수 있습니다.
-        return "주문 내역서 내용\n" +
-                "품목: " + order.getMaterialName() + "\n" +
-                "수량: " + order.getQuantity() + "\n" +
-                "가격: " + order.getPrice() + "\n" +
-                "주문 날짜: " + order.getOrderDate() + "\n";
+    public UUID selectSourcePriceId(UUID sourceId, UUID productCompanyId) {
+        return distributionOrderDao.selectSourcePriceId(sourceId, productCompanyId);
     }
+
+    public int insertProductOrder(UUID sourcePriceId, int quantity) {
+        return distributionOrderDao.insertProductOrder(sourcePriceId, quantity);
+    }
+
+
+
+
+
 }

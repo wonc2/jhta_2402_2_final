@@ -37,7 +37,8 @@ CREATE TABLE SOURCE_PRICE (
                               SOURCE_ID VARCHAR(50), -- 재료FK
                               PRICE INT, -- 가격
                               FOREIGN KEY (PRODUCT_COMPANY_ID) REFERENCES PRODUCT_COMPANY(PRODUCT_COMPANY_ID),
-                              FOREIGN KEY (SOURCE_ID) REFERENCES SOURCE(SOURCE_ID)
+                              FOREIGN KEY (SOURCE_ID) REFERENCES SOURCE(SOURCE_ID),
+                              CONSTRAINT unique_company_source UNIQUE (PRODUCT_COMPANY_ID, SOURCE_ID)
 );
 -- 7. 상태 테이블
 CREATE TABLE STATUS (

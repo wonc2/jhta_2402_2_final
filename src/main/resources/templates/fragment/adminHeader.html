@@ -12,8 +12,10 @@
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="/css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <script th:inline="javascript" th:src="@{/js/common.js}"></script>
 </head>
 <body class="sb-nav-fixed">
+<div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 1060;"></div>
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- 여기에 기존의 <nav> 태그 안의 내용을 복사 -->
     <!-- Navbar Brand-->
@@ -80,7 +82,7 @@
                             <a class="nav-link" href="#">Logistics User Page</a>
                             <a class="nav-link" href="/distribution/main">밀키트 재료 발주/출고 요청 페이지</a>
                             <a class="nav-link" href="/sales/product/order">밀키트 재료 발주로그 페이지</a>
-                            <a class="nav-link" href="/distributionOrder">유통관리</a>
+                            <a class="nav-link" href="/distribution/order">유통관리</a>
                             <a class="nav-link" href="/wareHouse/selectAll" th:href="@{wareHouse/selectAll}">유통창고</a>
                         </nav>
                     </div>
