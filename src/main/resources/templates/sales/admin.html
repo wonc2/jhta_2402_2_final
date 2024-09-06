@@ -31,7 +31,7 @@
                 </button>
             </div>
 
-            <div class="card mb-4">
+            <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
                     밀키트별 필요 재료 개수 확인
@@ -88,80 +88,7 @@
                 </div>
             </div>
 
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-table me-1"></i>
-                    밀키트 주문 확인 [실제 DB]
-                </div>
-                <div class="card-body">
-
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3"
-                          style="width: 400px;">
-                        <select class="datatable-selector" name="category">
-                            <option value="All">All</option>
-                            <option value="firstName">firstName</option>
-                            <option value="lastName">lastName</option>
-                            <option value="email">email</option>
-                            <option value="department">department</option>
-                            <option value="hiredate">hiredate</option>
-                        </select>
-                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
-                        <button type="submit" class="btn btn-primary">검색</button>
-                    </form>
-
-
-                    <table id="datatablesSimple">
-                        <thead>
-                        <tr>
-                            <th>번호</th>
-                            <th>주문 ID</th>
-                            <th>밀키트 업체 ID</th>
-                            <th>밀키트 ID</th>
-                            <th>수량</th>
-                            <th>주문 날짜</th>
-                            <th>상태</th>
-
-                        </tr>
-                        </thead>
-                        <tfoot>
-                        <tr>
-                            <th>번호</th>
-                            <th>주문 ID</th>
-                            <th>밀키트 업체 ID</th>
-                            <th>밀키트 ID</th>
-                            <th>수량</th>
-                            <th>주문 날짜</th>
-                            <th>상태</th>
-
-                        </tr>
-                        </tfoot>
-
-                        <!--tbody > tr > td-->
-                        <tbody>
-                        <tr th:each="kitOrders, iterStat : ${kitOrders}">
-
-                            <td th:text="${iterStat.count}"></td>
-                            <td th:text="${kitOrders.kitOrderId}"></td>
-                            <td th:text="${kitOrders.kitCompanyId}"></td>
-                            <td th:text="${kitOrders.mealkitId}"></td>
-                            <td th:text="${kitOrders.quantity}"></td>
-                            <td th:text="${kitOrders.productOrderDate}"></td>
-                            <td th:text="${kitOrders.statusId}"></td>
-
-                        </tr>
-                        </tbody>
-                    </table>
-
-
-                </div>
-            </div>
-
-        </div>
-
-        <!--        밀키트 주문 상세-->
-        <div class="container-fluid px-4">
-
-            <div class="card mb-4">
+            <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
                     밀키트 주문 상세 [보여지는거]
@@ -266,12 +193,7 @@
                 </div>
             </div>
 
-        </div>
-
-        <!--        밀키트 로그 -->
-        <div class="container-fluid px-4">
-
-            <div class="card mb-4">
+            <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
                     밀키트 주문 로그
@@ -331,11 +253,16 @@
                 </div>
             </div>
 
+
+
         </div>
+
+
+
     </main>
 </div>
 
-<!-- HTML 부분 -->
+
 <!-- 모달 -->
 <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -598,13 +525,14 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                        <button type="submit" class="btn btn-primary">저장</button>
+                        <button type="submit" class="btn btn-primary" form="mealkitForm">저장</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
 
 <!-- 자바스크립트 코드 -->
 <script>
