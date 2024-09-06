@@ -6,13 +6,12 @@ import org.apache.ibatis.session.SqlSession;
 import org.example.jhta_2402_2_final.dao.distribution.KitOrderProcessDao;
 import org.example.jhta_2402_2_final.dao.sales.SalesDao;
 import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderProcessDto;
-<<<<<<< HEAD
-import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderDto;
-import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDto;
-=======
+
+
+
 import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDto;
 import org.example.jhta_2402_2_final.model.dto.sales.KitStorageDto;
->>>>>>> 3fe4caf6decc32ec483d0c7c99be6c592c6976e7
+
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
