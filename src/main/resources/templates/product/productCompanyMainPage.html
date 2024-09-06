@@ -69,7 +69,7 @@
                                     <th>생산품명</th>
                                     <th>생산품가격</th>
                                     <th>현재 창고 재고량</th>
-                                    <th>수정 | 삭제</th>
+                                    <th>수정</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -107,8 +107,8 @@
                                 </select>
                                 <select id="orderStatusSearchSelect" class="form-select">
                                     <option value="1" selected>처리전</option>
-                                    <option value="5">입고대기</option>
-                                    <option value="all">완료</option> <!-- @@:나머지 생산이랑 관련 없는 값은 전부 완료로 표시 해서 가져오면 될듯? -->
+                                    <option value="2">완료</option>
+                                    <option value="">모두보기</option>
                                 </select>
 <!--                                <select id="orderSourceSearchSelect" class="form-select">-->
 <!--                                    <option value="all" selected>상품명 선택</option>-->
@@ -126,7 +126,7 @@
                                     <th>총 주문 가격</th>
                                     <th>주문 일자</th>
                                     <th>주문 상태</th>
-                                    <th>발주 | 생산</th>
+                                    <th>생산 | 발주</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -318,17 +318,16 @@
                                                         <input type="text" class="form-control" id="test01" value="-- 현재 창고 재고량 나와야함 --" disabled>
                                                     </div>
                                                 </div>
-                                                <div class="mb-3 row align-items-center">
-                                                    <label for="addSourceSelect" class="col-sm-3 col-form-label">제품</label>
-                                                    <div class="col-sm-9">
-                                                        <!-- 셀렉트 박스 -->
-                                                        <select id="orderStatusSelect" class="form-select">
-                                                            <option value="5">입고대기</option>
-                                                        </select>
-                                                        <!-- 처리중 or 취소만 ? 일단 하드코딩 -->
-                                                    </div>
-                                                </div>
-
+<!--                                                <div class="mb-3 row align-items-center">-->
+<!--                                                    <label for="addSourceSelect" class="col-sm-3 col-form-label">제품</label>-->
+<!--                                                    <div class="col-sm-9">-->
+<!--                                                        &lt;!&ndash; 셀렉트 박스 &ndash;&gt;-->
+<!--                                                        <select id="orderStatusSelect" class="form-select">-->
+<!--                                                            <option value="5">입고대기</option>-->
+<!--                                                        </select>-->
+<!--                                                        &lt;!&ndash; 처리중 or 취소만 ? 일단 하드코딩 &ndash;&gt;-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
                                             </div>
                                         </form>
                                     </div>

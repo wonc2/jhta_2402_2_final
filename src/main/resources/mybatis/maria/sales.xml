@@ -165,6 +165,17 @@
         VALUES (uuid(), #{kitOrderId}, #{statusId}, NOW())
     </insert>
 
+
+    <insert id="insertKitOrderLogByKitOrderId" parameterType="String">
+        INSERT INTO KIT_ORDER_LOG (KIT_ORDER_LOG_ID, KIT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE)
+        VALUES (
+                   uuid(),
+                   #{kitOrderId},
+                   (SELECT STATUS_ID FROM KIT_ORDER WHERE KIT_ORDER_ID = #{kitOrderId}),
+                   NOW()
+               )
+    </insert>
+
 <!--    업체별 밀키트 재고 확인-->
     <select id="selectKitStorage" resultType="KitStorageDto">
         SELECT

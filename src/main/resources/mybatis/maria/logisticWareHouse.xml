@@ -1,21 +1,6 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.distribution.DistributionDao">
-    <select id="selectAllLogisticsWarehouse/////" resultType="LogisticsWareHouseDto">
-        SELECT lw.WAREHOUSE_NAME AS wareHouseName,
-               s.NAME            AS sourceName,
-               pc.NAME           AS productCompanyName,
-               SUM(lws.QUANTITY) AS quantity
-        FROM LOGISTICS_WAREHOUSE lw
-                 JOIN LOGISTICS_WAREHOUSE_STACK lws ON lw.LOGISTICS_WAREHOUSE_ID = lws.LOGISTICS_WAREHOUSE_ID
-                 JOIN SOURCE s ON lws.SOURCE_ID = s.SOURCE_ID
-                 JOIN SOURCE_PRICE sp ON s.SOURCE_ID = sp.SOURCE_ID
-                 JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
-        GROUP BY lw.WAREHOUSE_NAME,
-                 s.NAME,
-                 pc.NAME
-        ORDER BY lw.WAREHOUSE_NAME,
-                 s.NAME
-    </select>
+
 
     <select id="selectAllLogisticsWarehouse" resultType="LogisticsWareHouseDto">
 
@@ -33,6 +18,19 @@
         ORDER BY lw.WAREHOUSE_NAME,
                  s.NAME
     </select>
+
+    <select id="selectBySourceNameLogisticsWarehouse" parameterType="String" resultType="LogisticsWareHouseDto">
+        SELECT lw.WAREHOUSE_NAME AS wareHouseName,
+               s.NAME            AS sourceName,
+               s.SOURCE_ID       AS sourceUUID,
+               SUM(lws.QUANTITY) AS quantity
+        FROM LOGISTICS_WAREHOUSE lw
+                 JOIN LOGISTICS_WAREHOUSE_STACK lws ON lw.LOGISTICS_WAREHOUSE_ID = lws.LOGISTICS_WAREHOUSE_ID
+                 JOIN SOURCE s ON lws.SOURCE_ID = s.SOURCE_ID
+        WHERE s.NAME = #{sourceName}
+        GROUP BY lw.WAREHOUSE_NAME, s.NAME, s.SOURCE_ID
+    </select>
+
 
     <!-- 쿼리 정의 -->
     <select id="selectProductOrderLogs" resultType="LogisticsWareHouseDetailDto">
@@ -60,7 +58,7 @@
     <update id="updateProductOrderStatus" parameterType="int">
         UPDATE PRODUCT_ORDER
         SET STATUS_ID = 7
-        WHERE STATUS_ID = 3
+        WHERE STATUS_ID = 5
     </update>
 
     <update id="updateKitOrderStatus" parameterType="int">
@@ -82,7 +80,7 @@
                  JOIN KIT_SOURCE KS ON SP.SOURCE_ID = KS.SOURCE_ID
                  JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
                  JOIN LOGISTICS_WAREHOUSE LW ON LW.WAREHOUSE_NAME = 'Shin_WAREHOUSE'
-        WHERE PO.STATUS_ID = 3
+        WHERE PO.STATUS_ID = 5
         GROUP BY S.SOURCE_ID, LW.LOGISTICS_WAREHOUSE_ID
 
     </insert>

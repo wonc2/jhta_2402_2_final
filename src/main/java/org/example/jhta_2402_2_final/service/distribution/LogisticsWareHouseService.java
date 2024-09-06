@@ -56,5 +56,9 @@ public class LogisticsWareHouseService {
     public List<ProductOrderLogDTO> selectProductOrderLogDetailsBySourceId(String sourceId) {
         return distributionDao.selectProductOrderLogDetailsBySourceId(sourceId);
     }
+
+    public List<LogisticsWareHouseDto> selectBySourceNameLogisticsWarehouse(String keyword) {
+    return distributionDao.selectBySourceNameLogisticsWarehouse(keyword);
+    }
 }
 
