@@ -6,6 +6,7 @@ import org.example.jhta_2402_2_final.model.dto.sales.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -156,6 +157,26 @@ public class SalesService {
     //밀키트 가격 변경
     public void updateKitPrice(String mealkitId, int minPrice) {
         salesDao.updateKitPrice(mealkitId, minPrice);
+    }
+
+    //밀키트 주문별 최저가 재료 포함한 상세정보
+    public List<OrderDetailDto> getOrderDetails(UUID kitOrderId, int quantity) {
+
+        return salesDao.selectOrderDetail(kitOrderId,quantity);
+    }
+
+    // 최저가를 파는 재료명과 업체명을 가지고 sourcePriceID값 찾기
+    public UUID findSourcePriceId(String sourceName, String companyName) {
+        return salesDao.findSourcePriceId(sourceName,companyName );
+    }
+
+    public int insertProductOrder(UUID sourcePriceId, int itemQuantity) {
+        return salesDao.insertProductOrder(sourcePriceId, itemQuantity);
+    }
+
+    //product_order 테이블 상세 조회
+    public List<ProductOrderDetailDto> selectProductOrder(){
+        return salesDao.selectProductOrder();
     }
 }
 

@@ -81,4 +81,16 @@ public interface SalesDao {
 
     //밀키트 가격 수정
     void updateKitPrice(@Param("mealkitId") String mealkitId, @Param("minPrice") int minPrice);
+
+    // 밀키트 주문 재료별 최소값 포함한 상세정보
+    List<OrderDetailDto> selectOrderDetail(UUID kitOrderId, int quantity);
+
+    //최소값을 파는 업체명과 재료명으로 sourcePriceId를 찾아옴
+    UUID findSourcePriceId(String sourceName, String companyName);
+
+    //product_order 테이블에 값 추가
+    int insertProductOrder(UUID sourcePriceId, int quantity);
+
+    //product_order 테이블 조회
+    List<ProductOrderDetailDto> selectProductOrder();
 }

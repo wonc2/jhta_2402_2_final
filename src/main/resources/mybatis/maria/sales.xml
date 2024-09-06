@@ -336,4 +336,75 @@
         WHERE MEALKIT_ID = #{mealkitId}
     </update>
 
+<!--    발주 요청을 위한 상세정보 가져오기-->
+    <select id="selectOrderDetail" resultType="OrderDetailDto">
+        SELECT
+            KO.KIT_ORDER_ID AS kitOrderId,         -- 주문 ID
+            M.NAME AS mealkitName,                -- 밀키트 이름
+            S.NAME AS sourceName,                  -- 재료 이름
+            (KS.QUANTITY * #{quantity}) AS quantity, -- 필요 수량 (주문 수량에 따라 계산)
+            IFNULL(SUM(LWS.QUANTITY), 0) AS stackQuantity,  -- 창고 재고 수량
+            sp_min.min_price AS minPrice,          -- 최소 가격
+            sp_min.companyName AS companyName      -- 회사명
+        FROM
+            KIT_ORDER KO
+                JOIN MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID  -- KIT_ORDER와 MEALKIT 조인
+                JOIN KIT_SOURCE KS ON M.MEALKIT_ID = KS.MEALKIT_ID  -- MEALKIT과 KIT_SOURCE 조인
+                JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID  -- KIT_SOURCE와 SOURCE 조인
+                LEFT JOIN LOGISTICS_WAREHOUSE_STACK LWS ON KS.SOURCE_ID = LWS.SOURCE_ID  -- 창고 정보 조인
+                JOIN (
+                SELECT
+                    sp.SOURCE_ID,
+                    sp.PRICE AS min_price,
+                    pc.NAME AS companyName,
+                    ROW_NUMBER() OVER (PARTITION BY sp.SOURCE_ID ORDER BY sp.PRICE) AS rn  -- 동일 SOURCE_ID 내에서 가격 순서대로 번호 부여
+                FROM
+                    SOURCE_PRICE sp
+                        JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+            ) sp_min ON S.SOURCE_ID = sp_min.SOURCE_ID  -- 재료의 최소 가격과 회사 정보 조인
+        WHERE
+            sp_min.rn = 1 AND -- 각 재료별 첫 번째(최소 가격) 행만 선택
+            KO.KIT_ORDER_ID = #{kitOrderId}  -- kitOrderId를 조건으로 사용
+        GROUP BY
+            KO.KIT_ORDER_ID, M.NAME, S.NAME, KS.QUANTITY, sp_min.min_price, sp_min.companyName
+    </select>
+
+
+
+    <!-- SOURCE_PRICE_ID 조회 -->
+    <select id="findSourcePriceId" resultType="UUID">
+        SELECT sp.SOURCE_PRICE_ID
+        FROM SOURCE_PRICE sp
+                 JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
+                 JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+        WHERE s.NAME = #{sourceName}
+          AND pc.NAME = #{companyName}
+    </select>
+
+    <!-- PRODUCT_ORDER 데이터 삽입 -->
+    <insert id="insertProductOrder">
+        INSERT INTO PRODUCT_ORDER_02 (PRODUCT_ORDER_ID, SOURCE_PRICE_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
+        VALUES (UUID(), #{sourcePriceId}, #{quantity}, NOW(), 1);
+    </insert>
+
+
+<!--    product_order 테이블 조회-->
+    <select id="selectProductOrder" resultType="ProductOrderDetailDto">
+        SELECT
+            po.PRODUCT_ORDER_ID as productOrderId,
+            pc.NAME AS companyName,
+            s.NAME AS sourceName,
+            sp.PRICE AS sourcePrice,
+            po.QUANTITY,
+            po.PRODUCT_ORDER_DATE as orderDate,
+            st.STATUS
+        FROM
+            PRODUCT_ORDER_02 po
+                JOIN SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+                JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
+                JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+                JOIN STATUS st ON po.STATUS_ID = st.STATUS_ID
+
+        order by orderDate DESC
+    </select>
 </mapper>
