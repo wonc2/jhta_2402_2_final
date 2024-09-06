@@ -2,10 +2,10 @@ package org.example.jhta_2402_2_final.dao.product;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.example.jhta_2402_2_final.model.dto.common.SourceDto;
+import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyChartDto;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Mapper
 public interface ProductCompanyDao {
@@ -34,7 +34,13 @@ public interface ProductCompanyDao {
 
     List<Map<String, Object>> getProductOrderList(Map<String, Object> paramData);
 
+    // 주문 처리
     int orderProcess(Map<String, Object> paramData);
+    int orderLog(Map<String, Object> paramData);
 
     int getSourceQuantityFromWarehouse(String sourcePriceId);
+
+    int outboundSource(Map<String, Object> paramData);
+
+    List<ProductCompanyChartDto> getChart(String companyName);
 }

@@ -50,6 +50,24 @@ public class ProductAdminService {
     public List<ProductOrderViewDto> getProductOrderList(){
         return productDao.getProductOrderList();
     }
+    public List<ProductOrderViewDto> getProductOrderListProductName(String productName){
+        return productDao.getProductOrderListProductName(productName);
+    }
+    public List<ProductOrderViewDto> getProductOrderListCompanyName(String companyName){
+        return productDao.getProductOrderListCompanyName(companyName);
+    }
+    public List<ProductOrderViewDto> getProductOrderListCompanyNameProductName(String companyName , String productName){
+        return productDao.getProductOrderListCompanyNameProductName(companyName,productName);
+    }
+    public List<SourcePriceViewDto> getSourcePriceListCompanyName(String companyName){
+        return productDao.getSourcePriceListCompanyName(companyName);
+    }
+    public List<SourcePriceViewDto> getSourcePriceListProductName(String productName){
+        return productDao.getSourcePriceListProductName(productName);
+    }
+    public List<SourcePriceViewDto> getSourcePriceListCompanyNameProductName(String companyName , String productName){
+        return productDao.getSourcePriceListCompanyNameProductName(companyName,productName);
+    }
     public int insertProductCompany(ProductCompanyInsertDto productCompanyInsertDto){
         MemberDto memberDto = MemberDto.builder()
                 .userId(productCompanyInsertDto.getUserId())

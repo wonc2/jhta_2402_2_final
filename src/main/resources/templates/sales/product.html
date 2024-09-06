@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <th:block th:replace="fragment/adminHeader :: head"></th:block>
+</head>
+
+
+<th:block th:replace="fragment/adminHeader :: body"></th:block>
+<div id="layoutSidenav_content">
+    <!-- 페이지마다 다른 콘텐츠 -->
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4 mb-5">Product_Order 테이블 조회 </h1>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    Product_Order 테이블 조회
+                </div>
+                <div class="card-body">
+
+                    <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                        <select class="datatable-selector" name="category">
+                            <option value="All">All</option>
+                            <option value="firstName">firstName</option>
+                            <option value="lastName">lastName</option>
+                            <option value="email">email</option>
+                            <option value="department">department</option>
+                            <option value="hiredate">hiredate</option>
+                        </select>
+                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+
+
+
+
+                    <table id="datatablesSimple">
+                        <thead>
+                        <tr>
+                            <th>생산 ID</th>
+                            <th>업체명</th>
+                            <th>재료명</th>
+                            <th>최저가</th>
+                            <th>수량</th>
+                            <th>주문 날짜</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>생산 ID</th>
+                            <th>업체명</th>
+                            <th>재료명</th>
+                            <th>최저가</th>
+                            <th>수량</th>
+                            <th>주문 날짜</th>
+                            <th>상태</th>
+                        </tr>
+                        </tfoot>
+
+                        <tbody>
+                        <tr th:each="productOrder : ${productOrder}" >
+                            <td th:text="${productOrder.productOrderId}"></td>
+                            <td th:text="${productOrder.companyName}"></td>
+                            <td th:text="${productOrder.sourceName}"></td>
+                            <td th:text="${productOrder.sourcePrice}"></td>
+                            <td th:text="${productOrder.quantity}"></td>
+                            <td th:text="${productOrder.orderDate}"></td>
+                            <td th:text="${productOrder.status}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    Product_Order_Log 테이블 조회
+                </div>
+                <div class="card-body">
+
+                    <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                        <select class="datatable-selector" name="category">
+                            <option value="All">All</option>
+                            <option value="firstName">firstName</option>
+                            <option value="lastName">lastName</option>
+                            <option value="email">email</option>
+                            <option value="department">department</option>
+                            <option value="hiredate">hiredate</option>
+                        </select>
+                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+
+
+
+
+                    <table id="datatablesSimple02">
+                        <thead>
+                        <tr>
+                            <th>번호</th>
+                            <th>업체명</th>
+                            <th>재료명</th>
+                            <th>수량</th>
+                            <th>재료가격</th>
+                            <th>주문 날짜</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>번호</th>
+                            <th>업체명</th>
+                            <th>재료명</th>
+                            <th>수량</th>
+                            <th>재료가격</th>
+                            <th>주문 날짜</th>
+                            <th>상태</th>
+                        </tr>
+                        </tfoot>
+
+                        <tbody>
+                        <tr th:each="productOrderLog, iterStat : ${productOrderLog}" >
+                            <td th:text="${iterStat.count}"></td>
+                            <td th:text="${productOrderLog.companyName}"></td>
+                            <td th:text="${productOrderLog.sourceName}"></td>
+                            <td th:text="${productOrderLog.quantity}"></td>
+                            <td th:text="${productOrderLog.price}"></td>
+                            <td th:text="${productOrderLog.orderDate}"></td>
+                            <td th:text="${productOrderLog.status}"></td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<th:block th:replace="fragment/adminFooter :: footer"></th:block>
+</body>
+</html>

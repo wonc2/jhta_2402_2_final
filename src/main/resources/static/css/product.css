@@ -1,56 +1,21 @@
-.card-body-product-upside{
-    display: flex;
-}
 .checkProductBtn{
     margin-right : 20px;
 }
-.productTableAreaTitle{
+.productAdminMainTableArea{
     display: flex;
-    background-color: #eaeaee;
-    padding: 8px;
-    border:2px solid #ccc;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    align-items: center;
-    .tableicon{
-        font-size: 32px;
-    }
-    #productTableChange{
-        margin-left:15px;
-    }
-}
-.productTableAreaTable{
-    padding : 15px;
-    border-left: 2px solid #ccc;
-    border-right: 2px solid #ccc;
-    border-bottom: 2px solid #ccc;
-    td{
-        border:1px solid #ccc;
-    }
-    th{
-        border:1px solid #ccc;
-        background-color: #eeeeee;
-    }
-}
-.productTableAreaBottom {
-    display: flex;
-    align-items: center;
     justify-content: space-between;
-    padding: 10px;
+    align-items: center;
 }
-
-.productTableAreaLeftEnd {
-    flex: 1;
+.productAdminMainTableLeft{
+    flex:1;
 }
-
-.productTableAreaBottomCenter {
+.productAdminMainTableCenter{
     display: flex;
-    justify-content: center; /* 페이지네이션을 중앙에 배치 */
-    flex: 1;
+    justify-content: center;
+    flex: 3;
 }
-
-.productTableAreaBottomRightEnd {
+.productAdminMainTableRight{
     display: flex;
-    justify-content: flex-end; /* 버튼을 우측 끝에 배치 */
-    flex: 1;
+    justify-content: flex-end;
+    flex: 2;
 }

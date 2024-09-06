@@ -1,5 +1,7 @@
 package org.example.jhta_2402_2_final.controller.sales;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jhta_2402_2_final.model.dto.Employee;
@@ -7,10 +9,12 @@ import org.example.jhta_2402_2_final.model.dto.sales.*;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.mybatis.logging.Logger;
 import org.mybatis.logging.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +78,6 @@ public class SalesController {
     public String changeKitOrderStatus(
             @RequestParam("kitOrderId") String kitOrderId,
             @RequestParam("statusId") int statusId) {
-        System.out.println("kitOrderId>>>>>>>>"+kitOrderId);
 
         salesService.updateKitOrderStatus(kitOrderId, statusId);
         salesService.createKitOrderLog(UUID.fromString(kitOrderId), statusId);
@@ -94,11 +97,53 @@ public class SalesController {
             @RequestParam("sourceIds") List<String> sourceIds,
             @RequestParam(value = "quantities", required = false) List<Integer> quantities) {
 
-        System.out.println("quantities>>>>>>>>>>>>>"+quantities);
-
         // 서비스에서 밀키트 추가 로직 호출
         salesService.insertMealkit(mealkitName, sourceIds, quantities);
 
         return "redirect:/sales";  // 완료 후 목록 페이지로 리다이렉트
     }
+
+    //주문별 최소 재료값 포함한 상세정보
+    @GetMapping("/order/details")
+    @ResponseBody
+    public List<OrderDetailDto> getOrderDetails(@RequestParam("kitOrderId") UUID kitOrderId,
+                                                @RequestParam("quantity") int quantity) {
+
+        return salesService.getOrderDetails(kitOrderId, quantity);
+    }
+
+
+    @PostMapping("/order/create")
+    public String submitOrder(
+            @RequestParam("kitOrderId") String kitOrderId,
+            @RequestParam("mealkitName") String mealkitName,
+            @RequestParam("quantity") int quantity,
+            @RequestParam("sourceNames") String sourceNamesJson,
+            @RequestParam("itemQuantities") String itemQuantitiesJson,
+            @RequestParam("stackQuantities") String stackQuantitiesJson,
+            @RequestParam("minPrices") String minPricesJson,
+            @RequestParam("companyNames") String companyNamesJson) throws JsonProcessingException {
+
+        System.out.println("kitOrderId>>>>>"+kitOrderId);
+        // JSON 문자열을 배열로 변환
+        ObjectMapper mapper = new ObjectMapper();
+
+        String[] sourceNames = mapper.readValue(sourceNamesJson, String[].class);
+        int[] itemQuantities = mapper.readValue(itemQuantitiesJson, int[].class);
+        int[] stackQuantities = mapper.readValue(stackQuantitiesJson, int[].class);
+        int[] minPrices = mapper.readValue(minPricesJson, int[].class);
+        String[] companyNames = mapper.readValue(companyNamesJson, String[].class);
+
+        salesService.processOrder(sourceNames, companyNames, itemQuantities);
+        int result=salesService.updateKitOrderStatus(kitOrderId, 2);
+        if (result>0){
+            salesService.insertKitOrderLogByKitOrderId(kitOrderId);
+        }else {
+            System.out.println("키트 오더 업데이트 오류뜸");
+        }
+
+
+        return "redirect:/sales/product/order";
+    }
+
 }

@@ -17,16 +17,18 @@
                 <button class="btn btn-primary"
                         data-bs-toggle="modal"
                         data-bs-target="#insertMealkitModal">
-                    밀키트 추가</button>
+                    밀키트 추가
+                </button>
             </div>
 
 
-<!--           주문 추가 모달 버튼-->
+            <!--           주문 추가 모달 버튼-->
             <div class="d-flex justify-content-end mb-3">
                 <button class="btn btn-primary"
                         data-bs-toggle="modal"
                         data-bs-target="#insertKitOrderModal">
-                    새로운 밀키트 주문 추가</button>
+                    새로운 밀키트 주문 추가
+                </button>
             </div>
 
             <div class="card mb-4">
@@ -36,7 +38,8 @@
                 </div>
                 <div class="card-body">
 
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3"
+                          style="width: 400px;">
                         <select class="datatable-selector" name="category">
                             <option value="All">All</option>
                             <option value="firstName">firstName</option>
@@ -48,8 +51,6 @@
                         <input type="text" class="form-control" name="keyword" placeholder="Search...">
                         <button type="submit" class="btn btn-primary">검색</button>
                     </form>
-
-
 
 
                     <table id="datatablesSimple04">
@@ -73,7 +74,7 @@
 
                         <!--tbody > tr > td-->
                         <tbody>
-                        <tr th:each="kitSource, iterStat : ${kitSourceDetails}" >
+                        <tr th:each="kitSource, iterStat : ${kitSourceDetails}">
 
                             <td th:text="${iterStat.count}"></td>
                             <td th:text="${kitSource.mealkitName}"></td>
@@ -94,7 +95,8 @@
                 </div>
                 <div class="card-body">
 
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3"
+                          style="width: 400px;">
                         <select class="datatable-selector" name="category">
                             <option value="All">All</option>
                             <option value="firstName">firstName</option>
@@ -106,8 +108,6 @@
                         <input type="text" class="form-control" name="keyword" placeholder="Search...">
                         <button type="submit" class="btn btn-primary">검색</button>
                     </form>
-
-
 
 
                     <table id="datatablesSimple">
@@ -138,7 +138,7 @@
 
                         <!--tbody > tr > td-->
                         <tbody>
-                        <tr th:each="kitOrders, iterStat : ${kitOrders}" >
+                        <tr th:each="kitOrders, iterStat : ${kitOrders}">
 
                             <td th:text="${iterStat.count}"></td>
                             <td th:text="${kitOrders.kitOrderId}"></td>
@@ -158,7 +158,7 @@
 
         </div>
 
-<!--        밀키트 주문 상세-->
+        <!--        밀키트 주문 상세-->
         <div class="container-fluid px-4">
 
             <div class="card mb-4">
@@ -168,7 +168,8 @@
                 </div>
                 <div class="card-body">
 
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3"
+                          style="width: 400px;">
                         <select class="datatable-selector" name="category">
                             <option value="All">All</option>
                             <option value="firstName">firstName</option>
@@ -180,8 +181,6 @@
                         <input type="text" class="form-control" name="keyword" placeholder="Search...">
                         <button type="submit" class="btn btn-primary">검색</button>
                     </form>
-
-
 
 
                     <table id="datatablesSimple02">
@@ -196,7 +195,8 @@
                             <th>총액</th>
                             <th>주문일자</th>
                             <th>상태</th>
-                            <th>상태 변경</th>
+                            <th>발주요청</th>
+                            <th>상태변경</th>
                         </tr>
                         </thead>
                         <tfoot>
@@ -209,14 +209,14 @@
                             <th>개수</th>
                             <th>총액</th>
                             <th>주문일자</th>
-                            <th>상태</th>
-                            <th>상태 변경</th>
+                            <th>발주요청</th>
+                            <th>상태변경</th>
                         </tr>
                         </tfoot>
 
                         <!--tbody > tr > td-->
                         <tbody>
-                        <tr th:each="details, iterStat : ${kitOrderDetails}" >
+                        <tr th:each="details, iterStat : ${kitOrderDetails}">
 
                             <td th:text="${iterStat.count}"></td>
                             <td th:text="${details.kitOrderId}"></td>
@@ -227,6 +227,26 @@
                             <td th:text="${details.total}"></td>
                             <td th:text="${details.orderDate}"></td>
                             <td th:text="${details.status}"></td>
+                            <td>
+                                <button
+                                        th:if="${details.status == '처리전'}"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#orderDetailModal"
+                                        th:attr="
+                                        data-order-id=${details.kitOrderId},
+                                        data-quantity=${details.quantity},
+                                        data-mealkit-name=${details.mealkitName}">
+                                    발주 요청
+                                </button>
+
+                                <button
+                                        th:if="${details.status != '처리전'}"
+                                        class="btn btn-secondary"
+                                        disabled>
+                                    발주 요청
+                                </button>
+                            </td>
                             <td>
                                 <!-- 상태 변경 버튼 -->
                                 <button class="btn btn-primary change-status-btn"
@@ -248,7 +268,7 @@
 
         </div>
 
-<!--        밀키트 로그 -->
+        <!--        밀키트 로그 -->
         <div class="container-fluid px-4">
 
             <div class="card mb-4">
@@ -258,7 +278,8 @@
                 </div>
                 <div class="card-body">
 
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3"
+                          style="width: 400px;">
                         <select class="datatable-selector" name="category">
                             <option value="All">All</option>
                             <option value="firstName">firstName</option>
@@ -270,8 +291,6 @@
                         <input type="text" class="form-control" name="keyword" placeholder="Search...">
                         <button type="submit" class="btn btn-primary">검색</button>
                     </form>
-
-
 
 
                     <table id="datatablesSimple03">
@@ -316,9 +335,150 @@
     </main>
 </div>
 
+<!-- HTML 부분 -->
+<!-- 모달 -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderDetailModalLabel">발주 상세 정보</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="orderForm" th:action="@{/sales/order/create}" th:method="post">
+                    <div id="kitInfo">
+
+                        <div class="mb-3">
+                            <label for="mealkitNameInput" class="form-label">밀키트명</label>
+                            <input type="text" class="form-control" id="mealkitNameInput" name="mealkitName" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantityInput" class="form-label">주문 개수</label>
+                            <input type="text" class="form-control" id="quantityInput" name="quantity" readonly>
+                        </div>
+                    </div>
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>재료명</th>
+                            <th>재료수량</th>
+                            <th>창고재고</th>
+                            <th>최저가</th>
+                            <th>생산업체명</th>
+                        </tr>
+                        </thead>
+                        <tbody id="orderDetailsTableBody">
+                        <!-- 데이터가 여기에 삽입됩니다 -->
+                        </tbody>
+                    </table>
+
+                    <!-- 숨겨진 필드들 -->
+                    <input type="hidden" name="kitOrderId" id="hiddenKitOrderId">
+                    <input type="hidden" name="sourceNames" id="hiddenSourceNames">
+                    <input type="hidden" name="itemQuantities" id="hiddenItemQuantities">
+                    <input type="hidden" name="stackQuantities" id="hiddenStackQuantities">
+                    <input type="hidden" name="minPrices" id="hiddenMinPrices">
+                    <input type="hidden" name="companyNames" id="hiddenCompanyNames">
+                </form>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button type="submit" class="btn btn-primary" form="orderForm">발주 요청</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // 모달이 열릴 때 이벤트 리스너 설정
+        var orderDetailModal = document.getElementById('orderDetailModal');
+
+        orderDetailModal.addEventListener('show.bs.modal', function (event) {
+
+
+            var button = event.relatedTarget;
+            var kitOrderId = button.getAttribute('data-order-id');
+            var quantity = button.getAttribute('data-quantity');
+            var mealkitName = button.getAttribute('data-mealkit-name');
+
+            document.getElementById('mealkitNameInput').value = mealkitName;
+            document.getElementById('quantityInput').value = quantity;
+
+
+            const encodedKitOrderId = encodeURIComponent(kitOrderId);
+            const encodedQuantity = encodeURIComponent(quantity);
+
+            // Fetch API를 이용해 서버에서 데이터를 가져옴
+            fetch(`/sales/order/details?kitOrderId=${encodedKitOrderId}&quantity=${encodedQuantity}`)
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('HTTP 오류:', response.status, response.statusText);
+                        throw new Error('네트워크 응답에 문제가 있습니다.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 서버로부터 받은 데이터를 모달에 채움
+                    const tbody = document.querySelector('#orderDetailModal .modal-body tbody');
+                    tbody.innerHTML = ''; // 기존 데이터를 지움
+
+                    // 숨겨진 필드를 업데이트
+                    const sourceNames = [];
+                    const itemQuantities = [];
+                    const stackQuantities = [];
+                    const minPrices = [];
+                    const companyNames = [];
+
+                    data.forEach(item => {
+
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${item.sourceName}</td>
+                                <td>${item.quantity}</td>
+                                <td>${item.stackQuantity}</td>
+                                <td>${item.minPrice}</td>
+                                <td>${item.companyName}</td>
+
+                            </tr>
+                        `;
+
+                        sourceNames.push(item.sourceName);
+                        itemQuantities.push(item.quantity);
+                        stackQuantities.push(item.stackQuantity);
+                        minPrices.push(item.minPrice);
+                        companyNames.push(item.companyName);
+
+                    });
+
+                    document.getElementById('hiddenSourceNames').value = JSON.stringify(sourceNames);
+                    document.getElementById('hiddenItemQuantities').value = JSON.stringify(itemQuantities);
+                    document.getElementById('hiddenStackQuantities').value = JSON.stringify(stackQuantities);
+                    document.getElementById('hiddenMinPrices').value = JSON.stringify(minPrices);
+                    document.getElementById('hiddenCompanyNames').value = JSON.stringify(companyNames);
+                    document.getElementById('hiddenKitOrderId').value = kitOrderId;
+
+                })
+                .catch(error => {
+                    console.error('Fetch 오류:', error);
+                });
+
+
+        });
+
+
+    });
+
+</script>
+
 
 <!-- 주문 추가 모달 -->
-<div class="modal fade" id="insertKitOrderModal" tabindex="-1" aria-labelledby="insertKitOrderModalLabel" aria-hidden="true">
+<div class="modal fade" id="insertKitOrderModal" tabindex="-1" aria-labelledby="insertKitOrderModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -352,7 +512,8 @@
                     <div class="mb-3">
                         <!-- 밀키트 가격을 표시할 입력 필드 -->
                         <label for="mealkitPrice" class="form-label">밀키트 가격</label>
-                        <input type="number" id="mealkitPrice" name="price" class="form-control" readonly placeholder="가격이 여기에 표시됩니다">
+                        <input type="number" id="mealkitPrice" name="price" class="form-control" readonly
+                               placeholder="가격이 여기에 표시됩니다">
                     </div>
                     <div class="mb-3">
                         <label for="quantity" class="form-label">수량</label>
@@ -370,7 +531,8 @@
 </div>
 
 <!-- 상태 변경 모달 -->
-<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -398,7 +560,8 @@
 </div>
 
 <!-- 밀키트 추가 모달 -->
-<div class="modal fade" id="insertMealkitModal" tabindex="-1" aria-labelledby="insertMealkitModalLabel" aria-hidden="true">
+<div class="modal fade" id="insertMealkitModal" tabindex="-1" aria-labelledby="insertMealkitModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">

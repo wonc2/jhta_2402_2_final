@@ -4,9 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 import org.example.jhta_2402_2_final.dao.distribution.KitOrderProcessDao;
+import org.example.jhta_2402_2_final.dao.sales.SalesDao;
 import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderProcessDto;
+<<<<<<< HEAD
 import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderDto;
 import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDto;
+=======
+import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDto;
+import org.example.jhta_2402_2_final.model.dto.sales.KitStorageDto;
+>>>>>>> 3fe4caf6decc32ec483d0c7c99be6c592c6976e7
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +29,7 @@ public class KitOrderProcessService {
     private final SqlSession sqlSession;
     private final KitOrderProcessDao kitOrderProcessDao;
     private final SalesService salesService;
+    private final SalesDao salesDao;
 
     public List<Map<String, Object>> findAllOrder() {
         return kitOrderProcessDao.findAllOrder();
@@ -105,8 +112,32 @@ public class KitOrderProcessService {
 
         // 5. 주문 상태를 '처리완료'로 업데이트
         kitOrderProcessDao.updateOrderStatus(kitOrderId, 3);
-        // 5. 주문 로그의 상태를 '처리 완료' 로 업데이트
-        kitOrderProcessDao.updateOrderLogStatus(kitOrderId, 3);
+
+        // 6. 주문 로그 테이블 (KIT_ORDER_LOG) 에 상태가 3인 것을 추가
+        kitOrderProcessDao.insertOrderLogStatus(kitOrderId, 3);
+
+
+// 밑에서부턴 밀키트 창고 재고 업데이트 부분
+
+        KitOrderDto kitOrder = salesDao.selectKitOrderById(kitOrderId);
+
+        String kitCompanyId = kitOrder.getKitCompanyId();
+        String mealkitId = kitOrder.getMealkitId();
+        int quantity = kitOrder.getQuantity();
+
+//밀키트 아이디와 판매업체 아이디로 창고 재고를 확인
+        KitStorageDto kitStorageDto = salesDao.selectKitStorageById(kitCompanyId,mealkitId);
+        UUID kiStorageId = UUID.randomUUID();
+
+//해당 재고가 없으면 새로 추가
+        if (kitStorageDto == null) {
+            salesDao.insertKitStorage(kiStorageId, kitCompanyId, mealkitId, quantity);
+        }
+
+//재고가 있으면 업데이트
+        else {
+            salesDao.updateKitStorage(kitStorageDto.getKitStorageId(), quantity);
+        }
 
 
         return true;

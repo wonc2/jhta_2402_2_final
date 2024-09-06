@@ -16,21 +16,34 @@
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-chart-bar me-1"></i>
-                                재고 현황 차트
+                                주문 현황 차트
                             </div>
                             <div class="card-body">
-                                <canvas id="salesProductPriceChart" width="100%" height="100%"></canvas>
+                                <canvas id="orderChart" style="max-width: 1000px; max-height: 300px;"></canvas>
                             </div>
                         </div>
                     </div>
                     <div class="col-xl-6">
                         <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-area me-1"></i>
-                                생산 주문 요청 차트
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-chart-area me-1"></i>
+                                    재고 현황 차트
+                                </div>
+                                <!-- 드롭다운 버튼 -->
+                                <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="warehouseChartDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        막대 차트
+                                    </button>
+                                    <ul class="dropdown-menu" id="chartDropDownMenu" aria-labelledby="warehouseChartDropdown">
+                                        <li><button class="dropdown-item warehouse-dropdown-item" data-value="bar" data-name="막대 차트 ">막대 차트</button></li>
+                                        <li><button class="dropdown-item warehouse-dropdown-item" data-value="line" data-name="선형 차트 ">선형 차트</button></li>
+                                        <li><button class="dropdown-item warehouse-dropdown-item" data-value="doughnut" data-name="도넛 차트 ">도넛 차트</button></li>
+                                    </ul>
+                                </div>
                             </div>
                             <div class="card-body">
-                                <canvas id="salesProductChart" width="100%" height="100%"></canvas>
+                                <canvas id="warehouseChart" style="max-width: 1000px; max-height: 300px;"></canvas>
                             </div>
                         </div>
                     </div>
@@ -38,25 +51,25 @@
                 <div class="card mb-4">
                     <div class="card-header">
                         <i class="fas fa-table me-1"></i>
-                        <button class="btn btn-secondary dropdown-toggle ms-2" type="button" id="viewListDropDown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-secondary dropdown-toggle ms-2" type="button" id="tableDropDown" data-bs-toggle="dropdown" aria-expanded="false">
                             생산 현황
                         </button>
-                        <ul class="dropdown-menu" aria-labelledby="viewListDropDown">
-                            <li><a class="dropdown-item" data-value="companySourceList">생산 현황 </a></li>
-                            <li><a class="dropdown-item" data-value="warehouseList">창고 현황 </a></li>
-                            <li><a class="dropdown-item" data-value="orderList">주문 현황 </a></li>
+                        <ul class="dropdown-menu" aria-labelledby="tableDropDown">
+                            <li><button class="dropdown-item table-dropdown-item" data-value="companySourceList" data-name="생산 현황 " type="button">생산 현황</button></li>
+                            <li><button class="dropdown-item table-dropdown-item" data-value="warehouseList" data-name="창고 현황 " type="button">창고 현황</button></li>
+                            <li><button class="dropdown-item table-dropdown-item" data-value="orderList" data-name="주문 현황 " type="button">주문 현황</button></li>
                         </ul>
                     </div>
                     <div class="card-body">
                         <div id="companySourceTableContainer">
-                            <table id="companySourceTable" class="table table-bordered">
+                            <table id="companySourceTable" class="table table-bordered" style="table-layout: fixed;">
                                 <thead>
                                 <tr>
                                     <th>등록 번호</th>
                                     <th>생산품명</th>
                                     <th>생산품가격</th>
                                     <th>현재 창고 재고량</th>
-                                    <th>생산</th>
+                                    <th>수정</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -73,10 +86,13 @@
                             <table id="warehouseTable" class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <th>생산번호</th>
+                                    <th>입출번호</th>
                                     <th>생산품명</th>
-                                    <th>생산량</th>
-                                    <th>생산일자</th>
+                                    <th>입출량</th>
+                                    <th>구분</th>
+                                    <th>입출일</th> <!-- 출고량 / 입고량  이렇게 나오면되나 ? -->
+                                    <!--                                    <th>생산(입고)일자</th>-->
+                                    <!--                                    <th>납품일자</th> &lt;!&ndash; 30 / 100 이었다가 100 / 100 되면 100 / 100 되는 순간의 납품일자로 업데이트 &ndash;&gt;-->
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -85,9 +101,26 @@
                         </div>
 
                         <div id="orderTableContainer" style="display:none;">
+                            <div class="input-group mb-3 d-flex justify-content-end orderSearch" style="width: 300px;">
+                                <select id="orderMonthSearchSelect" class="form-select">
+                                    <option value="all" selected>all</option>
+                                    <option th:each="i : ${#numbers.sequence(1, 12)}" th:value="${i}" th:text="${i}+월"></option>
+                                </select>
+                                <select id="orderStatusSearchSelect" class="form-select">
+                                    <option value="1" selected>처리전</option>
+                                    <option value="2">완료</option>
+                                    <option value="">모두보기</option>
+                                </select>
+<!--                                <select id="orderSourceSearchSelect" class="form-select">-->
+<!--                                    <option value="all" selected>상품명 선택</option>-->
+<!--                                    <option value="5">입고대기</option>-->
+<!--                                    <option value="all">완료</option> &lt;!&ndash; @@:나머지 생산이랑 관련 없는 값은 전부 완료로 표시 해서 가져오면 될듯? &ndash;&gt;-->
+<!--                                </select>-->
+                            </div>
                             <table id="orderTable" class="table table-bordered">
                                 <thead>
                                 <tr>
+<!--                                    <th>no</th>-->
                                     <th>주문번호</th>
                                     <th>주문한 재료</th>
                                     <th>재료 가격</th>
@@ -95,7 +128,7 @@
                                     <th>총 주문 가격</th>
                                     <th>주문 일자</th>
                                     <th>주문 상태</th>
-                                    <th>주문처리</th>
+                                    <th>생산 | 발주</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -170,7 +203,7 @@
                                                     <label class="col-sm-3 col-form-label">갯수</label>
                                                     <div class="col-sm-9">
                                                         <input type="number" id="sourceQuantity" class="form-control"
-                                                               min="1" max="50000" value="1" step="1">
+                                                               min="10" max="50000" value="10" step="10">
                                                     </div>
                                                 </div>
                                                 <input type="hidden" id="sourcePriceId" name="sourcePriceId">
@@ -202,7 +235,7 @@
                                                     <label for="addSourceSelect" class="col-sm-3 col-form-label">제품</label>
                                                     <div class="col-sm-9">
                                                         <!-- 셀렉트 박스 -->
-                                                        <select id="addSourceSelect" class="form-select addSource" name="sourceId">
+                                                        <select id="addSourceSelect" class="form-select addSource">
                                                             <option value="directInput">직접입력</option>
                                                         </select>
                                                         <!-- 인풋 필드 -->
@@ -284,20 +317,19 @@
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">창고 재고량</label>
                                                     <div class="col-sm-9">
-                                                        <input type="text" class="form-control" id="test01" value="--현재 창고 재고량 나와야함 모자라면 발주 막기--" disabled>
+                                                        <input type="text" class="form-control" id="test01" value="-- 현재 창고 재고량 나와야함 --" disabled>
                                                     </div>
                                                 </div>
-                                                <div class="mb-3 row align-items-center">
-                                                    <label for="addSourceSelect" class="col-sm-3 col-form-label">제품</label>
-                                                    <div class="col-sm-9">
-                                                        <!-- 셀렉트 박스 -->
-                                                        <select id="orderStatusSelect" class="form-select">
-                                                            <option value="2">처리중</option>
-                                                        </select>
-                                                        <!-- 처리중 or 취소만 ? 일단 하드코딩 -->
-                                                    </div>
-                                                </div>
-
+<!--                                                <div class="mb-3 row align-items-center">-->
+<!--                                                    <label for="addSourceSelect" class="col-sm-3 col-form-label">제품</label>-->
+<!--                                                    <div class="col-sm-9">-->
+<!--                                                        &lt;!&ndash; 셀렉트 박스 &ndash;&gt;-->
+<!--                                                        <select id="orderStatusSelect" class="form-select">-->
+<!--                                                            <option value="5">입고대기</option>-->
+<!--                                                        </select>-->
+<!--                                                        &lt;!&ndash; 처리중 or 취소만 ? 일단 하드코딩 &ndash;&gt;-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
                                             </div>
                                         </form>
                                     </div>
@@ -329,5 +361,6 @@
 </div>
 </body>
 <th:block th:replace="~{fragment/footer}"></th:block>
+<!--<script th:inline="javascript" th:src="@{/js/common.js}"></script>-->
 <script th:inline="javascript" th:src="@{/js/productCompany.js}"></script>
 </html>

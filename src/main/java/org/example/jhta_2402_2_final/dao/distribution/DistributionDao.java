@@ -1,11 +1,13 @@
 package org.example.jhta_2402_2_final.dao.distribution;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderDetailLogDTO;
+
 import org.example.jhta_2402_2_final.model.dto.distribution.LogisticsWareHouseDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDTO;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 @Mapper
 public interface DistributionDao {
@@ -25,5 +27,18 @@ public interface DistributionDao {
 
     int deleteZeroQuantityRecords();
 
-    List<Map<String,Object>> selectKitOrderLogDetailsBySourceId(String sourceID);
+    List<KitOrderDetailLogDTO> selectKitOrderLogDetailsBySourceId(String sourceID);
+
+    List<ProductOrderLogDTO> selectProductOrderLogDetailsBySourceId(String sourceId);
+
+
+    List<LogisticsWareHouseDto> selectBySourceNameLogisticsWarehouse(String keyword);
+
+    List<String> selectProductOrderIdByStatus(int i);
+
+    int insertProductOrderLog(List<String> productOrderIdList);
+
+    List<String> selectKitOrderIdByStatus(int i);
+
+    int insertKitOrderLog(List<String> kitOrderIdList);
 }
