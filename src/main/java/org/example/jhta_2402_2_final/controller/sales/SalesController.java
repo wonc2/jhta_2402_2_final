@@ -136,6 +136,7 @@ public class SalesController {
 
         salesService.processOrder(sourceNames, companyNames, itemQuantities);
 
+
         return "redirect:/sales/product/order";
     }
 

@@ -384,7 +384,7 @@
     <!-- PRODUCT_ORDER 데이터 삽입 -->
     <insert id="insertProductOrder">
         INSERT INTO PRODUCT_ORDER (PRODUCT_ORDER_ID, SOURCE_PRICE_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
-        VALUES (UUID(), #{sourcePriceId}, #{quantity}, NOW(), 1);
+        VALUES (#{productOrderId}, #{sourcePriceId}, #{quantity}, NOW(), 1);
     </insert>
 
 
@@ -407,4 +407,22 @@
 
         order by orderDate DESC
     </select>
+
+<!--    product_order_log 인서트-->
+    <insert id="insertProductOrderLog">
+        INSERT INTO PRODUCT_ORDER_LOG (
+            PRODUCT_ORDER_LOG_ID,
+            PRODUCT_ORDER_ID,
+            STATUS_ID,
+            PRODUCT_ORDER_DATE
+        )
+        VALUES (
+                   UUID(),
+                   #{productOrderId},
+                   (SELECT STATUS_ID
+                    FROM PRODUCT_ORDER
+                    WHERE PRODUCT_ORDER_ID = #{productOrderId}),
+                   NOW()
+               );
+    </insert>
 </mapper>
