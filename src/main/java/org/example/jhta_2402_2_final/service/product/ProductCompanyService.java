@@ -112,7 +112,8 @@ public class ProductCompanyService {
     @Transactional
     public List<Map<String, Object>> orderProcess(String companyName, Map<String, Object> paramData) {
         // 필요값: { orderId, orderStatus }
-        productCompanyDao.orderProcess(paramData); // 주문처리서 상태 업데이트
+        productCompanyDao.orderProcess(paramData); // product_order 상태 업데이트 -> 입고대기
+        productCompanyDao.orderLog(paramData); // product_order_log 인서트
         // 필요값: { sourceQuantity, sourcePriceId }
         productCompanyDao.outboundSource(paramData);
         // 위에서 출고 연산 수행한후 창고의 재료 재고가 < 0 일시 롤백

@@ -62,18 +62,24 @@
         DATE_FORMAT(po.PRODUCT_ORDER_DATE, '%Y-%m-%d %h:%m') AS orderDate,
         st.STATUS AS orderStatus,
         sp.SOURCE_PRICE_ID as sourcePriceId
---         sw.quantity as sourceQuantity,
---         sw.quantity - po.quantity as checkStockAmount
+        -- sw.quantity as sourceQuantity,
+        -- sw.quantity - po.quantity as checkStockAmount
         FROM PRODUCT_ORDER po
         JOIN SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
         JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
         JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
---         JOIN SOURCE_WAREHOUSE sw on sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+        -- JOIN SOURCE_WAREHOUSE sw on sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
         WHERE pc.NAME = #{companyName}
-        <if test="orderStatusOption != 'all'">
-            and st.STATUS_ID = #{orderStatusOption}
-        </if>
+        <choose>
+            <when test="orderStatusOption == 1">
+                and st.STATUS_ID = #{orderStatusOption}
+            </when>
+            <when test="orderStatusOption == 2">
+                and st.STATUS_ID != 1
+            </when>
+            <otherwise></otherwise>
+        </choose>
         <if test="orderMonthOption != 'all'">
             and po.PRODUCT_ORDER_DATE LIKE CONCAT('2024-', LPAD(#{orderMonthOption}, 2, '0'), '%')
         </if>
@@ -82,6 +88,11 @@
     <update id="orderProcess" parameterType="map">
         update PRODUCT_ORDER set STATUS_ID = #{orderStatus} where PRODUCT_ORDER_ID = #{orderId}
     </update>
+
+    <insert id="orderLog" parameterType="map">
+        insert into PRODUCT_ORDER_LOG (PRODUCT_ORDER_LOG_ID, PRODUCT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE)
+        VALUES (UUID(), #{orderId}, #{orderStatus}, NOW())
+    </insert>
 
     <insert id="outboundSource" parameterType="map">
         INSERT into SOURCE_WAREHOUSE (SOURCE_WAREHOUSE_ID, QUANTITY, PRODUCE_DATE, SOURCE_PRICE_ID)

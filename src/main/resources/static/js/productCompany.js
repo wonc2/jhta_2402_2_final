@@ -61,13 +61,56 @@ $(document).ready(function () {
         });
     });
 
+    // 생산 모달창 -> 갯수 입력후 생산 로직 수행 @@: 이거 여기에 있는게 나은거같음
+    $('#companySourceTable').on('click', 'button[data-action="produce"]', function () {
+        const row = $(this).closest('tr');
+        const data = $('#companySourceTable').DataTable().row(row).data();
+
+        $('#produceSourceName').val(data.sourceName);
+        $('#produceSourcePrice').val(data.sourcePrice);
+        $('#sourcePriceId').val(data.companySourceId);
+        $('#produceSourceModal').modal('show');
+    });
+    $('#produceSourceBtn').on('click', function () {
+        const sourceQuantity = $('#sourceQuantity').val();
+        const sourcePriceId = $('#sourcePriceId').val();
+        const sourceName = $('#produceSourceName').val();
+
+        const data = {
+            sourceQuantity: sourceQuantity,
+            sourcePriceId: sourcePriceId
+        };
+        $.ajax({
+            url: '/api/product/company/produce',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
+            },
+            success: function () {
+                showToast("생산 요청이 완료 되었습니다: " + sourceName + " " + sourceQuantity + " 개");
+                $('#companySourceTable').DataTable().ajax.reload(null, false);
+                updateWarehouseChart();
+                $('#produceSourceModal').modal('hide');
+                setTimeout(function () {
+                    $('#sourceQuantity').val(10);
+                }, 500);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error occurred:', error);
+                alert('생산 요청 중 오류가 발생했습니다.');
+            }
+        });
+    });
+
     // 생산 품목 삭제 ( 삭제 로직 @@:시간나면 수정 )
     $('#companySourceTable').on('click', 'button[data-action="delete"]', function () {
         const row = $(this).closest('tr');
         const data = $('#companySourceTable').DataTable().row(row).data();
         const companySourceId = data.companySourceId;
 
-        if (confirm('정말로 이 항목을 삭제하시겠습니까?\n -- 삭제 -> 가리기(생산중단) 버튼으로 바꿔야할듯 참조키 있으면 삭제하면 안됨 로그 날아감')) {
+        if (confirm('정말로 이 항목을 삭제하시겠습니까?\n -- 참조키 있으면 삭제 안됨: 수정 예정')) {
             $.ajax({
                 url: `/api/product/company/add/${companySourceId}`,
                 type: 'DELETE',
@@ -128,48 +171,48 @@ $(document).ready(function () {
         }, true);
     });
 
-    // 생산 모달창 -> 갯수 입력후 생산 로직 수행 @@: 이거 지금 생산 테이블에 있는데 주문 테이블로 옮겨야함
-    $('#orderTable').on('click', 'button[data-action="produce"]', function () {
-        const row = $(this).closest('tr');
-        const data = $('#orderTable').DataTable().row(row).data();
-
-        $('#produceSourceName').val(data.sourceName);
-        $('#produceSourcePrice').val(data.sourcePrice);
-        $('#sourcePriceId').val(data.sourcePriceId);
-        $('#produceSourceModal').modal('show');
-    });
-    $('#produceSourceBtn').on('click', function () {
-        const sourceQuantity = $('#sourceQuantity').val();
-        const sourcePriceId = $('#sourcePriceId').val();
-        const sourceName = $('#produceSourceName').val();
-
-        const data = {
-            sourceQuantity: sourceQuantity,
-            sourcePriceId: sourcePriceId
-        };
-        $.ajax({
-            url: '/api/product/company/produce',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
-            },
-            success: function () {
-                showToast("생산 요청이 완료 되었습니다: " + sourceName + " " + sourceQuantity + " 개");
-                $('#orderTable').DataTable().ajax.reload(null, false);
-                updateWarehouseChart();
-                $('#produceSourceModal').modal('hide');
-                setTimeout(function () {
-                    $('#sourceQuantity').val(10);
-                }, 500);
-            },
-            error: function (xhr, status, error) {
-                console.error('Error occurred:', error);
-                alert('생산 요청 중 오류가 발생했습니다.');
-            }
-        });
-    });
+    // // 생산 모달창 -> 갯수 입력후 생산 로직 수행
+    // $('#orderTable').on('click', 'button[data-action="produce"]', function () {
+    //     const row = $(this).closest('tr');
+    //     const data = $('#orderTable').DataTable().row(row).data();
+    //
+    //     $('#produceSourceName').val(data.sourceName);
+    //     $('#produceSourcePrice').val(data.sourcePrice);
+    //     $('#sourcePriceId').val(data.sourcePriceId);
+    //     $('#produceSourceModal').modal('show');
+    // });
+    // $('#produceSourceBtn').on('click', function () {
+    //     const sourceQuantity = $('#sourceQuantity').val();
+    //     const sourcePriceId = $('#sourcePriceId').val();
+    //     const sourceName = $('#produceSourceName').val();
+    //
+    //     const data = {
+    //         sourceQuantity: sourceQuantity,
+    //         sourcePriceId: sourcePriceId
+    //     };
+    //     $.ajax({
+    //         url: '/api/product/company/produce',
+    //         type: 'POST',
+    //         contentType: 'application/json',
+    //         data: JSON.stringify(data),
+    //         beforeSend: function (xhr) {
+    //             xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
+    //         },
+    //         success: function () {
+    //             showToast("생산 요청이 완료 되었습니다: " + sourceName + " " + sourceQuantity + " 개");
+    //             $('#orderTable').DataTable().ajax.reload(null, false);
+    //             updateWarehouseChart();
+    //             $('#produceSourceModal').modal('hide');
+    //             setTimeout(function () {
+    //                 $('#sourceQuantity').val(10);
+    //             }, 500);
+    //         },
+    //         error: function (xhr, status, error) {
+    //             console.error('Error occurred:', error);
+    //             alert('생산 요청 중 오류가 발생했습니다.');
+    //         }
+    //     });
+    // });
 
     $('#orderTable').on('click', 'button[data-action="orderProcessBlock"]', function () {
         alert("재고가 모자랍니다~");
@@ -194,13 +237,13 @@ $(document).ready(function () {
     });
     $('#orderProcessBtn').on('click', function () {
         const orderId = $('#orderId').val();
-        const orderStatus = $('#orderStatusSelect').val();
+        // const orderStatus = $('#orderStatusSelect').val();
         const sourcePriceId = $('#orderSourcePriceId').val();
         const orderQuantity = $('#orderQuantity').val();
 
         const data = {
             orderId: orderId,
-            orderStatus: orderStatus,
+            orderStatus: 5,
             sourceQuantity: orderQuantity,
             sourcePriceId: sourcePriceId
         };
@@ -215,7 +258,7 @@ $(document).ready(function () {
             },
             success: function () {
                 $('#orderProcessModal').modal('hide');
-                showToast("주문 처리가 완료되었습니다.")
+                showToast("주문 번호: '" + orderId.substring(0, 8) + "' 의 발주가 완료되었습니다.")
                 updateWarehouseChart();
                 $('#orderTable').DataTable().ajax.reload(function () {
                 }, false);
@@ -297,9 +340,9 @@ function getCompanySourceTable() {
                 data: null,
                 render: function () {
                     return `
-<!--                            <button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button> |-->
-                            <button type="button" class="btn btn-info btn-sm" data-action="update">수정</button> |
-                            <button type="button" class="btn btn-danger btn-sm" data-action="delete">삭제</button>
+                            <button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button> |
+                            <button type="button" class="btn btn-info btn-sm" data-action="update">수정</button>
+<!--                            <button type="button" class="btn btn-danger btn-sm" data-action="delete">삭제</button>-->
                         `;
                 }
             }
@@ -338,7 +381,7 @@ function getOrderTable() {
             url: '/api/product/company/order',
             data: function (d) {
                 d.orderMonthOption = $('#orderMonthSearchSelect').val() || "all"; // 기본값은 "all"
-                d.orderStatusOption = $('#orderStatusSearchSelect').val() || "all"; // 기본값은 "all"
+                d.orderStatusOption = $('#orderStatusSearchSelect').val();
             },
             dataSrc: ''
         },
@@ -349,11 +392,17 @@ function getOrderTable() {
             {data: 'quantity'},
             {data: 'totalPrice'},
             {data: 'orderDate'},
-            {data: 'orderStatus'},
+            {
+                data: 'orderStatus',
+                render: function (data) {
+                    return data === '처리전' ? data : '완료';
+                }
+            },
             {
                 data: null,
                 render: function (data, type, row) {
-                    let buttons = `<button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button>`;
+                    let buttons = '';
+                        //`<button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button>`;
 
                     // 'orderStatus'가 '처리전'일 때만 발주 버튼을 활성화
                     if (row.orderStatus === '처리전') {
@@ -361,7 +410,7 @@ function getOrderTable() {
                         // if (row.checkStockAmount < 0) {
                         //     buttons += ` | <button type="button" class="btn btn-outline-warning btn-sm" data-action="orderProcessBlock">재고부족</button>`;
                         // } else {
-                        buttons += ` | <button type="button" class="btn btn-outline-primary btn-sm" data-action="orderProcess">발주</button>`;
+                        buttons += `<button type="button" class="btn btn-outline-primary btn-sm" data-action="orderProcess">발주</button>`;
                         // }
                     }
                     return buttons;
