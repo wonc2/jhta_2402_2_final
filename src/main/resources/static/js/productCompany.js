@@ -8,9 +8,11 @@ $(document).ready(function () {
 
     // 차트 초기화 아무 값 없는 빈 차트
     initChart(chartType);
+    initOrderChart(oderChartType);
 
     // 위에서 초기화한 차트에 첫번째 값 넣음 이거 사용해서 계속 값 업데이트 해주면됨
     updateWarehouseChart();
+    updateOrderChart();
 
     // 테이블 불러오고 숨김
     // 처음 페이지에 접속할때 초기화 하는 이유: 테이블 나중에 초기화하면 화면이 새로고침 비슷하게 되는 버그?가 있음.. @@:로딩 오래걸리면 로직 원래대로 변경
@@ -332,7 +334,8 @@ function getCompanySourceTable() {
             dataSrc: 'companySourceList'
         },
         columns: [
-            {data: 'companySourceId', render: data => data.substring(0, 8)},
+            {data: null, render: (data, type, row, meta) => meta.row + 1},
+            // {data: 'companySourceId', render: data => data.substring(0, 8)},
             {data: 'sourceName'},
             {data: 'sourcePrice'},
             {data: 'totalQuantity'},
@@ -359,13 +362,14 @@ function getWarehouseTable() {
             dataSrc: ''
         },
         columns: [
-            // {data: 'rowNum'},
-            {data: 'sourceWarehouseId', render: data => data.substring(0, 8)},
+            {data: 'rowNum'},
+            // {data: 'sourceWarehouseId', render: data => data.substring(0, 8)},
             {data: 'sourceName'},
             {data: 'sourceQuantity'},
             {data: 'type'},
             {data: 'produceDate'}
         ],
+        order: [[0, 'desc']],
         language: {emptyTable: '데이터가 없습니다.'},
         lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]], pageLength: 10,
         initComplete: function () {
@@ -388,6 +392,7 @@ function getOrderTable() {
             dataSrc: ''
         },
         columns: [
+            {data: 'rowNum'},
             {data: 'orderId', render: data => data.substring(0, 8)},
             {data: 'sourceName'},
             {data: 'sourcePrice'},
@@ -397,7 +402,7 @@ function getOrderTable() {
             {
                 data: 'orderStatus',
                 render: function (data) {
-                    return data === '처리전' ? data : '완료';
+                    return data === '처리전' ? '주문접수' : '완료';
                 }
             },
             {
@@ -419,6 +424,7 @@ function getOrderTable() {
                 }
             }
         ],
+        order: [[0, 'desc']],
         language: {emptyTable: '데이터가 없습니다.'},
         lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]], pageLength: 10,
         initComplete: function () {
@@ -435,7 +441,9 @@ function getOrderTable() {
 /* 차트 관련 */
 
 let warehouseChart; // 전역 변수로 차트 객체를 선언
+let orderChart; // 전역 변수로 차트 객체를 선언
 let chartType = 'bar'; // 기본 차트 타입은 'bar'
+let oderChartType = 'bar'; // 기본 차트 타입은 'bar'
 
 function updateWarehouseChart() {
     $.ajax({
@@ -450,6 +458,32 @@ function updateWarehouseChart() {
             response.forEach(function (item) {
                 labels.push(item.sourceName); // sourceName을 labels로 사용
                 data.push(item.sourceQuantity); // totalQuantity 값을 data로 사용
+            });
+
+            warehouseChart.data.labels = labels;
+            warehouseChart.data.datasets[0].data = data;
+            warehouseChart.data.datasets[0].backgroundColor = colors.slice(0, data.length);
+            warehouseChart.update();
+        },
+        error: function (xhr, status, error) {
+            console.error('차트 데이터 가져오는데 실패함:', error);
+        }
+    });
+}
+
+function updateOrderChart() {
+    $.ajax({
+        url: '/api/product/company/orderChart', // 창고 데이터를 가져오는 URL
+        type: 'GET',
+        contentType: 'application/json',
+        success: function (response) {
+            const labels = [];
+            const data = [];
+
+            // response 데이터를 순회하며 필요한 정보 추출
+            response.forEach(function (item) {
+                labels.push(item.sourceName); // sourceName을 labels로 사용
+                data.push(item.sales); // totalQuantity 값을 data로 사용
             });
 
             warehouseChart.data.labels = labels;
@@ -479,6 +513,35 @@ function initChart(type) {
             labels: [], // 초기 레이블
             datasets: [{
                 label: '총 재고량',
+                data: [],
+                backgroundColor: [],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function initOrderChart(type) {
+    const ctx = $('#orderChart')[0].getContext('2d');
+
+    // 기존 차트가 있으면 삭제하고 새로 생성
+    if (orderChart) {
+        orderChart.destroy(); // 기존 차트 삭제
+    }
+
+    orderChart = new Chart(ctx, {
+        type: type, // 동적으로 받은 차트 타입
+        data: {
+            labels: [], // 초기 레이블
+            datasets: [{
+                label: '총 판매량',
                 data: [],
                 backgroundColor: [],
                 borderWidth: 1

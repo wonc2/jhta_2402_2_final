@@ -39,9 +39,10 @@
 
     <!-- 창고 입출고 리스트 가져옴 -->
     <select id="getWarehouseSources" resultType="map" parameterType="String">
-        SELECT sw.source_warehouse_id                   as sourceWarehouseId,
+        SELECT ROW_NUMBER() OVER (order by sw.produce_date asc) AS rowNum,
+               sw.source_warehouse_id                   as sourceWarehouseId,
                sw.QUANTITY                              as sourceQuantity,
-               DATE_FORMAT(sw.produce_date, '%Y-%m-%d') as produceDate,
+               DATE_FORMAT(sw.produce_date, '%Y-%m-%d %h:%m') as produceDate,
                s.name                                   as sourceName,
                CASE
                    WHEN sw.QUANTITY > 0 THEN '입고'
@@ -52,13 +53,12 @@
                  JOIN SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
                  JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         WHERE pc.NAME = #{companyName}
-        order by sw.produce_date desc
     </select>
 
     <!-- 주문 주문 주문 주문 주문 -->
     <select id="getProductOrderList" resultType="map">
         SELECT
---         ROW_NUMBER() OVER (ORDER BY po.PRODUCT_ORDER_DATE DESC) AS rowNum,
+        ROW_NUMBER() OVER (ORDER BY po.PRODUCT_ORDER_DATE asc) AS rowNum,
         po.PRODUCT_ORDER_ID as orderId,
         s.NAME AS sourceName,
         sp.PRICE AS sourcePrice,

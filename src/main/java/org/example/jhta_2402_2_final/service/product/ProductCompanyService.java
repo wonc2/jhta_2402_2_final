@@ -2,7 +2,9 @@ package org.example.jhta_2402_2_final.service.product;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.product.ProductCompanyDao;
-import org.example.jhta_2402_2_final.exception.types.addCompanySourceException;
+import org.example.jhta_2402_2_final.exception.types.productCompany.AddCompanySourceException;
+import org.example.jhta_2402_2_final.exception.types.productCompany.ProduceSourceException;
+import org.example.jhta_2402_2_final.exception.types.productCompany.ProductCompanyOrderProcessException;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyChartDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -41,11 +43,11 @@ public class ProductCompanyService {
 
         // 중복 검사
         if (productCompanyDao.checkDuplicateCompanySource(paramData)) {
-            throw new addCompanySourceException("이미 등록된 제품 입니다.", HttpStatus.BAD_REQUEST);
+            throw new AddCompanySourceException("이미 등록된 제품 입니다.", HttpStatus.BAD_REQUEST);
         }
         // 빈 값 검사
         if (sourceId == null && (sourceName == null || sourceName.isEmpty() || sourceName.isBlank())) {
-            throw new addCompanySourceException("빈 값 입력 안됩니다.", HttpStatus.BAD_REQUEST);
+            throw new AddCompanySourceException("빈 값 입력 안됩니다.", HttpStatus.BAD_REQUEST);
         }
         // 셀렉트로 sourceId 가져왔으면 if문 스킵 else -> sourceName 으로 sourceId 가져옴 없으면 SOURCE 테이블에 등록
         if (sourceId == null) {
@@ -80,15 +82,15 @@ public class ProductCompanyService {
     public List<Map<String, Object>> produceSource(String companyName, Map<String ,Object> paramData) {
         Object sourceQuantityObj = paramData.get("sourceQuantity");
         if (sourceQuantityObj == null) {
-            throw new RuntimeException("값이 없습니다 ~");
+            throw new ProduceSourceException("값이 없습니다 ~", HttpStatus.BAD_REQUEST);
         }
         try {
             int sourceQuantity = Integer.parseInt(sourceQuantityObj.toString());
             if (sourceQuantity <= 0 ) {
-                throw new RuntimeException("한 개 이상 입력해야함 ~");
+                throw new ProduceSourceException("한 개 이상 입력해야함 ~", HttpStatus.BAD_REQUEST);
             }
         } catch (NumberFormatException e) {
-            throw new RuntimeException("정수만 입력하세요 ~");
+            throw new ProduceSourceException("정수만 입력하세요 ~", HttpStatus.BAD_REQUEST);
         }
         productCompanyDao.produceSource(paramData);
         return productCompanyDao.getWarehouseSources(companyName);
@@ -103,8 +105,6 @@ public class ProductCompanyService {
     public List<Map<String, Object>> getProductOrderList(String companyName, Map<String, Object> paramData) {
         paramData.put("companyName", companyName);
 
-        // product_order 상태 하드코딩 -> 리스트로 내려오게 해야함 ?
-
         // values: { orderId, sourceName, sourcePrice, quantity, totalPrice, orderDate, orderStatus }
         return productCompanyDao.getProductOrderList(paramData);
     }
@@ -118,7 +118,7 @@ public class ProductCompanyService {
         productCompanyDao.outboundSource(paramData);
         // 위에서 출고 연산 수행한후 창고의 재료 재고가 < 0 일시 롤백
         if (productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId")) < 0){
-            throw new RuntimeException("적재량이 모자람~");
+            throw new ProductCompanyOrderProcessException("적재량이 모자람~", HttpStatus.BAD_REQUEST);
         }
 
         return getProductOrderList(companyName, paramData);

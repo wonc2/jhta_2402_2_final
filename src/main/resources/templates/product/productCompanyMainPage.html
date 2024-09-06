@@ -14,9 +14,17 @@
                 <div class="row">
                     <div class="col-xl-6">
                         <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-chart-bar me-1"></i>
-                                주문 현황 차트
+                            <!-- -->
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-chart-area me-1"></i>
+                                    월별 매출 차트
+                                </div>
+                                <!-- 드롭다운 버튼 -->
+                                <select id="chartMonthSelect" class="form-select" style="width: 100px;">
+                                    <option value="all" selected>연도별</option>
+                                    <option th:each="i : ${#numbers.sequence(1, 12)}" th:value="${i}" th:text="${i}+월"></option>
+                                </select>
                             </div>
                             <div class="card-body">
                                 <canvas id="orderChart" style="max-width: 1000px; max-height: 300px;"></canvas>
@@ -65,7 +73,8 @@
                             <table id="companySourceTable" class="table table-bordered" style="table-layout: fixed;">
                                 <thead>
                                 <tr>
-                                    <th>등록 번호</th>
+                                    <th>no</th>
+<!--                                    <th>등록 번호</th>-->
                                     <th>생산품명</th>
                                     <th>생산품가격</th>
                                     <th>현재 창고 재고량</th>
@@ -86,11 +95,13 @@
                             <table id="warehouseTable" class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <th>입출번호</th>
+                                    <th>no</th>
+<!--                                    <th>입출번호</th>-->
                                     <th>생산품명</th>
                                     <th>입출량</th>
                                     <th>구분</th>
-                                    <th>입출일</th> <!-- 출고량 / 입고량  이렇게 나오면되나 ? -->
+                                    <th>입출시간</th>
+                                    <!-- 출고량 / 입고량  이렇게 나오면되나 ? -->
                                     <!--                                    <th>생산(입고)일자</th>-->
                                     <!--                                    <th>납품일자</th> &lt;!&ndash; 30 / 100 이었다가 100 / 100 되면 100 / 100 되는 순간의 납품일자로 업데이트 &ndash;&gt;-->
                                 </tr>
@@ -107,7 +118,7 @@
                                     <option th:each="i : ${#numbers.sequence(1, 12)}" th:value="${i}" th:text="${i}+월"></option>
                                 </select>
                                 <select id="orderStatusSearchSelect" class="form-select">
-                                    <option value="1" selected>처리전</option>
+                                    <option value="1" selected>주문</option>
                                     <option value="2">완료</option>
                                     <option value="">모두보기</option>
                                 </select>
@@ -120,7 +131,7 @@
                             <table id="orderTable" class="table table-bordered">
                                 <thead>
                                 <tr>
-<!--                                    <th>no</th>-->
+                                    <th>no</th>
                                     <th>주문번호</th>
                                     <th>주문한 재료</th>
                                     <th>재료 가격</th>
@@ -359,8 +370,9 @@
         </footer>
     </div>
 </div>
+<div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 1060;"></div>
 </body>
 <th:block th:replace="~{fragment/footer}"></th:block>
-<!--<script th:inline="javascript" th:src="@{/js/common.js}"></script>-->
+<script th:inline="javascript" th:src="@{/js/common.js}"></script>
 <script th:inline="javascript" th:src="@{/js/productCompany.js}"></script>
 </html>
