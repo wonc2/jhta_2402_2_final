@@ -30,4 +30,7 @@ public interface DistributionDao {
     List<KitOrderDetailLogDTO> selectKitOrderLogDetailsBySourceId(String sourceID);
 
     List<ProductOrderLogDTO> selectProductOrderLogDetailsBySourceId(String sourceId);
+
+
+    List<LogisticsWareHouseDto> selectBySourceNameLogisticsWarehouse(String keyword);
 }

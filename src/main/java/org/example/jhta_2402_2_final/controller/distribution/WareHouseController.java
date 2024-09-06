@@ -63,6 +63,17 @@ public class WareHouseController {
         return "distribution/wareHouseList";
     }
 
+    @GetMapping("/selectBySourceName")
+    public String selectBySourceName(@RequestParam String keyword ,Model model) {
+
+
+        List<LogisticsWareHouseDto> list = logisticsWareHouseService.selectBySourceNameLogisticsWarehouse(keyword);
+
+        model.addAttribute("warehouseList", list);
+        return "distribution/wareHouseList";
+    }
+
+
     @GetMapping("/selectLog")
     @ResponseBody
     public List<CombineLogDTO> getWarehouseLog(@RequestParam String sourceId) {

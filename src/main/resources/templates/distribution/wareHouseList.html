@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 날짜 포맷 함수 정의
             function formatDate(dateString) {
                 const date = new Date(dateString);
@@ -84,14 +84,12 @@
                     창고 재고 확인
                 </div>
                 <div class="card-body">
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
-                        <select class="datatable-selector" name="category">
-                            <option value="All">All</option>
-                            <option value="sourceName">재료명</option>
-                            <option value="productCompanyName">업체명</option>
-                        </select>
-                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
+                    <form action="/wareHouse/selectBySourceName" method="get"
+                          class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+
+                        <input type="text" class="form-control" name="keyword" placeholder="재료명 입력">
                         <button type="submit" class="btn btn-primary">검색</button>
+                        <a href="/wareHouse/selectAll"><button  class="btn btn-primary" type="button">전체검색</button></a>
                     </form>
 
                     <table id="datatablesSimple">
@@ -124,7 +122,7 @@
                                         th:attr="data-source-id=${items.sourceUUID}"
 
                                 >
-<!-- 상세-->                          로그버튼
+                                    <!-- 상세-->                          로그버튼
                                 </button>
 
                             </td>
@@ -163,16 +161,15 @@
             </div>
             <!-- Modal div end -->
 
-            <div class="d-flex justify-content-end">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">추가</button>
-            </div>
+            <!--            <div class="d-flex justify-content-end">-->
+            <!--                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">추가</button>-->
+            <!--            </div>-->
         </div>
     </main>
 </div>
 
 <th:block th:replace="fragment/adminFooter :: footer"></th:block>
 </body>
-
 
 
 </html>
