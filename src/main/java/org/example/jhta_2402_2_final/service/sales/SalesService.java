@@ -6,7 +6,6 @@ import org.example.jhta_2402_2_final.model.dto.sales.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -191,6 +190,11 @@ public class SalesService {
             UUID sourcePriceId = findSourcePriceId(sourceNames[i], companyNames[i]);
             insertProductOrder(sourcePriceId, itemQuantities[i]);
         }
+    }
+
+    //product_order_log 셀렉
+    public List<ProductOrderLogDetailDto> selectProductOrderLog() {
+        return salesDao.selectProductOrderLog();
     }
 
 }

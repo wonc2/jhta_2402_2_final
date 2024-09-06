@@ -436,4 +436,25 @@
                    NOW()
                );
     </insert>
+
+    <select id="selectProductOrderLog" resultType="ProductOrderLogDetailDto">
+        SELECT
+            POL.PRODUCT_ORDER_LOG_ID AS productOrderLogId,
+            PO.PRODUCT_ORDER_ID AS productOrderId,
+            S.NAME AS sourceName,
+            PC.NAME AS companyName,
+            PO.QUANTITY,
+            SP.PRICE,
+            POL.PRODUCT_ORDER_DATE AS orderDate,
+            ST.STATUS AS status
+        FROM
+            PRODUCT_ORDER_LOG POL
+                JOIN PRODUCT_ORDER PO ON POL.PRODUCT_ORDER_ID = PO.PRODUCT_ORDER_ID
+                JOIN SOURCE_PRICE SP ON PO.SOURCE_PRICE_ID = SP.SOURCE_PRICE_ID
+                JOIN SOURCE S ON SP.SOURCE_ID = S.SOURCE_ID
+                JOIN PRODUCT_COMPANY PC ON SP.PRODUCT_COMPANY_ID = PC.PRODUCT_COMPANY_ID
+                JOIN STATUS ST ON POL.STATUS_ID = ST.STATUS_ID
+        ORDER BY
+            orderDate DESC;
+    </select>
 </mapper>

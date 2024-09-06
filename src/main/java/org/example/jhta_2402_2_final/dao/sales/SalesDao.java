@@ -98,4 +98,7 @@ public interface SalesDao {
 
     //product_order_log 인서트
     int insertProductOrderLog(UUID productOrderId);
+
+    //product_order_log 셀렉
+    List<ProductOrderLogDetailDto> selectProductOrderLog();
 }
