@@ -37,23 +37,28 @@
         VALUES (UUID(), #{sourceQuantity}, NOW(), #{sourcePriceId})
     </insert>
 
-    <!-- 생산한 제품 리스트 가져옴 -->
+    <!-- 창고 입출고 리스트 가져옴 -->
     <select id="getWarehouseSources" resultType="map" parameterType="String">
-        SELECT
-            sw.source_warehouse_id as sourceWarehouseId,
-            sw.QUANTITY as sourceQuantity,
-            DATE_FORMAT(sw.produce_date, '%Y-%m-%d') as produceDate,
-            s.name as sourceName
+        SELECT sw.source_warehouse_id                   as sourceWarehouseId,
+               sw.QUANTITY                              as sourceQuantity,
+               DATE_FORMAT(sw.produce_date, '%Y-%m-%d') as produceDate,
+               s.name                                   as sourceName,
+               CASE
+                   WHEN sw.QUANTITY > 0 THEN '입고'
+                   ELSE '출고'
+                   END                                  as type
         FROM SOURCE_WAREHOUSE sw
                  JOIN SOURCE_PRICE sp on sp.SOURCE_PRICE_ID = sw.SOURCE_PRICE_ID
                  JOIN SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
                  JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         WHERE pc.NAME = #{companyName}
+        order by sw.produce_date desc
     </select>
 
     <!-- 주문 주문 주문 주문 주문 -->
     <select id="getProductOrderList" resultType="map">
         SELECT
+--         ROW_NUMBER() OVER (ORDER BY po.PRODUCT_ORDER_DATE DESC) AS rowNum,
         po.PRODUCT_ORDER_ID as orderId,
         s.NAME AS sourceName,
         sp.PRICE AS sourcePrice,
@@ -83,6 +88,7 @@
         <if test="orderMonthOption != 'all'">
             and po.PRODUCT_ORDER_DATE LIKE CONCAT('2024-', LPAD(#{orderMonthOption}, 2, '0'), '%')
         </if>
+        order by po.PRODUCT_ORDER_DATE DESC
     </select>
 
     <update id="orderProcess" parameterType="map">
