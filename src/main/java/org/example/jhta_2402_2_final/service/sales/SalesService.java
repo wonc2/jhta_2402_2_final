@@ -178,5 +178,17 @@ public class SalesService {
     public List<ProductOrderDetailDto> selectProductOrder(){
         return salesDao.selectProductOrder();
     }
+
+
+
+    public void processOrder(String[] sourceNames, String[] companyNames, int[] itemQuantities) {
+        for (int i = 0; i < sourceNames.length; i++) {
+            UUID sourcePriceId = findSourcePriceId(sourceNames[i], companyNames[i]);
+            int result = insertProductOrder(sourcePriceId, itemQuantities[i]);
+
+            if (result > 0) System.out.println("인서트 성공");
+            else System.out.println("인서트 실패");
+        }
+    }
 }
 

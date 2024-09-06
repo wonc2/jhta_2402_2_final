@@ -1,5 +1,6 @@
 package org.example.jhta_2402_2_final.controller.sales;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -120,45 +121,19 @@ public class SalesController {
             @RequestParam("itemQuantities") String itemQuantitiesJson,
             @RequestParam("stackQuantities") String stackQuantitiesJson,
             @RequestParam("minPrices") String minPricesJson,
-            @RequestParam("companyNames") String companyNamesJson) {
+            @RequestParam("companyNames") String companyNamesJson) throws JsonProcessingException {
 
         // JSON 문자열을 배열로 변환
         ObjectMapper mapper = new ObjectMapper();
-        try {
-            String[] sourceNames = mapper.readValue(sourceNamesJson, String[].class);
-            int[] itemQuantities = mapper.readValue(itemQuantitiesJson, int[].class);
-            int[] stackQuantities = mapper.readValue(stackQuantitiesJson, int[].class);
-            int[] minPrices = mapper.readValue(minPricesJson, int[].class);
-            String[] companyNames = mapper.readValue(companyNamesJson, String[].class);
 
-            // 데이터 처리 로직
-            System.out.println("Mealkit Name: " + mealkitName);
-            System.out.println("Quantity: " + quantity);
-            for (int i = 0; i < sourceNames.length; i++) {
-                System.out.println("Source Name: " + sourceNames[i]);
-                System.out.println("Item Quantity: " + itemQuantities[i]);
-                System.out.println("Stack Quantity: " + stackQuantities[i]);
-                System.out.println("Min Price: " + minPrices[i]);
-                System.out.println("Company Name: " + companyNames[i]);
+        String[] sourceNames = mapper.readValue(sourceNamesJson, String[].class);
+        int[] itemQuantities = mapper.readValue(itemQuantitiesJson, int[].class);
+        int[] stackQuantities = mapper.readValue(stackQuantitiesJson, int[].class);
+        int[] minPrices = mapper.readValue(minPricesJson, int[].class);
+        String[] companyNames = mapper.readValue(companyNamesJson, String[].class);
 
-                // SOURCE_PRICE_ID 조회
-                UUID sourcePriceId = salesService.findSourcePriceId(sourceNames[i], companyNames[i]);
+        salesService.processOrder(sourceNames, companyNames, itemQuantities);
 
-                if (sourcePriceId != null) {
-                    System.out.println("intsert into>>"+i);
-                    // PRODUCT_ORDER에 데이터 삽입
-                    int result = salesService.insertProductOrder(sourcePriceId, itemQuantities[i]); // 1은 상태 ID, 필요에 따라 수정
-                    if (result > 0) System.out.println("인서트 성공");
-                    else System.out.println("인서트 실패 ");
-                }
-
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // 처리 후 성공 메시지 반환
         return "redirect:/sales/product/order";
     }
 
