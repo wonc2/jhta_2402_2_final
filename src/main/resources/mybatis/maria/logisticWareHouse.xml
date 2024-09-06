@@ -166,17 +166,20 @@
         WHERE QUANTITY <![CDATA[<=]]> 0
     </delete>
 
-    <select id="selectKitOrderLogDetailsBySourceId" parameterType="String" resultType="map">
+    <select id="selectKitOrderLogDetailsBySourceId" parameterType="String" resultType="org.example.jhta_2402_2_final.model.dto.distribution.KitOrderDetailLogDTO">
 
         SELECT
             KOL.KIT_ORDER_ID AS kitOrderId,
             MK.NAME AS mealkitName,
             S.NAME AS sourceName,
             S.SOURCE_ID AS sourceId,
-            (KO.QUANTITY * KS.QUANTITY) AS totalQuantity,
+            (KO.QUANTITY * KS.QUANTITY) AS quantity,
             KOL.PRODUCT_ORDER_DATE AS orderDate,
-            KC.NAME AS companyName,  -- KIT_COMPANY의 회사명 추가
-            KOL.STATUS_ID as status
+            KC.NAME AS CompanyName,  -- KIT_COMPANY의 회사명 추가
+            CASE
+                WHEN KOL.STATUS_ID = 3 THEN '출고'
+                ELSE '다른 상태'
+                END AS status
         FROM
             KIT_ORDER_LOG KOL
                 JOIN KIT_ORDER KO ON KOL.KIT_ORDER_ID = KO.KIT_ORDER_ID
@@ -185,13 +188,37 @@
                 JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
                 JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID  -- KIT_COMPANY 테이블 조인
         WHERE
-            KO.STATUS_ID = 3
+            KOL.STATUS_ID = 3
           AND S.SOURCE_ID = #{sourceId}
 
+    </select>
 
-
-
-
+    <select id="selectProductOrderLogDetailsBySourceId" parameterType="String" resultType="org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDTO">
+        SELECT
+            pol.PRODUCT_ORDER_ID as productOrderId,
+            s.NAME AS sourceName ,
+            s.SOURCE_ID as sourceId,
+            po.QUANTITY as quantity,
+            pc.PRODUCT_COMPANY_ID as productCompanyId,
+            pc.NAME AS companyName,
+            pol.PRODUCT_ORDER_DATE AS orderDate,
+            CASE
+                WHEN pol.STATUS_ID = 3 THEN '입고'
+                ELSE '다른 상태'
+                END AS status
+        FROM
+            PRODUCT_ORDER_LOG pol
+                JOIN
+            PRODUCT_ORDER po ON pol.PRODUCT_ORDER_ID = po.PRODUCT_ORDER_ID
+                JOIN
+            SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+                JOIN
+            SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
+                JOIN
+            PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+        WHERE
+            pol.STATUS_ID = 3
+            AND s.SOURCE_ID = #{sourceId}
     </select>
 
     <!--

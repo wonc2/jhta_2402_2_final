@@ -44,7 +44,7 @@ public class ProductCompanyService {
             throw new addCompanySourceException("이미 등록된 제품 입니다.", HttpStatus.BAD_REQUEST);
         }
         // 빈 값 검사
-        if (sourceId == null && (sourceName == null || sourceName.isEmpty())) {
+        if (sourceId == null && (sourceName == null || sourceName.isEmpty() || sourceName.isBlank())) {
             throw new addCompanySourceException("빈 값 입력 안됩니다.", HttpStatus.BAD_REQUEST);
         }
         // 셀렉트로 sourceId 가져왔으면 if문 스킵 else -> sourceName 으로 sourceId 가져옴 없으면 SOURCE 테이블에 등록

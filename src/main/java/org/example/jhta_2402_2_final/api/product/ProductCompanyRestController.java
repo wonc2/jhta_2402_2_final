@@ -19,8 +19,8 @@ public class ProductCompanyRestController {
 
     @ModelAttribute("companyName")
     public String getCompanyName(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        // return userDetails.getMemberDto().getUserName();
-        return "한림";
+        if (userDetails == null || userDetails.getMemberDto().getUserId().equals("admin")) return "한림"; // 개발 편의상 설정
+        return userDetails.getMemberDto().getUserName();
     }
 
     @GetMapping("add")

@@ -53,25 +53,55 @@
 
     <!-- 주문 주문 주문 주문 주문 -->
     <select id="getProductOrderList" resultType="map">
+--         SELECT
+--         po.PRODUCT_ORDER_ID as orderId,
+--         s.NAME AS sourceName,
+--         sp.PRICE AS sourcePrice,
+--         po.QUANTITY AS quantity,
+--         (sp.PRICE * po.QUANTITY) AS totalPrice,
+--         DATE_FORMAT(po.PRODUCT_ORDER_DATE, '%Y-%m-%d %h:%m') AS orderDate,
+--         st.STATUS AS orderStatus,
+--         sp.SOURCE_PRICE_ID as sourcePriceId,
+--         sw.quantity as sourceQuantity,
+--         sw.quantity - po.quantity as checkStockAmount
+--         FROM PRODUCT_ORDER po
+--         JOIN SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+--         JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+--         JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
+--         JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
+--         JOIN SOURCE_WAREHOUSE sw on sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+--         WHERE pc.NAME = #{companyName}
         SELECT
             po.PRODUCT_ORDER_ID as orderId,
             s.NAME AS sourceName,
             sp.PRICE AS sourcePrice,
-            po.QUANTITY AS quantity,
-            (sp.PRICE * po.QUANTITY) AS totalPrice,
+            SUM(po.QUANTITY) AS quantity,
+            (sp.PRICE * SUM(po.QUANTITY)) AS totalPrice,
             DATE_FORMAT(po.PRODUCT_ORDER_DATE, '%Y-%m-%d %h:%m') AS orderDate,
             st.STATUS AS orderStatus,
-            sp.SOURCE_PRICE_ID as sourcePriceId
+            sp.SOURCE_PRICE_ID as sourcePriceId,
+            sw.quantity as sourceQuantity,
+            sw.quantity - SUM(po.QUANTITY) as checkStockAmount
         FROM PRODUCT_ORDER po
-                 JOIN SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
-                 JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
-                 JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
-                 JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
+        JOIN SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+        JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+        JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
+        JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
+        JOIN SOURCE_WAREHOUSE sw on sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
         WHERE pc.NAME = #{companyName}
+        group by po.PRODUCT_ORDER_ID
+<!--        <if test="orderStatusOption != 'all'">-->
+<!--            and st.STATUS_ID = #{orderStatusOption}-->
+<!--        </if>-->
+<!--        <if test="orderMonthOption != 'all'">-->
+<!--            and po.PRODUCT_ORDER_DATE LIKE CONCAT('2024-', LPAD(#{orderMonthOption}, 2, '0'), '%')-->
+<!--        </if>-->
     </select>
+
     <update id="orderProcess" parameterType="map">
         update PRODUCT_ORDER set STATUS_ID = #{orderStatus} where PRODUCT_ORDER_ID = #{orderId}
     </update>
+
     <insert id="outboundSource" parameterType="map">
         INSERT into SOURCE_WAREHOUSE (SOURCE_WAREHOUSE_ID, QUANTITY, PRODUCE_DATE, SOURCE_PRICE_ID)
         VALUES (UUID(), -#{sourceQuantity}, NOW(), #{sourcePriceId})

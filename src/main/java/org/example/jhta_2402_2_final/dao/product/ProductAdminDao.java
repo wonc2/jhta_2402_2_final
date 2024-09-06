@@ -18,4 +18,10 @@ public interface ProductAdminDao {
     int insertProductCompany(ProductCompanyDto productCompanyDto);
     List<SourcePriceViewDto> getProductSourceList();
     List<ProductOrderViewDto> getProductOrderList();
+    List<ProductOrderViewDto> getProductOrderListProductName(String productName);
+    List<ProductOrderViewDto> getProductOrderListCompanyName(String companyName);
+    List<ProductOrderViewDto> getProductOrderListCompanyNameProductName (String companyName , String productName);
+    List<SourcePriceViewDto> getSourcePriceListCompanyName(String companyName);
+    List<SourcePriceViewDto> getSourcePriceListProductName(String productName);
+    List<SourcePriceViewDto> getSourcePriceListCompanyNameProductName(String companyName , String productName);
 }

@@ -33,12 +33,12 @@
                                 <!-- 드롭다운 버튼 -->
                                 <div class="dropdown">
                                     <button class="btn btn-secondary dropdown-toggle" type="button" id="warehouseChartDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                        차트 모양 선택
+                                        막대 차트
                                     </button>
-                                    <ul class="dropdown-menu" aria-labelledby="warehouseChartDropdown">
-                                        <li><a class="dropdown-item warehouse-dropdown-item" data-value="bar">막대 차트</a></li>
-                                        <li><a class="dropdown-item warehouse-dropdown-item" data-value="line">선형 차트</a></li>
-                                        <li><a class="dropdown-item warehouse-dropdown-item" data-value="doughnut">도넛 차트</a></li>
+                                    <ul class="dropdown-menu" id="chartDropDownMenu" aria-labelledby="warehouseChartDropdown">
+                                        <li><button class="dropdown-item warehouse-dropdown-item" data-value="bar" data-name="막대 차트 ">막대 차트</button></li>
+                                        <li><button class="dropdown-item warehouse-dropdown-item" data-value="line" data-name="선형 차트 ">선형 차트</button></li>
+                                        <li><button class="dropdown-item warehouse-dropdown-item" data-value="doughnut" data-name="도넛 차트 ">도넛 차트</button></li>
                                     </ul>
                                 </div>
                             </div>
@@ -55,9 +55,9 @@
                             생산 현황
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="tableDropDown">
-                            <li><button class="dropdown-item table-dropdown-item" data-value="companySourceList" type="button">생산 현황</button></li>
-                            <li><button class="dropdown-item table-dropdown-item" data-value="warehouseList" type="button">창고 현황</button></li>
-                            <li><button class="dropdown-item table-dropdown-item" data-value="orderList" type="button">주문 현황</button></li>
+                            <li><button class="dropdown-item table-dropdown-item" data-value="companySourceList" data-name="생산 현황 " type="button">생산 현황</button></li>
+                            <li><button class="dropdown-item table-dropdown-item" data-value="warehouseList" data-name="창고 현황 " type="button">창고 현황</button></li>
+                            <li><button class="dropdown-item table-dropdown-item" data-value="orderList" data-name="주문 현황 " type="button">주문 현황</button></li>
                         </ul>
                     </div>
                     <div class="card-body">
@@ -69,7 +69,7 @@
                                     <th>생산품명</th>
                                     <th>생산품가격</th>
                                     <th>현재 창고 재고량</th>
-                                    <th>생산</th>
+                                    <th>수정 | 삭제</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -88,8 +88,8 @@
                                 <tr>
                                     <th>입출번호</th>
                                     <th>생산품명</th>
-                                    <th>입고량</th>
-                                    <th>출고량</th> <!-- 출고량 / 입고량  이렇게 나오면되나 ? -->
+                                    <th>일출량</th>
+                                    <th>입출일</th> <!-- 출고량 / 입고량  이렇게 나오면되나 ? -->
                                     <!--                                    <th>생산(입고)일자</th>-->
                                     <!--                                    <th>납품일자</th> &lt;!&ndash; 30 / 100 이었다가 100 / 100 되면 100 / 100 되는 순간의 납품일자로 업데이트 &ndash;&gt;-->
                                 </tr>
@@ -100,6 +100,22 @@
                         </div>
 
                         <div id="orderTableContainer" style="display:none;">
+                            <div class="input-group mb-3 d-flex justify-content-end orderSearch" style="width: 300px;">
+                                <select id="orderMonthSearchSelect" class="form-select">
+                                    <option value="all" selected>all</option>
+                                    <option th:each="i : ${#numbers.sequence(1, 12)}" th:value="${i}" th:text="${i}+월"></option>
+                                </select>
+                                <select id="orderStatusSearchSelect" class="form-select">
+                                    <option value="1" selected>처리전</option>
+                                    <option value="5">입고대기</option>
+                                    <option value="all">완료</option> <!-- @@:나머지 생산이랑 관련 없는 값은 전부 완료로 표시 해서 가져오면 될듯? -->
+                                </select>
+<!--                                <select id="orderSourceSearchSelect" class="form-select">-->
+<!--                                    <option value="all" selected>상품명 선택</option>-->
+<!--                                    <option value="5">입고대기</option>-->
+<!--                                    <option value="all">완료</option> &lt;!&ndash; @@:나머지 생산이랑 관련 없는 값은 전부 완료로 표시 해서 가져오면 될듯? &ndash;&gt;-->
+<!--                                </select>-->
+                            </div>
                             <table id="orderTable" class="table table-bordered">
                                 <thead>
                                 <tr>
@@ -110,7 +126,7 @@
                                     <th>총 주문 가격</th>
                                     <th>주문 일자</th>
                                     <th>주문 상태</th>
-                                    <th>주문처리</th>
+                                    <th>발주 | 생산</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -185,7 +201,7 @@
                                                     <label class="col-sm-3 col-form-label">갯수</label>
                                                     <div class="col-sm-9">
                                                         <input type="number" id="sourceQuantity" class="form-control"
-                                                               min="1" max="50000" value="1" step="1">
+                                                               min="10" max="50000" value="10" step="10">
                                                     </div>
                                                 </div>
                                                 <input type="hidden" id="sourcePriceId" name="sourcePriceId">
@@ -217,7 +233,7 @@
                                                     <label for="addSourceSelect" class="col-sm-3 col-form-label">제품</label>
                                                     <div class="col-sm-9">
                                                         <!-- 셀렉트 박스 -->
-                                                        <select id="addSourceSelect" class="form-select addSource" name="sourceId">
+                                                        <select id="addSourceSelect" class="form-select addSource">
                                                             <option value="directInput">직접입력</option>
                                                         </select>
                                                         <!-- 인풋 필드 -->
@@ -307,7 +323,7 @@
                                                     <div class="col-sm-9">
                                                         <!-- 셀렉트 박스 -->
                                                         <select id="orderStatusSelect" class="form-select">
-                                                            <option value="2">처리중</option>
+                                                            <option value="5">입고대기</option>
                                                         </select>
                                                         <!-- 처리중 or 취소만 ? 일단 하드코딩 -->
                                                     </div>
@@ -342,7 +358,7 @@
         </footer>
     </div>
 </div>
-<div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 1050;"></div>
+<div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 1060;"></div>
 </body>
 <th:block th:replace="~{fragment/footer}"></th:block>
 <script th:inline="javascript" th:src="@{/js/productCompany.js}"></script>
