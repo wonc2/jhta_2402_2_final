@@ -3,7 +3,6 @@ package org.example.jhta_2402_2_final.dao.distribution;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderProcessDto;
-
 import java.util.List;
 import java.util.Map;
 
@@ -20,9 +19,6 @@ public interface KitOrderProcessDao {
     // 주문 내역을 조회하는 쿼리 (키워드 기반)
     List<Map<String, Object>> findOrdersByKeyword(@Param("orderKeyword") String orderKeyword);
 
-    int saveOrder(KitOrderProcessDto dto);
-
-    List<Map<String, Object>> findAllOrders();
 
     // MealKit ID와 주문수량으로 재료 및 창고 재고 정보 조회
     List<Map<String, Object>> findKitRecipeWithStock(@Param("mealkitId") String mealkitId, @Param("orderQuantity") int orderQuantity);
@@ -42,9 +38,4 @@ public interface KitOrderProcessDao {
     // 밀키트 주문로그 테이블의 상태 변경(KIT_ORDER_LOG 테이블)
     void updateOrderLogStatus(@Param("kitOrderId") String kitOrderId, @Param("status") int status);
 
-
-
-
-
-    /*List<Map<String, Object>> findKitSource();*/
 }

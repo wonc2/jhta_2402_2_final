@@ -5,14 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.SqlSession;
 import org.example.jhta_2402_2_final.dao.distribution.KitOrderProcessDao;
 import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderProcessDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDto;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +46,11 @@ public class KitOrderProcessService {
         return kitOrderProcessDao.findKitRecipe(kitOrderId); // 미사용
     }
 
+
+
+
+
+
     // 아래부터 3개는 창고 조회를 위해 사용되는 부분
 
     public Integer findOrderQuantityByKitOrderId(String kitOrderId) {
@@ -67,6 +73,8 @@ public class KitOrderProcessService {
 
         return kitOrderProcessDao.findKitRecipeWithStock(mealkitId, orderQuantity);
     }
+
+
 
     @Transactional
     public boolean processKitOrder(String kitOrderId) {
@@ -104,51 +112,4 @@ public class KitOrderProcessService {
         return true;
 
     }
-
-    // 데이터 저장을 위한 메서드
-    public void saveOrder(KitOrderProcessDto kitOrderProcessDto) {
-
-    }
-
-    // 주문 확인하기
-    public List<KitOrderProcessDto> findOrdersByKeyword(String orderKeyword) {
-        List<Map<String, Object>> results = kitOrderProcessDao.findOrdersByKeyword(orderKeyword);
-        return results.stream()
-                .map(result -> KitOrderProcessDto.builder()
-                        .kitOrderUid(UUID.fromString((String) result.get("kitOrderID")))
-                        .kitCompanyName((String) result.get("kitCompanyName"))
-                        .kitName((String) result.get("kitName"))
-                        .quantity((Integer) result.get("quantity"))
-                        .kitOrderDate((String) result.get("kitOrderDate"))
-                        .status((String) result.get("status"))
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    public List<KitOrderProcessDto> findAllOrders() {
-        List<Map<String, Object>> results = kitOrderProcessDao.findAllOrders();
-        return results.stream()
-                .map(result -> KitOrderProcessDto.builder()
-                        .kitOrderUid(UUID.fromString((String) result.get("kitOrderID")))
-                        .kitCompanyName((String) result.get("kitCompanyName"))
-                        .kitName((String) result.get("kitName"))
-                        .quantity((Integer) result.get("quantity"))
-                        .kitOrderDate((String) result.get("kitOrderDate"))
-                        .status((String) result.get("status"))
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    public KitOrderProcessService(KitOrderProcessDao kitOrderProcessDao, SalesService salesService) {
-        this.kitOrderProcessDao = kitOrderProcessDao;
-        this.salesService = salesService;
-    }
-
-    public void processKitSourceOrder(KitOrderProcessDto kitOrderProcessDto) {
-        kitOrderProcessDao.requestKitSourceOrder(kitOrderProcessDto);
-    }
 }
-
-
-
-

@@ -75,55 +75,6 @@ public class KitOrderProcessController {
         kitOrderProcessService.requestKitSourceOrder(requestKitSourceMap);
 
 
-
-
-
-
-
-
-  /*  @PostMapping("/kitSourceCheckAndOrder")
-    public String processOrder(@RequestParam("modalKitOrderID") String kitOrderId,
-                               @RequestParam("modalKitCompanyName") String companyName,
-                               @RequestParam("modalKitName") String kitName,
-                               @RequestParam("modalQuantity") String quantity,
-                               @RequestParam("modalDate") String orderDate,
-                               @RequestParam("kitIngredients") List<String> ingredients, // 재료 목록
-                               @RequestParam("kitIngredientQuantities") List<String> ingredientQuantities, // 재료 수량 목록
-                               Model model) {
-        // 콘솔에 로그를 찍거나, 데이터 처리만 수행
-        log.info("Order ID: {}", kitOrderId);
-        log.info("Company Name: {}", companyName);
-        log.info("Kit Name: {}", kitName);
-        log.info("Quantity: {}", quantity);
-        log.info("Order Date: {}", orderDate);
-
-        // 재료 및 재료 수량 로그
-        for (int i = 0; i < ingredients.size(); i++) {
-            log.info("Ingredient: {} - Quantity: {}", ingredients.get(i), ingredientQuantities.get(i));
-        }
-
-    // 밀키트 업체에 재료 출고하는 로직
-
-
-        // 모델에 추가할 데이터
-        model.addAttribute("orderId", kitOrderId);
-        model.addAttribute("companyName", companyName);
-        model.addAttribute("kitName", kitName);
-        model.addAttribute("quantity", quantity);
-        model.addAttribute("orderDate", orderDate);
-        model.addAttribute("ingredients", ingredients);
-        model.addAttribute("ingredientQuantities", ingredientQuantities);
-        model.addAttribute("message", "Order processed successfully!");
-
-        // 결과를 표시할 뷰로 리다이렉트
-        return "redirect:/distribution/main"; // 주문 내역 페이지로 리다이렉트
-    }
-
-    @GetMapping("/order-details")
-    @ResponseBody
-    public ResponseEntity<List<KitOrderProcessDto>> getOrderDetails(@RequestParam("orderKeyword") String orderKeyword) {
-        List<KitOrderProcessDto> orders = kitOrderProcessService.findOrdersByKeyword(orderKeyword);
-        return ResponseEntity.ok(orders);*/
     }
 
 }
