@@ -25,32 +25,43 @@ import java.util.*;
 public class WareHouseController {
 
     private final LogisticsWareHouseService logisticsWareHouseService;
+
     //    private final SmsUtil smsUtil;
     @GetMapping("/selectAll")
     public String selectAll(Model model) {
 
-        // 프러덕트 오더 테이블에서 스테이터스가 3인 경우 창고에 적재하고 3 -> 7로 바꿈
+        // 프러덕트 오더 테이블에서 스테이터스가 5인 경우 창고에 적재하고 5 -> 8로 바꿈
         int result = logisticsWareHouseService.insertWarehouseStackForCompletedOrders();
         if (result > 0) {
+            List<String> productOrderIdList = logisticsWareHouseService.selectProductOrderIdByStatus(5);
             logisticsWareHouseService.updateProductOrderStatus();
+            logisticsWareHouseService.insertProductOrderLog(productOrderIdList);
+
         }
 
-        // 밀키트 오더 테이블에서 스테이터스가 3인 경우 창고에서 차감하고 3->8으로 바꿈
+        // 밀키트 오더 테이블에서 스테이터스가 3인 경우 창고에서 차감하고 3->7으로 바꿈
         List<Map<String, Object>> requiredStackList = logisticsWareHouseService.selectRequiredStack();
         if (!requiredStackList.isEmpty()) {
             for (Map<String, Object> list : requiredStackList) {
                 String sourceFk = (String) list.get("sourceFk");
                 BigDecimal totalQuantity = (BigDecimal) list.get("totalQuantity");
                 int quantity = totalQuantity.intValue();
-                System.out.println("ddddddddddddddd>>>>>>>>>>" + sourceFk);
-                System.out.println("ddddddddddddddddd >>>>>>" + quantity);
                 Map<String, Object> params = new HashMap<>();
                 params.put("sourceFk", sourceFk);
                 params.put("quantity", quantity);
 
                 logisticsWareHouseService.updateStackFirstRecord(params);
             }
+            List<String> kitOrderIdList = logisticsWareHouseService.selectKitOrderIdByStatus(3);
             logisticsWareHouseService.updateKitOrderStatus();
+            if (!kitOrderIdList.isEmpty()) {
+                int resultLog=logisticsWareHouseService.insertKitOrderLog(kitOrderIdList);
+                if (resultLog > 0) {
+                    System.out.println("성공적으로 KIT_ORDER_LOG가 들어갔습니다.");
+                }
+            }else System.out.println("selectKitOrderIdStatus에서 불러온 값이 없습니다.");
+
+
         }
 
 
@@ -64,7 +75,7 @@ public class WareHouseController {
     }
 
     @GetMapping("/selectBySourceName")
-    public String selectBySourceName(@RequestParam String keyword ,Model model) {
+    public String selectBySourceName(@RequestParam String keyword, Model model) {
 
 
         List<LogisticsWareHouseDto> list = logisticsWareHouseService.selectBySourceNameLogisticsWarehouse(keyword);
