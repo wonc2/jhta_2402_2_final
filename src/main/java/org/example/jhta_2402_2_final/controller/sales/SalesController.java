@@ -115,6 +115,7 @@ public class SalesController {
 
     @PostMapping("/order/create")
     public String submitOrder(
+            @RequestParam("kitOrderId") String kitOrderId,
             @RequestParam("mealkitName") String mealkitName,
             @RequestParam("quantity") int quantity,
             @RequestParam("sourceNames") String sourceNamesJson,
@@ -123,6 +124,7 @@ public class SalesController {
             @RequestParam("minPrices") String minPricesJson,
             @RequestParam("companyNames") String companyNamesJson) throws JsonProcessingException {
 
+        System.out.println("kitOrderId>>>>>"+kitOrderId);
         // JSON 문자열을 배열로 변환
         ObjectMapper mapper = new ObjectMapper();
 

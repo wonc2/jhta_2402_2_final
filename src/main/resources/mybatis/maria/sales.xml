@@ -383,7 +383,7 @@
 
     <!-- PRODUCT_ORDER 데이터 삽입 -->
     <insert id="insertProductOrder">
-        INSERT INTO PRODUCT_ORDER_02 (PRODUCT_ORDER_ID, SOURCE_PRICE_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
+        INSERT INTO PRODUCT_ORDER (PRODUCT_ORDER_ID, SOURCE_PRICE_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
         VALUES (UUID(), #{sourcePriceId}, #{quantity}, NOW(), 1);
     </insert>
 
@@ -399,7 +399,7 @@
             po.PRODUCT_ORDER_DATE as orderDate,
             st.STATUS
         FROM
-            PRODUCT_ORDER_02 po
+            PRODUCT_ORDER po
                 JOIN SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
                 JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
                 JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
