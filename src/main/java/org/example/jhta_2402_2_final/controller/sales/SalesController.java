@@ -11,6 +11,7 @@ import org.mybatis.logging.Logger;
 import org.mybatis.logging.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -113,6 +114,7 @@ public class SalesController {
     }
 
 
+    @Transactional
     @PostMapping("/order/create")
     public String submitOrder(
             @RequestParam("kitOrderId") String kitOrderId,
@@ -134,7 +136,7 @@ public class SalesController {
         int[] minPrices = mapper.readValue(minPricesJson, int[].class);
         String[] companyNames = mapper.readValue(companyNamesJson, String[].class);
 
-        salesService.processOrder(sourceNames, companyNames, itemQuantities);
+        salesService.processOrder(sourceNames, companyNames, itemQuantities, minPrices);
         int result=salesService.updateKitOrderStatus(kitOrderId, 2);
         if (result>0){
             salesService.insertKitOrderLogByKitOrderId(kitOrderId);

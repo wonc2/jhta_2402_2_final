@@ -34,7 +34,7 @@
             <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
-                    밀키트별 필요 재료 개수 확인
+                    밀키트 주문 [판매 처리]
                 </div>
                 <div class="card-body">
 
@@ -53,33 +53,59 @@
                     </form>
 
 
-                    <table id="datatablesSimple04">
+                    <table id="datatablesSimple">
                         <thead>
                         <tr>
                             <th>번호</th>
+                            <th>주문 ID</th>
+                            <th>밀키트 업체명</th>
                             <th>밀키트명</th>
-                            <th>재료명</th>
+                            <th>밀키트 가격</th>
                             <th>개수</th>
-
+                            <th>총액</th>
+                            <th>주문일자</th>
+                            <th>상태</th>
+                            <th>처리완료</th>
                         </tr>
                         </thead>
                         <tfoot>
                         <tr>
                             <th>번호</th>
+                            <th>주문 ID</th>
+                            <th>밀키트 업체명</th>
                             <th>밀키트명</th>
-                            <th>재료명</th>
+                            <th>밀키트 가격</th>
                             <th>개수</th>
+                            <th>총액</th>
+                            <th>주문일자</th>
+                            <th>발주요청</th>
+                            <th>처리완료</th>
                         </tr>
                         </tfoot>
 
                         <!--tbody > tr > td-->
                         <tbody>
-                        <tr th:each="kitSource, iterStat : ${kitSourceDetails}">
+                        <tr th:each="details, iterStat : ${kitOrderDetails}">
 
                             <td th:text="${iterStat.count}"></td>
-                            <td th:text="${kitSource.mealkitName}"></td>
-                            <td th:text="${kitSource.sourceName}"></td>
-                            <td th:text="${kitSource.quantity}"></td>
+                            <td th:text="${details.kitOrderId}"></td>
+                            <td th:text="${details.kitCompanyName}"></td>
+                            <td th:text="${details.mealkitName}"></td>
+                            <td th:text="${details.mealkitPrice}"></td>
+                            <td th:text="${details.quantity}"></td>
+                            <td th:text="${details.total}"></td>
+                            <td th:text="${details.orderDate}"></td>
+                            <td th:text="${details.status}"></td>
+
+                            <td>
+                                <button class="btn btn-primary change-status-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#updateStatusModal"
+                                        th:attr="data-order-id=${details.kitOrderId}">
+                                    처리 완료
+                                </button>
+                            </td>
+
                         </tr>
                         </tbody>
                     </table>
@@ -91,7 +117,7 @@
             <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
-                    밀키트 주문 상세 [보여지는거]
+                    밀키트 주문 상세 [유통 처리]
                 </div>
                 <div class="card-body">
 

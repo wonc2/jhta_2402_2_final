@@ -1,7 +1,6 @@
 package org.example.jhta_2402_2_final.controller.distribution;
 
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jhta_2402_2_final.model.dto.distribution.CombineLogDTO;
@@ -13,7 +12,6 @@ import org.example.jhta_2402_2_final.service.distribution.LogisticsWareHouseServ
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.math.BigDecimal;
 import java.util.*;
