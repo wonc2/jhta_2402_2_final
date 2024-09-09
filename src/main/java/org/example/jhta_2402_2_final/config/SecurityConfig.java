@@ -11,6 +11,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+/*
+* [code-review] 시큐리티 설정 힘드셨을 텐데 잘하셨습니다.
+* 여기서 더 나아가서 현재 어떻게 세션이 관리가 되고 있는지
+* 현재 방법은 어떤 문제가 있기에 데이터 베이스를 사용하는지
+* 데이터 베이스로 세션을 변경시켜 보는 것을 추천드립니다.
+* */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {

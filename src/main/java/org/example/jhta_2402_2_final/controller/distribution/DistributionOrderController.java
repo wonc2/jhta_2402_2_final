@@ -51,7 +51,9 @@ public class DistributionOrderController {
 
 
         int result = distributionOrderService.insertProductOrder(sourcePriceId, totalQuantity);
-
+        /*
+        * [code-review] 로그의 경우 slf4j, log4j2 이용해서 작성해주세요 System.out.println 가급적 지양해주세요.
+        * */
         if (result > 0) System.out.println("인서트 성공");
         else System.out.println("인서트 실패 ");
 

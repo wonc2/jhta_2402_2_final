@@ -30,7 +30,8 @@
         DELETE FROM employees WHERE id = #{id}
     </delete>
 
-
+    <!-- [code-review] where에서 문자열을 찾을 때 인덱스를 어떻게 설정 하셨는지는 모르겠으나
+    % 붙이게 되면 인덱스가 동작하지 않습니다. hiredate 는 date 형식에 맞게 검색해주세요-->
     <select id="search" parameterType="map" resultType="Employee">
         SELECT *
         FROM employees

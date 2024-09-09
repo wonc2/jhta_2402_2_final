@@ -30,6 +30,15 @@ public class KitOrderProcessService {
     private final SalesService salesService;
     private final SalesDao salesDao;
 
+    /*
+    * [code-review] 다양한 곳에서도 Map 형태로 객체간 소통하는 것을 많이 보았습니다.
+    * Map 자료구조는 매우 휼룽한 자료 구조입니다. 하지만 Java 라는 언어가 어떤것을 지향하는지 생각해봐야 합니다.
+    * Map 으로 보내면 지금은 매우 편합니다. 어떤 변화에 있어서도 유연하게 대처할 수 있으니까요.
+    * 하지만 개발 이란 것은 사실 개발이 10% 이고 유지보수가 90% 전 생각합니다. 당장 아래에 있는 requestKitSourceMap
+    * 하여도 저는 해당 Map 어떤 필드가 더 있을지 알수가 없고 의도 자체도 파악이 힘듭니다.
+    * requestKitSourceMap 받을 시 형변환 이라는 추가적인 리소스 까지 발생합니다.
+    * Java는 객체지향 언어 입니다. 이 의미를 한번 더 새겨보시길 바랍니다.
+    * */
     public List<Map<String, Object>> findAllOrder() {
         return kitOrderProcessDao.findAllOrder();
     }
