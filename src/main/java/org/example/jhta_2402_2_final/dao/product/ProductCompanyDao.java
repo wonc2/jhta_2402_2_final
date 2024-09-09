@@ -48,4 +48,6 @@ public interface ProductCompanyDao {
 
     // 등록된 모든 재료 리스트 (검색용)
     List<String> selectAllCompanySource (String companyName);
+
+    int getOrderStatus(String orderId);
 }
