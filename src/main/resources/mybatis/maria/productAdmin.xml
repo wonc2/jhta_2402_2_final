@@ -154,4 +154,7 @@
     <insert id="insertProductCompany" parameterType="ProductCompanyDto">
         INSERT INTO PRODUCT_COMPANY (PRODUCT_COMPANY_ID,NAME,ADDRESS) VALUES(UUID(),#{productCompanyName},#{productCompanyAddress})
     </insert>
+    <select id="getProductCompanyId" parameterType="String">
+        SELECT P_C.PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY P_C WHERE P_C.NAME = #{productCompanyName};
+    </select>
 </mapper>

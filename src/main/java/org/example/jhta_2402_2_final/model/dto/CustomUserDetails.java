@@ -3,6 +3,7 @@ package org.example.jhta_2402_2_final.model.dto;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.example.jhta_2402_2_final.model.dto.member.MemberDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
