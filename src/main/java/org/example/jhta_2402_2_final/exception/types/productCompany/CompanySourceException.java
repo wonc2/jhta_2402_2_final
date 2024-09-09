@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public class AddCompanySourceException extends RuntimeException {
+public class CompanySourceException extends RuntimeException {
     private final String errorMsg;
     private final HttpStatus httpStatus;
 }

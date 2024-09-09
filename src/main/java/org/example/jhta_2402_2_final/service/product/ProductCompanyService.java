@@ -2,7 +2,7 @@ package org.example.jhta_2402_2_final.service.product;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.product.ProductCompanyDao;
-import org.example.jhta_2402_2_final.exception.types.productCompany.AddCompanySourceException;
+import org.example.jhta_2402_2_final.exception.types.productCompany.CompanySourceException;
 import org.example.jhta_2402_2_final.exception.types.productCompany.ProduceSourceException;
 import org.example.jhta_2402_2_final.exception.types.productCompany.ProductCompanyOrderProcessException;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyChartDto;
@@ -21,7 +21,9 @@ public class ProductCompanyService {
     private final ProductCompanyDao productCompanyDao;
     private final ProductCompanyUtil productCompanyUtil;
 
-    /* 필요한 리스트 전부 가져옴 */
+    /* CompanySource Table */
+
+    /* 생산품 등록 및 재고 등록 테이블 리스트 가져옴 */
     public Map<String, Object> findAll(String companyName){
         productCompanyUtil.getCompanyId(companyName);
         Map<String,Object> responseData = new HashMap<>();
@@ -43,11 +45,11 @@ public class ProductCompanyService {
 
         // 중복 검사
         if (productCompanyDao.checkDuplicateCompanySource(paramData)) {
-            throw new AddCompanySourceException("이미 등록된 제품 입니다.", HttpStatus.BAD_REQUEST);
+            throw new CompanySourceException("이미 등록된 제품 입니다.", HttpStatus.BAD_REQUEST);
         }
         // 빈 값 검사
         if (sourceId == null && (sourceName == null || sourceName.isEmpty() || sourceName.isBlank())) {
-            throw new AddCompanySourceException("빈 값 입력 안됩니다.", HttpStatus.BAD_REQUEST);
+            throw new CompanySourceException("빈 값 입력 안됩니다.", HttpStatus.BAD_REQUEST);
         }
         // 셀렉트로 sourceId 가져왔으면 if문 스킵 else -> sourceName 으로 sourceId 가져옴 없으면 SOURCE 테이블에 등록
         if (sourceId == null) {
@@ -64,12 +66,46 @@ public class ProductCompanyService {
         return findAll(companyName);
     }
 
-    /* 등록된 상품 생산 업체에서 삭제 */
+    /* 등록된 생산품 Delete */
     @Transactional
     public Map<String, Object> deleteSourceFromCompany(String companyName, String companySourceId) {
         productCompanyDao.deleteSourceFromCompany(companySourceId);
         return findAll(companyName);
     }
+
+    /* 등록된 상품 생산 -> 창고에 적재 */
+    @Transactional
+    public List<Map<String, Object>> produceSource(String companyName, Map<String ,Object> paramData) {
+        String sourceQuantityStr = (String) paramData.get("sourceQuantity");
+        if (sourceQuantityStr.isBlank()) {
+            throw new ProduceSourceException("입력된 값이 없습니다", HttpStatus.BAD_REQUEST);
+        }
+        try {
+            int sourceQuantity = Integer.parseInt(sourceQuantityStr);
+            if (sourceQuantity < 1 ) {
+                throw new ProduceSourceException("1 이상만 등록할 수 있습니다.", HttpStatus.BAD_REQUEST);
+            }
+        } catch (NumberFormatException e) {
+            throw new ProduceSourceException("정수만 입력할 수 있습니다.", HttpStatus.BAD_REQUEST);
+        }
+        productCompanyDao.produceSource(paramData);
+        return productCompanyDao.getWarehouseSources(companyName);
+    }
+
+    /* 재료 가격 수정 */
+    @Transactional
+    public List<Map<String, Object>> sourcePriceUpdate(String companyName, String companySourceId, Map<String, Object> paramData) {
+        if (paramData.get("sourcePrice").equals(paramData.get("oldPrice"))) {
+            throw new CompanySourceException("가격 변동 사항이 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+        paramData.put("companySourceId", companySourceId);
+        productCompanyDao.sourcePriceUpdate(paramData);
+        productCompanyDao.sourcePriceHistory(paramData);
+        return productCompanyDao.getWarehouseSources(companyName);
+    }
+
+
+    /* Source Warehouse Table */
 
     /* 생산 창고 리스트 다 가져옴 */
     public List<Map<String, Object>> getWarehouseSources(String companyName) {
@@ -77,38 +113,22 @@ public class ProductCompanyService {
         return productCompanyDao.getWarehouseSources(companyName);
     }
 
-    /* 등록된 상품 생산 -> 창고에 적재 */
-    @Transactional
-    public List<Map<String, Object>> produceSource(String companyName, Map<String ,Object> paramData) {
-        Object sourceQuantityObj = paramData.get("sourceQuantity");
-        if (sourceQuantityObj == null) {
-            throw new ProduceSourceException("값이 없습니다 ~", HttpStatus.BAD_REQUEST);
-        }
-        try {
-            int sourceQuantity = Integer.parseInt(sourceQuantityObj.toString());
-            if (sourceQuantity <= 0 ) {
-                throw new ProduceSourceException("한 개 이상 입력해야함 ~", HttpStatus.BAD_REQUEST);
-            }
-        } catch (NumberFormatException e) {
-            throw new ProduceSourceException("정수만 입력하세요 ~", HttpStatus.BAD_REQUEST);
-        }
-        productCompanyDao.produceSource(paramData);
-        return productCompanyDao.getWarehouseSources(companyName);
-    }
 
-    public List<Map<String, Object>> sourcePriceUpdate(String companyName, String companySourceId, Map<String, Object> paramData) {
-        paramData.put("companySourceId", companySourceId);
-        productCompanyDao.sourcePriceUpdate(paramData);
-        return productCompanyDao.getWarehouseSources(companyName);
-    }
+    /* Order Table */
 
+    /* 주문 리스트 가져옴 */
     public List<Map<String, Object>> getProductOrderList(String companyName, Map<String, Object> paramData) {
         paramData.put("companyName", companyName);
-
         // values: { orderId, sourceName, sourcePrice, quantity, totalPrice, orderDate, orderStatus }
         return productCompanyDao.getProductOrderList(paramData);
     }
 
+    // 재료 검색 셀렉트 리스트
+    public List<String> selectAllCompanySource(String companyName) {
+        return productCompanyDao.selectAllCompanySource(companyName);
+    }
+
+    /* 주문 처리 프로세스 */
     @Transactional
     public List<Map<String, Object>> orderProcess(String companyName, Map<String, Object> paramData) {
         // 필요값: { orderId, orderStatus }
@@ -126,5 +146,9 @@ public class ProductCompanyService {
 
     public List<ProductCompanyChartDto> getChart(String companyName) {
         return productCompanyDao.getChart(companyName);
+    }
+    public List<Map<String, Object>> orderChart(String companyName, Map<String, Object> paramData) {
+        paramData.put("companyName", companyName);
+        return productCompanyDao.orderChart(paramData);
     }
 }

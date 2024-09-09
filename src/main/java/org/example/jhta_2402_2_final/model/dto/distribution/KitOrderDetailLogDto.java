@@ -12,7 +12,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class KitOrderDetailLogDTO {
+public class KitOrderDetailLogDto {
     private String kitOrderId;
     private String CompanyName;
     private String sourceName;
