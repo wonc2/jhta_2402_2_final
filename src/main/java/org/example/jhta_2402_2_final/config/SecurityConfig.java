@@ -1,5 +1,6 @@
 package org.example.jhta_2402_2_final.config;
 
+import org.example.jhta_2402_2_final.service.login.CustomLoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -25,7 +26,10 @@ public class SecurityConfig {
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+    @Bean
+    public CustomLoginSuccessHandler customLoginSuccessHandler() {
+        return new CustomLoginSuccessHandler();
+    }
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web -> web.ignoring().requestMatchers(
@@ -42,6 +46,8 @@ public class SecurityConfig {
                 .requestMatchers("/user/**").hasAnyRole("ADMIN","USER")
                 .requestMatchers("/manager/**").hasAnyRole("ADMIN","MANAGER")
                 .requestMatchers("/distribution/**").hasAnyRole("ADMIN","MANAGER")
+//                .requestMatchers("/product/company/**").hasAnyRole("ADMIN","PRODUCT_MANAGER")
+//                .requestMatchers("/**").hasRole("ADMIN")
                 .anyRequest()
                 .authenticated()
         );
@@ -51,6 +57,7 @@ public class SecurityConfig {
                 .usernameParameter("userId")
                 .passwordParameter("userPassword")
                 .defaultSuccessUrl("/",true) //true를 쓰지 않으면 이전 페이지로 간다.
+//                .successHandler(customLoginSuccessHandler())
                 .failureHandler(customFailureHandler)  //로그인 실패시 어떻게 할건지를 니가 만들어서 처리해라
                 .permitAll()
         );

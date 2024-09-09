@@ -34,7 +34,7 @@
             <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
-                    밀키트별 필요 재료 개수 확인
+                    밀키트 주문 [판매 처리]
                 </div>
                 <div class="card-body">
 
@@ -53,33 +53,67 @@
                     </form>
 
 
-                    <table id="datatablesSimple04">
+                    <table id="datatablesSimple">
                         <thead>
                         <tr>
                             <th>번호</th>
+                            <th>주문 ID</th>
+                            <th>밀키트 업체명</th>
                             <th>밀키트명</th>
-                            <th>재료명</th>
+                            <th>밀키트 가격</th>
                             <th>개수</th>
-
+                            <th>총액</th>
+                            <th>주문일자</th>
+                            <th>상태</th>
+                            <th>처리완료</th>
+                            <th>취소</th>
                         </tr>
                         </thead>
                         <tfoot>
                         <tr>
                             <th>번호</th>
+                            <th>주문 ID</th>
+                            <th>밀키트 업체명</th>
                             <th>밀키트명</th>
-                            <th>재료명</th>
+                            <th>밀키트 가격</th>
                             <th>개수</th>
+                            <th>총액</th>
+                            <th>주문일자</th>
+                            <th>발주요청</th>
+                            <th>처리완료</th>
+                            <th>취소</th>
                         </tr>
                         </tfoot>
 
                         <!--tbody > tr > td-->
                         <tbody>
-                        <tr th:each="kitSource, iterStat : ${kitSourceDetails}">
+                        <tr th:each="details, iterStat : ${kitOrderDetails}">
 
                             <td th:text="${iterStat.count}"></td>
-                            <td th:text="${kitSource.mealkitName}"></td>
-                            <td th:text="${kitSource.sourceName}"></td>
-                            <td th:text="${kitSource.quantity}"></td>
+                            <td th:text="${details.kitOrderId}"></td>
+                            <td th:text="${details.kitCompanyName}"></td>
+                            <td th:text="${details.mealkitName}"></td>
+                            <td th:text="${details.mealkitPrice}"></td>
+                            <td th:text="${details.quantity}"></td>
+                            <td th:text="${details.total}"></td>
+                            <td th:text="${details.orderDate}"></td>
+                            <td th:text="${details.status}"></td>
+
+                            <td>
+                                <button class="btn btn-primary change-status-btn"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#updateStatusModal"
+                                        th:attr="data-order-id=${details.kitOrderId}">
+                                    처리완료
+                                </button>
+                            </td>
+
+                            <td>
+                                <button class="btn btn-danger change-status-btn">
+                                    취소
+                                </button>
+                            </td>
+
                         </tr>
                         </tbody>
                     </table>
@@ -91,7 +125,7 @@
             <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
-                    밀키트 주문 상세 [보여지는거]
+                    밀키트 주문 상세 [유통 처리]
                 </div>
                 <div class="card-body">
 
@@ -254,9 +288,7 @@
             </div>
 
 
-
         </div>
-
 
 
     </main>
@@ -301,6 +333,7 @@
                     </table>
 
                     <!-- 숨겨진 필드들 -->
+
                     <input type="hidden" name="kitOrderId" id="hiddenKitOrderId">
                     <input type="hidden" name="sourceNames" id="hiddenSourceNames">
                     <input type="hidden" name="itemQuantities" id="hiddenItemQuantities">
@@ -312,6 +345,15 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                     <button type="submit" class="btn btn-primary" form="orderForm">발주 요청</button>
+                    <form th:action="@{/sales/shinhyeok}" th:method="post">
+                        <input type="hidden" name="kitOrderIdForSale" id="hiddenKitOrderIdForSale">
+                        <input type="hidden" name="sourceNamesForSale" id="hiddenSourceNamesForSale">
+                        <input type="hidden" name="itemQuantitiesForSale" id="hiddenItemQuantitiesForSale">
+
+                    <button type="submit" id="sellButton" class="btn btn-primary">판매</button>
+                    </form>
+
+                    <!-- 판매 버튼 -->
                 </div>
             </div>
 
@@ -322,12 +364,10 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 
-        // 모달이 열릴 때 이벤트 리스너 설정
         var orderDetailModal = document.getElementById('orderDetailModal');
+        var sellButton = document.getElementById('sellButton'); // 판매 버튼을 선택
 
         orderDetailModal.addEventListener('show.bs.modal', function (event) {
-
-
             var button = event.relatedTarget;
             var kitOrderId = button.getAttribute('data-order-id');
             var quantity = button.getAttribute('data-quantity');
@@ -335,7 +375,6 @@
 
             document.getElementById('mealkitNameInput').value = mealkitName;
             document.getElementById('quantityInput').value = quantity;
-
 
             const encodedKitOrderId = encodeURIComponent(kitOrderId);
             const encodedQuantity = encodeURIComponent(quantity);
@@ -350,36 +389,42 @@
                     return response.json();
                 })
                 .then(data => {
-                    // 서버로부터 받은 데이터를 모달에 채움
                     const tbody = document.querySelector('#orderDetailModal .modal-body tbody');
                     tbody.innerHTML = ''; // 기존 데이터를 지움
 
-                    // 숨겨진 필드를 업데이트
                     const sourceNames = [];
                     const itemQuantities = [];
                     const stackQuantities = [];
                     const minPrices = [];
                     const companyNames = [];
 
-                    data.forEach(item => {
+                    let canSell = true; // 판매 가능 여부를 추적
 
-                        tbody.innerHTML += `
-                            <tr>
-                                <td>${item.sourceName}</td>
-                                <td>${item.quantity}</td>
-                                <td>${item.stackQuantity}</td>
+                    data.forEach(item => {
+                        let rowHtml = `
+                        <tr>
+                            <td>${item.sourceName}</td>
+                            <td>${item.quantity}</td>
+                            <td>${item.stackQuantity}`;
+
+                        // 창고재고가 재료수량보다 적을 경우 시각적으로 표시
+                        if (item.stackQuantity < item.quantity) {
+                            rowHtml += ` <span style="color: red;">(부족)</span>`;
+                            canSell = false; // 판매 불가능
+                        }
+
+                        rowHtml += `</td>
                                 <td>${item.minPrice}</td>
                                 <td>${item.companyName}</td>
+                            </tr>`;
 
-                            </tr>
-                        `;
+                        tbody.innerHTML += rowHtml;
 
                         sourceNames.push(item.sourceName);
                         itemQuantities.push(item.quantity);
                         stackQuantities.push(item.stackQuantity);
                         minPrices.push(item.minPrice);
                         companyNames.push(item.companyName);
-
                     });
 
                     document.getElementById('hiddenSourceNames').value = JSON.stringify(sourceNames);
@@ -389,14 +434,25 @@
                     document.getElementById('hiddenCompanyNames').value = JSON.stringify(companyNames);
                     document.getElementById('hiddenKitOrderId').value = kitOrderId;
 
+                    document.getElementById('hiddenSourceNamesForSale').value = JSON.stringify(sourceNames);
+                    document.getElementById('hiddenItemQuantitiesForSale').value = JSON.stringify(itemQuantities);;
+                    document.getElementById('hiddenKitOrderIdForSale').value = kitOrderId;
+                    // 판매 버튼 활성화/비활성화
+                    if (canSell) {
+                        sellButton.classList.remove('btn-secondary');
+                        sellButton.classList.add('btn-primary');
+                        sellButton.disabled = false;
+                    } else {
+                        sellButton.classList.remove('btn-primary');
+                        sellButton.classList.add('btn-secondary');
+                        sellButton.disabled = true;
+                    }
+
                 })
                 .catch(error => {
                     console.error('Fetch 오류:', error);
                 });
-
-
         });
-
 
     });
 

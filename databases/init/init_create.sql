@@ -47,14 +47,20 @@ CREATE TABLE STATUS (
 );
 -- 8. 생산주문(발주) 테이블
 CREATE TABLE PRODUCT_ORDER (
-                               PRODUCT_ORDER_ID VARCHAR(50) PRIMARY KEY, -- 발주PK
-                               SOURCE_PRICE_ID VARCHAR(50), -- 생산품가격FK
-                               QUANTITY INT NOT NULL , -- 개수
-                               PRODUCT_ORDER_DATE DATETIME DEFAULT CURRENT_TIMESTAMP,  -- 주문 일자
-                               STATUS_ID INT, -- 상태FK
-                               FOREIGN KEY (SOURCE_PRICE_ID) REFERENCES SOURCE_PRICE(SOURCE_PRICE_ID),
-                               FOREIGN KEY (STATUS_ID) REFERENCES STATUS(STATUS_ID)
+                               PRODUCT_ORDER_ID VARCHAR(50) PRIMARY KEY, -- 발주 PK
+                               PRODUCT_COMPANY_ID VARCHAR(50), -- 생산업체 FK
+                               SOURCE_ID VARCHAR(50), -- 재료 FK
+                               KIT_ORDER_ID VARCHAR(50), -- 밀키트 주문 FK
+                               QUANTITY INT, -- 개수
+                               PRICE INT, -- 가격
+                               PRODUCT_ORDER_DATE DATETIME DEFAULT CURRENT_TIMESTAMP, -- 주문 일자
+                               STATUS_ID INT, -- 상태 FK
+                               FOREIGN KEY (PRODUCT_COMPANY_ID) REFERENCES PRODUCT_COMPANY(PRODUCT_COMPANY_ID), -- 회사 참조
+                               FOREIGN KEY (SOURCE_ID) REFERENCES SOURCE(SOURCE_ID), -- 재료 참조
+                               FOREIGN KEY (KIT_ORDER_ID) REFERENCES KIT_ORDER(KIT_ORDER_ID), -- 밀키트 주문 참조
+                               FOREIGN KEY (STATUS_ID) REFERENCES STATUS(STATUS_ID) -- 상태 참조
 );
+
 -- 9. 생산주문(발주) 로그 테이블
 CREATE TABLE PRODUCT_ORDER_LOG (
                                    PRODUCT_ORDER_LOG_ID VARCHAR(50) PRIMARY KEY, -- 발주로그PK
@@ -100,6 +106,13 @@ CREATE TABLE USER (
                       USER_EMAIL VARCHAR(50) NOT NULL, -- 유저 이메일
                       USER_TEL VARCHAR(50) NOT NULL, -- 전화번호
                       ROLE_NAME VARCHAR(50) NOT NULL -- 권한FK
+);
+CREATE TABLE PRODUCT_COMPANY_MEMBER(
+    PRODUCT_COMPANY_MEMBER_ID VARCHAR(50) PRIMARY KEY NOT NULL,
+    USER_ID                   VARCHAR(50),
+    PRODUCT_COMPANY_ID        VARCHAR(50),
+    FOREIGN KEY (USER_ID) REFERENCES USER (USER_PK),
+    FOREIGN KEY (PRODUCT_COMPANY_ID) REFERENCES PRODUCT_COMPANY (PRODUCT_COMPANY_ID)
 );
 
 -- 14. 밀키트 업체 별 창고 테이블

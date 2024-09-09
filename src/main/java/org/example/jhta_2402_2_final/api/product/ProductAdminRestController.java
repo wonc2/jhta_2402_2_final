@@ -3,6 +3,8 @@ package org.example.jhta_2402_2_final.api.product;
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.model.dto.common.SourceMinPriceDto;
 import org.example.jhta_2402_2_final.model.dto.common.SourcePriceViewDto;
+import org.example.jhta_2402_2_final.model.dto.product.ProductCompanySourcePriceDto;
+import org.example.jhta_2402_2_final.model.dto.product.ProductCountDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductOrderCountDto;
 import org.example.jhta_2402_2_final.model.dto.product.ProductOrderViewDto;
 import org.example.jhta_2402_2_final.service.product.ProductAdminService;
@@ -21,8 +23,9 @@ public class ProductAdminRestController {
     List<SourcePriceViewDto>sourcePriceList;
     List<SourcePriceViewDto>sourcePriceSearchList;
     List<SourceMinPriceDto>sourceMinPriceList;
-    List<SourceMinPriceDto>sourcePriceCompanyList;
+    List<ProductCompanySourcePriceDto>sourcePriceCompanyList;
     List<ProductOrderCountDto>productOrderCountList;
+    List<ProductCountDto> productCountList;
 //    @GetMapping("/main/data/sourcePriceList")
 //    @ResponseBody
 //    public List<SourcePriceViewDto> getSourcePriceList(@RequestParam(value = "productTableStatus" ,required = false) String productTableStatus,@RequestParam(value = "page" , defaultValue = "1") int page , @RequestParam(value = "pageScale" , defaultValue = "10") int pageScale, Model model){
@@ -89,12 +92,17 @@ public class ProductAdminRestController {
         return sourceMinPriceList;
     }
     @GetMapping("/main/data/sourcePriceCompanyChart")
-    public List<SourceMinPriceDto> getSourcePriceCompany(){
-        return sourcePriceCompanyList = productAdminService.getSourcePriceCompany();
+    public List<ProductCompanySourcePriceDto> getSourcePriceCompany(String productCompanyName){
+        return sourcePriceCompanyList = productAdminService.getSourcePriceCompanyList(productCompanyName);
+//        return sourcePriceCompanyList = productAdminService.getSourcePriceCompanyList();
     }
     @GetMapping("/main/data/productOrderCountChart")
     public List<ProductOrderCountDto> getProductOrderCount(){
         return productOrderCountList = productAdminService.getProductOrderCount();
+    }
+    @GetMapping("/main/data/productCountListChart")
+    public List<ProductCountDto> getProductCountList(){
+        return productCountList = productAdminService.getProductCountList();
     }
 
 }

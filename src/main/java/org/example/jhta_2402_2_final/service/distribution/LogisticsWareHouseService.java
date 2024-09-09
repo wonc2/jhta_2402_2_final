@@ -77,5 +77,15 @@ public class LogisticsWareHouseService {
     public int insertKitOrderLog(List<String> kitOrderIdList) {
     return distributionDao.insertKitOrderLog(kitOrderIdList);
     }
+
+    public void updateStackBySourceName(List<Map<String, Object>> combinedList) {
+        for (Map<String, Object> item : combinedList) {
+            distributionDao.updateStackBySourceName(item);
+        }
+    }
+
+    public void insertProductOrder(Map<String, Object> map) {
+    distributionDao.insertProductOrder(map);
+    }
 }
 

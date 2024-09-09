@@ -394,8 +394,25 @@
 
     <!-- PRODUCT_ORDER 데이터 삽입 -->
     <insert id="insertProductOrder">
-        INSERT INTO PRODUCT_ORDER (PRODUCT_ORDER_ID, SOURCE_PRICE_ID, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
-        VALUES (#{productOrderId}, #{sourcePriceId}, #{quantity}, NOW(), 1);
+        INSERT INTO PRODUCT_ORDER (
+            PRODUCT_ORDER_ID,
+            PRODUCT_COMPANY_ID,
+            SOURCE_ID,
+            QUANTITY,
+            PRICE,
+            PRODUCT_ORDER_DATE,
+            STATUS_ID
+        )
+        VALUES (
+                   #{productOrderId},
+                   (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = #{companyName}),  -- 회사 이름으로 회사 ID 찾기
+                   (SELECT SOURCE_ID FROM SOURCE WHERE NAME = #{sourceName}),  -- 재료 이름으로 재료 ID 찾기
+                   #{itemQuantity},
+                   #{minPrice},
+                   NOW(),
+                   1
+               );
+
     </insert>
 
 
@@ -405,18 +422,17 @@
             po.PRODUCT_ORDER_ID as productOrderId,
             pc.NAME AS companyName,
             s.NAME AS sourceName,
-            sp.PRICE AS sourcePrice,
+            po.PRICE AS sourcePrice,
             po.QUANTITY,
             po.PRODUCT_ORDER_DATE as orderDate,
             st.STATUS
         FROM
             PRODUCT_ORDER po
-                JOIN SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
-                JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
-                JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+                JOIN SOURCE s ON po.SOURCE_ID = s.SOURCE_ID
+                JOIN PRODUCT_COMPANY pc ON po.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
                 JOIN STATUS st ON po.STATUS_ID = st.STATUS_ID
-
-        order by orderDate DESC
+        ORDER BY
+            orderDate DESC;
     </select>
 
 <!--    product_order_log 인서트-->
@@ -444,15 +460,14 @@
             S.NAME AS sourceName,
             PC.NAME AS companyName,
             PO.QUANTITY,
-            SP.PRICE,
+            PO.PRICE,
             POL.PRODUCT_ORDER_DATE AS orderDate,
             ST.STATUS AS status
         FROM
             PRODUCT_ORDER_LOG POL
                 JOIN PRODUCT_ORDER PO ON POL.PRODUCT_ORDER_ID = PO.PRODUCT_ORDER_ID
-                JOIN SOURCE_PRICE SP ON PO.SOURCE_PRICE_ID = SP.SOURCE_PRICE_ID
-                JOIN SOURCE S ON SP.SOURCE_ID = S.SOURCE_ID
-                JOIN PRODUCT_COMPANY PC ON SP.PRODUCT_COMPANY_ID = PC.PRODUCT_COMPANY_ID
+                JOIN SOURCE S ON PO.SOURCE_ID = S.SOURCE_ID
+                JOIN PRODUCT_COMPANY PC ON PO.PRODUCT_COMPANY_ID = PC.PRODUCT_COMPANY_ID
                 JOIN STATUS ST ON POL.STATUS_ID = ST.STATUS_ID
         ORDER BY
             orderDate DESC;
