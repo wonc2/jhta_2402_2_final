@@ -80,6 +80,7 @@
         )
         SELECT
             KO.KIT_ORDER_ID AS kitOrderId,
+            KO.PRODUCT_ORDER_DATE AS orderDate,
             MK.NAME AS mealkitName,
             KO.QUANTITY AS mealkitQuantity,
             KS.SOURCE_ID AS sourceId,
@@ -96,36 +97,32 @@
                 JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
                 JOIN RankedPrices RP ON KS.SOURCE_ID = RP.sourceId AND RP.rn = 1
         ORDER BY
-            KO.KIT_ORDER_ID, S.NAME
+            orderDate DESC;
     </select>
 
 
-    <select id="selectSourcePriceId" resultType="UUID">
-        SELECT
-            SP.SOURCE_PRICE_ID
-        FROM
-            SOURCE_PRICE SP
-        WHERE
-            SP.SOURCE_ID = #{sourceId}
-          AND SP.PRODUCT_COMPANY_ID = #{productCompanyId}
-    </select>
+
 
     <insert id="insertProductOrder">
         INSERT INTO PRODUCT_ORDER (
-            PRODUCT_ORDER_ID,
-            SOURCE_PRICE_ID,
+            PRODUCT_ORDER_ID ,
+            PRODUCT_COMPANY_ID,
+            SOURCE_ID,
             QUANTITY,
+            PRICE,
             PRODUCT_ORDER_DATE,
-            STATUS_ID
-        )
-        VALUES (
-                   UUID(),  -- 새로운 UUID 생성
-                   #{sourcePriceId},  -- 조회된 SOURCE_PRICE_ID
-                   #{quantity},  -- 주문 수량
-                   NOW(),  -- 현재 날짜 및 시간
-                   1 -- 상태 ID
-               );
-
+            STATUS_ID,
+            KIT_ORDER_ID
+        ) VALUES (
+                     #{productOrderId},  -- 새로운 UUID 생성
+                     #{productCompanyId},  -- 생산업체ID
+                     #{sourceId},          -- 재료ID
+                     #{totalQuantity},      -- 주문 수량
+                     #{sourcePrice},        -- 가격
+                     NOW(),                -- 현재 날짜 및 시간
+                     1,-- 상태 ID (기본값)
+                     #{kitOrderId}
+                 );
     </insert>
 
     <insert id="insertProductOrderLog">
@@ -138,10 +135,17 @@
         VALUES (
                    UUID(),
                    #{productOrderId},
-                   (SELECT STATUS_ID
+                   (SELECT STATUS_ID as statusId
                     FROM PRODUCT_ORDER
                     WHERE PRODUCT_ORDER_ID = #{productOrderId}),
                    NOW()
                );
-</insert>
+    </insert>
+
+
+    <update id="updateKitOrderStatus">
+        UPDATE KIT_ORDER
+        SET STATUS_ID = 2
+        where KIT_ORDER_ID = #{kitOrderId}
+    </update>
 </mapper>
