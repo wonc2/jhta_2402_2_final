@@ -24,11 +24,11 @@ public class ProductCompanyService {
     /* CompanySource Table */
 
     /* 생산품 등록 및 재고 등록 테이블 리스트 가져옴 */
-    public Map<String, Object> findAll(String companyName){
+    public Map<String, Object> findAll(String companyName) {
         productCompanyUtil.getCompanyId(companyName);
-        Map<String,Object> responseData = new HashMap<>();
+        Map<String, Object> responseData = new HashMap<>();
         // productList values: { companySourceId, sourceName, sourcePrice, totalQuantity }
-        responseData.put("companySourceList",productCompanyDao.getSourcesByCompanyName(companyName));
+        responseData.put("companySourceList", productCompanyDao.getSourcesByCompanyName(companyName));
         responseData.put("sources", productCompanyDao.getAllSources(companyName));
         // responseData values: { List<Map>, List<SourceDto> }
         return responseData;
@@ -36,18 +36,18 @@ public class ProductCompanyService {
 
     /*  생산업체 생산품 목록에 등록 (실제 생산 x, 생산품 등록임) */
     @Transactional
-    public Map<String, Object> addSourceToCompany(String companyName, Map<String ,Object> paramData) {
+    public Map<String, Object> addSourceToCompany(String companyName, Map<String, Object> paramData) {
         // 필요한 값 가져오기
         String companyId = productCompanyDao.getCompanyIdByName(companyName);
         paramData.put("companyId", companyId);
         String sourceName = (String) paramData.get("sourceName");
         String sourceId = (String) paramData.get("sourceId");
 
-        // 중복 검사
+        // : 생산품 등록 중복 검사 한 업체에 동일한 이름을 가진 제품 중복 등록 불가능
         if (productCompanyDao.checkDuplicateCompanySource(paramData)) {
             throw new CompanySourceException("이미 등록된 제품 입니다.", HttpStatus.BAD_REQUEST);
         }
-        // 빈 값 검사
+        // : 제품 이름으로 공백이나 null 값 입력 불가능
         if (sourceId == null && (sourceName == null || sourceName.isEmpty() || sourceName.isBlank())) {
             throw new CompanySourceException("빈 값 입력 안됩니다.", HttpStatus.BAD_REQUEST);
         }
@@ -75,17 +75,20 @@ public class ProductCompanyService {
 
     /* 등록된 상품 생산 -> 창고에 적재 */
     @Transactional
-    public List<Map<String, Object>> produceSource(String companyName, Map<String ,Object> paramData) {
+    public List<Map<String, Object>> produceSource(String companyName, Map<String, Object> paramData) {
         String sourceQuantityStr = (String) paramData.get("sourceQuantity");
+        // : 빈값 입력 제한
         if (sourceQuantityStr.isBlank()) {
             throw new ProduceSourceException("입력된 값이 없습니다", HttpStatus.BAD_REQUEST);
         }
         try {
             int sourceQuantity = Integer.parseInt(sourceQuantityStr);
-            if (sourceQuantity < 1 ) {
+            // : 1 미만 숫자 입력 제한
+            if (sourceQuantity < 1) {
                 throw new ProduceSourceException("1 이상만 등록할 수 있습니다.", HttpStatus.BAD_REQUEST);
             }
         } catch (NumberFormatException e) {
+            // : 문자나 기타 등등 입력 제한
             throw new ProduceSourceException("정수만 입력할 수 있습니다.", HttpStatus.BAD_REQUEST);
         }
         productCompanyDao.produceSource(paramData);
@@ -131,15 +134,30 @@ public class ProductCompanyService {
     /* 주문 처리 프로세스 */
     @Transactional
     public List<Map<String, Object>> orderProcess(String companyName, Map<String, Object> paramData) {
-        // 필요값: { orderId, orderStatus }
-        productCompanyDao.orderProcess(paramData); // product_order 상태 업데이트 -> 입고대기
-        productCompanyDao.orderLog(paramData); // product_order_log 인서트
-        // 필요값: { sourceQuantity, sourcePriceId }
-        productCompanyDao.outboundSource(paramData);
-        // 위에서 출고 연산 수행한후 창고의 재료 재고가 < 0 일시 롤백
-        if (productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId")) < 0){
+        int sourceQuantity = Integer.parseInt(paramData.get("sourceQuantity").toString());
+        int paramStockBalance = Integer.parseInt(paramData.get("stockBalance").toString());
+        int orderStatus = productCompanyDao.getOrderStatus(paramData.get("orderId").toString());
+        int sourceStockBalance = productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId"));
+
+        // : 주문 처리중 취소된거 출하 안되게 막기
+        if (orderStatus != 1){
+            throw new ProductCompanyOrderProcessException("취소된 주문 입니다", HttpStatus.CONFLICT);
+        }
+        // : 서로 다른 유저가 같은 주문 처리할 때 중복으로 안되게 막기
+        if (paramStockBalance != sourceStockBalance) {
+            throw new ProductCompanyOrderProcessException("이미 처리된 주문 입니다", HttpStatus.CONFLICT);
+        }
+        // : 창고 적재량은 음수로 갈 수 없음
+        if (sourceStockBalance - sourceQuantity < 0) {
             throw new ProductCompanyOrderProcessException("적재량이 모자람~", HttpStatus.BAD_REQUEST);
         }
+
+
+        // 필요값: { sourceQuantity, sourcePriceId }
+        productCompanyDao.outboundSource(paramData); // SOURCE_WAREHOUSE quantity 갯수 업데이트
+        // 필요값: { orderId, orderStatus }
+        productCompanyDao.orderProcess(paramData); // product_order 상태 업데이트 -> 입고대기
+        productCompanyDao.orderLog(paramData); // product_order_log insert
 
         return getProductOrderList(companyName, paramData);
     }
@@ -147,6 +165,7 @@ public class ProductCompanyService {
     public List<ProductCompanyChartDto> getChart(String companyName) {
         return productCompanyDao.getChart(companyName);
     }
+
     public List<Map<String, Object>> orderChart(String companyName, Map<String, Object> paramData) {
         paramData.put("companyName", companyName);
         return productCompanyDao.orderChart(paramData);

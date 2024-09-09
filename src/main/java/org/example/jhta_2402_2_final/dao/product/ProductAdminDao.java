@@ -11,11 +11,8 @@ import java.util.Map;
 @Mapper
 public interface ProductAdminDao {
     // 리스트 가져옴
-    List<Map<String, Object>> findAll();
-    List<Map<String, Object>> getProductListByParams(Map<String, Object> params);
-    List<ProductCompanyDto> getAllCompanies();
-    List<StatusDto> getAllStatus();
     int insertProductCompany(ProductCompanyDto productCompanyDto);
+    String getProductCompanyId(String productCompanyName);
     List<SourcePriceViewDto> getProductSourceList();
     List<ProductOrderViewDto> getProductOrderList();
     List<ProductOrderViewDto> getProductOrderListProductName(String productName);

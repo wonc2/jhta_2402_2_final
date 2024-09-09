@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jhta_2402_2_final.dao.MemberDao;
 import org.example.jhta_2402_2_final.model.dto.CustomUserDetails;
-import org.example.jhta_2402_2_final.model.dto.MemberDto;
+import org.example.jhta_2402_2_final.model.dto.member.MemberDto;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

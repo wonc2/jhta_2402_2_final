@@ -64,22 +64,78 @@
                         <div class="col-xl-6">
                             <div class="card mb-4">
                                 <div class="card-header">
-                                    <i class="fas fa-chart-bar me-1"></i>
-                                    생산 현황 차트
+                                    <div class="chartTitle">
+                                        <div class="input-group chartTitleLeft">
+                                            <i class="fas fa-chart-bar me-1"></i>
+                                            <label>주문 현황 차트</label>
+                                        </div>
+                                        <div class="chartTitleCenter">
+                                            <div class="dropdown">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="productOrderChartDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    막대 차트
+                                                </button>
+                                                <ul class="dropdown-menu" id="productOrderChartDropdownMenu" aria-labelledby="productOrderChartDropdown">
+                                                    <li><button class="dropdown-item productOrder-dropdown-item" data-value="bar" data-name="막대 차트 ">막대 차트</button></li>
+                                                    <li><button class="dropdown-item productOrder-dropdown-item" data-value="line" data-name="선형 차트 ">선형 차트</button></li>
+                                                    <li><button class="dropdown-item productOrder-dropdown-item" data-value="doughnut" data-name="도넛 차트 ">도넛 차트</button></li>
+                                                    <li><button class="dropdown-item productOrder-dropdown-item" data-value="polarArea" data-name="폴라 차트 ">폴라 차트</button></li>
+                                                    <li><button class="dropdown-item productOrder-dropdown-item" data-value="radar" data-name="레이더 차트 ">레이더 차트</button></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="input-group chartTitleRight">
+                                            <label class="input-group-text">옵션</label>
+                                            <select class="form-select" id="productOrderChartOption">
+                                                <option value="productOrderCountByCompany" selected>업체별 주문 수량</option>
+                                                <option value="productOrderCountByProduct">상품별 주문 수량</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="productChart1" width="100%" height="100%"></canvas>
+                                    <canvas id="productOrderAdminChart" width="100%" height="100%"></canvas>
                                 </div>
                             </div>
                         </div>
                         <div class="col-xl-6">
                             <div class="card mb-4">
                                 <div class="card-header">
-                                    <i class="fas fa-chart-area me-1"></i>
-                                    생산 현황 차트
+                                    <div class="chartTitle">
+                                        <div class="input-group chartTitleLeft">
+                                            <i class="fas fa-chart-bar me-1"></i>
+                                            <label>상품 현황 차트</label>
+                                        </div>
+                                        <div class="chartTitleCenter">
+                                            <div class="dropdown">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="sourcePriceChartDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    막대 차트
+                                                </button>
+                                                <ul class="dropdown-menu" id="sourcePriceChartDropdownMenu" aria-labelledby="sourcePriceChartDropdown">
+                                                    <li><button class="dropdown-item sourcePrice-dropdown-item" data-value="bar" data-name="막대 차트 ">막대 차트</button></li>
+                                                    <li><button class="dropdown-item sourcePrice-dropdown-item" data-value="line" data-name="선형 차트 ">선형 차트</button></li>
+                                                    <li><button class="dropdown-item sourcePrice-dropdown-item" data-value="doughnut" data-name="도넛 차트 ">도넛 차트</button></li>
+                                                    <li><button class="dropdown-item sourcePrice-dropdown-item" data-value="polarArea" data-name="폴라 차트 ">폴라 차트</button></li>
+                                                    <li><button class="dropdown-item sourcePrice-dropdown-item" data-value="radar" data-name="레이더 차트 ">레이더 차트</button></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="input-group chartTitleRight sourcePriceChartCompanyOption">
+                                            <label class="input-group-text">업체명</label>
+                                            <select class="form-select" id="productCompanyOption">
+
+                                            </select>
+                                        </div>
+                                        <div class="input-group chartTitleRight">
+                                            <label class="input-group-text">옵션</label>
+                                            <select class="form-select" id="sourcePriceChartOption">
+                                                <option value="sourceMinPrice" selected>상품별 최저가격</option>
+                                                <option value="sourcePriceByCompany">업체별 상품 가격</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="productChart2" width="100%" height="100%"></canvas>
+                                    <canvas id="sourcePriceChart" width="100%" height="100%"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -154,5 +210,7 @@
     </div>
 </div>
 <footer th:replace="~{fragment/indexAdminFooter}"></footer>
+<script src="/js/indexAdminPage.js" th:src="@{/js/indexAdminPage.js}"></script>
+
 </body>
 </html>

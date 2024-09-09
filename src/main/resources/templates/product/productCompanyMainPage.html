@@ -22,7 +22,7 @@
                                 </div>
                                 <!-- 드롭다운 버튼 -->
                                 <select id="chartMonthSelect" class="form-select" style="width: 100px;">
-                                    <option value="all" selected>연도별</option>
+                                    <option value="all" selected>2024년</option>
                                     <option th:each="i : ${#numbers.sequence(1, 12)}" th:value="${i}" th:text="${i}+월"></option>
                                 </select>
                             </div>
@@ -84,7 +84,7 @@
                                             <span>작업</span>
                                             <div>
                                                 <input type="checkbox" id="companySourceEditCheckBox">
-                                                <label for="companySourceEditCheckBox">수정/삭제</label>
+                                                <label for="companySourceEditCheckBox">가격수정/가리기</label>
                                             </div>
                                         </div>
                                     </th>

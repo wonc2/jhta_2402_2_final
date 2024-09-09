@@ -1,4 +1,4 @@
-package org.example.jhta_2402_2_final.model.dto;
+package org.example.jhta_2402_2_final.model.dto.member;
 
 import lombok.Builder;
 import lombok.Getter;
