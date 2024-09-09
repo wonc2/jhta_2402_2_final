@@ -207,12 +207,14 @@ $(document).ready(function () {
         // const orderStatus = $('#orderStatusSelect').val();
         const sourcePriceId = $('#orderSourcePriceId').val();
         const orderQuantity = $('#orderQuantity').val();
+        const stockBalance = $('#orderStockBalance').val();
 
         const data = {
             orderId: orderId,
             orderStatus: 5,
             sourceQuantity: orderQuantity,
-            sourcePriceId: sourcePriceId
+            sourcePriceId: sourcePriceId,
+            stockBalance: stockBalance
         };
 
         $.ajax({
@@ -230,9 +232,15 @@ $(document).ready(function () {
                 $('#orderTable').DataTable().ajax.reload(function () {
                 }, false);
             },
-            error: function (xhr, status, error) {
-                console.error('Error occurred:', error);
-                alert('알 수 없는 에러 발생');
+            error: function (xhr) {
+                $('#orderProcessModal').modal('hide');
+                const response = JSON.parse(xhr.responseText);
+                if (xhr.status === 400) alert(response.message);
+                if (xhr.status === 409) {
+                    $('#orderTable').DataTable().ajax.reload(null, false);
+                    alert(response.message);
+                }
+                else alert('알 수 없는 에러가 발생');
             }
         });
     });
@@ -273,13 +281,13 @@ $(document).ready(function () {
             $('#companySourceTableContainer').hide();
             $('#orderTableContainer').hide();
             $('#warehouseTableContainer').show();
-            $('#warehouseTable').DataTable().ajax.reload(null, false);  // warehouseTable 재로드
+            $('#warehouseTable').DataTable().ajax.reload(null, false);
             // }
         } else if (selectedValue === 'orderList') {
             $('#warehouseTableContainer').hide();
             $('#companySourceTableContainer').hide();
             $('#orderTableContainer').show();
-            $('#orderTable').DataTable().ajax.reload(null, false);  // warehouseTable 재로드
+            $('#orderTable').DataTable().ajax.reload(null, false);
         }
     });
 })

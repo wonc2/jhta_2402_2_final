@@ -43,11 +43,11 @@ public class ProductCompanyService {
         String sourceName = (String) paramData.get("sourceName");
         String sourceId = (String) paramData.get("sourceId");
 
-        // 중복 검사
+        // : 생산품 등록 중복 검사 한 업체에 동일한 이름을 가진 제품 중복 등록 불가능
         if (productCompanyDao.checkDuplicateCompanySource(paramData)) {
             throw new CompanySourceException("이미 등록된 제품 입니다.", HttpStatus.BAD_REQUEST);
         }
-        // 빈 값 검사
+        // : 제품 이름으로 공백이나 null 값 입력 불가능
         if (sourceId == null && (sourceName == null || sourceName.isEmpty() || sourceName.isBlank())) {
             throw new CompanySourceException("빈 값 입력 안됩니다.", HttpStatus.BAD_REQUEST);
         }
@@ -77,15 +77,18 @@ public class ProductCompanyService {
     @Transactional
     public List<Map<String, Object>> produceSource(String companyName, Map<String, Object> paramData) {
         String sourceQuantityStr = (String) paramData.get("sourceQuantity");
+        // : 빈값 입력 제한
         if (sourceQuantityStr.isBlank()) {
             throw new ProduceSourceException("입력된 값이 없습니다", HttpStatus.BAD_REQUEST);
         }
         try {
             int sourceQuantity = Integer.parseInt(sourceQuantityStr);
+            // : 1 미만 숫자 입력 제한
             if (sourceQuantity < 1) {
                 throw new ProduceSourceException("1 이상만 등록할 수 있습니다.", HttpStatus.BAD_REQUEST);
             }
         } catch (NumberFormatException e) {
+            // : 문자나 기타 등등 입력 제한
             throw new ProduceSourceException("정수만 입력할 수 있습니다.", HttpStatus.BAD_REQUEST);
         }
         productCompanyDao.produceSource(paramData);
@@ -131,12 +134,20 @@ public class ProductCompanyService {
     /* 주문 처리 프로세스 */
     @Transactional
     public List<Map<String, Object>> orderProcess(String companyName, Map<String, Object> paramData) {
-        if (!paramData.get("orderStatus").toString().equals("1")) {
-            throw new ProductCompanyOrderProcessException("이미 처리된 주문 입니다~", HttpStatus.BAD_REQUEST);
-        }
         int sourceQuantity = Integer.parseInt(paramData.get("sourceQuantity").toString());
+        int paramStockBalance = Integer.parseInt(paramData.get("stockBalance").toString());
+        int orderStatus = productCompanyDao.getOrderStatus(paramData.get("orderId").toString());
         int sourceStockBalance = productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId"));
 
+        // : 주문 처리중 취소된거 출하 안되게 막기
+        if (orderStatus != 1){
+            throw new ProductCompanyOrderProcessException("취소된 주문 입니다", HttpStatus.CONFLICT);
+        }
+        // : 서로 다른 유저가 같은 주문 처리할 때 중복으로 안되게 막기
+        if (paramStockBalance != sourceStockBalance) {
+            throw new ProductCompanyOrderProcessException("이미 처리된 주문 입니다", HttpStatus.CONFLICT);
+        }
+        // : 창고 적재량은 음수로 갈 수 없음
         if (sourceStockBalance - sourceQuantity < 0) {
             throw new ProductCompanyOrderProcessException("적재량이 모자람~", HttpStatus.BAD_REQUEST);
         }

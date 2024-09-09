@@ -114,6 +114,10 @@
         INSERT into SOURCE_WAREHOUSE (SOURCE_WAREHOUSE_ID, QUANTITY, PRODUCE_DATE, SOURCE_PRICE_ID)
         VALUES (UUID(), -#{sourceQuantity}, NOW(), #{sourcePriceId})
     </insert>
+
+    <select id="getOrderStatus" parameterType="String" resultType="int">
+        select STATUS_ID FROM PRODUCT_ORDER where PRODUCT_ORDER_ID = #{orderId}
+    </select>
     <!-- 주문 끝 -->
 
 
@@ -172,8 +176,6 @@
                  join PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         WHERE pc.NAME = #{companyName}
         GROUP BY sp.SOURCE_PRICE_ID
-        --         ORDER BY sourceQuantity DESC
---         LIMIT 20
     </select>
     <select id="orderChart" resultType="map" parameterType="map">
         SELECT
