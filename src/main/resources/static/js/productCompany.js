@@ -317,7 +317,7 @@ function getCompanySourceTable() {
                             </div>
                             <div>
                             <button type="button" class="btn btn-outline-info btn-sm edit-btn" data-action="update" style="display: none;">수정</button>
-                            <button type="button" class="btn btn-outline-danger btn-sm edit-btn" data-action="delete" style="display: none;">삭제</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm edit-btn" data-action="delete" style="display: none;">가리기</button>
                             </div>
                             </div>
                         `;
@@ -330,7 +330,7 @@ function getCompanySourceTable() {
 
     $('#companySourceEditCheckBox').on('change', function () {
         const isChecked = $(this).is(':checked');
-        $('.row-checkbox').prop('checked', isChecked); // 모든 체크박스 선택/해제
+        // $('.row-checkbox').prop('checked', isChecked); // 모든 체크박스 선택/해제
 
         if (isChecked) {
             $('.edit-btn').show();

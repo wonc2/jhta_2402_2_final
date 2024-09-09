@@ -65,15 +65,15 @@
         ROW_NUMBER() OVER (ORDER BY po.PRODUCT_ORDER_DATE asc) AS rowNum,
         po.PRODUCT_ORDER_ID as orderId,
         s.NAME AS sourceName,
-        sp.PRICE AS sourcePrice,
+        po.PRICE AS sourcePrice,
         po.QUANTITY AS quantity,
-        (sp.PRICE * po.QUANTITY) AS totalPrice,
+        (po.PRICE * po.QUANTITY) AS totalPrice,
         DATE_FORMAT(po.PRODUCT_ORDER_DATE, '%Y-%m-%d %h:%m') AS orderDate,
         st.STATUS AS orderStatus,
         sp.SOURCE_PRICE_ID as sourcePriceId,
         COALESCE(sw.totalQuantity, 0) AS stockBalance
         FROM PRODUCT_ORDER po
-        JOIN SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+        JOIN SOURCE_PRICE sp ON po.SOURCE_ID = sp.SOURCE_ID
         JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
         JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
@@ -85,6 +85,7 @@
         GROUP BY SOURCE_PRICE_ID
         ) sw ON sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
         WHERE pc.NAME = #{companyName}
+        GROUP BY po.PRODUCT_ORDER_ID
         <choose>
             <when test="orderStatusOption == 1">
                 and st.STATUS_ID = #{orderStatusOption}
@@ -97,9 +98,6 @@
         <if test="orderSourceNameOption != 'all'">
             and s.name = #{orderSourceNameOption}
         </if>
-        <!--        <if test="orderMonthOption != 'all'">-->
-        --             and po.PRODUCT_ORDER_DATE LIKE CONCAT(YEAR(CURDATE()), '-', LPAD(#{orderMonthOption}, 2, '0'), '%')
-        <!--        </if>-->
         order by po.PRODUCT_ORDER_DATE DESC
     </select>
 
