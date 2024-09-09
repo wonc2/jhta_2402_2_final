@@ -1,11 +1,9 @@
 package org.example.jhta_2402_2_final.dao.distribution;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 import org.example.jhta_2402_2_final.model.dto.distribution.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Mapper
@@ -23,13 +21,11 @@ public interface DistributionOrderDao {
     List<MinPriceSourceDto> selectMinPriceSource ();
 
 
-    void insertProductOrder();
-
     UUID selectSourcePriceId(UUID sourceId, UUID productCompanyId);
 
-    //product order 인서트
-    int insertProductOrder(UUID sourcePriceId, int quantity);
-
-    //product order log 인서트
+    int insertProductOrder(UUID productOrderId, UUID productCompanyId, UUID sourceId, int totalQuantity, int sourcePrice, UUID kitOrderId);
     int insertProductOrderLog(UUID productOrderId);
+
+
+    void updateKitOrderStatus(UUID kitOrderId);
 }

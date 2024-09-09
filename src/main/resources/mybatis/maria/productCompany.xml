@@ -1,5 +1,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.product.ProductCompanyDao">
+    <!-- 유저 인증 -->
+    <select id="getUserUidByUserId" parameterType="String" resultType="String">
+        select user_pk as userUid from USER where USER_ID = #{userId}
+    </select>
+    <select id="getCompanyIdByUserUid" parameterType="String" resultType="String">
+        select PRODUCT_COMPANY_ID as companyId from PRODUCT_COMPANY_MEMBER where USER_ID = #{userUid}
+    </select>
+
     <!-- 생산 업체의 현재 생산품 리스트 가져옴 -->
     <select id="getSourcesByCompanyName" resultType="Map" parameterType="String">
         select
@@ -12,7 +20,7 @@
         from SOURCE_PRICE sp
                  join SOURCE s ON s.source_id = sp.source_id
                  join PRODUCT_COMPANY pc ON pc.product_company_id = sp.product_company_id
-        where pc.NAME = #{companyName}
+        where pc.PRODUCT_COMPANY_ID = #{companyId}
     </select>
 
     <!-- 생산업체 생산품 등록 Create, Update, Delete -->
@@ -56,7 +64,7 @@
                  JOIN SOURCE_PRICE sp on sp.SOURCE_PRICE_ID = sw.SOURCE_PRICE_ID
                  JOIN SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
                  JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
-        WHERE pc.NAME = #{companyName}
+        WHERE pc.PRODUCT_COMPANY_ID = #{companyId}
     </select>
 
     <!-- 주문 주문 주문 주문 주문 -->
@@ -84,11 +92,10 @@
         FROM SOURCE_WAREHOUSE
         GROUP BY SOURCE_PRICE_ID
         ) sw ON sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
-        WHERE pc.NAME = #{companyName}
-        GROUP BY po.PRODUCT_ORDER_ID
+        WHERE pc.PRODUCT_COMPANY_ID = #{companyId}
         <choose>
             <when test="orderStatusOption == 1">
-                and st.STATUS_ID = #{orderStatusOption}
+                and st.STATUS_ID = 1
             </when>
             <when test="orderStatusOption == 2">
                 and st.STATUS_ID != 1
@@ -98,6 +105,7 @@
         <if test="orderSourceNameOption != 'all'">
             and s.name = #{orderSourceNameOption}
         </if>
+        GROUP BY po.PRODUCT_ORDER_ID
         order by po.PRODUCT_ORDER_DATE DESC
     </select>
 
@@ -130,7 +138,7 @@
             FROM SOURCE_PRICE sp
                      JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
             WHERE sp.SOURCE_ID = s.SOURCE_ID
-              AND pc.NAME = #{companyName}
+              AND pc.PRODUCT_COMPANY_ID = #{companyId}
         )
     </select>
 
@@ -141,9 +149,6 @@
     <insert id="addSource" parameterType="map">
         INSERT INTO SOURCE (SOURCE_ID, NAME) VALUES (#{sourceId}, #{sourceName})
     </insert>
-    <select id="getCompanyIdByName" parameterType="String" resultType="String">
-        select product_company_id from PRODUCT_COMPANY where NAME = #{companyName}
-    </select>
 
     <select id="getSourceQuantityFromWarehouse" parameterType="String" resultType="int">
         select SUM(quantity) from SOURCE_WAREHOUSE WHERE SOURCE_PRICE_ID = #{sourcePriceId}
@@ -162,7 +167,7 @@
         FROM SOURCE_PRICE sp
                  JOIN PRODUCT_COMPANY pc on sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
                  JOIN SOURCE s on sp.SOURCE_ID = s.SOURCE_ID
-        where pc.NAME = #{companyName}
+        where pc.PRODUCT_COMPANY_ID = #{companyId}
     </select>
 
     <!-- Chart 차트 -->
@@ -174,7 +179,7 @@
                  join SOURCE_PRICE sp on sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
                  join SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
                  join PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
-        WHERE pc.NAME = #{companyName}
+        WHERE pc.PRODUCT_COMPANY_ID = #{companyId}
         GROUP BY sp.SOURCE_PRICE_ID
     </select>
     <select id="orderChart" resultType="map" parameterType="map">
@@ -185,7 +190,7 @@
         JOIN SOURCE_PRICE sp on sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
         join SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
         join PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
-        WHERE pc.NAME = #{companyName}
+        WHERE pc.PRODUCT_COMPANY_ID = #{companyId}
         and sw.quantity &lt; 0
         <if test="orderChartMonthOption != 'all'">
             and sw.PRODUCE_DATE LIKE CONCAT(YEAR(CURDATE()), '-', LPAD(#{orderChartMonthOption}, 2, '0'), '%')

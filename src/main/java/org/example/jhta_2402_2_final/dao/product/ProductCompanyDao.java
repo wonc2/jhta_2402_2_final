@@ -9,10 +9,15 @@ import java.util.Map;
 
 @Mapper
 public interface ProductCompanyDao {
+
+    // 유저 인증
+    String getUserUidByUserId(String userName);
+    String getCompanyIdByUserUid(String userUid);
+
     // 생산업체에 등록된 생산품 리스트 가져옴
-    List<Map<String, Object>> getSourcesByCompanyName(String companyName);
+    List<Map<String, Object>> getSourcesByCompanyName(String companyId);
     // 모든 재료 리스트
-    List<SourceDto> getAllSources(String companyName);
+    List<SourceDto> getAllSources(String companyId);
 
     // 생산업체 생산품 Create, Update, Delete
     int addSourceToCompany(Map<String, Object> paramData);
@@ -22,11 +27,10 @@ public interface ProductCompanyDao {
 
     // Source 중복체크겸 id 가져오기 (return: null 이면 중복 없으므로 재료 테이블에 추가 -> addSource)
     String getSourceIdByName(String sourceName);
-    String getCompanyIdByName(String companyName);
     int addSource(String sourceId, String sourceName);
 
     // 생산 창고 리스트
-    List<Map<String, Object>> getWarehouseSources(String companyName);
+    List<Map<String, Object>> getWarehouseSources(String companyId);
     // 제품 생산
     int produceSource(Map<String, Object> paramData);
 
@@ -43,11 +47,11 @@ public interface ProductCompanyDao {
 
     int outboundSource(Map<String, Object> paramData);
 
-    List<ProductCompanyChartDto> getChart(String companyName);
+    List<ProductCompanyChartDto> getChart(String companyId);
     List<Map<String, Object>> orderChart(Map<String, Object> paramData);
 
     // 등록된 모든 재료 리스트 (검색용)
-    List<String> selectAllCompanySource (String companyName);
+    List<String> selectAllCompanySource (String companyId);
 
     int getOrderStatus(String orderId);
 }
