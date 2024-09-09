@@ -21,24 +21,28 @@ public class ProductCompanyService {
     private final ProductCompanyDao productCompanyDao;
     private final ProductCompanyUtil productCompanyUtil;
 
+    public String getCompanyIdByUserId(String userId) {
+        String userUid = productCompanyDao.getUserUidByUserId(userId);
+        return productCompanyDao.getCompanyIdByUserUid(userUid);
+    }
+
     /* CompanySource Table */
 
     /* 생산품 등록 및 재고 등록 테이블 리스트 가져옴 */
-    public Map<String, Object> findAll(String companyName) {
-        productCompanyUtil.getCompanyId(companyName);
+    public Map<String, Object> findAll(String companyId) {
+//        productCompanyUtil.getCompanyId(companyName);
         Map<String, Object> responseData = new HashMap<>();
         // productList values: { companySourceId, sourceName, sourcePrice, totalQuantity }
-        responseData.put("companySourceList", productCompanyDao.getSourcesByCompanyName(companyName));
-        responseData.put("sources", productCompanyDao.getAllSources(companyName));
+        responseData.put("companySourceList", productCompanyDao.getSourcesByCompanyName(companyId));
+        responseData.put("sources", productCompanyDao.getAllSources(companyId));
         // responseData values: { List<Map>, List<SourceDto> }
         return responseData;
     }
 
     /*  생산업체 생산품 목록에 등록 (실제 생산 x, 생산품 등록임) */
     @Transactional
-    public Map<String, Object> addSourceToCompany(String companyName, Map<String, Object> paramData) {
+    public Map<String, Object> addSourceToCompany(String companyId, Map<String, Object> paramData) {
         // 필요한 값 가져오기
-        String companyId = productCompanyDao.getCompanyIdByName(companyName);
         paramData.put("companyId", companyId);
         String sourceName = (String) paramData.get("sourceName");
         String sourceId = (String) paramData.get("sourceId");
@@ -63,19 +67,19 @@ public class ProductCompanyService {
         // paramData: { companyId, sourceId, sourceName, sourcePrice }
         // 필요값: { companyId, sourceId, sourcePrice }
         productCompanyDao.addSourceToCompany(paramData);
-        return findAll(companyName);
+        return findAll(companyId);
     }
 
     /* 등록된 생산품 Delete */
     @Transactional
-    public Map<String, Object> deleteSourceFromCompany(String companyName, String companySourceId) {
+    public Map<String, Object> deleteSourceFromCompany(String companyId, String companySourceId) {
         productCompanyDao.deleteSourceFromCompany(companySourceId);
-        return findAll(companyName);
+        return findAll(companyId);
     }
 
     /* 등록된 상품 생산 -> 창고에 적재 */
     @Transactional
-    public List<Map<String, Object>> produceSource(String companyName, Map<String, Object> paramData) {
+    public List<Map<String, Object>> produceSource(String companyId, Map<String, Object> paramData) {
         String sourceQuantityStr = (String) paramData.get("sourceQuantity");
         // : 빈값 입력 제한
         if (sourceQuantityStr.isBlank()) {
@@ -92,19 +96,19 @@ public class ProductCompanyService {
             throw new ProduceSourceException("정수만 입력할 수 있습니다.", HttpStatus.BAD_REQUEST);
         }
         productCompanyDao.produceSource(paramData);
-        return productCompanyDao.getWarehouseSources(companyName);
+        return productCompanyDao.getWarehouseSources(companyId);
     }
 
     /* 재료 가격 수정 */
     @Transactional
-    public List<Map<String, Object>> sourcePriceUpdate(String companyName, String companySourceId, Map<String, Object> paramData) {
+    public List<Map<String, Object>> sourcePriceUpdate(String companyId, String companySourceId, Map<String, Object> paramData) {
         if (paramData.get("sourcePrice").equals(paramData.get("oldPrice"))) {
             throw new CompanySourceException("가격 변동 사항이 없습니다.", HttpStatus.BAD_REQUEST);
         }
         paramData.put("companySourceId", companySourceId);
         productCompanyDao.sourcePriceUpdate(paramData);
         productCompanyDao.sourcePriceHistory(paramData);
-        return productCompanyDao.getWarehouseSources(companyName);
+        return productCompanyDao.getWarehouseSources(companyId);
     }
 
 
@@ -140,7 +144,7 @@ public class ProductCompanyService {
         int sourceStockBalance = productCompanyDao.getSourceQuantityFromWarehouse((String) paramData.get("sourcePriceId"));
 
         // : 주문 처리중 취소된거 출하 안되게 막기
-        if (orderStatus != 1){
+        if (orderStatus != 1) {
             throw new ProductCompanyOrderProcessException("취소된 주문 입니다", HttpStatus.CONFLICT);
         }
         // : 서로 다른 유저가 같은 주문 처리할 때 중복으로 안되게 막기
