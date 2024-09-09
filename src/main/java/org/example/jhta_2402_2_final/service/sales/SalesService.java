@@ -174,9 +174,9 @@ public class SalesService {
     }
 
     //product order, product_order_log 생성
-    public void insertProductOrder(UUID sourcePriceId, int itemQuantity) {
+    public void insertProductOrder(String companyName, String sourceName, int itemQuantity, int minPrice) {
         UUID productOrderId = UUID.randomUUID();
-        salesDao.insertProductOrder(productOrderId, sourcePriceId, itemQuantity);
+        salesDao.insertProductOrder(productOrderId, companyName, sourceName, itemQuantity, minPrice);
         salesDao.insertProductOrderLog(productOrderId);
     }
 
@@ -185,10 +185,9 @@ public class SalesService {
         return salesDao.selectProductOrder();
     }
 
-    public void processOrder(String[] sourceNames, String[] companyNames, int[] itemQuantities) {
+    public void processOrder(String[] sourceNames, String[] companyNames, int[] itemQuantities, int[] minPrices) {
         for (int i = 0; i < sourceNames.length; i++) {
-            UUID sourcePriceId = findSourcePriceId(sourceNames[i], companyNames[i]);
-            insertProductOrder(sourcePriceId, itemQuantities[i]);
+            insertProductOrder(companyNames[i], sourceNames[i], itemQuantities[i], minPrices[i]);
         }
     }
 

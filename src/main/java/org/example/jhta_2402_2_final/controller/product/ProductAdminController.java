@@ -19,14 +19,12 @@ public class ProductAdminController {
     public String productMainPage() {
         return "product/productAdminMainPage";
     }
-
-    @GetMapping("/role")
-    public String role(){
-        return "product/roletest";
-    }
     @PostMapping("/insertProductCompany")
     public String insertProductCompany(ProductCompanyInsertDto productCompanyInsertDto){
         productAdminService.insertProductCompany(productCompanyInsertDto);
-        return "redirect :/product/admin/main";
+        String userId = productAdminService.getProductMemberId(productCompanyInsertDto.getUserEmail());
+        String productCompanyId = productAdminService.getProductCompanyId(productCompanyInsertDto.getProductCompanyName());
+        productAdminService.insertProductCompanyMember(userId,productCompanyId);
+        return "redirect:/product/admin/main";
     }
 }

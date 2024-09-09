@@ -78,6 +78,7 @@
                     WHERE SP2.SOURCE_ID = KS.SOURCE_ID
                 )
         )
+
         SELECT
             KO.KIT_ORDER_ID AS kitOrderId,
             KO.PRODUCT_ORDER_DATE AS orderDate,

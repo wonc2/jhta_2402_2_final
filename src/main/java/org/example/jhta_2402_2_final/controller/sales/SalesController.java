@@ -1,24 +1,24 @@
 package org.example.jhta_2402_2_final.controller.sales;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jhta_2402_2_final.model.dto.Employee;
 import org.example.jhta_2402_2_final.model.dto.sales.*;
+import org.example.jhta_2402_2_final.service.distribution.LogisticsWareHouseService;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.mybatis.logging.Logger;
 import org.mybatis.logging.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/sales")
@@ -27,6 +27,7 @@ import java.util.UUID;
 public class SalesController {
 
     private final SalesService salesService;
+    private final LogisticsWareHouseService logisticsWareHouseService;
 
     @GetMapping
     public String salesMain(Model model) {
@@ -113,6 +114,7 @@ public class SalesController {
     }
 
 
+    @Transactional
     @PostMapping("/order/create")
     public String submitOrder(
             @RequestParam("kitOrderId") String kitOrderId,
@@ -134,7 +136,7 @@ public class SalesController {
         int[] minPrices = mapper.readValue(minPricesJson, int[].class);
         String[] companyNames = mapper.readValue(companyNamesJson, String[].class);
 
-        salesService.processOrder(sourceNames, companyNames, itemQuantities);
+        salesService.processOrder(sourceNames, companyNames, itemQuantities, minPrices);
         int result=salesService.updateKitOrderStatus(kitOrderId, 2);
         if (result>0){
             salesService.insertKitOrderLogByKitOrderId(kitOrderId);
@@ -145,5 +147,50 @@ public class SalesController {
 
         return "redirect:/sales/product/order";
     }
+
+    @PostMapping("/shinhyeok")
+    public String shinhyeok(@RequestParam("kitOrderIdForSale") String kitOrderId,
+                            @RequestParam("sourceNamesForSale") String sourceNamesJson,
+                            @RequestParam("itemQuantitiesForSale") String itemQuantitiesJson) throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        // JSON 문자열을 List로 변환
+        List<String> sourceNames = objectMapper.readValue(sourceNamesJson, new TypeReference<List<String>>() {});
+        List<Integer> itemQuantities = objectMapper.readValue(itemQuantitiesJson, new TypeReference<List<Integer>>() {});
+
+        // 검증: 두 리스트의 크기가 동일한지 확인
+        if (sourceNames.size() != itemQuantities.size()) {
+            throw new IllegalArgumentException("sourceNames와 itemQuantities의 크기가 다릅니다.");
+        }
+
+        // List<Map<String, Object>>로 변환
+        List<Map<String, Object>> combinedList = new ArrayList<>();
+        for (int i = 0; i < sourceNames.size(); i++) {
+            Map<String, Object> itemMap = new HashMap<>();
+            itemMap.put("sourceName", sourceNames.get(i));
+            itemMap.put("quantity", itemQuantities.get(i));
+            combinedList.add(itemMap);
+        }
+
+        // 데이터 저장을 위한 Map 생성
+        Map<String, Object> map = new HashMap<>();
+        map.put("kitOrderId", kitOrderId);
+        map.put("combinedList", combinedList);
+
+        // 창고에서 차감
+        logisticsWareHouseService.updateStackBySourceName(combinedList);
+
+        // KitOrder의 Status 수정
+        salesService.updateKitOrderStatus(kitOrderId, 8);
+
+        // KitOrderLog 기입
+        salesService.insertKitOrderLogByKitOrderId(kitOrderId);
+
+        return "redirect:/sales";
+    }
+
+
+
 
 }
