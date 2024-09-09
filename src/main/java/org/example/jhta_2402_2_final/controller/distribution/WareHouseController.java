@@ -28,7 +28,7 @@ public class WareHouseController {
     @GetMapping("/selectAll")
     public String selectAll(Model model) {
 
-        // 프러덕트 오더 테이블에서 스테이터스가 5인 경우 창고에 적재하고 5 -> 8로 바꿈
+        // 프러덕트 오더 테이블에서 스테이터스가 5인 경우 창고에 적재하고 5 -> 7로 바꿈
         int result = logisticsWareHouseService.insertWarehouseStackForCompletedOrders();
         if (result > 0) {
             List<String> productOrderIdList = logisticsWareHouseService.selectProductOrderIdByStatus(5);
@@ -37,7 +37,7 @@ public class WareHouseController {
 
         }
 
-        // 밀키트 오더 테이블에서 스테이터스가 3인 경우 창고에서 차감하고 3->7으로 바꿈
+        // 밀키트 오더 테이블에서 스테이터스가 3인 경우 창고에서 차감하고 6->8으로 바꿈
         List<Map<String, Object>> requiredStackList = logisticsWareHouseService.selectRequiredStack();
         if (!requiredStackList.isEmpty()) {
             for (Map<String, Object> list : requiredStackList) {
@@ -50,7 +50,7 @@ public class WareHouseController {
 
                 logisticsWareHouseService.updateStackFirstRecord(params);
             }
-            List<String> kitOrderIdList = logisticsWareHouseService.selectKitOrderIdByStatus(3);
+            List<String> kitOrderIdList = logisticsWareHouseService.selectKitOrderIdByStatus(6);
             logisticsWareHouseService.updateKitOrderStatus();
             if (!kitOrderIdList.isEmpty()) {
                 int resultLog=logisticsWareHouseService.insertKitOrderLog(kitOrderIdList);

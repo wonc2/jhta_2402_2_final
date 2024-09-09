@@ -42,4 +42,6 @@ public interface DistributionDao {
     List<String> selectKitOrderIdByStatus(int i);
 
     int insertKitOrderLog(List<String> kitOrderIdList);
+
+    int updateStackBySourceName(Map<String, Object> map);
 }
