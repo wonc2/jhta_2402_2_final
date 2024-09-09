@@ -4,7 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderDetailLogDTO;
 
 import org.example.jhta_2402_2_final.model.dto.distribution.LogisticsWareHouseDto;
-import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +29,7 @@ public interface DistributionDao {
 
     List<KitOrderDetailLogDTO> selectKitOrderLogDetailsBySourceId(String sourceID);
 
-    List<ProductOrderLogDto> selectProductOrderLogDetailsBySourceId(String sourceId);
+    List<ProductOrderLogDTO> selectProductOrderLogDetailsBySourceId(String sourceId);
 
 
     List<LogisticsWareHouseDto> selectBySourceNameLogisticsWarehouse(String keyword);

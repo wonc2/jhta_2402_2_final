@@ -1,19 +1,17 @@
 package org.example.jhta_2402_2_final.controller.distribution;
 
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jhta_2402_2_final.model.dto.distribution.CombineLogDTO;
 import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderDetailLogDTO;
 import org.example.jhta_2402_2_final.model.dto.distribution.LogisticsWareHouseDto;
-import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDTO;
 import org.example.jhta_2402_2_final.service.distribution.LogisticsWareHouseService;
 //import org.example.jhta_2402_2_final.util.SmsUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -90,7 +88,7 @@ public class WareHouseController {
     public List<CombineLogDTO> getWarehouseLog(@RequestParam String sourceId) {
 
         List<KitOrderDetailLogDTO> kitOrderLogs = logisticsWareHouseService.selectKitOrderLogDetailsBySourceId(sourceId);
-        List<ProductOrderLogDto> productOrderLogs = logisticsWareHouseService.selectProductOrderLogDetailsBySourceId(sourceId);
+        List<ProductOrderLogDTO> productOrderLogs = logisticsWareHouseService.selectProductOrderLogDetailsBySourceId(sourceId);
 
 
         List<CombineLogDTO> combineLogs = new ArrayList<>();
@@ -105,7 +103,7 @@ public class WareHouseController {
                     kitLog.getStatus()
             ));
         }
-        for (ProductOrderLogDto productLog : productOrderLogs) {
+        for (ProductOrderLogDTO productLog : productOrderLogs) {
             combineLogs.add(new CombineLogDTO(
                     productLog.getProductOrderId(),
                     productLog.getCompanyName(),

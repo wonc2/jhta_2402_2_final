@@ -11,7 +11,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductOrderLogDto {
+public class ProductOrderLogDTO {
     private String productOrderId;
     private String companyName;
     private String sourceName;

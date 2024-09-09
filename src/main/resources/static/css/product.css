@@ -6,14 +6,14 @@
     align-items: center;
 }
 .chartTitleLeft{
-    flex: 1;
+    flex: 2;
     align-items: center;
 }
 .chartTitleCenter{
-    flex: 2;
+    flex: 1;
 }
 .chartTitleRight{
-    flex: 2;
+    flex: 3;
 }
 .tableTitle{
     display: flex;
