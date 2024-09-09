@@ -91,7 +91,7 @@ public interface SalesDao {
     UUID findSourcePriceId(String sourceName, String companyName);
 
     //product_order 인서트
-    int insertProductOrder(UUID productOrderId, UUID sourcePriceId, int quantity);
+    int insertProductOrder(UUID productOrderId, String companyName, String sourceName, int itemQuantity, int minPrice);
 
     //product_order 테이블 조회
     List<ProductOrderDetailDto> selectProductOrder();
@@ -101,4 +101,6 @@ public interface SalesDao {
 
     //product_order_log 셀렉
     List<ProductOrderLogDetailDto> selectProductOrderLog();
+
+
 }

@@ -6,11 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jhta_2402_2_final.model.dto.Employee;
 import org.example.jhta_2402_2_final.model.dto.sales.*;
+import org.example.jhta_2402_2_final.service.distribution.LogisticsWareHouseService;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.mybatis.logging.Logger;
 import org.mybatis.logging.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +29,7 @@ import java.util.UUID;
 public class SalesController {
 
     private final SalesService salesService;
+    private final LogisticsWareHouseService logisticsWareHouseService;
 
     @GetMapping
     public String salesMain(Model model) {
@@ -113,6 +116,7 @@ public class SalesController {
     }
 
 
+    @Transactional
     @PostMapping("/order/create")
     public String submitOrder(
             @RequestParam("kitOrderId") String kitOrderId,
@@ -134,7 +138,7 @@ public class SalesController {
         int[] minPrices = mapper.readValue(minPricesJson, int[].class);
         String[] companyNames = mapper.readValue(companyNamesJson, String[].class);
 
-        salesService.processOrder(sourceNames, companyNames, itemQuantities);
+        salesService.processOrder(sourceNames, companyNames, itemQuantities, minPrices);
         int result=salesService.updateKitOrderStatus(kitOrderId, 2);
         if (result>0){
             salesService.insertKitOrderLogByKitOrderId(kitOrderId);
@@ -145,5 +149,39 @@ public class SalesController {
 
         return "redirect:/sales/product/order";
     }
+
+    @PostMapping("/shinhyeok")
+    public String shinhyeok(@RequestParam("kitOrderIdForSale") String kitOrderId,
+
+                            @RequestParam("sourceNamesForSale") String sourceNamesJson,
+                            @RequestParam("itemQuantitiesForSale") String itemQuantitiesJson) throws JsonProcessingException {
+
+
+
+        // 데이터 저장을 위한 Map 생성
+        Map<String, Object> map = new HashMap<>();
+        map.put("kitOrderId", kitOrderId);
+        map.put("sourceNamesJson", sourceNamesJson);
+        map.put("itemQuantitiesJson", itemQuantitiesJson);
+   ;
+
+        // Map의 모든 항목 출력
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+
+        // 창고에서 차감
+        logisticsWareHouseService.updateStackBySourceName(map);
+
+        // KitOrder의 Status 수정
+        salesService.updateKitOrderStatus(kitOrderId, 8);
+
+        // KitOrderLog 기입
+        salesService.insertKitOrderLogByKitOrderId(kitOrderId);
+
+        return "redirect:/sales";
+    }
+
+
 
 }

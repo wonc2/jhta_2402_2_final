@@ -3,6 +3,7 @@ package org.example.jhta_2402_2_final.controller.sales;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jhta_2402_2_final.model.dto.sales.KitPriceDto;
+import org.example.jhta_2402_2_final.model.dto.sales.KitSourceDetailDto;
 import org.example.jhta_2402_2_final.model.dto.sales.SourcePriceDto;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,10 @@ public class SourcePriceController {
 
     @GetMapping
     public String sourcePrice(Model model){
+
+        //밀키트와 해당 밀키트의 재료 가져오기
+        List<KitSourceDetailDto> kitSourceDetails = salesService.getAllKitSourceDetail();
+        model.addAttribute("kitSourceDetails", kitSourceDetails);
 
         //업체별 재료 가격 셀렉
         List<SourcePriceDto> sourcePriceDtos = salesService.getAllSourcePrice();

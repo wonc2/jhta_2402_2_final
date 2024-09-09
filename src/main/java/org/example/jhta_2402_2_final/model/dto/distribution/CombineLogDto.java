@@ -22,4 +22,5 @@ public class CombineLogDto {
     private String status;
 
 
+    // Getters and setters
 }
