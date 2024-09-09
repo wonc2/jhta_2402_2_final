@@ -17,6 +17,7 @@
                 JOIN STATUS S ON KO.STATUS_ID = S.STATUS_ID;
     </select>
 
+    <!--원래 사용하던 밀키트 주문별로 필요 재료랑 수량 나타내던 쿼리-->
     <select id="findKitRecipe" resultType="Map">
         SELECT
             S.NAME AS 재료명,
@@ -27,8 +28,46 @@
                 JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
         WHERE
             KO.KIT_ORDER_ID = #{kitOrderId}
-            /*KO.KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')*/
+        /*KO.KIT_ORDER_ID LIKE CONCAT(#{kitOrderId}, '%')*/
     </select>
+
+    <!--위에꺼 대신 사용할 쿼리-->
+    <select id="findKitRecipeWithStockAndSupplier" resultType="Map">
+        SELECT
+            S.NAME AS 재료명,
+            (KS.QUANTITY * #{orderQuantity}) AS 필요수량,
+            IFNULL(SUM(LWS.QUANTITY), 0) AS 창고재고수량,
+            sp_min.min_price AS 현재최소가,
+            sp_min.companyName AS 공급업체명
+        FROM
+            KIT_SOURCE KS
+                JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+                LEFT JOIN LOGISTICS_WAREHOUSE_STACK LWS ON KS.SOURCE_ID = LWS.SOURCE_ID
+                JOIN (
+                SELECT
+                    sp.SOURCE_ID,
+                    sp.PRICE AS min_price,
+                    pc.NAME AS companyName
+                FROM
+                    SOURCE_PRICE sp
+                        JOIN PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+                WHERE
+                    sp.PRICE = (
+                        SELECT MIN(sp2.PRICE)
+                        FROM SOURCE_PRICE sp2
+                        WHERE sp2.SOURCE_ID = sp.SOURCE_ID
+                    )
+                GROUP BY sp.SOURCE_ID  -- 동일한 재료에 대해 하나의 최솟값만 선택
+                    LIMIT 1
+            ) sp_min ON S.SOURCE_ID = sp_min.SOURCE_ID
+        WHERE
+            KS.MEALKIT_ID = #{mealkitId}
+        GROUP BY
+            S.NAME, KS.QUANTITY, sp_min.min_price, sp_min.companyName
+    </select>
+
+
+
 
     <select id="findKitRecipeWithStock" resultType="Map">
         SELECT
@@ -62,6 +101,24 @@
             KIT_ORDER_ID = #{kitOrderId}
     </select>
 
+    <insert id="requestKitSourceOrder" parameterType="KitOrderProcessDto">
+        INSERT INTO KIT_ORDER_PROCESS (
+            KIT_ORDER_ID,
+            KIT_COMPANY_NAME,
+            KIT_NAME,
+            QUANTITY,
+            ORDER_DATE,
+            STATUS
+        ) VALUES (
+                     #{kitOrderUid},
+                     #{kitCompanyName},
+                     #{kitName},
+                     #{quantity},
+                     #{kitOrderDate},
+                     #{status}
+                 )
+    </insert>
+
     <select id="findOrdersByKeyword" parameterType="String" resultType="Map">
         SELECT
             KO.KIT_ORDER_ID AS kitOrderID,
@@ -85,66 +142,63 @@
         WHERE SOURCE_FK = #{sourceId}
     </update>
 
-    <update id="updateOrderStatus">
+    <update id="updateKitOrderStatus">
         UPDATE KIT_ORDER
         SET STATUS_ID = #{status}
         WHERE KIT_ORDER_ID = #{kitOrderId}
     </update>
 
-<!--    <update id="updateOrderLogStatus">-->
-<!--        UPDATE KIT_ORDER_LOG-->
-<!--        SET STATUS_ID = #{status}-->
-<!--        WHERE KIT_ORDER_ID = #{kitOrderId}-->
-<!--    </update>-->
-    <insert id="insertOrderLogStatus" parameterType="Map">
-        INSERT INTO KIT_ORDER_LOG
+    <!--    <update id="updateOrderLogStatus">-->
+    <!--        UPDATE KIT_ORDER_LOG-->
+    <!--        SET STATUS_ID = #{status}-->
+    <!--        WHERE KIT_ORDER_ID = #{kitOrderId}-->
+    <!--    </update>-->
+    <insert id="insertKitOrderLog">
+        INSERT INTO KIT_ORDER_LOG (KIT_ORDER_LOG_ID, KIT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE)
         VALUES (UUID(), #{kitOrderId}, #{status}, NOW())
     </insert>
 
 
 
+    <!-- 특정 재료와 업체의 최소 가격을 기준으로 sourceId와 sourcePriceId를 조회하는 쿼리 -->
+    <select id="findSourceAndPriceInfo" resultType="Map">
+        SELECT
+            S.SOURCE_ID AS sourceId,
+            SP.SOURCE_PRICE_ID AS sourcePriceId
+        FROM
+            SOURCE S
+                JOIN SOURCE_PRICE SP ON S.SOURCE_ID = SP.SOURCE_ID
+                JOIN PRODUCT_COMPANY PC ON SP.PRODUCT_COMPANY_ID = PC.PRODUCT_COMPANY_ID
+        WHERE
+            S.NAME = #{sourceName}
+          AND PC.NAME = #{supplierName}
+          AND SP.PRICE = #{minPrice}
+            LIMIT 1
+    </select>
 
-    <insert id="insertProductOrder" parameterType="ProductOrderDto">
+
+    <!-- PRODUCT_ORDER 테이블에 재료주문목록 INSERT 하는 쿼리 -->
+    <insert id="insertProductOrder">
         INSERT INTO PRODUCT_ORDER (
             PRODUCT_ORDER_ID,
             SOURCE_PRICE_ID,
             QUANTITY,
             PRODUCT_ORDER_DATE,
             STATUS_ID
-        ) VALUES (
-                     #{id},
-                     #{sourcePriceId},
-                     #{quantity},
-                     #{productOrderDate},
-                     #{statusId}
-                 )
+        )
+        VALUES (
+                   UUID(),
+                   #{sourcePriceId},
+                   #{quantity},
+                   NOW(),
+                   1
+               )
     </insert>
 
 
-    <insert id="insertProductOrderLog" parameterType="ProductOrderLogDto">
-        INSERT INTO PRODUCT_ORDER_LOG (
-            LOG_ID,
-            ORDER_ID,
-            STATUS,
-            LOG_DATE
-        ) VALUES (
-                     #{id},
-                     #{productOrderId},
-                     #{statusId},
-                     #{productOrderDate}
-                 )
-    </insert>
 
-    <update id="updateProductOrderStatus">
-        UPDATE PRODUCT_ORDER
-        SET STATUS = #{status}
-        WHERE ORDER_ID = #{id}
-    </update>
 
-    <update id="updateProductOrderLogStatus">
-        UPDATE PRODUCT_ORDER_LOG
-        SET STATUS = #{statusId}
-        WHERE ORDER_ID = #{productOrderId}
-    </update>
+
+
 
 </mapper>

@@ -3,9 +3,12 @@ package org.example.jhta_2402_2_final.controller.distribution;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderProcessDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.OrderDetail;
+import org.example.jhta_2402_2_final.model.dto.distribution.RequestOrderDto;
 import org.example.jhta_2402_2_final.service.distribution.KitOrderProcessService;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,8 +53,15 @@ public class KitOrderProcessController {
 
         // KitOrderId를 이용해서 밀키트 아이디를 조회?
         // String mealKitId = kitOrderProcessService.findMealKitByKitOrderId(kitOrderId);
+        String mealKitId = kitOrderProcessService.findMealKitByKitOrderId(kitOrderId);
+        int orderQuantity = kitOrderProcessService.findOrderQuantityByKitOrderId(kitOrderId);
 
-        return kitOrderProcessService.findKitRecipeWithStock(kitOrderId);
+        // // 3. 재료 정보, 창고 재고, 최소 가격 및 공급업체 정보 가져오기
+        // 인스턴스를 사용해 메소드 호출
+        return kitOrderProcessService.findKitRecipeWithStockAndSupplier(mealKitId, orderQuantity);
+
+
+        //return kitOrderProcessService.findKitRecipeWithStock(kitOrderId);
 
         // return kitOrderProcessService.findKitRecipe(kitOrderId); // 이 리턴 부분은 바뀔수도 있을 것 같음
     }
@@ -68,14 +78,76 @@ public class KitOrderProcessController {
         }
     }
 
+    /*@PostMapping("/requestSourceOrder")
+    @ResponseBody
+    public ResponseEntity<String> requestProductOrder(@RequestBody Map<String, Object> orderData) {
+        String kitOrderId = (String) orderData.get("kitOrderId");
+        List<Map<String, Object>> orderDetails = (List<Map<String, Object>>) orderData.get("orderDetails");
 
-    @PostMapping("/kitSourceCheckAndOrder") // 밀키트에 필요한 재료를 다른 유통에 발주 넣는 메소드
-    // 아직 미사용중
-    public void kitSourceCheckAndOrder(@RequestParam Map<String, Object> requestKitSourceMap ) {
-        kitOrderProcessService.requestKitSourceOrder(requestKitSourceMap);
+        // 서비스 호출
+        kitOrderProcessService.requestProductOrders(kitOrderId, orderDetails);
 
+        // 요청이 성공했음을 알리는 메시지 반환
+        return ResponseEntity.ok("재료 발주 요청이 완료되었습니다.");
+    }*/
 
+    /*@PostMapping("/requestSourceOrder")
+    public String requestProductOrder(@RequestParam Map<String, Object> orderData, Model model) {
+        String kitOrderId = (String) orderData.get("kitOrderId");
+        List<Map<String, Object>> orderDetails = (List<Map<String, Object>>) orderData.get("orderDetails");
+
+        // 서비스 호출
+        kitOrderProcessService.requestProductOrders(kitOrderId, orderDetails);
+
+        // 처리 후 리다이렉트 (성공 페이지나 메인 페이지로)
+        return "redirect:/distribution/main";
+    }*/
+
+    // 구버전 requestProductOrder 매소드
+    @PostMapping("/distribution/requestSourceOrder")
+    public ResponseEntity<?> requestSourceOrder(@RequestBody RequestOrderDto requestOrderDto) {
+        // 서비스 로직 호출 (발주 처리)
+        boolean result = kitOrderProcessService.requestProductOrders(requestOrderDto);
+
+        if (result) {
+            return ResponseEntity.ok("Order successfully processed.");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process the order.");
+        }
     }
+
+
+
+    // form.submit()받는 컨트롤러 메소드
+    /*@PostMapping("/requestSourceOrder")
+    public String requestSourceOrder(
+            @RequestParam("kitOrderId") String kitOrderId,
+            @RequestParam("sourceName[]") List<String> sourceNames,
+            @RequestParam("supplierName[]") List<String> supplierNames,
+            @RequestParam("minPrice[]") List<Integer> minPrices,
+            @RequestParam("insufficientQuantity[]") List<Integer> insufficientQuantities) {
+
+        // 디버깅 출력
+        boolean success = kitOrderProcessService.requestProductOrders(kitOrderId, sourceNames, supplierNames, minPrices, insufficientQuantities);
+
+        // 요청에 대한 비즈니스 로직 처리
+
+        if (success) {
+            return "redirect:/distribution/main?success=true";
+        } else {
+            return "redirect:/distribution/main?error=insufficientStock";
+        }
+    }*/
+
+
+
+
+
+
+
+
+
+
 
 }
 
