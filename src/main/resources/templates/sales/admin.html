@@ -66,6 +66,7 @@
                             <th>주문일자</th>
                             <th>상태</th>
                             <th>처리완료</th>
+                            <th>취소</th>
                         </tr>
                         </thead>
                         <tfoot>
@@ -80,6 +81,7 @@
                             <th>주문일자</th>
                             <th>발주요청</th>
                             <th>처리완료</th>
+                            <th>취소</th>
                         </tr>
                         </tfoot>
 
@@ -102,7 +104,13 @@
                                         data-bs-toggle="modal"
                                         data-bs-target="#updateStatusModal"
                                         th:attr="data-order-id=${details.kitOrderId}">
-                                    처리 완료
+                                    처리완료
+                                </button>
+                            </td>
+
+                            <td>
+                                <button class="btn btn-danger change-status-btn">
+                                    취소
                                 </button>
                             </td>
 
