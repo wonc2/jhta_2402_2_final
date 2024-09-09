@@ -4,9 +4,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.example.jhta_2402_2_final.model.dto.common.SourceMinPriceDto;
 import org.example.jhta_2402_2_final.model.dto.common.SourcePriceViewDto;
 import org.example.jhta_2402_2_final.model.dto.common.StatusDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductOrderCountDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductOrderViewDto;
+import org.example.jhta_2402_2_final.model.dto.product.*;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +25,7 @@ public interface ProductAdminDao {
     List<SourcePriceViewDto> getSourcePriceListProductName(String productName);
     List<SourcePriceViewDto> getSourcePriceListCompanyNameProductName(String companyName , String productName);
     List<SourceMinPriceDto> getSourceMinPriceListForChart();
-    List<SourceMinPriceDto> getSourcePriceCompany();
+    List<ProductCompanySourcePriceDto> getSourcePriceCompanyList(String productCompanyName);
     List<ProductOrderCountDto> getProductOrderCount();
+    List<ProductCountDto> getProductCountList();
 }

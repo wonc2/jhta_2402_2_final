@@ -69,11 +69,15 @@ public class ProductAdminService {
     public List<SourceMinPriceDto> getSourceMinPriceListForChart(){
         return productDao.getSourceMinPriceListForChart();
     }
-    public List<SourceMinPriceDto> getSourcePriceCompany(){
-        return productDao.getSourcePriceCompany();
+    public List<ProductCompanySourcePriceDto> getSourcePriceCompanyList(String productCompanyName){
+        return productDao.getSourcePriceCompanyList(productCompanyName);
+//        return productDao.getSourcePriceCompanyList();
     }
     public List<ProductOrderCountDto> getProductOrderCount(){
         return productDao.getProductOrderCount();
+    }
+    public List<ProductCountDto> getProductCountList(){
+        return productDao.getProductCountList();
     }
     public int insertProductCompany(ProductCompanyInsertDto productCompanyInsertDto){
         MemberDto memberDto = MemberDto.builder()
