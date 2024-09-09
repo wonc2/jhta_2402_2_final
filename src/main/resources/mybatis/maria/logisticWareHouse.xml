@@ -57,7 +57,7 @@
 
     <update id="updateProductOrderStatus" >
         UPDATE PRODUCT_ORDER
-        SET STATUS_ID = 8
+        SET STATUS_ID = 7
         WHERE STATUS_ID = 5
     </update>
 
@@ -72,14 +72,14 @@
         INSERT INTO PRODUCT_ORDER_LOG (PRODUCT_ORDER_LOG_ID, PRODUCT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE)
         VALUES
         <foreach collection="list" item="productOrderId" separator=",">
-            (UUID(), #{productOrderId}, 8, NOW())
+            (UUID(), #{productOrderId}, 7, NOW())
         </foreach>
     </insert>
 
     <update id="updateKitOrderStatus" parameterType="int">
         UPDATE KIT_ORDER
-        SET STATUS_ID = 7
-        WHERE STATUS_ID = 3
+        SET STATUS_ID = 8
+        WHERE STATUS_ID = 6
     </update>
 
     <select id="selectKitOrderIdByStatus" resultType="String" parameterType="int">
@@ -90,7 +90,7 @@
         INSERT INTO KIT_ORDER_LOG (KIT_ORDER_LOG_ID, KIT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE)
         VALUES
         <foreach collection="list" item="kitOrderId" separator=",">
-            (UUID(), #{kitOrderId}, 7, NOW())
+            (UUID(), #{kitOrderId}, 8, NOW())
         </foreach>
     </insert>
 
@@ -126,7 +126,7 @@
              SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
                  JOIN
              LOGISTICS_WAREHOUSE LW ON LW.WAREHOUSE_NAME = 'Shin_WAREHOUSE'
-        WHERE PO.STATUS_ID = 3
+        WHERE PO.STATUS_ID = 6
         GROUP BY S.SOURCE_ID, LW.LOGISTICS_WAREHOUSE_ID
     </insert>
 
@@ -173,6 +173,13 @@
         SET QUANTITY = QUANTITY - #{quantity}
         WHERE SOURCE_ID = #{sourceFk}
     </update>
+
+    <update id ="updateStackBySourceName" parameterType="map">
+        UPDATE LOGISTICS_WAREHOUSE_STACK
+        SET QUANTITY = QUANTITY - #{itemQuantitiesJson}
+        WHERE SOURCE_ID = (select SOURCE_ID from SOURCE where NAME = #{sourceNamesJson});
+    </update>
+
 
 
     <update id="updateStackFirstRecord">

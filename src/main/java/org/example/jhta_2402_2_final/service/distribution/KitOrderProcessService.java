@@ -110,34 +110,34 @@ public class KitOrderProcessService {
             kitOrderProcessDao.updateWarehouseStock(sourceId, -required);
         }
 
-        // 5. 주문 상태를 '처리완료'로 업데이트
-        kitOrderProcessDao.updateKitOrderStatus(kitOrderId, 3);
+        // 5. 주문 상태를 '처리완료'로 업데이트 => 3에서 6으로 수정
+        kitOrderProcessDao.updateKitOrderStatus(kitOrderId, 6);
 
         // 6. 주문 로그 테이블 (KIT_ORDER_LOG) 에 상태가 3인 것을 추가
-        kitOrderProcessDao.insertKitOrderLog(kitOrderId, 3);
+        kitOrderProcessDao.insertKitOrderLog(kitOrderId, 6);
 
 
-// 밑에서부턴 밀키트 창고 재고 업데이트 부분
-
-        KitOrderDto kitOrder = salesDao.selectKitOrderById(kitOrderId);
-
-        String kitCompanyId = kitOrder.getKitCompanyId();
-        String mealkitId = kitOrder.getMealkitId();
-        int quantity = kitOrder.getQuantity();
-
-//밀키트 아이디와 판매업체 아이디로 창고 재고를 확인
-        KitStorageDto kitStorageDto = salesDao.selectKitStorageById(kitCompanyId,mealkitId);
-        UUID kiStorageId = UUID.randomUUID();
-
-//해당 재고가 없으면 새로 추가
-        if (kitStorageDto == null) {
-            salesDao.insertKitStorage(kiStorageId, kitCompanyId, mealkitId, quantity);
-        }
-
-//재고가 있으면 업데이트
-        else {
-            salesDao.updateKitStorage(kitStorageDto.getKitStorageId(), quantity);
-        }
+//// 밑에서부턴 밀키트 창고 재고 업데이트 부분
+//
+//        KitOrderDto kitOrder = salesDao.selectKitOrderById(kitOrderId);
+//
+//        String kitCompanyId = kitOrder.getKitCompanyId();
+//        String mealkitId = kitOrder.getMealkitId();
+//        int quantity = kitOrder.getQuantity();
+//
+////밀키트 아이디와 판매업체 아이디로 창고 재고를 확인
+//        KitStorageDto kitStorageDto = salesDao.selectKitStorageById(kitCompanyId,mealkitId);
+//        UUID kiStorageId = UUID.randomUUID();
+//
+////해당 재고가 없으면 새로 추가
+//        if (kitStorageDto == null) {
+//            salesDao.insertKitStorage(kiStorageId, kitCompanyId, mealkitId, quantity);
+//        }
+//
+////재고가 있으면 업데이트
+//        else {
+//            salesDao.updateKitStorage(kitStorageDto.getKitStorageId(), quantity);
+//        }
 
 
         return true;
