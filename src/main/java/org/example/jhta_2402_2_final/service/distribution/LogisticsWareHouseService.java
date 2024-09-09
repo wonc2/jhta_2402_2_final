@@ -2,10 +2,11 @@ package org.example.jhta_2402_2_final.service.distribution;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.distribution.DistributionDao;
-import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderDetailLogDTO;
+import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderDetailLogDto;
 import org.example.jhta_2402_2_final.model.dto.distribution.LogisticsWareHouseDto;
 //import org.example.jhta_2402_2_final.util.SmsUtil;
-import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDTO;
+
+import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,11 +50,11 @@ public class LogisticsWareHouseService {
         return distributionDao.deleteZeroQuantityRecords();
     }
 
-    public List<KitOrderDetailLogDTO> selectKitOrderLogDetailsBySourceId(String sourceId){
+    public List<KitOrderDetailLogDto> selectKitOrderLogDetailsBySourceId(String sourceId){
         return distributionDao.selectKitOrderLogDetailsBySourceId(sourceId);
     }
 
-    public List<ProductOrderLogDTO> selectProductOrderLogDetailsBySourceId(String sourceId) {
+    public List<ProductOrderLogDto> selectProductOrderLogDetailsBySourceId(String sourceId) {
         return distributionDao.selectProductOrderLogDetailsBySourceId(sourceId);
     }
 

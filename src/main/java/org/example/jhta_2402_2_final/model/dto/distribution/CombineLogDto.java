@@ -12,7 +12,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CombineLogDTO {
+public class CombineLogDto {
     private String id;
     private String companyName;
     private String sourceName;

@@ -191,7 +191,7 @@
         WHERE QUANTITY <![CDATA[<=]]> 0
     </delete>
 
-    <select id="selectKitOrderLogDetailsBySourceId" parameterType="String" resultType="org.example.jhta_2402_2_final.model.dto.distribution.KitOrderDetailLogDTO">
+    <select id="selectKitOrderLogDetailsBySourceId" parameterType="String" resultType="org.example.jhta_2402_2_final.model.dto.distribution.KitOrderDetailLogDto">
 
         SELECT
             KOL.KIT_ORDER_ID AS kitOrderId,
@@ -218,7 +218,7 @@
 
     </select>
 
-    <select id="selectProductOrderLogDetailsBySourceId" parameterType="String" resultType="org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDTO">
+    <select id="selectProductOrderLogDetailsBySourceId" parameterType="String" resultType="org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDto">
         SELECT
             pol.PRODUCT_ORDER_ID as productOrderId,
             s.NAME AS sourceName ,
