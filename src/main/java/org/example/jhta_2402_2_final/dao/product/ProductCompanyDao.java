@@ -16,6 +16,8 @@ public interface ProductCompanyDao {
 
     // 생산업체 생산품 Create, Update, Delete
     int addSourceToCompany(Map<String, Object> paramData);
+    int sourcePriceUpdate(Map<String, Object> paramData);
+    int sourcePriceHistory(Map<String, Object> paramData);
     int deleteSourceFromCompany(String companySourceId);
 
     // Source 중복체크겸 id 가져오기 (return: null 이면 중복 없으므로 재료 테이블에 추가 -> addSource)
@@ -28,7 +30,6 @@ public interface ProductCompanyDao {
     // 제품 생산
     int produceSource(Map<String, Object> paramData);
 
-    int sourcePriceUpdate(Map<String, Object> paramData);
 
     boolean checkDuplicateCompanySource(Map<String, Object> paramData);
 
@@ -43,4 +44,8 @@ public interface ProductCompanyDao {
     int outboundSource(Map<String, Object> paramData);
 
     List<ProductCompanyChartDto> getChart(String companyName);
+    List<Map<String, Object>> orderChart(Map<String, Object> paramData);
+
+    // 등록된 모든 재료 리스트 (검색용)
+    List<String> selectAllCompanySource (String companyName);
 }

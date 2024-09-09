@@ -91,7 +91,7 @@ $(document).ready(function () {
                 xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
             },
             success: function () {
-                showToast("생산 요청이 완료 되었습니다: " + sourceName + " " + sourceQuantity + " 개");
+                showToast("입고 요청이 완료 되었습니다: " + sourceName + " " + sourceQuantity + " 개");
                 $('#companySourceTable').DataTable().ajax.reload(null, false);
                 updateWarehouseChart();
                 $('#produceSourceModal').modal('hide');
@@ -99,9 +99,10 @@ $(document).ready(function () {
                     $('#sourceQuantity').val(10);
                 }, 500);
             },
-            error: function (xhr, status, error) {
-                console.error('Error occurred:', error);
-                alert('생산 요청 중 오류가 발생했습니다.');
+            error: function (xhr) {
+                const response = JSON.parse(xhr.responseText);
+                if (xhr.status === 400) alert(response.message);
+                else alert('알 수 없는 에러가 발생');
             }
         });
     });
@@ -136,14 +137,19 @@ $(document).ready(function () {
 
         $('#updateSourceName').val(data.sourceName);
         $('#updateSourcePrice').val(data.sourcePrice);
+        $('#oldPrice').val(data.sourcePrice);
         $('#updateCompanySourceId').val(data.companySourceId);
         $('#updateSourceModal').modal('show');
     });
     $('#updateSourceBtn').on('click', function () {
         const sourcePrice = $('#updateSourcePrice').val();
         const companySourceId = $('#updateCompanySourceId').val();
+        const oldPrice = $('#oldPrice').val();
 
-        const data = {sourcePrice: sourcePrice};
+        const data = {
+            sourcePrice: sourcePrice,
+            oldPrice: oldPrice
+        };
         $.ajax({
             url: `/api/product/company/add/${companySourceId}`,
             type: 'PUT',
@@ -154,12 +160,13 @@ $(document).ready(function () {
             },
             success: function () {
                 $('#updateSourceModal').modal('hide');
-                alert('생산품 가격 수정이 완료되었습니다.');
+                showToast('생산품 가격 수정이 완료되었습니다.');
                 $('#companySourceTable').DataTable().ajax.reload(null, false);
             },
-            error: function (xhr, status, error) {
-                console.error('Error occurred:', error);
-                alert('가격 수정중 오류가 발생했습니다.');
+            error: function (xhr) {
+                const response = JSON.parse(xhr.responseText);
+                if (xhr.status === 400) alert(response.message);
+                else alert('알 수 없는 에러가 발생');
             }
         });
     });
@@ -173,51 +180,8 @@ $(document).ready(function () {
         }, true);
     });
 
-    // // 생산 모달창 -> 갯수 입력후 생산 로직 수행
-    // $('#orderTable').on('click', 'button[data-action="produce"]', function () {
-    //     const row = $(this).closest('tr');
-    //     const data = $('#orderTable').DataTable().row(row).data();
-    //
-    //     $('#produceSourceName').val(data.sourceName);
-    //     $('#produceSourcePrice').val(data.sourcePrice);
-    //     $('#sourcePriceId').val(data.sourcePriceId);
-    //     $('#produceSourceModal').modal('show');
-    // });
-    // $('#produceSourceBtn').on('click', function () {
-    //     const sourceQuantity = $('#sourceQuantity').val();
-    //     const sourcePriceId = $('#sourcePriceId').val();
-    //     const sourceName = $('#produceSourceName').val();
-    //
-    //     const data = {
-    //         sourceQuantity: sourceQuantity,
-    //         sourcePriceId: sourcePriceId
-    //     };
-    //     $.ajax({
-    //         url: '/api/product/company/produce',
-    //         type: 'POST',
-    //         contentType: 'application/json',
-    //         data: JSON.stringify(data),
-    //         beforeSend: function (xhr) {
-    //             xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
-    //         },
-    //         success: function () {
-    //             showToast("생산 요청이 완료 되었습니다: " + sourceName + " " + sourceQuantity + " 개");
-    //             $('#orderTable').DataTable().ajax.reload(null, false);
-    //             updateWarehouseChart();
-    //             $('#produceSourceModal').modal('hide');
-    //             setTimeout(function () {
-    //                 $('#sourceQuantity').val(10);
-    //             }, 500);
-    //         },
-    //         error: function (xhr, status, error) {
-    //             console.error('Error occurred:', error);
-    //             alert('생산 요청 중 오류가 발생했습니다.');
-    //         }
-    //     });
-    // });
-
     $('#orderTable').on('click', 'button[data-action="orderProcessBlock"]', function () {
-        alert("재고가 모자랍니다~");
+        alert("출하 불가: 현재 상품의 재고가 부족함");
     });
     // 주문 처리, 주문 상태 변경하고 창고에서 주문받은 재료 갯수만큼 출고하는 로직 수행
     $('#orderTable').on('click', 'button[data-action="orderProcess"]', function () {
@@ -234,6 +198,7 @@ $(document).ready(function () {
         $('#orderTotalPrice').val(data.totalPrice);
         $('#orderDate').val(data.orderDate);
         $('#orderSourcePriceId').val(data.sourcePriceId);
+        $('#orderStockBalance').val(data.stockBalance);
 
         $('#orderProcessModal').modal('show');
     });
@@ -260,14 +225,14 @@ $(document).ready(function () {
             },
             success: function () {
                 $('#orderProcessModal').modal('hide');
-                showToast("주문 번호: '" + orderId.substring(0, 8) + "' 의 발주가 완료되었습니다.")
+                showToast("주문 번호: '" + orderId.substring(0, 8) + "' 의 출하가 완료되었습니다.")
                 updateWarehouseChart();
                 $('#orderTable').DataTable().ajax.reload(function () {
                 }, false);
             },
             error: function (xhr, status, error) {
                 console.error('Error occurred:', error);
-                alert('발주 실패! 현재 재고가 부족함');
+                alert('알 수 없는 에러 발생');
             }
         });
     });
@@ -285,8 +250,14 @@ $(document).ready(function () {
         updateWarehouseChart(); // 새로운 차트에 데이터 업데이트
     });
 
+    $('#chartMonthSelect').on('change', function (){
+        orderChartMonthOption = $('#chartMonthSelect').val();
+        updateOrderChart();
+    })
+
     // 테이블 변경
     $('.table-dropdown-item').on('click', function () {
+        $('#companySourceEditCheckBox').prop('checked', false);
 
         const selectedValue = $(this).data('value');
         const selectedName = $(this).data('name');
@@ -321,10 +292,6 @@ $(document).ready(function () {
 const csrfToken = $('meta[name="_csrf"]').attr('content');
 const csrfHeader = $('meta[name="_csrf_header"]').attr('content');
 
-// 검색 옵션들 변수 ??: 테이블별로 따로 만들어야하나
-let orderMonthOption = '';
-let orderStatusOption = '';
-
 /* 테이블 리스트 초기화 */
 
 function getCompanySourceTable() {
@@ -341,11 +308,18 @@ function getCompanySourceTable() {
             {data: 'totalQuantity'},
             {
                 data: null,
+                orderable: false,
                 render: function () {
                     return `
-                            <button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button> |
-                            <button type="button" class="btn btn-info btn-sm" data-action="update">수정</button>
-<!--                            <button type="button" class="btn btn-danger btn-sm" data-action="delete">삭제</button>-->
+                            <div class="d-flex justify-content-between">
+                            <div>
+                            <button type="button" class="btn btn-outline-primary btn-sm" data-action="produce">재고 등록</button>
+                            </div>
+                            <div>
+                            <button type="button" class="btn btn-outline-info btn-sm edit-btn" data-action="update" style="display: none;">수정</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm edit-btn" data-action="delete" style="display: none;">삭제</button>
+                            </div>
+                            </div>
                         `;
                 }
             }
@@ -353,6 +327,18 @@ function getCompanySourceTable() {
         language: {emptyTable: '데이터가 없습니다.'},
         lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]], pageLength: 10
     });
+
+    $('#companySourceEditCheckBox').on('change', function () {
+        const isChecked = $(this).is(':checked');
+        $('.row-checkbox').prop('checked', isChecked); // 모든 체크박스 선택/해제
+
+        if (isChecked) {
+            $('.edit-btn').show();
+        } else {
+            $('.edit-btn').hide();
+        }
+    });
+
 }
 
 function getWarehouseTable() {
@@ -386,8 +372,9 @@ function getOrderTable() {
         ajax: {
             url: '/api/product/company/order',
             data: function (d) {
-                d.orderMonthOption = $('#orderMonthSearchSelect').val() || "all"; // 기본값은 "all"
+                // d.orderMonthOption = $('#orderMonthSearchSelect').val() || "all"; // 기본값은 "all"
                 d.orderStatusOption = $('#orderStatusSearchSelect').val();
+                d.orderSourceNameOption = $('#sourceNameSearchSelect').val() || "all";
             },
             dataSrc: ''
         },
@@ -411,14 +398,14 @@ function getOrderTable() {
                     let buttons = '';
                     //`<button type="button" class="btn btn-primary btn-sm" data-action="produce">생산</button>`;
 
-                    // 'orderStatus'가 '처리전'일 때만 발주 버튼을 활성화
+                    // 'orderStatus'가 '처리전'일 때만 출하 버튼을 활성화
                     if (row.orderStatus === '처리전') {
-                        // checkStockAmount가 0 이상일 때만 발주 로직 활성화
-                        // if (row.checkStockAmount < 0) {
-                        //     buttons += ` | <button type="button" class="btn btn-outline-warning btn-sm" data-action="orderProcessBlock">재고부족</button>`;
-                        // } else {
-                        buttons += `<button type="button" class="btn btn-outline-primary btn-sm" data-action="orderProcess">발주</button>`;
-                        // }
+                        // checkStockAmount가 0 이상일 때만 출하 로직 활성화
+                        if (row.stockBalance - row.quantity < 0) {
+                            buttons += `<button type="button" class="btn btn-outline-warning btn-sm" data-action="orderProcessBlock">재고부족</button>`;
+                        } else {
+                            buttons += `<button type="button" class="btn btn-outline-primary btn-sm" data-action="orderProcess">출하</button>`;
+                        }
                     }
                     return buttons;
                 }
@@ -434,6 +421,33 @@ function getOrderTable() {
             });
         }
     });
+    $.ajax({
+        url: '/api/product/company/allCompanySources', // 소스 이름을 가져오는 API 호출
+        type: 'GET',
+        success: function(response) {
+            const sourceNames = response; // List<String> 형태의 소스 이름
+            const $sourceSelect = $('#sourceNameSearchSelect');
+
+            // 소스 이름을 셀렉트 박스에 추가
+            sourceNames.forEach(function(sourceName) {
+                $sourceSelect.append(new Option(sourceName, sourceName));
+            });
+        },
+        error: function() {
+            console.error('소스 이름을 가져오는 중 오류 발생');
+        }
+    });
+    // $('#orderTable_filter').css('display', 'flex').addClass('justify-content-end');
+    $('#orderTable_filter').append(`
+        <select id="orderStatusSearchSelect" class="form-select form-select-sm orderSearch" style="display:inline-block; width:auto;">
+            <option value="" selected>주문 상태</option>
+            <option value="1">주문</option>
+            <option value="2">완료</option>
+        </select>
+        <select id="sourceNameSearchSelect" class="form-select form-select-sm orderSearch" style="display:inline-block; width:auto;">
+            <option value="all" selected>생산품별</option>
+        </select>
+    `);
 }
 
 /* 테이블 리스트 초기화 끝 */
@@ -444,6 +458,7 @@ let warehouseChart; // 전역 변수로 차트 객체를 선언
 let orderChart; // 전역 변수로 차트 객체를 선언
 let chartType = 'bar'; // 기본 차트 타입은 'bar'
 let oderChartType = 'bar'; // 기본 차트 타입은 'bar'
+let orderChartMonthOption = 'all';
 
 function updateWarehouseChart() {
     $.ajax({
@@ -473,7 +488,7 @@ function updateWarehouseChart() {
 
 function updateOrderChart() {
     $.ajax({
-        url: '/api/product/company/orderChart', // 창고 데이터를 가져오는 URL
+        url: '/api/product/company/orderChart?orderChartMonthOption=' + orderChartMonthOption, // 창고 데이터를 가져오는 URL
         type: 'GET',
         contentType: 'application/json',
         success: function (response) {
@@ -482,14 +497,14 @@ function updateOrderChart() {
 
             // response 데이터를 순회하며 필요한 정보 추출
             response.forEach(function (item) {
-                labels.push(item.sourceName); // sourceName을 labels로 사용
-                data.push(item.sales); // totalQuantity 값을 data로 사용
+                labels.push(item.sourceName);
+                data.push(-item.sales); // 판매량
             });
 
-            warehouseChart.data.labels = labels;
-            warehouseChart.data.datasets[0].data = data;
-            warehouseChart.data.datasets[0].backgroundColor = colors.slice(0, data.length);
-            warehouseChart.update();
+            orderChart.data.labels = labels;
+            orderChart.data.datasets[0].data = data;
+            orderChart.data.datasets[0].backgroundColor = colors.slice(0, data.length);
+            orderChart.update();
         },
         error: function (xhr, status, error) {
             console.error('차트 데이터 가져오는데 실패함:', error);
