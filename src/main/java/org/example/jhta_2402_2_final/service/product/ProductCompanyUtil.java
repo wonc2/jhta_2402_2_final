@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 public class ProductCompanyUtil {
     private final ProductCompanyDao productCompanyDao;
 
-    // todo: 캐시 시간 설정, 로그아웃시 캐시 삭제, AOP 로 모든 companyService 메서드에 적용 ?
+    // @@: 캐시 시간 설정, 로그아웃시 캐시 삭제, AOP 로 모든 companyService 메서드에 적용 ?
     @Cacheable(value = "companyIdCache", key = "#companyName")
     public void getCompanyId(String companyName) {
         String companyId = productCompanyDao.getCompanyIdByName(companyName);

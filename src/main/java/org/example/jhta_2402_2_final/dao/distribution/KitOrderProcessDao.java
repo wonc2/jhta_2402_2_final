@@ -32,13 +32,39 @@ public interface KitOrderProcessDao {
     // 창고 수량 차감
     void updateWarehouseStock(@Param("sourceId") String sourceId, @Param("quantityChange") int quantityChange);
 
+
+    // KIT_ORDER_LOG 테이블에 추가
+    void insertKitOrderLog(@Param("kitOrderId") String kitOrderId, @Param("status") int status);
+
+    List<Map<String, Object>> findKitRecipeWithStockAndSupplier(@Param("mealkitId") String mealkitId, @Param("orderQuantity") int orderQuantity);
+
+
+    //Map<String, Object> findSupplierInfoWithSourceName(@Param("sourceName") String sourceName);
+
+    // 재료 이름을 이용해 해당 재료의 공급업체 정보 및 최소가를 가져오는 메소드
+    // Map<String, Object> findSourceAndPriceIdByNameAndSupplier(@Param("sourceName") String sourceName, @Param("supplierName") String supplierName, @Param("minPrice") int minPrice);
+
+
+    //void insertProductOrder(UUID productOrderId, String sourcePriceId, int insufficientQuantity);
+
+    // SOURCE_PRICE_ID와 관련된 정보 조회
+    Map<String, Object> findSourceAndPriceInfo(@Param("sourceName") String sourceName,
+                                               @Param("supplierName") String supplierName,
+                                               @Param("minPrice") int minPrice);
+
+    // PRODUCT_ORDER 테이블에 데이터 추가
+    void insertProductOrder(@Param("sourcePriceId") String sourcePriceId,
+                            @Param("quantity") int quantity);
+
+
+    // KIT_ORDER_LOG 테이블에 새로운 로그 추가하는 메소드
+    //void insertKitOrderLog(@Param("logId") UUID logId, @Param("kitOrderId") String kitOrderId, @Param("statusId") int statusId);
+
+    // void updateKitOrderStatus(String kitOrderId, int i);
     // 밀키트 주문 상태 변경(KIT_ORDER 테이블)
-    void updateOrderStatus(@Param("kitOrderId") String kitOrderId, @Param("status") int status);
+    void updateKitOrderStatus(@Param("kitOrderId") String kitOrderId, @Param("status") int status);
 
-    // 밀키트 주문로그 테이블의 상태 변경(KIT_ORDER_LOG 테이블)
-    void updateOrderLogStatus(@Param("kitOrderId") String kitOrderId, @Param("status") int status);
 
-    void insertOrderLogStatus(@Param("kitOrderId") String kitOrderId, @Param("status") int status);
 
 
 }

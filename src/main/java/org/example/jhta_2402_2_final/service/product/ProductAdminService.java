@@ -4,12 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.MemberDao;
 import org.example.jhta_2402_2_final.dao.product.ProductAdminDao;
 import org.example.jhta_2402_2_final.model.dto.MemberDto;
+import org.example.jhta_2402_2_final.model.dto.common.SourceMinPriceDto;
 import org.example.jhta_2402_2_final.model.dto.common.SourcePriceViewDto;
 import org.example.jhta_2402_2_final.model.dto.common.StatusDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyInsertDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductOrderViewDto;
+import org.example.jhta_2402_2_final.model.dto.product.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -67,6 +65,15 @@ public class ProductAdminService {
     }
     public List<SourcePriceViewDto> getSourcePriceListCompanyNameProductName(String companyName , String productName){
         return productDao.getSourcePriceListCompanyNameProductName(companyName,productName);
+    }
+    public List<SourceMinPriceDto> getSourceMinPriceListForChart(){
+        return productDao.getSourceMinPriceListForChart();
+    }
+    public List<SourceMinPriceDto> getSourcePriceCompany(){
+        return productDao.getSourcePriceCompany();
+    }
+    public List<ProductOrderCountDto> getProductOrderCount(){
+        return productDao.getProductOrderCount();
     }
     public int insertProductCompany(ProductCompanyInsertDto productCompanyInsertDto){
         MemberDto memberDto = MemberDto.builder()

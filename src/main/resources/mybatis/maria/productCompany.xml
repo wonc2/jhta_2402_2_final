@@ -3,18 +3,16 @@
     <!-- 생산 업체의 현재 생산품 리스트 가져옴 -->
     <select id="getSourcesByCompanyName" resultType="Map" parameterType="String">
         select
-        sp.SOURCE_PRICE_ID as 'companySourceId',
-        s.NAME as 'sourceName',
-        PRICE as 'sourcePrice',
-        COALESCE((SELECT SUM(quantity)
-        FROM SOURCE_WAREHOUSE sw
-        WHERE sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID), 0) AS totalQuantity
+            sp.SOURCE_PRICE_ID as 'companySourceId',
+                s.NAME as 'sourceName',
+                PRICE as 'sourcePrice',
+                COALESCE((SELECT SUM(quantity)
+                          FROM SOURCE_WAREHOUSE sw
+                          WHERE sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID), 0) AS totalQuantity
         from SOURCE_PRICE sp
-        join SOURCE s ON s.source_id = sp.source_id
-        join PRODUCT_COMPANY pc ON pc.product_company_id = sp.product_company_id
-        <if test="companyName != null and companyName != ''">
-            where pc.NAME = #{companyName}
-        </if>
+                 join SOURCE s ON s.source_id = sp.source_id
+                 join PRODUCT_COMPANY pc ON pc.product_company_id = sp.product_company_id
+        where pc.NAME = #{companyName}
     </select>
 
     <!-- 생산업체 생산품 등록 Create, Update, Delete -->
@@ -27,6 +25,12 @@
     <update id="sourcePriceUpdate" parameterType="map">
         UPDATE SOURCE_PRICE SET price = #{sourcePrice} WHERE source_price_id = #{companySourceId}
     </update>
+    <insert id="sourcePriceHistory" parameterType="map">
+        INSERT INTO
+            SOURCE_PRICE_HISTORY (SOURCE_PRICE_HISTORY_ID, SOURCE_PRICE_ID, OLD_PRICE, NEW_PRICE, CHANGE_DATE)
+        VALUES
+            (UUID(), #{companySourceId}, #{oldPrice}, #{sourcePrice}, NOW())
+    </insert>
     <delete id="deleteSourceFromCompany" parameterType="Map">
         DELETE FROM SOURCE_PRICE WHERE SOURCE_PRICE_ID = #{companySourceId}
     </delete>
@@ -39,9 +43,10 @@
 
     <!-- 창고 입출고 리스트 가져옴 -->
     <select id="getWarehouseSources" resultType="map" parameterType="String">
-        SELECT sw.source_warehouse_id                   as sourceWarehouseId,
+        SELECT ROW_NUMBER() OVER (order by sw.produce_date asc) AS rowNum,
+                sw.source_warehouse_id                   as sourceWarehouseId,
                sw.QUANTITY                              as sourceQuantity,
-               DATE_FORMAT(sw.produce_date, '%Y-%m-%d') as produceDate,
+               DATE_FORMAT(sw.produce_date, '%Y-%m-%d %h:%m') as produceDate,
                s.name                                   as sourceName,
                CASE
                    WHEN sw.QUANTITY > 0 THEN '입고'
@@ -52,13 +57,12 @@
                  JOIN SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
                  JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         WHERE pc.NAME = #{companyName}
-        order by sw.produce_date desc
     </select>
 
     <!-- 주문 주문 주문 주문 주문 -->
     <select id="getProductOrderList" resultType="map">
         SELECT
---         ROW_NUMBER() OVER (ORDER BY po.PRODUCT_ORDER_DATE DESC) AS rowNum,
+        ROW_NUMBER() OVER (ORDER BY po.PRODUCT_ORDER_DATE asc) AS rowNum,
         po.PRODUCT_ORDER_ID as orderId,
         s.NAME AS sourceName,
         sp.PRICE AS sourcePrice,
@@ -66,15 +70,20 @@
         (sp.PRICE * po.QUANTITY) AS totalPrice,
         DATE_FORMAT(po.PRODUCT_ORDER_DATE, '%Y-%m-%d %h:%m') AS orderDate,
         st.STATUS AS orderStatus,
-        sp.SOURCE_PRICE_ID as sourcePriceId
-        -- sw.quantity as sourceQuantity,
-        -- sw.quantity - po.quantity as checkStockAmount
+        sp.SOURCE_PRICE_ID as sourcePriceId,
+        COALESCE(sw.totalQuantity, 0) AS stockBalance
         FROM PRODUCT_ORDER po
         JOIN SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
         JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
         JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
-        -- JOIN SOURCE_WAREHOUSE sw on sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+        LEFT JOIN (
+        SELECT
+        SOURCE_PRICE_ID,
+        SUM(QUANTITY) AS totalQuantity
+        FROM SOURCE_WAREHOUSE
+        GROUP BY SOURCE_PRICE_ID
+        ) sw ON sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
         WHERE pc.NAME = #{companyName}
         <choose>
             <when test="orderStatusOption == 1">
@@ -85,9 +94,12 @@
             </when>
             <otherwise></otherwise>
         </choose>
-        <if test="orderMonthOption != 'all'">
-            and po.PRODUCT_ORDER_DATE LIKE CONCAT('2024-', LPAD(#{orderMonthOption}, 2, '0'), '%')
+        <if test="orderSourceNameOption != 'all'">
+            and s.name = #{orderSourceNameOption}
         </if>
+        <!--        <if test="orderMonthOption != 'all'">-->
+        --             and po.PRODUCT_ORDER_DATE LIKE CONCAT(YEAR(CURDATE()), '-', LPAD(#{orderMonthOption}, 2, '0'), '%')
+        <!--        </if>-->
         order by po.PRODUCT_ORDER_DATE DESC
     </select>
 
@@ -107,7 +119,7 @@
     <!-- 주문 끝 -->
 
 
-    <!-- 모든 재료 리스트 -->
+    <!-- 모든 재료 리스트 (현재 업체에 등록된 재료 제외) -->
     <select id="getAllSources" resultType="SourceDto" parameterType="String">
         SELECT s.SOURCE_ID as 'sourceId', s.NAME as 'sourceName'
         FROM SOURCE s
@@ -143,6 +155,13 @@
         WHERE pc.PRODUCT_COMPANY_ID = #{companyId} and (s.SOURCE_ID = #{sourceId} or s.NAME = #{sourceName})
     </select>
 
+    <select id="selectAllCompanySource" parameterType="String" resultType="String">
+        SELECT s.NAME as sourceName
+        FROM SOURCE_PRICE sp
+                 JOIN PRODUCT_COMPANY pc on sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+                 JOIN SOURCE s on sp.SOURCE_ID = s.SOURCE_ID
+        where pc.NAME = #{companyName}
+    </select>
 
     <!-- Chart 차트 -->
     <select id="getChart" resultType="ProductCompanyChartDto" parameterType="String">
@@ -152,9 +171,40 @@
         FROM SOURCE_WAREHOUSE sw
                  join SOURCE_PRICE sp on sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
                  join SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
-                 join PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID WHERE pc.NAME = #{companyName}
+                 join PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+        WHERE pc.NAME = #{companyName}
         GROUP BY sp.SOURCE_PRICE_ID
         --         ORDER BY sourceQuantity DESC
 --         LIMIT 20
     </select>
+    <select id="orderChart" resultType="map" parameterType="map">
+        SELECT
+        s.NAME as sourceName,
+        SUM(sw.QUANTITY) as sales
+        FROM SOURCE_WAREHOUSE sw
+        JOIN SOURCE_PRICE sp on sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+        join SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
+        join PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+        WHERE pc.NAME = #{companyName}
+        and sw.quantity &lt; 0
+        <if test="orderChartMonthOption != 'all'">
+            and sw.PRODUCE_DATE LIKE CONCAT(YEAR(CURDATE()), '-', LPAD(#{orderChartMonthOption}, 2, '0'), '%')
+        </if>
+        group by sp.SOURCE_PRICE_ID
+    </select>
+
+    <!--    SELECT-->
+    <!--    s.NAME as sourceName,-->
+    <!--    SUM(CASE-->
+    <!--    WHEN sw.QUANTITY &lt; 0 THEN sw.QUANTITY-->
+    <!--    ELSE 0-->
+    <!--    END) as soldQuantity, &#45;&#45; 판매된 수량 (음수)-->
+    <!--    SUM(sw.QUANTITY) as sourceQuantity &#45;&#45; 전체 수량-->
+    <!--    FROM SOURCE_WAREHOUSE sw-->
+    <!--    JOIN SOURCE_PRICE sp on sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID-->
+    <!--    JOIN SOURCE s on s.SOURCE_ID = sp.SOURCE_ID-->
+    <!--    JOIN PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID-->
+    <!--    WHERE pc.NAME = #{companyName}-->
+    <!--    AND sw.PRODUCE_DATE LIKE CONCAT(YEAR(CURDATE()), '-', LPAD(#{orderChartMonthOption}, 2, '0'), '%')-->
+    <!--    GROUP BY sp.SOURCE_PRICE_ID-->
 </mapper>

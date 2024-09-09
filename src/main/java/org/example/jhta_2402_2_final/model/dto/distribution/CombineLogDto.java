@@ -7,19 +7,20 @@ import lombok.Setter;
 
 import java.util.Date;
 
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductOrderLogDTO {
-    private String productOrderId;
+public class CombineLogDto {
+    private String id;
     private String companyName;
     private String sourceName;
     private String sourceId;
     private int quantity;
     private Date orderDate;
     private String status;
-    private String productCompanyId;
+
 
     // Getters and setters
 }

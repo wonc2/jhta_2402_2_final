@@ -35,7 +35,7 @@ public class DistributionOrderService {
 
 
     @Transactional
-    public void sourceOrder(String kitOrderId, String sourceId, int quantity, double sourcePrice) {
+    public void sourceOrder(String kitOrderId, String sourceId, int quantity, int sourcePrice) {
         // 새로운 주문 ID 생성
         String productOrderId = UUID.randomUUID().toString();
 

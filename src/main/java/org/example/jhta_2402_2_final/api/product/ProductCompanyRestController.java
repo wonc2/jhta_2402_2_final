@@ -74,10 +74,20 @@ public class ProductCompanyRestController {
         List<Map<String, Object>> responseData = productCompanyService.orderProcess(companyName, paramData);
         return ResponseEntity.ok().body(responseData);
     }
+    @GetMapping("allCompanySources")
+    public ResponseEntity<List<String>> selectAllCompanySource(@ModelAttribute("companyName") String companyName){
+        List<String> responseData = productCompanyService.selectAllCompanySource(companyName);
+        return ResponseEntity.ok().body(responseData);
+    }
 
     @GetMapping("chart")
     public ResponseEntity<List<ProductCompanyChartDto>> getChart(@ModelAttribute("companyName") String companyName){
         List<ProductCompanyChartDto> responseData = productCompanyService.getChart(companyName);
+        return ResponseEntity.ok().body(responseData);
+    }
+    @GetMapping("orderChart")
+    public ResponseEntity<List<Map<String, Object>>> orderChart(@ModelAttribute("companyName") String companyName, @RequestParam Map<String ,Object> paramData){
+        List<Map<String, Object>> responseData = productCompanyService.orderChart(companyName, paramData);
         return ResponseEntity.ok().body(responseData);
     }
 
