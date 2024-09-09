@@ -144,7 +144,8 @@
                  GROUP BY P_C.NAME;
     </select>
     <select id="getProductCountList" resultType="ProductCountDto">
-        SELECT S.NAME AS productName , P_O.QUANTITY AS quantity
+        SELECT S.NAME AS productName,
+               SUM(P_O.QUANTITY) AS quantity
         FROM SOURCE_PRICE S_P
                  JOIN SOURCE S ON S_P.SOURCE_ID = S.SOURCE_ID
                  JOIN PRODUCT_ORDER P_O ON S_P.PRICE = P_O.PRICE
