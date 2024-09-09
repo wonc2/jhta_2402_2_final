@@ -159,41 +159,71 @@
     </insert>
 
 
-
-    <!-- 특정 재료와 업체의 최소 가격을 기준으로 sourceId와 sourcePriceId를 조회하는 쿼리 -->
-    <select id="findSourceAndPriceInfo" resultType="Map">
+    <!--제발되라-->
+    <select id="findProductCompanyIdAndSourceId" resultType="Map">
         SELECT
-            S.SOURCE_ID AS sourceId,
-            SP.SOURCE_PRICE_ID AS sourcePriceId
+            sp.PRODUCT_COMPANY_ID AS productCompanyId,
+            sp.SOURCE_ID AS sourceId
         FROM
-            SOURCE S
-                JOIN SOURCE_PRICE SP ON S.SOURCE_ID = SP.SOURCE_ID
-                JOIN PRODUCT_COMPANY PC ON SP.PRODUCT_COMPANY_ID = PC.PRODUCT_COMPANY_ID
+            SOURCE s
+                JOIN
+            SOURCE_PRICE sp ON s.SOURCE_ID = sp.SOURCE_ID
+                JOIN
+            PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
         WHERE
-            S.NAME = #{sourceName}
-          AND PC.NAME = #{supplierName}
-          AND SP.PRICE = #{minPrice}
-            LIMIT 1
+            s.NAME = #{sourceName}
+          AND pc.NAME = #{supplierName}
+          AND sp.PRICE = #{minPrice}
     </select>
 
 
+
     <!-- PRODUCT_ORDER 테이블에 재료주문목록 INSERT 하는 쿼리 -->
+    <!-- PRODUCT ORDER ID, PRODUCT COMPANY ID, SOURCE_ID, QUANTITY(부족한 수량), PRICE, PRODUCT ORDER DATE, STATUS_ID -->
     <insert id="insertProductOrder">
         INSERT INTO PRODUCT_ORDER (
             PRODUCT_ORDER_ID,
-            SOURCE_PRICE_ID,
+            PRODUCT_COMPANY_ID,
+            SOURCE_ID,
             QUANTITY,
+            PRICE,
             PRODUCT_ORDER_DATE,
-            STATUS_ID
+            STATUS_ID,  -- 쉼표 추가
+            KIT_ORDER_ID  -- 마지막 항목에는 쉼표가 없어야 함
         )
         VALUES (
                    UUID(),
-                   #{sourcePriceId},
-                   #{quantity},
+                   #{supplierId},
+                   #{sourceId},
+                   #{insufficientQuantity},
+                   #{minPrice},
                    NOW(),
-                   1
+                   1,
+                   #{kitOrderId}
                )
     </insert>
+
+    <select id="findProductOrderIds" resultType="String">
+        SELECT PRODUCT_ORDER_ID
+        FROM PRODUCT_ORDER
+        WHERE KIT_ORDER_ID = #{kitOrderId}
+    </select>
+
+
+    <insert id="insertProductOrderLog">
+        INSERT INTO PRODUCT_ORDER_LOG
+        (PRODUCT_ORDER_LOG_ID,
+         PRODUCT_ORDER_ID,
+         STATUS_ID,
+         PRODUCT_ORDER_DATE)
+        VALUES (
+                UUID(),
+                #{productOrderId},
+                1,
+                NOW()
+               )
+    </insert>
+
 
 
 

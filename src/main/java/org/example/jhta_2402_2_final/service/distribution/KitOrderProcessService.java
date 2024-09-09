@@ -294,20 +294,37 @@ public class KitOrderProcessService {
             int insufficientQuantity = detail.getInsufficientQuantity();
 
             // 비즈니스 로직 수행 (재고 부족 처리 및 발주 생성)
-            Map<String, Object> productInfo = kitOrderProcessDao.findSourceAndPriceInfo(sourceName, supplierName, minPrice);
-            String sourcePriceId = (String) productInfo.get("sourcePriceId");
+            // 재료회사ID, 재료ID, 재료가격 찾아와야함
+            Map<String, Object> productInfo = kitOrderProcessDao.findProductCompanyIdAndSourceId(sourceName, supplierName, minPrice);
+            // String sourcePriceId = (String) productInfo.get("sourcePriceId");
+
+            String supplierId = (String) productInfo.get("productCompanyId");
+            String sourceId = (String) productInfo.get("sourceId");
 
             // 부족한 수량이 있을 때 발주 생성 (PRODUCT_ORDER 테이블에 INSERT)
+            // 재료주문아이디(UUID), 재료공급업체명, 재료의 ID, 부족한 수량, 재료의 가격, 현재시각, 상태 넣어야 함
             if (insufficientQuantity > 0) {
-                kitOrderProcessDao.insertProductOrder(sourcePriceId, insufficientQuantity);
+                // 재료발주요청 테이블에 넣기(PRODUCT_ORDER)
+                kitOrderProcessDao.insertProductOrder(supplierId, sourceId, minPrice, insufficientQuantity, minPrice, kitOrderId);
+
+                // 재료발주요청 로그에 값 넣기 위한 PRODUCT_ORDER SELECT(PRODUCT_ORDER_LOG 테이블)
+                List<String> productOrderIds = kitOrderProcessDao.findProductOrderIds(kitOrderId);
+
+                // 재료발주요청 로그 테이블에 값 INSERT(PRODUCT_ORDER_LOG)
+                // 각 productOrderId에 대해 로그 생성
+                for (String productOrderId : productOrderIds) {
+                    kitOrderProcessDao.insertProductOrderLog(productOrderId);
+                }
+
+
+                // KIT_ORDER 테이블의 상태를 처리중(STATUS_ID = 2)로 업데이트
+                kitOrderProcessDao.updateKitOrderStatus(kitOrderId, 2);
+
+                // KIT_ORDER_LOG 테이블에 로그 기록 추가 (상태가 2)
+                kitOrderProcessDao.insertKitOrderLog(kitOrderId, 2);  // 상태 2 = 처리중
             }
+            // UUID, PRODUCT_COMPANY_ID, SOURCE_ID, QUANTITY, PRICE, NOW(), 1
         }
-
-        // KIT_ORDER 테이블의 상태를 처리중(STATUS_ID = 2)로 업데이트
-        kitOrderProcessDao.updateKitOrderStatus(kitOrderId, 2);
-
-        // KIT_ORDER_LOG 테이블에 로그 기록 추가 (상태가 2)
-        kitOrderProcessDao.insertKitOrderLog(kitOrderId, 2);  // 상태 2 = 처리중
 
         return true;
     }

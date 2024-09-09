@@ -48,13 +48,13 @@ public interface KitOrderProcessDao {
     //void insertProductOrder(UUID productOrderId, String sourcePriceId, int insufficientQuantity);
 
     // SOURCE_PRICE_ID와 관련된 정보 조회
-    Map<String, Object> findSourceAndPriceInfo(@Param("sourceName") String sourceName,
-                                               @Param("supplierName") String supplierName,
-                                               @Param("minPrice") int minPrice);
+    Map<String, Object> findProductCompanyIdAndSourceId(@Param("sourceName") String sourceName,
+                                                        @Param("supplierName") String supplierName,
+                                                        @Param("minPrice") int minPrice);
 
     // PRODUCT_ORDER 테이블에 데이터 추가
-    void insertProductOrder(@Param("sourcePriceId") String sourcePriceId,
-                            @Param("quantity") int quantity);
+    void insertProductOrder(@Param("supplierId") String supplierId,
+                            String sourceId, @Param("quantity") int quantity, int insufficientQuantity, int minPrice, String kitOrderId);
 
 
     // KIT_ORDER_LOG 테이블에 새로운 로그 추가하는 메소드
@@ -64,7 +64,8 @@ public interface KitOrderProcessDao {
     // 밀키트 주문 상태 변경(KIT_ORDER 테이블)
     void updateKitOrderStatus(@Param("kitOrderId") String kitOrderId, @Param("status") int status);
 
+    //
+    List<String> findProductOrderIds(@Param("kitOrderId") String kitOrderId);
 
-
-
+    void insertProductOrderLog(@Param("productOrderId") String productOrderId);
 }
