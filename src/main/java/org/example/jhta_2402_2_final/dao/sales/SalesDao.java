@@ -118,4 +118,7 @@ public interface SalesDao {
 
     //새로운 업체 등록
     void insertKitCompany(String companyName, String companyAddress);
+
+    //월별 업체별
+    List<MonthlySalesDto> getMonthlySales();
 }

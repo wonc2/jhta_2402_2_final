@@ -60,7 +60,7 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            밀키트 업체별 매출액
+                            밀키트 업체별 월별 매출액
                         </div>
                         <div class="card-body">
                             <canvas id="myChart02" width="100%" height="60"></canvas>
@@ -717,29 +717,25 @@
 
 
 
+    // 두번째 차트
+    const monthList = [[${monthlySales}]];
+
+
     // 라벨 생성
-    const DATA_COUNT = 13;
     const month = [];
-    for (let i = 1; i < DATA_COUNT; ++i) {
+    for (let i = 1; i <= 12; ++i) {
         month.push(i.toString());
     }
 
-    // companyList의 각 항목을 사용하여 라벨, 데이터 포인트, 색상 생성
-    const datasets = companyList.map(company => {
-
-
-        // 각 회사에 대해 데이터 포인트를 생성 (임의로 생성하거나 실제 데이터를 사용할 수 있음)
-        const companyDataPoints = Array.from({ length: DATA_COUNT }, () => Math.floor(Math.random() * 500));
-
-        return {
-            label: company.companyName,  // 데이터셋의 라벨
-            data: companyDataPoints,  // 데이터 포인트
-            borderColor: backgroundColors,  // 데이터셋의 색상
-            fill: false,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.4
-        };
-    });
+    // companyList의 각 항목을 사용하여 데이터 포인트와 색상 생성
+    const datasets = monthList.map(company => ({
+        label: company.companyName,  // 데이터셋의 라벨
+        data: company.monthlySales,  // 서버에서 받은 월별 매출 데이터
+        borderColor: backgroundColors,  // 데이터셋의 색상
+        fill: false,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4
+    }));
 
     // 두 번째 차트 데이터와 설정 정의
     const data02 = {
@@ -774,7 +770,7 @@
                     display: true,
                     title: {
                         display: true,
-                        text: '만원'
+                        text: '원'
                     },
                     suggestedMin: 0,
                     suggestedMax: 500

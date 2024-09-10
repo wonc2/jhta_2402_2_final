@@ -32,6 +32,11 @@ public class SalesController {
     @GetMapping
     public String salesMain(Model model) {
 
+        //업체별 월별 판매량
+        List<Map<String, Object>> monthlySales = salesService.getMonthlySales();
+        model.addAttribute("monthlySales",monthlySales);
+
+
         //업체별 누적 판매량, 판매금액
         List<Map<String, String>> totalQuantityByCompanyNameList = salesService.selectTotalQuantityByCompanyName();
         model.addAttribute("totalQuantityByCompanyNameList", totalQuantityByCompanyNameList);
