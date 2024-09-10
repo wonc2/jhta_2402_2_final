@@ -160,13 +160,7 @@
         ORDER BY productOrderDate DESC
     </select>
 
-    <insert id="insertLog">
-        INSERT INTO KIT_ORDER_LOG (KIT_ORDER_LOG_ID, KIT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE)
-        VALUES (uuid(), #{kitOrderId}, #{statusId}, NOW())
-    </insert>
-
-
-    <insert id="insertKitOrderLogByKitOrderId" parameterType="String">
+    <insert id="insertKitOrderLog">
         INSERT INTO KIT_ORDER_LOG (KIT_ORDER_LOG_ID, KIT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE)
         VALUES (
                    uuid(),
@@ -175,6 +169,7 @@
                    NOW()
                )
     </insert>
+
 
 <!--    업체별 밀키트 재고 확인-->
     <select id="selectKitStorage" resultType="KitStorageDto">
@@ -401,7 +396,8 @@
             QUANTITY,
             PRICE,
             PRODUCT_ORDER_DATE,
-            STATUS_ID
+            STATUS_ID,
+            KIT_ORDER_ID
         )
         VALUES (
                    #{productOrderId},
@@ -410,7 +406,8 @@
                    #{itemQuantity},
                    #{minPrice},
                    NOW(),
-                   1
+                   1,
+                   #{kitOrderId}
                );
 
     </insert>
@@ -472,4 +469,25 @@
         ORDER BY
             orderDate DESC;
     </select>
+
+<!--    취소-->
+    <update id="updateKitOrderCancel">
+        UPDATE KIT_ORDER
+        SET STATUS_ID = 4
+        WHERE KIT_ORDER_ID = #{kitOrderId};
+    </update>
+
+    <update id="updateProductOrderCancel">
+        UPDATE PRODUCT_ORDER
+        SET STATUS_ID = 4
+        WHERE KIT_ORDER_ID = #{kitOrderId};
+    </update>
+
+    <select id="selectProductOrderIdByKitOrderId" resultType="UUID">
+        SELECT PRODUCT_ORDER_ID
+        FROM PRODUCT_ORDER
+        WHERE KIT_ORDER_ID = #{kitOrderId}
+    </select>
+
+
 </mapper>

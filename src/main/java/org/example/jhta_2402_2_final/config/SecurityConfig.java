@@ -33,13 +33,13 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web -> web.ignoring().requestMatchers(
-                "/css/**", "/js/**", "/images/**", "/h2-console/**", "/error/**", "/api/**")
+                "/css/**", "/js/**", "/images/**", "/h2-console/**", "/error/**")
         );
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
         httpSecurity.authorizeHttpRequests((auth)->auth
-                .requestMatchers("/","/member/**","/test","/adminMain/**","/product/**","/sales/**","/distribution/**","/wareHouse/**","/distributionOrder/**")
+                .requestMatchers("/","/member/**","/test","/adminMain/**","/sales/**","/distribution/**","/wareHouse/**","/distributionOrder/**")
                 .permitAll()
                 .requestMatchers("/product/role").hasAuthority("ROLE_PRODUCT_MANAGER")
                 .requestMatchers("/admin/**").hasRole("ADMIN")

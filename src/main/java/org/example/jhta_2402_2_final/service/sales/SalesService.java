@@ -63,8 +63,9 @@ public class SalesService {
     }
 
     // 상태 변경하기
-    public int updateKitOrderStatus(String kitOrderId, int statusId) {
-        return salesDao.updateKitOrderStatus(kitOrderId, statusId);
+    public void updateKitOrderStatus(UUID kitOrderId, int statusId) {
+         salesDao.updateKitOrderStatus(kitOrderId, statusId);
+         salesDao.insertKitOrderLog(kitOrderId);
     }
 
     //밀키트랑 재료 가져오기
@@ -100,12 +101,8 @@ public class SalesService {
         return salesDao.selectKitOrderLogs();
     }
 
-    public void createKitOrderLog(UUID kitOrderId, int statusId) {
-        salesDao.insertLog(kitOrderId, statusId);
-    }
-
-    public int insertKitOrderLogByKitOrderId(String kitOrderId){
-        return salesDao.insertKitOrderLogByKitOrderId(kitOrderId);
+    public int insertKitOrderLog(UUID kitOrderId){
+        return salesDao.insertKitOrderLog(kitOrderId);
     }
 
     // 창고 테이블 가져오기
@@ -119,7 +116,7 @@ public class SalesService {
     }
 
     //창고 업데이트
-    public void updateKitStorage(String kitOrderId) {
+    public void updateKitStorage(UUID kitOrderId) {
         // kitOrderId를 통해 KIT_ORDER 정보를 가져옴
         KitOrderDto kitOrder = salesDao.selectKitOrderById(kitOrderId);
 
@@ -168,33 +165,49 @@ public class SalesService {
         return salesDao.selectOrderDetail(kitOrderId,quantity);
     }
 
-    // 최저가를 파는 재료명과 업체명을 가지고 sourcePriceID값 찾기
-    public UUID findSourcePriceId(String sourceName, String companyName) {
-        return salesDao.findSourcePriceId(sourceName,companyName );
-    }
 
-    //product order, product_order_log 생성
-    public void insertProductOrder(String companyName, String sourceName, int itemQuantity, int minPrice) {
-        UUID productOrderId = UUID.randomUUID();
-        salesDao.insertProductOrder(productOrderId, companyName, sourceName, itemQuantity, minPrice);
-        salesDao.insertProductOrderLog(productOrderId);
-    }
 
     //product_order 테이블 상세 조회
     public List<ProductOrderDetailDto> selectProductOrder(){
         return salesDao.selectProductOrder();
     }
 
-    public void processOrder(String[] sourceNames, String[] companyNames, int[] itemQuantities, int[] minPrices) {
+    public void processOrder(String[] sourceNames, String[] companyNames, int[] itemQuantities,int[] stackQuantities, int[] minPrices , UUID kitOrderId) {
         for (int i = 0; i < sourceNames.length; i++) {
-            insertProductOrder(companyNames[i], sourceNames[i], itemQuantities[i], minPrices[i]);
+            //창고 재료 보다 부족한 경우에만 발주 신청
+            if (itemQuantities[i] > stackQuantities[i]){
+                insertProductOrder(companyNames[i], sourceNames[i], itemQuantities[i]-stackQuantities[i], minPrices[i], kitOrderId);
+            }
+
         }
     }
+
+    //product order, product_order_log 생성
+    public void insertProductOrder(String companyName, String sourceName, int itemQuantity, int minPrice, UUID kitOrderId) {
+        UUID productOrderId = UUID.randomUUID();
+        salesDao.insertProductOrder(productOrderId, companyName, sourceName, itemQuantity, minPrice, kitOrderId);
+        salesDao.insertProductOrderLog(productOrderId);
+    }
+
+
 
     //product_order_log 셀렉
     public List<ProductOrderLogDetailDto> selectProductOrderLog() {
         return salesDao.selectProductOrderLog();
     }
+
+    public void updateKitOrderCancel(UUID kitOrderId) {
+        salesDao.updateKitOrderCancel(kitOrderId);
+        salesDao.updateProductOrderCancel(kitOrderId);
+        salesDao.insertKitOrderLog(kitOrderId);
+
+        List<UUID> productOrderIds = salesDao.selectProductOrderIdByKitOrderId(kitOrderId);
+        for (UUID id : productOrderIds) {
+            salesDao.insertProductOrderLog(id);
+        }
+
+    }
+
 
 }
 

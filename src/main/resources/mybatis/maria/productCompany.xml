@@ -68,7 +68,7 @@
     </select>
 
     <!-- 주문 주문 주문 주문 주문 -->
-    <select id="getProductOrderList" resultType="map">
+    <select id="getProductOrderList" resultType="map" parameterType="map">
         SELECT
         ROW_NUMBER() OVER (ORDER BY po.PRODUCT_ORDER_DATE asc) AS rowNum,
         po.PRODUCT_ORDER_ID as orderId,
