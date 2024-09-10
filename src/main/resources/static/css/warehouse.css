@@ -1,0 +1,29 @@
+/* 슬라이드 인/아웃 효과를 위한 기본 스타일 */
+.slide-container {
+    overflow: hidden;
+    transition: max-height 1s ease, opacity 1s ease; /* max-height와 opacity에 대해 부드러운 전환 설정 */
+    max-height: 0; /* 초기 최대 높이 설정 */
+    opacity: 0; /* 초기 불투명도 설정 */
+}
+
+/* 슬라이드가 보일 때의 높이와 불투명도 */
+.slide-container.show {
+    max-height: 1000px; /* 충분히 큰 값으로 설정하여 모든 내용이 보이도록 함 */
+    opacity: 1; /* 완전 불투명 */
+}
+
+/* 클릭 가능한 스타일 추가 */
+.toggle-header {
+    cursor: pointer; /* 클릭할 수 있는 손 모양 커서 */
+    background-color: #f8f9fa; /* 기본 배경색 */
+    padding: 10px 15px; /* 여백 추가 */
+    border: 1px solid #ddd; /* 테두리 추가 */
+    border-radius: 5px; /* 둥근 모서리 */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* 부드러운 효과 */
+}
+
+/* 호버 시 스타일 */
+.toggle-header:hover {
+    background-color: #e9ecef; /* 호버 시 배경색 변경 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+}
