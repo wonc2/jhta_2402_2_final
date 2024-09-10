@@ -122,10 +122,10 @@ public class WareHouseController {
         logisticsWareHouseService.updateStackBySourceName(combinedList);
 
         // KitOrder의 Status 수정
-        salesService.updateKitOrderStatus(kitOrderId, 8);
+        salesService.updateKitOrderStatus(UUID.fromString(kitOrderId), 8);
 
         // KitOrderLog 기입
-        salesService.insertKitOrderLogByKitOrderId(kitOrderId);
+        salesService.insertKitOrderLog(UUID.fromString(kitOrderId));
 
         return "redirect:/distribution/wareHouseList";
     }
@@ -202,7 +202,7 @@ public class WareHouseController {
 
         return "redirect:/wareHouse/selectList";
 
-}
+    }
 
 
 
