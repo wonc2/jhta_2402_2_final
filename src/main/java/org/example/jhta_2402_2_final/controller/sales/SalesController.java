@@ -68,20 +68,17 @@ public class SalesController {
         salesService.createKitOrder(kitOrderDto);
 
         UUID kitOrderId = kitOrderDto.getKitOrderId();
-        int statusId = kitOrderDto.getStatusId();
-
-        salesService.createKitOrderLog(kitOrderId, statusId);
+        salesService.insertKitOrderLog(kitOrderId);
         return "redirect:/sales";
     }
 
     // 상태 변경
     @PostMapping("/update-status")
     public String changeKitOrderStatus(
-            @RequestParam("kitOrderId") String kitOrderId,
+            @RequestParam("kitOrderId") UUID kitOrderId,
             @RequestParam("statusId") int statusId) {
 
         salesService.updateKitOrderStatus(kitOrderId, statusId);
-        salesService.createKitOrderLog(UUID.fromString(kitOrderId), statusId);
 
         //만약 상태 아이디가 3인 경우에 재고 테이블에 해당 밀키트 추가
         if (statusId == 3) {
@@ -117,7 +114,7 @@ public class SalesController {
     @Transactional
     @PostMapping("/order/create")
     public String submitOrder(
-            @RequestParam("kitOrderId") String kitOrderId,
+            @RequestParam("kitOrderId") UUID kitOrderId,
             @RequestParam("mealkitName") String mealkitName,
             @RequestParam("quantity") int quantity,
             @RequestParam("sourceNames") String sourceNamesJson,
@@ -126,7 +123,6 @@ public class SalesController {
             @RequestParam("minPrices") String minPricesJson,
             @RequestParam("companyNames") String companyNamesJson) throws JsonProcessingException {
 
-        System.out.println("kitOrderId>>>>>"+kitOrderId);
         // JSON 문자열을 배열로 변환
         ObjectMapper mapper = new ObjectMapper();
 
@@ -136,20 +132,15 @@ public class SalesController {
         int[] minPrices = mapper.readValue(minPricesJson, int[].class);
         String[] companyNames = mapper.readValue(companyNamesJson, String[].class);
 
-        salesService.processOrder(sourceNames, companyNames, itemQuantities, minPrices);
-        int result=salesService.updateKitOrderStatus(kitOrderId, 2);
-        if (result>0){
-            salesService.insertKitOrderLogByKitOrderId(kitOrderId);
-        }else {
-            System.out.println("키트 오더 업데이트 오류뜸");
-        }
-
+        salesService.processOrder(sourceNames, companyNames, itemQuantities, stackQuantities, minPrices, kitOrderId);
+        salesService.updateKitOrderStatus(kitOrderId, 2);
 
         return "redirect:/sales/product/order";
     }
 
     @PostMapping("/shinhyeok")
-    public String shinhyeok(@RequestParam("kitOrderIdForSale") String kitOrderId,
+    public String shinhyeok(@RequestParam("kitOrderIdForSale") UUID kitOrderId,
+
                             @RequestParam("sourceNamesForSale") String sourceNamesJson,
                             @RequestParam("itemQuantitiesForSale") String itemQuantitiesJson) throws IOException {
 
@@ -185,8 +176,14 @@ public class SalesController {
         salesService.updateKitOrderStatus(kitOrderId, 8);
 
         // KitOrderLog 기입
-        salesService.insertKitOrderLogByKitOrderId(kitOrderId);
+        salesService.insertKitOrderLog(kitOrderId);
 
+        return "redirect:/sales";
+    }
+
+    @PostMapping("/cancel")
+    public String cancel (@RequestParam UUID kitOrderId) {
+        salesService.updateKitOrderCancel(kitOrderId);
         return "redirect:/sales";
     }
 

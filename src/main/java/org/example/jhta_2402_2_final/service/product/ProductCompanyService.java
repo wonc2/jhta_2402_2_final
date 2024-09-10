@@ -1,12 +1,14 @@
 package org.example.jhta_2402_2_final.service.product;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.javassist.NotFoundException;
 import org.example.jhta_2402_2_final.dao.product.ProductCompanyDao;
 import org.example.jhta_2402_2_final.exception.types.productCompany.CompanySourceException;
 import org.example.jhta_2402_2_final.exception.types.productCompany.ProduceSourceException;
 import org.example.jhta_2402_2_final.exception.types.productCompany.ProductCompanyOrderProcessException;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyChartDto;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +23,14 @@ public class ProductCompanyService {
     private final ProductCompanyDao productCompanyDao;
     private final ProductCompanyUtil productCompanyUtil;
 
+    // 유저 인증
     public String getCompanyIdByUserId(String userId) {
         String userUid = productCompanyDao.getUserUidByUserId(userId);
-        return productCompanyDao.getCompanyIdByUserUid(userUid);
+        String companyId = productCompanyDao.getCompanyIdByUserUid(userUid);
+        if (companyId == null || companyId.isEmpty()) {
+            throw new IllegalArgumentException("생산 업체 직원이 아니거나 권한이 없음");
+        }
+        return companyId;
     }
 
     /* CompanySource Table */
@@ -115,29 +122,29 @@ public class ProductCompanyService {
     /* Source Warehouse Table */
 
     /* 생산 창고 리스트 다 가져옴 */
-    public List<Map<String, Object>> getWarehouseSources(String companyName) {
+    public List<Map<String, Object>> getWarehouseSources(String companyId) {
         // { "produceDate", "sourceWarehouseId", "sourceQuantity", "sourceName" }
-        return productCompanyDao.getWarehouseSources(companyName);
+        return productCompanyDao.getWarehouseSources(companyId);
     }
 
 
     /* Order Table */
 
     /* 주문 리스트 가져옴 */
-    public List<Map<String, Object>> getProductOrderList(String companyName, Map<String, Object> paramData) {
-        paramData.put("companyName", companyName);
+    public List<Map<String, Object>> getProductOrderList(String companyId, Map<String, Object> paramData) {
+        paramData.put("companyId", companyId);
         // values: { orderId, sourceName, sourcePrice, quantity, totalPrice, orderDate, orderStatus }
         return productCompanyDao.getProductOrderList(paramData);
     }
 
     // 재료 검색 셀렉트 리스트
-    public List<String> selectAllCompanySource(String companyName) {
-        return productCompanyDao.selectAllCompanySource(companyName);
+    public List<String> selectAllCompanySource(String companyId) {
+        return productCompanyDao.selectAllCompanySource(companyId);
     }
 
     /* 주문 처리 프로세스 */
     @Transactional
-    public List<Map<String, Object>> orderProcess(String companyName, Map<String, Object> paramData) {
+    public List<Map<String, Object>> orderProcess(String companyId, Map<String, Object> paramData) {
         int sourceQuantity = Integer.parseInt(paramData.get("sourceQuantity").toString());
         int paramStockBalance = Integer.parseInt(paramData.get("stockBalance").toString());
         int orderStatus = productCompanyDao.getOrderStatus(paramData.get("orderId").toString());
@@ -163,15 +170,15 @@ public class ProductCompanyService {
         productCompanyDao.orderProcess(paramData); // product_order 상태 업데이트 -> 입고대기
         productCompanyDao.orderLog(paramData); // product_order_log insert
 
-        return getProductOrderList(companyName, paramData);
+        return getProductOrderList(companyId, paramData);
     }
 
-    public List<ProductCompanyChartDto> getChart(String companyName) {
-        return productCompanyDao.getChart(companyName);
+    public List<ProductCompanyChartDto> getChart(String companyId) {
+        return productCompanyDao.getChart(companyId);
     }
 
-    public List<Map<String, Object>> orderChart(String companyName, Map<String, Object> paramData) {
-        paramData.put("companyName", companyName);
+    public List<Map<String, Object>> orderChart(String companyId, Map<String, Object> paramData) {
+        paramData.put("companyId", companyId);
         return productCompanyDao.orderChart(paramData);
     }
 }

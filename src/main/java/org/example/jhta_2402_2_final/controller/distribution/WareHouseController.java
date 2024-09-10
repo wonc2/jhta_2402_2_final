@@ -117,40 +117,12 @@ public class WareHouseController {
         logisticsWareHouseService.updateStackBySourceName(combinedList);
 
         // KitOrder의 Status 수정
-        salesService.updateKitOrderStatus(kitOrderId, 8);
+        salesService.updateKitOrderStatus(UUID.fromString(kitOrderId), 8);
 
         // KitOrderLog 기입
-        salesService.insertKitOrderLogByKitOrderId(kitOrderId);
+        salesService.insertKitOrderLog(UUID.fromString(kitOrderId));
 
-        return "redirect:/wareHouse/selectList";
-    }
-
-    private void deductQuantityFIFO(List<Map<String, Object>> combinedList) {
-
-
-        for (Map<String, Object> itemMap : combinedList) {
-            int remainQuantity = (int) itemMap.get("quantity");
-            String sourceName = (String) itemMap.get("sourceName");
-
-            List<LogisticsWareHouseDto> logisticsWareHouseDtos = logisticsWareHouseService.selectStacksBySourceFIFO(sourceName);
-
-            for (LogisticsWareHouseDto logisticsWareHouseDto : logisticsWareHouseDtos) {
-                String stackId = logisticsWareHouseDto.getLogisticsWareHouseUUID();
-                if (remainQuantity - logisticsWareHouseDto.getQuantity() > 0) {
-                    Map<String, Object> params = new HashMap<>();
-                    params.put("remainQuantity", remainQuantity);
-                    params.put("stackId", stackId);
-
-                    logisticsWareHouseService.updateStackQuantityFIFO(params);
-
-                    remainQuantity = remainQuantity - logisticsWareHouseDtos.get(0).getQuantity();
-                }
-
-            }
-
-
-        }
-
+        return "redirect:/distribution/wareHouseList";
     }
 
 

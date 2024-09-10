@@ -18,8 +18,7 @@ public class ProductCompanyRestController {
     private final ProductCompanyService productCompanyService;
 
     @ModelAttribute("companyId")
-    public String getCompanyId(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        if (userDetails == null || userDetails.getMemberDto().getUserId().equals("admin")) return "한림"; // 개발 편의상 설정
+    public String getCompanyId(@AuthenticationPrincipal CustomUserDetails userDetails) { // 개발 편의상 설정
         return productCompanyService.getCompanyIdByUserId(userDetails.getMemberDto().getUserId());
     }
 

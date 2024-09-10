@@ -30,7 +30,7 @@ public interface SalesDao {
     List<Map<String, Object>> getMealkitIdAndNames();
 
     // 상태 변경하기
-    int updateKitOrderStatus(@Param("kitOrderId") String kitOrderId, @Param("statusId") int statusId);
+    int updateKitOrderStatus(UUID kitOrderId, int statusId);
 
     //밀키트별 재료 가져오기
     List<KitSourceDetailDto> findAllKitSourceDetail();
@@ -49,9 +49,7 @@ public interface SalesDao {
     //로그 셀렉
     List<KitOrderLogDto> selectKitOrderLogs();
 
-    void insertLog(UUID kitOrderId, int statusId);
-
-    int insertKitOrderLogByKitOrderId(String KitOrderId);
+    int insertKitOrderLog(UUID KitOrderId);
 
     //창고
     List<KitCompletedDto> selectKitStorage();
@@ -60,7 +58,7 @@ public interface SalesDao {
     List<KitOrderLogDto> findAllCompleted();
 
     // 주문 id값으로 주문 정보를 가져옴
-    KitOrderDto selectKitOrderById(String kitOrderId);
+    KitOrderDto selectKitOrderById(UUID kitOrderId);
 
     //밀키트 아이디와 업체 아이디로 창고 정보를 가져옴
     KitStorageDto selectKitStorageById(String kitCompanyId, String mealkitId);
@@ -91,7 +89,7 @@ public interface SalesDao {
     UUID findSourcePriceId(String sourceName, String companyName);
 
     //product_order 인서트
-    int insertProductOrder(UUID productOrderId, String companyName, String sourceName, int itemQuantity, int minPrice);
+    int insertProductOrder(UUID productOrderId, String companyName, String sourceName, int itemQuantity, int minPrice, UUID kitOrderId);
 
     //product_order 테이블 조회
     List<ProductOrderDetailDto> selectProductOrder();
@@ -103,4 +101,9 @@ public interface SalesDao {
     List<ProductOrderLogDetailDto> selectProductOrderLog();
 
 
+    void updateKitOrderCancel(UUID kitOrderId);
+
+    void updateProductOrderCancel(UUID kitOrderId);
+
+    List<UUID> selectProductOrderIdByKitOrderId(UUID kitOrderId);
 }

@@ -325,7 +325,7 @@ function getCompanySourceTable() {
                             </div>
                             <div>
                             <button type="button" class="btn btn-outline-info btn-sm edit-btn" data-action="update" style="display: none;">수정</button>
-                            <button type="button" class="btn btn-outline-danger btn-sm edit-btn" data-action="delete" style="display: none;">가리기</button>
+<!--                            <button type="button" class="btn btn-outline-danger btn-sm edit-btn" data-action="delete" style="display: none;">가리기</button>-->
                             </div>
                             </div>
                         `;
