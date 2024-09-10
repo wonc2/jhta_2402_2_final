@@ -1,7 +1,7 @@
 $(document).ready(function (){
     getProductOrderList();
     getProductOrderCompanyName()
-    productOrderChartCompanyOption.hide()
+    $(".productOrderChartCompanyOption").hide()
 
     getSourcePriceList();
     getSourcePriceCompanyName();
@@ -154,6 +154,29 @@ let sourceMinPriceChart; // 전역 변수로 차트 객체를 선언
 let productOrderAdminChart;
 let chartType = 'bar'; // 기본 차트 타입은 'bar'
 
+function getSourcePriceCompanyName() {
+    $.ajax({
+        url: '/api/product/admin/main/data/sourcePriceChart', // 모든 재료의 가격 데이터를 가져오는 URL
+        type: 'GET',
+        contentType: 'application/json',
+        success: function (response) {
+            const productCompanyNames = new Set();
+            const sourcePriceCompanyOption = $("#sourcePriceCompanyOption");
+            sourcePriceCompanyOption.empty();
+            response.forEach(function (item) {
+                productCompanyNames.add(item.productCompanyName)
+            })
+            productCompanyNames.forEach(function (companyName) {
+                sourcePriceCompanyOption.append(
+                    `<option value="${companyName}">${companyName}</option>`
+                );
+            })
+        },
+        error: function (xhr, status, error) {
+            console.error('차트 데이터 가져오는데 실패함:', error);
+        }
+    });
+}
 function updateSourceMinPriceChart() {
     $.ajax({
         url: '/api/product/admin/main/data/sourceMinPriceChart', // 최저가 데이터를 가져오는 URL
@@ -180,53 +203,6 @@ function updateSourceMinPriceChart() {
         }
     });
 }
-function getSourcePriceCompanyName() {
-    $.ajax({
-        url: '/api/product/admin/main/data/sourcePriceChart', // 모든 재료의 가격 데이터를 가져오는 URL
-        type: 'GET',
-        contentType: 'application/json',
-        success: function (response) {
-            const productCompanyNames = new Set();
-            const sourcePriceCompanyOption = $("#sourcePriceCompanyOption");
-            sourcePriceCompanyOption.empty();
-            response.forEach(function (item) {
-                productCompanyNames.add(item.productCompanyName)
-            })
-            productCompanyNames.forEach(function (companyName) {
-                sourcePriceCompanyOption.append(
-                    `<option value="${companyName}">${companyName}</option>`
-                );
-            })
-        },
-        error: function (xhr, status, error) {
-            console.error('차트 데이터 가져오는데 실패함:', error);
-        }
-    });
-}
-
-    function getProductOrderCompanyName(){
-        $.ajax({
-            url: '/api/product/admin/main/data/productOrderChart', // 모든 재료의 가격 데이터를 가져오는 URL
-            type: 'GET',
-            contentType: 'application/json',
-            success: function (response) {
-                const productCompanyNames = new Set();
-                const productOrderCompanyOption = $("#productOrderCompanyOption");
-                productOrderCompanyOption.empty();
-                response.forEach(function (item){
-                    productCompanyNames.add(item.productCompanyName)
-                })
-                productCompanyNames.forEach(function (companyName){
-                    productOrderCompanyOption.append(
-                        `<option value="${companyName}">${companyName}</option>`
-                    );
-                })
-            },
-            error: function (xhr, status, error) {
-                console.error('차트 데이터 가져오는데 실패함:', error);
-            }
-        });
-    }
 function updateSourcePriceProductCompanyChart() {
     const sourcePriceCompanyOption = $("#sourcePriceCompanyOption").val();
     $.ajax({
@@ -256,6 +232,30 @@ function updateSourcePriceProductCompanyChart() {
         }
     });
 }
+    function getProductOrderCompanyName(){
+        $.ajax({
+            url: '/api/product/admin/main/data/productOrderChart', // 모든 재료의 가격 데이터를 가져오는 URL
+            type: 'GET',
+            contentType: 'application/json',
+            success: function (response) {
+                const productCompanyNames = new Set();
+                const productOrderCompanyOption = $("#productOrderCompanyOption");
+                productOrderCompanyOption.empty();
+                response.forEach(function (item){
+                    productCompanyNames.add(item.productCompanyName)
+                })
+                productCompanyNames.forEach(function (companyName){
+                    productOrderCompanyOption.append(
+                        `<option value="${companyName}">${companyName}</option>`
+                    );
+                })
+            },
+            error: function (xhr, status, error) {
+                console.error('차트 데이터 가져오는데 실패함:', error);
+            }
+        });
+    }
+
 function updateProductOrderCountChart() {
     $.ajax({
         url: '/api/product/admin/main/data/productOrderCountChart', // 최저가 데이터를 가져오는 URL
@@ -309,22 +309,22 @@ function updateProductCountListChart() {
 function updateProductOrderCompanyChart() {
     const productOrderCompanyOption = $("#productOrderCompanyOption").val();
     $.ajax({
-        url: '/api/product/admin/main/data/productOrderChart', // 업체별 생산품 가격 데이터를 가져오는 URL
+        url: '/api/product/admin/main/data/productOrderQuantityChart', // 업체별 생산품 가격 데이터를 가져오는 URL
         type: 'GET',
         contentType: 'application/json',
         data : {
             productCompanyName : productOrderCompanyOption
         },
         success: function (response) {
-            const sourceNames = []; // 제품 이름 배열
+            const productNames = []; // 제품 이름 배열
             const quantities = []; // 가격 배열
 
             // response 데이터를 순회하며 필요한 정보 추출
             response.forEach(function (item) {
-                sourceNames.push(item.sourceName);
+                productNames.push(item.productName);
                 quantities.push(item.quantity);
             });
-            productOrderAdminChart.data.labels = sourceNames;
+            productOrderAdminChart.data.labels = productNames;
             productOrderAdminChart.data.datasets[0].label = '수량';
             productOrderAdminChart.data.datasets[0].data = quantities;
             productOrderAdminChart.data.datasets[0].backgroundColor = colors.slice(0, quantities.length);

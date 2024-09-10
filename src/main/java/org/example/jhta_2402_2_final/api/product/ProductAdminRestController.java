@@ -3,10 +3,7 @@ package org.example.jhta_2402_2_final.api.product;
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.model.dto.common.SourceMinPriceDto;
 import org.example.jhta_2402_2_final.model.dto.common.SourcePriceViewDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductCompanySourcePriceDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductCountDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductOrderCountDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductOrderViewDto;
+import org.example.jhta_2402_2_final.model.dto.product.*;
 import org.example.jhta_2402_2_final.service.product.ProductAdminService;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +16,7 @@ import java.util.List;
 public class ProductAdminRestController {
     private final ProductAdminService productAdminService;
     List<ProductOrderViewDto> productOrderList;
+    List<ProductOrderQuantityDto> productOrderQuantityList;
     List<ProductOrderViewDto>productOrderSearchList;
     List<SourcePriceViewDto>sourcePriceList;
     List<SourcePriceViewDto>sourcePriceSearchList;
@@ -70,6 +68,11 @@ public class ProductAdminRestController {
             productOrderList = productAdminService.getProductOrderListCompanyName(companyName);
         }
         return productOrderList;
+    }
+    @GetMapping("/main/data/productOrderQuantityChart")
+    public List<ProductOrderQuantityDto> getProductOrderQuantityChart(@RequestParam(value = "productCompanyName",defaultValue = "none")String productCompanyName){
+            productOrderQuantityList = productAdminService.getProductOrderQuantityListCompanyName(productCompanyName);
+        return productOrderQuantityList;
     }
     @GetMapping("/main/data/sourcePriceChart")
     public List<SourcePriceViewDto> getSourcePriceChart(){
