@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
     <link href="../../static/css/styles.css" th:href="@{/css/warehouse.css}" rel="stylesheet"/>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 </head>
 <body>
 <th:block th:replace="fragment/adminHeader :: body"></th:block>
@@ -146,7 +146,7 @@
                             <td th:text="${details.status}"></td>
                             <td>
                                 <button
-                                        th:if="${details.status == '처리전'}"
+                                        th:if="${details.status == '처리전'|| details.status == '처리중' }"
                                         class="btn btn-primary"
                                         data-bs-toggle="modal"
                                         data-bs-target="#orderDetailModal"
@@ -154,11 +154,11 @@
                                         data-order-id=${details.kitOrderId},
                                         data-quantity=${details.quantity},
                                         data-mealkit-name=${details.mealkitName}">
-                                    발주 요청 상세
+                                    발주요청 상세
                                 </button>
 
                                 <button
-                                        th:if="${details.status != '처리전'}"
+                                        th:if="${details.status != '처리전' && details.status !='처리중'}"
                                         class="btn btn-secondary"
                                         disabled>
                                     요청 처리 중
@@ -180,7 +180,7 @@
                 </div>
 
                 <div class="card-body slide-container">
-
+                    <!-- 검색 폼 -->
                     <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3"
                           style="width: 400px;">
                         <select class="datatable-selector" name="category">
@@ -196,6 +196,7 @@
                     </form>
 
 
+                    <!-- 테이블 -->
                     <table id="datatablesSimple03">
                         <thead>
                         <tr>
@@ -215,7 +216,6 @@
                             <th>발주</th>
                         </tr>
                         </tfoot>
-                        <!--tbody > tr > td-->
                         <tbody>
                         <tr th:each="min, iterStat : ${minSourcePrice}">
                             <td th:text="${iterStat.count}"></td>
@@ -238,7 +238,66 @@
                 </div>
             </div>
 
+            <div class="card mb-5">
+                <div class="card-header toggle-header">
+                    <i class="fas fa-chevron-down me-1"></i> <!-- 아이콘을 클릭 가능하게 보이도록 변경 -->
+                    최저가 차트 확인
+                </div>
+
+
+                <div class="card-body slide-container">
+                    <!-- 검색 버튼 (모달 열기 버튼) -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchModal">
+                        검색 조건 입력
+                    </button>
+                    <canvas id="line-chart" width="420" height="200"></canvas>
+                </div>
+            </div>
         </div>
+
+
+        <!-- 검색 조건 입력 모달 -->
+        <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="searchModalLabel">검색 조건 입력</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="searchForm">
+                            <div class="mb-3">
+                                <label for="sourceNameForChart" class="form-label">Source Name</label>
+                                <select class="form-select" id="sourceNameForChart" name="sourceName" required>
+                                    <option value="">Choose Source Name</option>
+                                    <!-- DB에서 받아온 값들이 들어감 -->
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="companyNameForChart" class="form-label">Company Name</label>
+                                <select class="form-select" id="companyNameForChart" name="companyName" required>
+                                    <option value="">Choose Company Name</option>
+                                    <!-- DB에서 받아온 값들이 들어감 -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="startDateForChart" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDateForChart" name="startDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="endDateForChart" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDateForChart" name="endDate" required>
+                            </div>
+                            <button type="button" class="btn btn-primary" id="searchBtn">데이터 추가</button>
+                            <button type="button" class="btn btn-secondary" id="resetBtn">차트 초기화</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <!-- 로그 모달 Modal -->
         <div class="modal fade" id="LogModal" tabindex="-1" aria-labelledby="LogModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -391,6 +450,134 @@
 </main>
 </div>
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('line-chart').getContext('2d');
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [], // 날짜
+                datasets: [] // 가격 데이터
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: '상품별 가격 변동차트'
+                }
+            }
+        });
+
+        // 데이터 추가 버튼 클릭 이벤트
+        document.getElementById('searchBtn').addEventListener('click', function () {
+            var sourceName = document.getElementById('sourceNameForChart').value;
+            var companyName = document.getElementById('companyNameForChart').value;
+            var startDate = document.getElementById('startDateForChart').value;
+            var endDate = document.getElementById('endDateForChart').value;
+
+            fetch(`/api/wareHouse/chart?sourceName=${encodeURIComponent(sourceName)}&companyName=${encodeURIComponent(companyName)}&startDate=${startDate}&endDate=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 데이터 가공
+                    const newLabels = [...new Set(data.map(item => item.date))]; // 새로운 날짜 목록
+                    newLabels.sort((a, b) => new Date(a) - new Date(b)); // 날짜 정렬
+
+                    // 데이터셋 업데이트
+                    data.forEach(item => {
+                        let dataset = myLineChart.data.datasets.find(ds => ds.label === item.companyName + " " + item.sourceName);
+                        if (!dataset) {
+                            dataset = {
+                                label: item.companyName + " " + item.sourceName,
+                                data: new Array(newLabels.length).fill(null), // 정렬된 레이블 수만큼 빈 데이터 배열 생성
+                                borderColor: getRandomColor(),
+                                fill: false
+                            };
+                            myLineChart.data.datasets.push(dataset);
+                        }
+
+                        // 데이터 포인트 반영
+                        const index = newLabels.indexOf(item.date);
+                        if (index !== -1) {
+                            dataset.data[index] = item.price;
+                        }
+                    });
+
+                    // 기존 레이블과 데이터셋을 날짜 순으로 정렬
+                    myLineChart.data.labels = newLabels;
+                    myLineChart.data.datasets.forEach(dataset => {
+                        dataset.data = newLabels.map(date => dataset.data[newLabels.indexOf(date)] || null);
+                    });
+
+                    // 차트 업데이트
+                    myLineChart.update();
+
+                    // 모달 닫기
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('searchModal'));
+                    modal.hide();
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+
+        // 차트 초기화 버튼 클릭 이벤트
+        document.getElementById('resetBtn').addEventListener('click', function () {
+            // 차트 데이터 초기화
+            myLineChart.data.labels = [];
+            myLineChart.data.datasets = [];
+            myLineChart.update();
+        });
+
+        // 색상 생성 함수
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    });
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // sourceName과 companyName을 가져와서 셀렉트 옵션을 채우는 함수
+        function loadSelectOptions() {
+            // sourceName을 DB에서 받아오기
+            fetch('/api/wareHouse/getSource')
+                .then(response => response.json())
+                .then(data => {
+                    const sourceSelect = document.getElementById('sourceNameForChart');
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.NAME;
+                        option.text = item.NAME;
+                        sourceSelect.add(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching source names:', error));
+
+            // companyName을 DB에서 받아오기
+            fetch('/api/wareHouse/getCompany')
+                .then(response => response.json())
+                .then(data => {
+                    const companySelect = document.getElementById('companyNameForChart');
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.NAME;
+                        option.text = item.NAME;
+                        companySelect.add(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching company names:', error));
+        }
+
+        // 페이지 로드 시 옵션 목록 로드
+        loadSelectOptions();
+    });
+
+
+
+
+
+
     // 슬라이드
     document.addEventListener('DOMContentLoaded', function () {
         // 모든 .toggle-header 요소와 해당 .slide-container 요소를 선택

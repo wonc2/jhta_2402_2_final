@@ -7,6 +7,7 @@ import org.example.jhta_2402_2_final.model.dto.distribution.LogisticsWareHouseDt
 //import org.example.jhta_2402_2_final.util.SmsUtil;
 
 import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.wareHouseChartDto;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -127,6 +128,18 @@ public class LogisticsWareHouseService {
 
     public void updateStackQuantityFIFO(Map<String, Object> params) {
         distributionDao.updateStackQuantityFIFO(params);
+    }
+
+    public List<Map<String, Object>> getSource() {
+        return distributionDao.getSource();
+    }
+
+    public List<Map<String, Object>> getCompany() {
+    return distributionDao.getCompanyName();
+    }
+
+    public List<wareHouseChartDto> getChartData(wareHouseChartDto dto) {
+    return distributionDao.getChartData(dto);
     }
 }
 

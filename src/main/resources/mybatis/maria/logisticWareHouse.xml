@@ -2,14 +2,49 @@
 <mapper namespace="org.example.jhta_2402_2_final.dao.distribution.DistributionDao">
 
 
+    <select id="getChartData" resultType="wareHouseChartDto" parameterType="wareHouseChartDto">
+
+        SELECT
+            sph.SOURCE_PRICE_ID,
+            sph.NEW_PRICE as price,
+            s.NAME AS sourceName,
+            c.NAME AS companyName,
+            sph.CHANGE_DATE as date
+        FROM
+            SOURCE_PRICE_HISTORY sph
+                JOIN
+            SOURCE_PRICE sp ON sph.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+                JOIN
+            SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
+                JOIN
+            PRODUCT_COMPANY c ON sp.PRODUCT_COMPANY_ID = c.PRODUCT_COMPANY_ID
+        WHERE
+            c.NAME = #{companyName}
+          AND s.NAME = #{sourceName}
+          AND sph.CHANGE_DATE BETWEEN #{startDate} AND #{endDate}
+        ORDER BY
+            sph.CHANGE_DATE
+    </select>
+
+
+
+
+    <select id="getSource" resultType="map" >
+        select NAME from SOURCE
+    </select>
+
+    <select id="getCompanyName" resultType="map">
+        select NAME from PRODUCT_COMPANY
+    </select>
+
 
     <!-- FIFO 순서로 해당 SOURCE의 스택을 가져오는 쿼리 -->
     <select id="selectStacksBySourceFIFO" parameterType="String" resultType="LogisticsWareHouseDto">
         SELECT LOGISTICS_WAREHOUSE_STACK_ID as logisticsWareHouseUUID,
-        QUANTITY as quantity
+               QUANTITY                     as quantity
         FROM LOGISTICS_WAREHOUSE_STACK
         WHERE SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = #{sourceName})
-        ORDER BY created_at ASC
+        ORDER BY created_at ASC, LOGISTICS_WAREHOUSE_STACK_ID ASC
     </select>
 
     <update id="updateStackQuantityFIFO" parameterType="map">
