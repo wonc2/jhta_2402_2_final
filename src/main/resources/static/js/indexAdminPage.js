@@ -37,7 +37,6 @@ const productCompanyOption = document.getElementById("productCompanyOption");
 const sourcePriceChartCompanyOption = $(".sourcePriceChartCompanyOption");
 
 sourcePriceChartCompanyOption.hide()
-// const productCompanyOption = document.getElementById("productCompanyOption")
 sourcePriceChartOption.addEventListener("change",function (){
     const selectedSourcePriceChartOptionValue = sourcePriceChartOption.value;
     if(selectedSourcePriceChartOptionValue === "sourceMinPrice"){
@@ -50,7 +49,6 @@ sourcePriceChartOption.addEventListener("change",function (){
     }
 })
 productCompanyOption.addEventListener("change",function (){
-    const selectedProductCompanyOption = productCompanyOption.value;
     updateSourcePriceProductCompanyChart()
 })
 //productOrder 차트 옵션
@@ -59,10 +57,8 @@ const productOrderChartOption = document.getElementById("productOrderChartOption
 productOrderChartOption.addEventListener("change",function (){
     const selectedProductOrderChartOptionValue = productOrderChartOption.value;
     if(selectedProductOrderChartOptionValue === "productOrderCountByCompany"){
-        console.log(selectedProductOrderChartOptionValue);
         updateProductOrderCountChart()
     }else if (selectedProductOrderChartOptionValue === "productOrderCountByProduct"){
-        console.log(selectedProductOrderChartOptionValue);
         updateProductCountListChart()
     }
 })
@@ -82,7 +78,6 @@ function updateSourceMinPriceChart() {
             const companyNames = []; // 회사 이름 배열
             const productNames = []; // 제품 이름 배열
             const prices = []; // 최저가 배열
-            // console.log(response)
             // response 데이터를 순회하며 필요한 정보 추출
             response.forEach(function (item) {
                 companyNames.push(item.productCompanyName);
@@ -102,7 +97,7 @@ function updateSourceMinPriceChart() {
 }
 function getProductCompanyName(){
     $.ajax({
-        url: '/api/product/admin/main/data/sourceMinPriceChart', // 최저가 데이터를 가져오는 URL
+        url: '/api/product/admin/main/data/sourcePriceChart', // 최저가 데이터를 가져오는 URL
         type: 'GET',
         contentType: 'application/json',
         success: function (response) {
@@ -117,7 +112,6 @@ function getProductCompanyName(){
                     `<option value="${companyName}">${companyName}</option>`
                 );
             })
-            console.log(productCompanyName)
         },
         error: function (xhr, status, error) {
             console.error('차트 데이터 가져오는데 실패함:', error);
@@ -126,7 +120,6 @@ function getProductCompanyName(){
 }
 function updateSourcePriceProductCompanyChart() {
     const productCompanyOption = $("#productCompanyOption").val();
-    console.log(productCompanyOption)
     $.ajax({
         url: '/api/product/admin/main/data/sourcePriceCompanyChart', // 업체별 생산품 가격 데이터를 가져오는 URL
         type: 'GET',
@@ -138,7 +131,6 @@ function updateSourcePriceProductCompanyChart() {
             const productNames = []; // 제품 이름 배열
             const prices = []; // 가격 배열
 
-            console.log(response)
             // response 데이터를 순회하며 필요한 정보 추출
             response.forEach(function (item) {
                 productNames.push(item.productName);
@@ -163,7 +155,7 @@ function updateProductOrderCountChart() {
         success: function (response) {
             const companyNames = []; // 회사 이름 배열
             const count = []; // 개수 배열
-            // console.log(response)
+
             // response 데이터를 순회하며 필요한 정보 추출
             response.forEach(function (item) {
                 companyNames.push(item.productCompanyName);
@@ -188,7 +180,7 @@ function updateProductCountListChart() {
         success: function (response) {
             const productNames = []; // 회사 이름 배열
             const quantity = []; // 개수 배열
-            // console.log(response)
+
             // response 데이터를 순회하며 필요한 정보 추출
             response.forEach(function (item) {
                 productNames.push(item.productName);
