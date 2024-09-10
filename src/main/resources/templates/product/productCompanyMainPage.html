@@ -22,7 +22,7 @@
                                 </div>
                                 <!-- 드롭다운 버튼 -->
                                 <select id="chartMonthSelect" class="form-select" style="width: 100px;">
-                                    <option value="all" selected>2024년</option>
+                                    <option value="" selected>2024년</option>
                                     <option th:each="i : ${#numbers.sequence(1, 12)}" th:value="${i}" th:text="${i}+월"></option>
                                 </select>
                             </div>
@@ -79,15 +79,7 @@
                                     <th>생산품명</th>
                                     <th>가격</th>
                                     <th>현재 창고 재고량</th>
-                                    <th>
-                                        <div class="d-flex justify-content-between">
-                                            <span>작업</span>
-                                            <div>
-                                                <input type="checkbox" id="companySourceEditCheckBox">
-                                                <label for="companySourceEditCheckBox">가격수정</label>
-                                            </div>
-                                        </div>
-                                    </th>
+                                    <th>작업</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -140,7 +132,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="updateSourceModalLabel">가격 수정</h1>
+                                        <h1 class="modal-title fs-5" id="updateSourceModalLabel">판매 가격 수정</h1>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">

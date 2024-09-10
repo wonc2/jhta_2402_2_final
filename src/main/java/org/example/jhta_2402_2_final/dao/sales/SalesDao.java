@@ -106,4 +106,19 @@ public interface SalesDao {
     void updateProductOrderCancel(UUID kitOrderId);
 
     List<UUID> selectProductOrderIdByKitOrderId(UUID kitOrderId);
+
+    //창고에서 밀키트 별 재고 확인
+    List<Map<String, String>> selectKitStorageTotalQuantity();
+
+    //처리완료된(판매된) 밀키트 수량 확인
+    List<Map<String, String>> selectKitTotalQuantity();
+
+    //업체별 누적 판매량과 금액
+    List<Map<String, String>> selectTotalQuantityByCompanyName();
+
+    //새로운 업체 등록
+    void insertKitCompany(String companyName, String companyAddress);
+
+    //월별 업체별
+    List<MonthlySalesDto> getMonthlySales();
 }
