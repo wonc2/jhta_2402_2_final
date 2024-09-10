@@ -46,4 +46,9 @@ public interface DistributionDao {
     int updateStackBySourceName(Map<String, Object> map);
 
     void insertProductOrder(Map<String, Object> map);
+
+
+    List<LogisticsWareHouseDto> selectStacksBySourceFIFO(String sourceName);
+
+    void updateStackQuantityFIFO(Map<String, Object> params);
 }

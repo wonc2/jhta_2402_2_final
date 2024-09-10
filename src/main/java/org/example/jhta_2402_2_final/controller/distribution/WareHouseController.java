@@ -30,13 +30,14 @@ public class WareHouseController {
 
     private final LogisticsWareHouseService logisticsWareHouseService;
     private final SalesService salesService;
+
     //    private final SmsUtil smsUtil;
     @GetMapping("/selectAll")
     public String selectAll(Model model) {
 
         //최소 가격 셀렉
         List<SourcePriceDto> minSourcePrice = salesService.getMinSourcePrice();
-        model.addAttribute("minSourcePrice",minSourcePrice);
+        model.addAttribute("minSourcePrice", minSourcePrice);
 
         //상세정보 조인해서 가져오기
         List<KitOrderDetailDto> kitOrderDetails = salesService.getAllKitOrderDetail();
@@ -87,7 +88,6 @@ public class WareHouseController {
     }
 
 
-
     @PostMapping("/sales")
     public String shinhyeok(@RequestParam("kitOrderIdForSale") String kitOrderId,
                             @RequestParam("sourceNamesForSale") String sourceNamesJson,
@@ -113,12 +113,7 @@ public class WareHouseController {
             combinedList.add(itemMap);
         }
 
-        // 데이터 저장을 위한 Map 생성
-        Map<String, Object> map = new HashMap<>();
-        map.put("kitOrderId", kitOrderId);
-        map.put("combinedList", combinedList);
-
-        // 창고에서 차감
+        // 창고에서 차감 (FIFO 방식 적용)
         logisticsWareHouseService.updateStackBySourceName(combinedList);
 
         // KitOrder의 Status 수정
@@ -127,7 +122,35 @@ public class WareHouseController {
         // KitOrderLog 기입
         salesService.insertKitOrderLogByKitOrderId(kitOrderId);
 
-        return "redirect:/distribution/wareHouseList";
+        return "redirect:/wareHouse/selectList";
+    }
+
+    private void deductQuantityFIFO(List<Map<String, Object>> combinedList) {
+
+
+        for (Map<String, Object> itemMap : combinedList) {
+            int remainQuantity = (int) itemMap.get("quantity");
+            String sourceName = (String) itemMap.get("sourceName");
+
+            List<LogisticsWareHouseDto> logisticsWareHouseDtos = logisticsWareHouseService.selectStacksBySourceFIFO(sourceName);
+
+            for (LogisticsWareHouseDto logisticsWareHouseDto : logisticsWareHouseDtos) {
+                String stackId = logisticsWareHouseDto.getLogisticsWareHouseUUID();
+                if (remainQuantity - logisticsWareHouseDto.getQuantity() > 0) {
+                    Map<String, Object> params = new HashMap<>();
+                    params.put("remainQuantity", remainQuantity);
+                    params.put("stackId", stackId);
+
+                    logisticsWareHouseService.updateStackQuantityFIFO(params);
+
+                    remainQuantity = remainQuantity - logisticsWareHouseDtos.get(0).getQuantity();
+                }
+
+            }
+
+
+        }
+
     }
 
 
@@ -188,9 +211,9 @@ public class WareHouseController {
 
     @PostMapping("/singleOrder")
     public String singleOrder(@RequestParam("companyName") String companyName,
-                              @RequestParam("sourceName")String sourceName,
+                              @RequestParam("sourceName") String sourceName,
                               @RequestParam("price") String price,
-                              @RequestParam("quantity") int quantity){
+                              @RequestParam("quantity") int quantity) {
 
         Map<String, Object> map = new HashMap<>();
         map.put("companyName", companyName);
@@ -202,8 +225,7 @@ public class WareHouseController {
 
         return "redirect:/wareHouse/selectList";
 
-}
-
+    }
 
 
 //    @GetMapping("/sendMSG")

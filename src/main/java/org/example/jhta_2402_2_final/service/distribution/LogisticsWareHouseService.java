@@ -9,6 +9,7 @@ import org.example.jhta_2402_2_final.model.dto.distribution.LogisticsWareHouseDt
 import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDto;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,26 +19,27 @@ public class LogisticsWareHouseService {
     private final DistributionDao distributionDao;
 
 
-    public int updateKitOrderStatus(){
+    public int updateKitOrderStatus() {
         return distributionDao.updateKitOrderStatus();
     }
 
-    public List<LogisticsWareHouseDto> selectAllLogisticsWarehouse(){
-        return  distributionDao.selectAllLogisticsWarehouse();
+    public List<LogisticsWareHouseDto> selectAllLogisticsWarehouse() {
+        return distributionDao.selectAllLogisticsWarehouse();
     }
 
-    public int insertWarehouseStackForCompletedOrders(){
+    public int insertWarehouseStackForCompletedOrders() {
         return distributionDao.insertWarehouseStackForCompletedOrders();
     }
-    public int updateProductOrderStatus(){
-        return  distributionDao.updateProductOrderStatus();
+
+    public int updateProductOrderStatus() {
+        return distributionDao.updateProductOrderStatus();
     }
 
-    public List<Map<String,Object>> selectRequiredStack(){
+    public List<Map<String, Object>> selectRequiredStack() {
         return distributionDao.selectRequiredStack();
     }
 
-    public int updateStack(Map<String,Object> map){
+    public int updateStack(Map<String, Object> map) {
         return distributionDao.updateStack(map);
     }
 
@@ -46,11 +48,11 @@ public class LogisticsWareHouseService {
         return distributionDao.updateStackFirstRecord(params);
     }
 
-    public int deleteZeroQuantityRecords(){
+    public int deleteZeroQuantityRecords() {
         return distributionDao.deleteZeroQuantityRecords();
     }
 
-    public List<KitOrderDetailLogDto> selectKitOrderLogDetailsBySourceId(String sourceId){
+    public List<KitOrderDetailLogDto> selectKitOrderLogDetailsBySourceId(String sourceId) {
         return distributionDao.selectKitOrderLogDetailsBySourceId(sourceId);
     }
 
@@ -59,33 +61,72 @@ public class LogisticsWareHouseService {
     }
 
     public List<LogisticsWareHouseDto> selectBySourceNameLogisticsWarehouse(String keyword) {
-    return distributionDao.selectBySourceNameLogisticsWarehouse(keyword);
+        return distributionDao.selectBySourceNameLogisticsWarehouse(keyword);
     }
 
     public List<String> selectProductOrderIdByStatus(int i) {
-    return distributionDao.selectProductOrderIdByStatus(i);
+        return distributionDao.selectProductOrderIdByStatus(i);
     }
 
     public int insertProductOrderLog(List<String> productOrderIdList) {
-    return distributionDao.insertProductOrderLog(productOrderIdList);
+        return distributionDao.insertProductOrderLog(productOrderIdList);
     }
 
     public List<String> selectKitOrderIdByStatus(int i) {
-    return distributionDao.selectKitOrderIdByStatus(i);
+        return distributionDao.selectKitOrderIdByStatus(i);
     }
 
     public int insertKitOrderLog(List<String> kitOrderIdList) {
-    return distributionDao.insertKitOrderLog(kitOrderIdList);
+        return distributionDao.insertKitOrderLog(kitOrderIdList);
     }
 
     public void updateStackBySourceName(List<Map<String, Object>> combinedList) {
         for (Map<String, Object> item : combinedList) {
-            distributionDao.updateStackBySourceName(item);
+            String sourceName = (String) item.get("sourceName");
+            int quantityToDeduct = (int) item.get("quantity");
+
+
+            deductQuantityFIFO(sourceName, quantityToDeduct);
         }
     }
 
+    private void deductQuantityFIFO(String sourceName, int quantityToDeduct) {
+        int remainingQuantity = quantityToDeduct;
+
+        List<LogisticsWareHouseDto> logisticsWareHouseDtos = distributionDao.selectStacksBySourceFIFO(sourceName);
+        for (LogisticsWareHouseDto stack : logisticsWareHouseDtos) {
+            if (remainingQuantity <= 0) {
+                break;
+            }
+
+            int availableQuantity = stack.getQuantity();
+            int deductedQuantity = Math.min(availableQuantity, remainingQuantity);
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("stackId", stack.getLogisticsWareHouseUUID());
+            params.put("deduction", deductedQuantity);
+            distributionDao.updateStackQuantityFIFO(params);
+
+            remainingQuantity -= deductedQuantity;
+        }
+        if (remainingQuantity > 0) {
+            throw new RuntimeException("양이 충분하지 않음 소스 네임 >>>: " + sourceName);
+        }
+
+
+    }
+
     public void insertProductOrder(Map<String, Object> map) {
-    distributionDao.insertProductOrder(map);
+        distributionDao.insertProductOrder(map);
+    }
+
+
+    public List<LogisticsWareHouseDto> selectStacksBySourceFIFO(String sourceName) {
+        return distributionDao.selectStacksBySourceFIFO(sourceName);
+    }
+
+    public void updateStackQuantityFIFO(Map<String, Object> params) {
+        distributionDao.updateStackQuantityFIFO(params);
     }
 }
 
