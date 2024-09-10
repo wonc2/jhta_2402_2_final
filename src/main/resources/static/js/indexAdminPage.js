@@ -1,42 +1,25 @@
-//productChart start
 $(document).ready(function (){
+    getProductOrderCompanyName()
+    productOrderChartCompanyOption.hide()
 
-    getProductCompanyName();
+    getSourcePriceCompanyName();
+    $("#sourcePriceTableContainer").hide()
 
     // 차트 초기화 아무 값 없는 빈 차트
     initSourcePriceChart(chartType);
-    initProductOrderChart(chartType);
+    initProductOrderChart(chartType)
     // 위에서 초기화한 차트에 첫번째 값 넣음 이거 사용해서 계속 값 업데이트 해주면됨
     updateSourceMinPriceChart();
     updateProductOrderCountChart();
-
-    // 차트 타입 변경
-    $('.productOrder-dropdown-item').on('click', function () {
-        const selectedType = $(this).data('value'); // 선택된 차트 타입 가져오기
-        const selectedName = $(this).data('name'); // 선택된 차트 타입 가져오기
-        $('#productOrderChartDropdown').text(selectedName);
-        chartType = selectedType; // 선택된 차트 타입 저장
-        initProductOrderChart(chartType); // 새로운 차트 타입으로 초기화
-        updateProductOrderCountChart(); // 새로운 차트에 데이터 업데이트
-    });
-
-    $('.sourcePrice-dropdown-item').on('click', function () {
-        const selectedType = $(this).data('value'); // 선택된 차트 타입 가져오기
-        const selectedName = $(this).data('name'); // 선택된 차트 타입 가져오기
-        $('#sourcePriceChartDropdown').text(selectedName);
-        chartType = selectedType; // 선택된 차트 타입 저장
-        initSourcePriceChart(chartType); // 새로운 차트 타입으로 초기화
-        updateSourceMinPriceChart(); // 새로운 차트에 데이터 업데이트
-    });
-
 })
 //sourcePrice 차트 옵션
 
 const sourcePriceChartOption = document.getElementById("sourcePriceChartOption");
-const productCompanyOption = document.getElementById("productCompanyOption");
+const sourcePriceCompanyOption = document.getElementById("sourcePriceCompanyOption");
 const sourcePriceChartCompanyOption = $(".sourcePriceChartCompanyOption");
 
 sourcePriceChartCompanyOption.hide()
+
 sourcePriceChartOption.addEventListener("change",function (){
     const selectedSourcePriceChartOptionValue = sourcePriceChartOption.value;
     if(selectedSourcePriceChartOptionValue === "sourceMinPrice"){
@@ -44,25 +27,87 @@ sourcePriceChartOption.addEventListener("change",function (){
         updateSourceMinPriceChart();
     }else if(selectedSourcePriceChartOptionValue === "sourcePriceByCompany"){
         sourcePriceChartCompanyOption.show();
-        getProductCompanyName()
+        getSourcePriceCompanyName()
         updateSourcePriceProductCompanyChart();
     }
 })
-productCompanyOption.addEventListener("change",function (){
+sourcePriceCompanyOption.addEventListener("change",function (){
     updateSourcePriceProductCompanyChart()
 })
+
 //productOrder 차트 옵션
 const productOrderChartOption = document.getElementById("productOrderChartOption");
+const productOrderCompanyOption = document.getElementById("productOrderCompanyOption");
+const productOrderChartCompanyOption = $(".productOrderChartCompanyOption")
 
+productOrderCompanyOption.addEventListener("change",function (){
+    updateProductOrderCompanyChart()
+})
 productOrderChartOption.addEventListener("change",function (){
     const selectedProductOrderChartOptionValue = productOrderChartOption.value;
+    productOrderChartCompanyOption.hide()
     if(selectedProductOrderChartOptionValue === "productOrderCountByCompany"){
         updateProductOrderCountChart()
     }else if (selectedProductOrderChartOptionValue === "productOrderCountByProduct"){
         updateProductCountListChart()
+    }else if(selectedProductOrderChartOptionValue === "productCountByCompany"){
+        updateProductOrderCompanyChart()
+        productOrderChartCompanyOption.show()
     }
 })
 
+function getSourcePriceList() {
+    $('#productAdminSourceTable').DataTable({
+        ajax: {
+            url: '/api/product/admin/main/data/sourcePriceSearchList',
+            dataSrc: '',
+            data : function (d) {
+                d.companyName = $("#productAdminSearchTextCompanyName").val()
+                d.productName = $("#productAdminSearchTextProductName").val()
+            },
+        },
+        columns: [
+            {data: 'rowNum' },
+            {data: 'productCompanyName'},
+            {data: 'sourceName'},
+            {data: 'sourcePrice'}
+        ],
+        language: {emptyTable: '데이터가 없습니다.'},
+        lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]],
+        searching : false,
+        initComplete: function () {
+            $('#productAdminSourceTable').css({
+                'width': '100%',
+                'table-layout': 'fixed'
+            });
+        }
+    });
+}
+function getProductOrderList(){
+    $('#productAdminOrderTable').DataTable({
+        ajax: {
+            url: '/api/product/admin/main/data/productOrderSearchList',
+            dataSrc: '',
+            data : function (d) {
+                d.companyName = $("#productAdminSearchTextCompanyName").val()
+                d.productName = $("#productAdminSearchTextProductName").val()
+            },
+        },
+        columns: [
+            {data: 'rowNum' },
+            {data: 'productCompanyName'},
+            {data: 'sourceName'},
+            {data: 'sourcePrice'},
+            {data: 'quantity'},
+            {data: 'totalPrice'},
+            {data: 'productOrderDate'},
+            {data: 'status'},
+        ],
+        language: {emptyTable: '데이터가 없습니다.'},
+        lengthMenu: [ [5, 10, 25, 50], [5, 10, 25, 50] ],
+        searching : false
+    });
+}
 /* 차트 관련 */
 
 let sourceMinPriceChart; // 전역 변수로 차트 객체를 선언
@@ -95,20 +140,44 @@ function updateSourceMinPriceChart() {
         }
     });
 }
-function getProductCompanyName(){
+function getSourcePriceCompanyName() {
     $.ajax({
-        url: '/api/product/admin/main/data/sourcePriceChart', // 최저가 데이터를 가져오는 URL
+        url: '/api/product/admin/main/data/sourcePriceChart', // 모든 재료의 가격 데이터를 가져오는 URL
         type: 'GET',
         contentType: 'application/json',
         success: function (response) {
-            const productCompanyName = new Set();
-            const productCompanyOption = $("#productCompanyOption");
-            productCompanyOption.empty();
-            response.forEach(function (item){
-                productCompanyName.add(item.productCompanyName)
+            const productCompanyNames = new Set();
+            const sourcePriceCompanyOption = $("#sourcePriceCompanyOption");
+            sourcePriceCompanyOption.empty();
+            response.forEach(function (item) {
+                productCompanyNames.add(item.productCompanyName)
             })
-            productCompanyName.forEach(function (companyName){
-                productCompanyOption.append(
+            productCompanyNames.forEach(function (companyName) {
+                sourcePriceCompanyOption.append(
+                    `<option value="${companyName}">${companyName}</option>`
+                );
+            })
+        },
+        error: function (xhr, status, error) {
+            console.error('차트 데이터 가져오는데 실패함:', error);
+        }
+    });
+}
+
+function getProductOrderCompanyName(){
+    $.ajax({
+        url: '/api/product/admin/main/data/productOrderChart', // 모든 재료의 가격 데이터를 가져오는 URL
+        type: 'GET',
+        contentType: 'application/json',
+        success: function (response) {
+            const productCompanyNames = new Set();
+            const productOrderCompanyOption = $("#productOrderCompanyOption");
+            productOrderCompanyOption.empty();
+            response.forEach(function (item){
+                productCompanyNames.add(item.productCompanyName)
+            })
+            productCompanyNames.forEach(function (companyName){
+                productOrderCompanyOption.append(
                     `<option value="${companyName}">${companyName}</option>`
                 );
             })
@@ -119,13 +188,13 @@ function getProductCompanyName(){
     });
 }
 function updateSourcePriceProductCompanyChart() {
-    const productCompanyOption = $("#productCompanyOption").val();
+    const sourcePriceCompanyOption = $("#sourcePriceCompanyOption").val();
     $.ajax({
         url: '/api/product/admin/main/data/sourcePriceCompanyChart', // 업체별 생산품 가격 데이터를 가져오는 URL
         type: 'GET',
         contentType: 'application/json',
         data : {
-            productCompanyName : productCompanyOption
+            productCompanyName : sourcePriceCompanyOption
         },
         success: function (response) {
             const productNames = []; // 제품 이름 배열
@@ -197,7 +266,35 @@ function updateProductCountListChart() {
         }
     });
 }
+function updateProductOrderCompanyChart() {
+    const productOrderCompanyOption = $("#productOrderCompanyOption").val();
+    $.ajax({
+        url: '/api/product/admin/main/data/productOrderChart', // 업체별 생산품 가격 데이터를 가져오는 URL
+        type: 'GET',
+        contentType: 'application/json',
+        data : {
+            productCompanyName : productOrderCompanyOption
+        },
+        success: function (response) {
+            const sourceNames = []; // 제품 이름 배열
+            const quantities = []; // 가격 배열
 
+            // response 데이터를 순회하며 필요한 정보 추출
+            response.forEach(function (item) {
+                sourceNames.push(item.sourceName);
+                quantities.push(item.quantity);
+            });
+            productOrderAdminChart.data.labels = sourceNames;
+            productOrderAdminChart.data.datasets[0].label = '수량';
+            productOrderAdminChart.data.datasets[0].data = quantities;
+            productOrderAdminChart.data.datasets[0].backgroundColor = colors.slice(0, quantities.length);
+            productOrderAdminChart.update();
+        },
+        error: function (xhr, status, error) {
+            console.error('차트 데이터 가져오는데 실패함:', error);
+        }
+    });
+}
 // 차트 초기화 함수, 차트의 타입을 동적으로 받음, 차트 두개 띄우려면 아이디랑 차트 객체 파라미터로 받으면 될듯?
 
 function initSourcePriceChart(type) {
@@ -270,5 +367,3 @@ const colors = [
     '#8E24AA', '#7B1FA2', '#6D1B9D', '#4A148C', '#2C6C9A',
     '#00838F', '#00695C', '#004D40', '#004D40', '#1B5E20'
 ];
-
-//productChart end

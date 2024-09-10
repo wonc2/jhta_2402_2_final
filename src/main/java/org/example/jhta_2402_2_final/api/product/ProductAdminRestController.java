@@ -63,12 +63,10 @@ public class ProductAdminRestController {
     }
 
     @GetMapping("/main/data/productOrderChart")
-    public List<ProductOrderViewDto> getProductOrderChart(@RequestParam(value = "companyName",defaultValue = "none")String companyName){
+    public List<ProductOrderViewDto> getProductOrderChart(@RequestParam(value = "productCompanyName",defaultValue = "none")String companyName){
         if(companyName.equals("none")){
-            System.out.println("없음");
             productOrderList = productAdminService.getProductOrderList();
         }else if(!companyName.equals("none")){
-            System.out.println("companyName = "+companyName);
             productOrderList = productAdminService.getProductOrderListCompanyName(companyName);
         }
         return productOrderList;

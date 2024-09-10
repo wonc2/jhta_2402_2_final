@@ -1,8 +1,10 @@
 $(document).ready(function (){
     getProductOrderList();
-    getProductCompanyName();
+    getProductOrderCompanyName()
+    productOrderChartCompanyOption.hide()
 
     getSourcePriceList();
+    getSourcePriceCompanyName();
     $("#sourcePriceTableContainer").hide()
 
     // 차트 초기화 아무 값 없는 빈 차트
@@ -53,7 +55,7 @@ $(document).ready(function (){
 //sourcePrice 차트 옵션
 
 const sourcePriceChartOption = document.getElementById("sourcePriceChartOption");
-const productCompanyOption = document.getElementById("productCompanyOption");
+const sourcePriceCompanyOption = document.getElementById("sourcePriceCompanyOption");
 const sourcePriceChartCompanyOption = $(".sourcePriceChartCompanyOption");
 
 sourcePriceChartCompanyOption.hide()
@@ -65,22 +67,32 @@ sourcePriceChartOption.addEventListener("change",function (){
         updateSourceMinPriceChart();
     }else if(selectedSourcePriceChartOptionValue === "sourcePriceByCompany"){
         sourcePriceChartCompanyOption.show();
-        getProductCompanyName()
+        getSourcePriceCompanyName()
         updateSourcePriceProductCompanyChart();
     }
 })
-productCompanyOption.addEventListener("change",function (){
+sourcePriceCompanyOption.addEventListener("change",function (){
     updateSourcePriceProductCompanyChart()
 })
+
 //productOrder 차트 옵션
 const productOrderChartOption = document.getElementById("productOrderChartOption");
+const productOrderCompanyOption = document.getElementById("productOrderCompanyOption");
+const productOrderChartCompanyOption = $(".productOrderChartCompanyOption")
 
+productOrderCompanyOption.addEventListener("change",function (){
+    updateProductOrderCompanyChart()
+})
 productOrderChartOption.addEventListener("change",function (){
     const selectedProductOrderChartOptionValue = productOrderChartOption.value;
+        productOrderChartCompanyOption.hide()
     if(selectedProductOrderChartOptionValue === "productOrderCountByCompany"){
         updateProductOrderCountChart()
     }else if (selectedProductOrderChartOptionValue === "productOrderCountByProduct"){
         updateProductCountListChart()
+    }else if(selectedProductOrderChartOptionValue === "productCountByCompany"){
+        updateProductOrderCompanyChart()
+        productOrderChartCompanyOption.show()
     }
 })
 
@@ -168,20 +180,20 @@ function updateSourceMinPriceChart() {
         }
     });
 }
-function getProductCompanyName(){
+function getSourcePriceCompanyName() {
     $.ajax({
         url: '/api/product/admin/main/data/sourcePriceChart', // 모든 재료의 가격 데이터를 가져오는 URL
         type: 'GET',
         contentType: 'application/json',
         success: function (response) {
             const productCompanyNames = new Set();
-            const productCompanyOption = $("#productCompanyOption");
-            productCompanyOption.empty();
-            response.forEach(function (item){
+            const sourcePriceCompanyOption = $("#sourcePriceCompanyOption");
+            sourcePriceCompanyOption.empty();
+            response.forEach(function (item) {
                 productCompanyNames.add(item.productCompanyName)
             })
-            productCompanyNames.forEach(function (companyName){
-                productCompanyOption.append(
+            productCompanyNames.forEach(function (companyName) {
+                sourcePriceCompanyOption.append(
                     `<option value="${companyName}">${companyName}</option>`
                 );
             })
@@ -191,14 +203,38 @@ function getProductCompanyName(){
         }
     });
 }
+
+    function getProductOrderCompanyName(){
+        $.ajax({
+            url: '/api/product/admin/main/data/productOrderChart', // 모든 재료의 가격 데이터를 가져오는 URL
+            type: 'GET',
+            contentType: 'application/json',
+            success: function (response) {
+                const productCompanyNames = new Set();
+                const productOrderCompanyOption = $("#productOrderCompanyOption");
+                productOrderCompanyOption.empty();
+                response.forEach(function (item){
+                    productCompanyNames.add(item.productCompanyName)
+                })
+                productCompanyNames.forEach(function (companyName){
+                    productOrderCompanyOption.append(
+                        `<option value="${companyName}">${companyName}</option>`
+                    );
+                })
+            },
+            error: function (xhr, status, error) {
+                console.error('차트 데이터 가져오는데 실패함:', error);
+            }
+        });
+    }
 function updateSourcePriceProductCompanyChart() {
-    const productCompanyOption = $("#productCompanyOption").val();
+    const sourcePriceCompanyOption = $("#sourcePriceCompanyOption").val();
     $.ajax({
         url: '/api/product/admin/main/data/sourcePriceCompanyChart', // 업체별 생산품 가격 데이터를 가져오는 URL
         type: 'GET',
         contentType: 'application/json',
         data : {
-            productCompanyName : productCompanyOption
+            productCompanyName : sourcePriceCompanyOption
         },
         success: function (response) {
             const productNames = []; // 제품 이름 배열
@@ -270,7 +306,35 @@ function updateProductCountListChart() {
         }
     });
 }
+function updateProductOrderCompanyChart() {
+    const productOrderCompanyOption = $("#productOrderCompanyOption").val();
+    $.ajax({
+        url: '/api/product/admin/main/data/productOrderChart', // 업체별 생산품 가격 데이터를 가져오는 URL
+        type: 'GET',
+        contentType: 'application/json',
+        data : {
+            productCompanyName : productOrderCompanyOption
+        },
+        success: function (response) {
+            const sourceNames = []; // 제품 이름 배열
+            const quantities = []; // 가격 배열
 
+            // response 데이터를 순회하며 필요한 정보 추출
+            response.forEach(function (item) {
+                sourceNames.push(item.sourceName);
+                quantities.push(item.quantity);
+            });
+            productOrderAdminChart.data.labels = sourceNames;
+            productOrderAdminChart.data.datasets[0].label = '수량';
+            productOrderAdminChart.data.datasets[0].data = quantities;
+            productOrderAdminChart.data.datasets[0].backgroundColor = colors.slice(0, quantities.length);
+            productOrderAdminChart.update();
+        },
+        error: function (xhr, status, error) {
+            console.error('차트 데이터 가져오는데 실패함:', error);
+        }
+    });
+}
 // 차트 초기화 함수, 차트의 타입을 동적으로 받음, 차트 두개 띄우려면 아이디랑 차트 객체 파라미터로 받으면 될듯?
 
 function initSourcePriceChart(type) {

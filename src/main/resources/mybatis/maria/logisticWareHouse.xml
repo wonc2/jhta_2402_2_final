@@ -2,6 +2,24 @@
 <mapper namespace="org.example.jhta_2402_2_final.dao.distribution.DistributionDao">
 
 
+
+    <!-- FIFO 순서로 해당 SOURCE의 스택을 가져오는 쿼리 -->
+    <select id="selectStacksBySourceFIFO" parameterType="String" resultType="LogisticsWareHouseDto">
+        SELECT LOGISTICS_WAREHOUSE_STACK_ID as logisticsWareHouseUUID,
+        QUANTITY as quantity
+        FROM LOGISTICS_WAREHOUSE_STACK
+        WHERE SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = #{sourceName})
+        ORDER BY created_at ASC
+    </select>
+
+    <update id="updateStackQuantityFIFO" parameterType="map">
+        UPDATE LOGISTICS_WAREHOUSE_STACK
+        SET QUANTITY = QUANTITY - #{deduction}
+        WHERE LOGISTICS_WAREHOUSE_STACK_ID = #{stackId}
+    </update>
+
+
+
     <select id="selectAllLogisticsWarehouse" resultType="LogisticsWareHouseDto">
 
         SELECT lw.WAREHOUSE_NAME AS wareHouseName,
@@ -96,11 +114,12 @@
 
 
     <insert id="insertWarehouseStackForCompletedOrders">
-        INSERT INTO LOGISTICS_WAREHOUSE_STACK (LOGISTICS_WAREHOUSE_STACK_ID, SOURCE_ID, LOGISTICS_WAREHOUSE_ID, QUANTITY)
+        INSERT INTO LOGISTICS_WAREHOUSE_STACK (LOGISTICS_WAREHOUSE_STACK_ID, SOURCE_ID, LOGISTICS_WAREHOUSE_ID, QUANTITY,created_at)
         SELECT UUID() AS LOGISTICS_WAREHOUSE_STACK_ID,
                S.SOURCE_ID AS SOURCE_ID,
                LW.LOGISTICS_WAREHOUSE_ID AS LOGISTICS_WAREHOUSE_ID,
-               SUM(PO.QUANTITY * KS.QUANTITY) AS QUANTITY
+               SUM(PO.QUANTITY * KS.QUANTITY) AS QUANTITY,
+               now()
         FROM PRODUCT_ORDER PO
                  JOIN KIT_SOURCE KS ON PO.SOURCE_ID = KS.SOURCE_ID
                  JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
@@ -165,6 +184,8 @@
 
 
 
+
+
     <update id="updateStackFirstRecord">
         UPDATE LOGISTICS_WAREHOUSE_STACK
         SET QUANTITY = QUANTITY - #{quantity}
@@ -192,7 +213,7 @@
             KOL.PRODUCT_ORDER_DATE AS orderDate,
             KC.NAME AS CompanyName,  -- KIT_COMPANY의 회사명 추가
             CASE
-                WHEN KOL.STATUS_ID = 7 THEN '출고'
+                WHEN KOL.STATUS_ID = 8 THEN '출고'
                 ELSE '다른 상태'
                 END AS status
         FROM
@@ -203,7 +224,7 @@
                 JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
                 JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID  -- KIT_COMPANY 테이블 조인
         WHERE
-            KOL.STATUS_ID = 7
+            KOL.STATUS_ID = 8
           AND S.SOURCE_ID = #{sourceId}
 
     </select>
@@ -218,7 +239,7 @@
             pc.NAME AS companyName,
             pol.PRODUCT_ORDER_DATE AS orderDate,
             CASE
-                WHEN pol.STATUS_ID = 8 THEN '입고'
+                WHEN pol.STATUS_ID = 7 THEN '입고'
                 ELSE '다른 상태'
                 END AS status
         FROM
@@ -228,7 +249,7 @@
                 JOIN SOURCE s ON ks.SOURCE_ID = s.SOURCE_ID
                 JOIN PRODUCT_COMPANY pc ON po.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID  -- PRODUCT_COMPANY_ID를 PRODUCT_ORDER에서 가져옴
         WHERE
-            pol.STATUS_ID = 8
+            pol.STATUS_ID = 7
           AND s.SOURCE_ID = #{sourceId}
 
     </select>
