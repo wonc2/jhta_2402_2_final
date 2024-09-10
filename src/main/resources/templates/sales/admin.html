@@ -2,6 +2,10 @@
 <html lang="en">
 <head>
     <div th:replace="~{fragment/adminHeader :: head}"></div>
+
+
+
+
 </head>
 
 
@@ -31,6 +35,31 @@
                 </button>
             </div>
 
+            <div class="row">
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            Area Chart Example
+                        </div>
+                        <div class="card-body">
+                            <canvas id="myChart" width="100%" height="40"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            Bar Chart Example
+                        </div>
+                        <div class="card-body">
+                            <canvas id="myChart02" width="100%" height="40"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!--판매처리-->
             <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -100,18 +129,28 @@
                             <td th:text="${details.status}"></td>
 
                             <td>
-                                <button class="btn btn-primary change-status-btn"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#updateStatusModal"
-                                        th:attr="data-order-id=${details.kitOrderId}">
-                                    처리완료
-                                </button>
+                                <form th:action="@{/sales/update-status}" method="post" class="cancel-form">
+                                    <input type="hidden" name="kitOrderId" th:value="${details.kitOrderId}">
+                                    <input type="hidden" name="statusId" th:value="3">
+                                    <button th:if="${details.status == '출고'}" type="submit" class="btn btn-primary">
+                                        처리완료
+                                    </button>
+                                    <button th:if="${details.status != '출고'}" disabled class="btn btn-primary">
+                                        출고대기
+                                    </button>
+                                </form>
                             </td>
 
                             <td>
-                                <button class="btn btn-danger change-status-btn">
-                                    취소
-                                </button>
+                                <form th:action="@{/sales/cancel}" method="post" class="cancel-form">
+                                    <input type="hidden" name="kitOrderId" th:value="${details.kitOrderId}">
+                                    <button th:if="${details.status != '처리완료'}" type="submit" class="btn btn-danger">
+                                        취소
+                                    </button>
+                                    <button th:if="${details.status == '처리완료'}" disabled class="btn btn-danger">
+                                        취소불가
+                                    </button>
+                                </form>
                             </td>
 
                         </tr>
@@ -121,7 +160,7 @@
 
                 </div>
             </div>
-
+<!--유통처리-->
             <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -157,7 +196,6 @@
                             <th>주문일자</th>
                             <th>상태</th>
                             <th>발주요청</th>
-                            <th>상태변경</th>
                         </tr>
                         </thead>
                         <tfoot>
@@ -171,7 +209,6 @@
                             <th>총액</th>
                             <th>주문일자</th>
                             <th>발주요청</th>
-                            <th>상태변경</th>
                         </tr>
                         </tfoot>
 
@@ -208,16 +245,6 @@
                                     발주 요청
                                 </button>
                             </td>
-                            <td>
-                                <!-- 상태 변경 버튼 -->
-                                <button class="btn btn-primary change-status-btn"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#updateStatusModal"
-                                        th:attr="data-order-id=${details.kitOrderId}">
-                                    상태 변경
-                                </button>
-
-                            </td>
 
                         </tr>
                         </tbody>
@@ -226,7 +253,7 @@
 
                 </div>
             </div>
-
+<!--로그-->
             <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -294,8 +321,7 @@
     </main>
 </div>
 
-
-<!-- 모달 -->
+<!-- 발주 모달 -->
 <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -361,6 +387,7 @@
     </div>
 </div>
 
+<!--패치-->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 
@@ -513,35 +540,6 @@
     </div>
 </div>
 
-<!-- 상태 변경 모달 -->
-<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="updateStatusModalLabel">상태 변경</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="updateStatusForm" th:action="@{/sales/update-status}" th:method="post">
-                    <input type="hidden" id="orderId" name="kitOrderId" value="">
-                    <div class="mb-3">
-                        <label for="status" class="form-label">상태</label>
-                        <select id="status" name="statusId" class="form-select" required>
-                            <option value="" disabled selected>상태를 선택하세요</option>
-                            <option value="1">처리전</option>
-                            <option value="2">처리중</option>
-                            <option value="3">처리완료</option>
-                            <option value="4">취소</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">변경</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- 밀키트 추가 모달 -->
 <div class="modal fade" id="insertMealkitModal" tabindex="-1" aria-labelledby="insertMealkitModalLabel"
      aria-hidden="true">
@@ -590,26 +588,6 @@
 </div>
 
 
-<!-- 자바스크립트 코드 -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var updateStatusModal = document.getElementById('updateStatusModal');
-
-        updateStatusModal.addEventListener('show.bs.modal', function (event) {
-            // 모달을 트리거한 버튼을 가져옴
-            var button = event.relatedTarget;
-            // data-order-id 속성에서 kitOrderId를 가져옴
-            var kitOrderId = button.getAttribute('data-order-id');
-
-            // 모달 내의 hidden input에 kitOrderId 값을 설정
-            var modalOrderIdInput = updateStatusModal.querySelector('#orderId');
-            modalOrderIdInput.value = kitOrderId;
-        });
-    });
-
-</script>
-
-
 <!--밀키트 재료 추가 -->
 <script>
     function toggleQuantityInput(checkbox) {
@@ -646,5 +624,65 @@
 <div th:replace="~{fragment/adminFooter :: footer}"></div>
 </body>
 </html>
+
+<script>
+    const ctx = document.getElementById('myChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+<script>
+    var ctx = document.getElementById('myChart02').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [{
+                label: 'Sample Data',
+                data: [10, 20, 30, 40, 50, 60, 70],
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.4,  // tension 설정으로 곡선의 탄성을 조절
+                cubicInterpolationMode: 'monotone'  // 곡선 보간 방식 설정
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Month'
+                    }
+                },
+                y: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: 'Value'
+                    }
+                }
+            }
+        }
+    });
+</script>
 
 
