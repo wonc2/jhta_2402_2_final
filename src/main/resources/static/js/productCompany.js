@@ -113,7 +113,7 @@ $(document).ready(function () {
         const data = $('#companySourceTable').DataTable().row(row).data();
         const companySourceId = data.companySourceId;
 
-        if (confirm('정말로 이 항목을 삭제하시겠습니까?\n -- 참조키 있으면 삭제 안됨: 수정 예정')) {
+        if (confirm('정말로 이 항목을 삭제하시겠습니까?\n *참조키 있으면 삭제 안됨: 수정 예정*')) {
             $.ajax({
                 url: `/api/product/company/add/${companySourceId}`,
                 type: 'DELETE',
@@ -122,15 +122,18 @@ $(document).ready(function () {
                 },
                 success: function () {
                     $('#companySourceTable').DataTable().ajax.reload(null, false);
+                    showToast("삭제 완료")
                 },
-                error: function (xhr, status, error) {
-                    console.error('Error occurred while deleting:', error);
+                error: function (xhr) {
+                    const response = JSON.parse(xhr.responseText);
+                    if (xhr.status === 409) alert(response.message);
+                    else alert('삭제 실패함 원인은 모름~');
                 }
             });
         }
     });
 
-    // 생산 품목 업데이트 ( 가격 수정 로직 @@:로직 수정해야함 )
+    // 생산 품목 업데이트 ( 가격 수정 로직 )
     $('#companySourceTable').on('click', 'button[data-action="update"]', function () {
         const row = $(this).closest('tr');
         const data = $('#companySourceTable').DataTable().row(row).data();
@@ -324,8 +327,8 @@ function getCompanySourceTable() {
                             <button type="button" class="btn btn-outline-primary btn-sm" data-action="produce">재고 등록</button>
                             </div>
                             <div>
-                            <button type="button" class="btn btn-outline-info btn-sm edit-btn" data-action="update" style="display: none;">수정</button>
-<!--                            <button type="button" class="btn btn-outline-danger btn-sm edit-btn" data-action="delete" style="display: none;">가리기</button>-->
+                            <button type="button" class="btn btn-outline-info btn-sm" data-action="update">가격 수정</button>
+                            <button type="button" class="btn btn-outline-danger btn-sm edit-btn" data-action="delete">삭제</button>
                             </div>
                             </div>
                         `;
@@ -335,18 +338,6 @@ function getCompanySourceTable() {
         language: {emptyTable: '데이터가 없습니다.'},
         lengthMenu: [[5, 10, 25, 50], [5, 10, 25, 50]], pageLength: 10
     });
-
-    $('#companySourceEditCheckBox').on('change', function () {
-        const isChecked = $(this).is(':checked');
-        // $('.row-checkbox').prop('checked', isChecked); // 모든 체크박스 선택/해제
-
-        if (isChecked) {
-            $('.edit-btn').show();
-        } else {
-            $('.edit-btn').hide();
-        }
-    });
-
 }
 
 function getWarehouseTable() {
@@ -381,8 +372,9 @@ function getOrderTable() {
             url: '/api/product/company/order',
             data: function (d) {
                 // d.orderMonthOption = $('#orderMonthSearchSelect').val() || "all"; // 기본값은 "all"
-                d.orderStatusOption = $('#orderStatusSearchSelect').val();
-                d.orderSourceNameOption = $('#sourceNameSearchSelect').val() || "all";
+                d.statusId = $('#orderStatusSearchSelect').val();
+                d.sourceName = $('#sourceNameSearchSelect').val() || "all";
+                return $.param(d);
             },
             dataSrc: ''
         },
@@ -466,7 +458,7 @@ let warehouseChart; // 전역 변수로 차트 객체를 선언
 let orderChart; // 전역 변수로 차트 객체를 선언
 let chartType = 'bar'; // 기본 차트 타입은 'bar'
 let oderChartType = 'bar'; // 기본 차트 타입은 'bar'
-let orderChartMonthOption = 'all';
+let orderChartMonthOption = '';
 
 function updateWarehouseChart() {
     $.ajax({
@@ -496,8 +488,7 @@ function updateWarehouseChart() {
 
 function updateOrderChart() {
     $.ajax({
-        url: '/api/product/company/orderChart?orderChartMonthOption=' + orderChartMonthOption, // 창고 데이터를 가져오는 URL
-        type: 'GET',
+        url: '/api/product/company/orderChart?month='+orderChartMonthOption, // 창고 데이터를 가져오는 URL
         contentType: 'application/json',
         success: function (response) {
             const labels = [];

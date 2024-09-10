@@ -9,7 +9,7 @@
     </select>
 
     <!-- 생산 업체의 현재 생산품 리스트 가져옴 -->
-    <select id="getSourcesByCompanyName" resultType="Map" parameterType="String">
+    <select id="getSourcesByCompanyName" resultType="CompanySourceDto" parameterType="String">
         select
             sp.SOURCE_PRICE_ID as 'companySourceId',
                 s.NAME as 'sourceName',
@@ -24,16 +24,16 @@
     </select>
 
     <!-- 생산업체 생산품 등록 Create, Update, Delete -->
-    <insert id="addSourceToCompany" parameterType="Map">
+    <insert id="addSourceToCompany" parameterType="AddSourceDto">
         INSERT INTO
             SOURCE_PRICE (SOURCE_PRICE_ID, PRODUCT_COMPANY_ID, SOURCE_ID, PRICE)
         VALUES
             (UUID(), #{companyId}, #{sourceId}, #{sourcePrice})
     </insert>
-    <update id="sourcePriceUpdate" parameterType="map">
+    <update id="sourcePriceUpdate" parameterType="SourcePriceUpdateDto">
         UPDATE SOURCE_PRICE SET price = #{sourcePrice} WHERE source_price_id = #{companySourceId}
     </update>
-    <insert id="sourcePriceHistory" parameterType="map">
+    <insert id="sourcePriceHistory" parameterType="SourcePriceUpdateDto">
         INSERT INTO
             SOURCE_PRICE_HISTORY (SOURCE_PRICE_HISTORY_ID, SOURCE_PRICE_ID, OLD_PRICE, NEW_PRICE, CHANGE_DATE)
         VALUES
@@ -50,7 +50,7 @@
     </insert>
 
     <!-- 창고 입출고 리스트 가져옴 -->
-    <select id="getWarehouseSources" resultType="map" parameterType="String">
+    <select id="getWarehouseSources" resultType="ProductCompanyWarehouseDto" parameterType="String">
         SELECT ROW_NUMBER() OVER (order by sw.produce_date asc) AS rowNum,
                 sw.source_warehouse_id                   as sourceWarehouseId,
                sw.QUANTITY                              as sourceQuantity,
@@ -68,7 +68,7 @@
     </select>
 
     <!-- 주문 주문 주문 주문 주문 -->
-    <select id="getProductOrderList" resultType="map" parameterType="map">
+    <select id="getProductOrderList" resultType="ProductCompanyOrderDto" parameterType="ProductCompanySearchOptionDto">
         SELECT
         ROW_NUMBER() OVER (ORDER BY po.PRODUCT_ORDER_DATE asc) AS rowNum,
         po.PRODUCT_ORDER_ID as orderId,
@@ -94,31 +94,31 @@
         ) sw ON sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
         WHERE pc.PRODUCT_COMPANY_ID = #{companyId}
         <choose>
-            <when test="orderStatusOption == 1">
+            <when test="statusId == 1">
                 and st.STATUS_ID = 1
             </when>
-            <when test="orderStatusOption == 2">
+            <when test="statusId == 2">
                 and st.STATUS_ID != 1
             </when>
             <otherwise></otherwise>
         </choose>
-        <if test="orderSourceNameOption != 'all'">
-            and s.name = #{orderSourceNameOption}
+        <if test="sourceName != 'all'">
+            and s.name = #{sourceName}
         </if>
         GROUP BY po.PRODUCT_ORDER_ID
         order by po.PRODUCT_ORDER_DATE DESC
     </select>
 
-    <update id="orderProcess" parameterType="map">
+    <update id="orderProcess" parameterType="ProductCompanyOrderProcessDto">
         update PRODUCT_ORDER set STATUS_ID = #{orderStatus} where PRODUCT_ORDER_ID = #{orderId}
     </update>
 
-    <insert id="orderLog" parameterType="map">
+    <insert id="orderLog" parameterType="ProductCompanyOrderProcessDto">
         insert into PRODUCT_ORDER_LOG (PRODUCT_ORDER_LOG_ID, PRODUCT_ORDER_ID, STATUS_ID, PRODUCT_ORDER_DATE)
         VALUES (UUID(), #{orderId}, #{orderStatus}, NOW())
     </insert>
 
-    <insert id="outboundSource" parameterType="map">
+    <insert id="outboundSource" parameterType="ProductCompanyOrderProcessDto">
         INSERT into SOURCE_WAREHOUSE (SOURCE_WAREHOUSE_ID, QUANTITY, PRODUCE_DATE, SOURCE_PRICE_ID)
         VALUES (UUID(), -#{sourceQuantity}, NOW(), #{sourcePriceId})
     </insert>
@@ -154,7 +154,7 @@
         select SUM(quantity) from SOURCE_WAREHOUSE WHERE SOURCE_PRICE_ID = #{sourcePriceId}
     </select>
 
-    <select id="checkDuplicateCompanySource" parameterType="map" resultType="boolean">
+    <select id="checkDuplicateCompanySource" parameterType="AddSourceDto" resultType="boolean">
         SELECT COUNT(*)
         FROM SOURCE_PRICE sp
                  JOIN SOURCE s on sp.SOURCE_ID = s.SOURCE_ID
@@ -182,7 +182,7 @@
         WHERE pc.PRODUCT_COMPANY_ID = #{companyId}
         GROUP BY sp.SOURCE_PRICE_ID
     </select>
-    <select id="orderChart" resultType="map" parameterType="map">
+    <select id="orderChart" resultType="ProductCompanyChartDto" parameterType="ProductCompanySearchOptionDto">
         SELECT
         s.NAME as sourceName,
         SUM(sw.QUANTITY) as sales
@@ -192,8 +192,8 @@
         join PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         WHERE pc.PRODUCT_COMPANY_ID = #{companyId}
         and sw.quantity &lt; 0
-        <if test="orderChartMonthOption != 'all'">
-            and sw.PRODUCE_DATE LIKE CONCAT(YEAR(CURDATE()), '-', LPAD(#{orderChartMonthOption}, 2, '0'), '%')
+        <if test="month != null">
+            and sw.PRODUCE_DATE LIKE CONCAT(YEAR(CURDATE()), '-', LPAD(#{month}, 2, '0'), '%')
         </if>
         group by sp.SOURCE_PRICE_ID
     </select>
