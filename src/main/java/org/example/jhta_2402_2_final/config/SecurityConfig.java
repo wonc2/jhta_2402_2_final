@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
@@ -40,6 +41,11 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests((auth)->auth
                 .requestMatchers("/","/member/**","/test","/adminMain/**","/product/**","/sales/**","/distribution/**","/wareHouse/**","/distributionOrder/**")
                 .permitAll()
+                .requestMatchers("/product/role").hasAuthority("ROLE_PRODUCT_MANAGER")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/user/**").hasAnyRole("ADMIN","USER")
+                .requestMatchers("/manager/**").hasAnyRole("ADMIN","MANAGER")
+                .requestMatchers("/distribution/**").hasAnyRole("ADMIN","MANAGER")
 //                .requestMatchers("/product/company/**").hasAnyRole("ADMIN","PRODUCT_MANAGER")
 //                .requestMatchers("/**").hasRole("ADMIN")
                 .anyRequest()
@@ -60,6 +66,10 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/")
                 .invalidateHttpSession(true)
         );
+        httpSecurity.csrf(csrf -> csrf
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+        );
+
         return httpSecurity.build();
     }
 }

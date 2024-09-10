@@ -96,15 +96,13 @@
 
 
     <insert id="insertWarehouseStackForCompletedOrders">
-        INSERT INTO LOGISTICS_WAREHOUSE_STACK (LOGISTICS_WAREHOUSE_STACK_ID, SOURCE_ID, LOGISTICS_WAREHOUSE_ID,
-                                               QUANTITY)
-        SELECT UUID()                         AS LOGISTICS_WAREHOUSE_STACK_ID,
-               S.SOURCE_ID                    AS SOURCE_ID,
-               LW.LOGISTICS_WAREHOUSE_ID      AS LOGISTICS_WAREHOUSE_ID,
+        INSERT INTO LOGISTICS_WAREHOUSE_STACK (LOGISTICS_WAREHOUSE_STACK_ID, SOURCE_ID, LOGISTICS_WAREHOUSE_ID, QUANTITY)
+        SELECT UUID() AS LOGISTICS_WAREHOUSE_STACK_ID,
+               S.SOURCE_ID AS SOURCE_ID,
+               LW.LOGISTICS_WAREHOUSE_ID AS LOGISTICS_WAREHOUSE_ID,
                SUM(PO.QUANTITY * KS.QUANTITY) AS QUANTITY
         FROM PRODUCT_ORDER PO
-                 JOIN SOURCE_PRICE SP ON PO.SOURCE_PRICE_ID = SP.SOURCE_PRICE_ID
-                 JOIN KIT_SOURCE KS ON SP.SOURCE_ID = KS.SOURCE_ID
+                 JOIN KIT_SOURCE KS ON PO.SOURCE_ID = KS.SOURCE_ID
                  JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
                  JOIN LOGISTICS_WAREHOUSE LW ON LW.WAREHOUSE_NAME = 'Shin_WAREHOUSE'
         WHERE PO.STATUS_ID = 5
@@ -112,23 +110,7 @@
 
     </insert>
 
-    <insert id="insertWarehouseStackForCompletedOrders/////////">
-        INSERT INTO LOGISTICS_WAREHOUSE_STACK (LOGISTICS_WAREHOUSE_STACK_ID, SOURCE_ID, LOGISTICS_WAREHOUSE_ID,
-                                               QUANTITY)
-        SELECT UUID()                    AS LOGISTICS_WAREHOUSE_STACK_PK,
-               S.SOURCE_ID               AS SOURCE_FK,
-               LW.LOGISTICS_WAREHOUSE_ID AS LOGISTICS_WAREHOUSE_FK,
-               SUM(PO.QUANTITY)          AS QUANTITY
-        FROM PRODUCT_ORDER PO
-                 JOIN
-             KIT_SOURCE KS ON PO.SOURCE_PRICE_ID = KS.KIT_SOURCE_ID
-                 JOIN
-             SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
-                 JOIN
-             LOGISTICS_WAREHOUSE LW ON LW.WAREHOUSE_NAME = 'Shin_WAREHOUSE'
-        WHERE PO.STATUS_ID = 6
-        GROUP BY S.SOURCE_ID, LW.LOGISTICS_WAREHOUSE_ID
-    </insert>
+
 
 
     <!--  <select id="selectRequiredStack" resultType="map">
@@ -163,7 +145,7 @@
              KIT_SOURCE KS ON MK.MEALKIT_ID = KS.MEALKIT_ID
                  JOIN
              SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
-        WHERE KO.STATUS_ID = 3
+        WHERE KO.STATUS_ID = 6
         GROUP BY S.SOURCE_ID, S.NAME
     </select>
 
@@ -174,11 +156,12 @@
         WHERE SOURCE_ID = #{sourceFk}
     </update>
 
-    <update id ="updateStackBySourceName" parameterType="map">
+    <update id="updateStackBySourceName" parameterType="map">
         UPDATE LOGISTICS_WAREHOUSE_STACK
-        SET QUANTITY = QUANTITY - #{itemQuantitiesJson}
-        WHERE SOURCE_ID = (select SOURCE_ID from SOURCE where NAME = #{sourceNamesJson});
+        SET QUANTITY = QUANTITY - #{quantity}
+        WHERE SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = #{sourceName})
     </update>
+
 
 
 
@@ -227,11 +210,11 @@
 
     <select id="selectProductOrderLogDetailsBySourceId" parameterType="String" resultType="org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDto">
         SELECT
-            pol.PRODUCT_ORDER_ID as productOrderId,
-            s.NAME AS sourceName ,
-            s.SOURCE_ID as sourceId,
-            po.QUANTITY as quantity,
-            pc.PRODUCT_COMPANY_ID as productCompanyId,
+            pol.PRODUCT_ORDER_ID AS productOrderId,
+            s.NAME AS sourceName,
+            s.SOURCE_ID AS sourceId,
+            po.QUANTITY AS quantity,
+            po.PRODUCT_COMPANY_ID AS productCompanyId,  -- PRODUCT_COMPANY_ID를 PRODUCT_ORDER에서 가져옴
             pc.NAME AS companyName,
             pol.PRODUCT_ORDER_DATE AS orderDate,
             CASE
@@ -240,35 +223,28 @@
                 END AS status
         FROM
             PRODUCT_ORDER_LOG pol
-                JOIN
-            PRODUCT_ORDER po ON pol.PRODUCT_ORDER_ID = po.PRODUCT_ORDER_ID
-                JOIN
-            SOURCE_PRICE sp ON po.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
-                JOIN
-            SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
-                JOIN
-            PRODUCT_COMPANY pc ON sp.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID
+                JOIN PRODUCT_ORDER po ON pol.PRODUCT_ORDER_ID = po.PRODUCT_ORDER_ID
+                JOIN KIT_SOURCE ks ON po.SOURCE_ID = ks.SOURCE_ID
+                JOIN SOURCE s ON ks.SOURCE_ID = s.SOURCE_ID
+                JOIN PRODUCT_COMPANY pc ON po.PRODUCT_COMPANY_ID = pc.PRODUCT_COMPANY_ID  -- PRODUCT_COMPANY_ID를 PRODUCT_ORDER에서 가져옴
         WHERE
             pol.STATUS_ID = 8
-            AND s.SOURCE_ID = #{sourceId}
+          AND s.SOURCE_ID = #{sourceId}
+
     </select>
 
-    <!--
-       SELECT
-    MK.NAME AS mealkitName,
-    S.NAME AS sourceName,
-    (KO.QUANTITY * KS.QUANTITY) AS totalQuantity,
-    KOL.PRODUCT_ORDER_DATE
-FROM
-    KIT_ORDER_LOG KOL
-    JOIN KIT_ORDER KO ON KOL.KIT_ORDER_ID = KO.KIT_ORDER_ID
-    JOIN MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID
-    JOIN KIT_SOURCE KS ON MK.MEALKIT_ID = KS.MEALKIT_ID
-    JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
-WHERE
-    KO.STATUS_ID = 3;
-
-    -->
+ <insert id="insertProductOrder" parameterType="map">
+     INSERT INTO PRODUCT_ORDER  VALUES (
+                                           UUID(),
+                                           (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = #{companyName}),
+                                           (SELECT SOURCE_ID FROM SOURCE WHERE NAME = #{sourceName}),
+                                           #{quantity},
+                                           #{price},
+                                           NOW(),
+                                           1,
+                                           NULL
+                                       )
+ </insert>
 
 </mapper>
 

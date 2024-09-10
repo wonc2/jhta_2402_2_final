@@ -10,6 +10,10 @@ import java.util.UUID;
 @Data
 public class ProductOrderDto {
     private UUID productOrderId;
+    private UUID productCompanyId;
+    private UUID sourceId;
+    private int totalQuantity;
+    private int sourcePrice;
     private UUID sourcePriceId;
     private int quantity;
     private Date productOrderDate;
