@@ -122,7 +122,7 @@ public class WareHouseController {
         // KitOrderLog 기입
         salesService.insertKitOrderLog(UUID.fromString(kitOrderId));
 
-        return "redirect:/distribution/wareHouseList";
+        return "distribution/wareHouseList";
     }
 
 
