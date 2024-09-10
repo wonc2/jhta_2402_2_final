@@ -176,8 +176,8 @@
                 </div>
                 <div class="card-body">
 
-                    <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3"
-                          style="width: 400px;">
+                    <!-- 검색 폼 -->
+                    <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
                         <select class="datatable-selector" name="category">
                             <option value="All">All</option>
                             <option value="firstName">firstName</option>
@@ -190,6 +190,7 @@
                         <button type="submit" class="btn btn-primary">검색</button>
                     </form>
 
+                    <!-- 데이터 테이블 -->
                     <table id="datatablesSimple04">
                         <thead>
                         <tr>
@@ -216,28 +217,24 @@
                         </tr>
                         </tfoot>
                         <tbody>
-                        <tr th:each="minPriceSourceDtos : ${minPriceSourceDtos}">
-                            <td th:text="${minPriceSourceDtos.kitOrderId}"></td>
-                            <td th:text="${minPriceSourceDtos.mealkitName}"></td>
-                            <td th:text="${minPriceSourceDtos.mealkitQuantity}"></td>
-                            <td th:text="${minPriceSourceDtos.sourceName}"></td>
-                            <td th:text="${minPriceSourceDtos.totalQuantity}"></td>
-                            <td th:text="${minPriceSourceDtos.sourcePrice}"></td>
-                            <td th:text="${minPriceSourceDtos.productCompanyName}"></td>
+                        <tr th:each="minPriceSourceDto : ${minPriceSourceDtos}">
+                            <td th:text="${minPriceSourceDto.kitOrderId}"></td>
+                            <td th:text="${minPriceSourceDto.mealkitName}"></td>
+                            <td th:text="${minPriceSourceDto.mealkitQuantity}"></td>
+                            <td th:text="${minPriceSourceDto.sourceName}"></td>
+                            <td th:text="${minPriceSourceDto.totalQuantity}"></td>
+                            <td th:text="${minPriceSourceDto.sourcePrice}"></td>
+                            <td th:text="${minPriceSourceDto.productCompanyName}"></td>
 
                             <!-- 주문하기 버튼 -->
                             <td>
-                                <form th:action="@{/distribution/sourceOrder}" th:method="post"
-                                      onsubmit="submitOrder(event);">
-                                    <input type="hidden" th:value="${minPriceSourceDtos.kitOrderId}" name="kitOrderId"/>
-                                    <input type="hidden" th:value="${minPriceSourceDtos.sourceId}" name="sourceId"/>
-                                    <input type="hidden" th:value="${minPriceSourceDtos.productCompanyId}"
-                                           name="productCompanyId"/>
-                                    <input type="hidden" th:value="${minPriceSourceDtos.totalQuantity}"
-                                           name="totalQuantity"/>
-                                    <input type="hidden" th:value="${minPriceSourceDtos.sourcePrice}"
-                                           name="sourcePrice"/>
-                                    <button type="submit" id="submitButton" class="btn btn-primary">주문</button>
+                                <form th:action="@{/distribution/sourceOrder}" th:method="post" onsubmit="handleSubmit(event, this);">
+                                    <input type="hidden" th:value="${minPriceSourceDto.kitOrderId}" name="kitOrderId"/>
+                                    <input type="hidden" th:value="${minPriceSourceDto.sourceId}" name="sourceId"/>
+                                    <input type="hidden" th:value="${minPriceSourceDto.productCompanyId}" name="productCompanyId"/>
+                                    <input type="hidden" th:value="${minPriceSourceDto.totalQuantity}" name="totalQuantity"/>
+                                    <input type="hidden" th:value="${minPriceSourceDto.sourcePrice}" name="sourcePrice"/>
+                                    <button type="submit" class="btn btn-primary">주문</button>
                                 </form>
                             </td>
                         </tr>
@@ -245,14 +242,38 @@
                     </table>
 
                 </div>
-
             </div>
         </div>
-    </main>
-</div>
 
-<!-- footer.html 파일을 포함합니다 -->
-<th:block th:replace="fragment/adminFooter :: footer"></th:block>
+        <!-- footer.html 파일을 포함합니다 -->
+        <th:block th:replace="fragment/adminFooter :: footer"></th:block>
 
+        <script>
+            function handleSubmit(event, form) {
+                event.preventDefault(); // 폼의 기본 제출 동작을 방지합니다.
+
+                const submitButton = form.querySelector("button[type='submit']");
+                submitButton.disabled = true;
+                submitButton.innerText = "주문 처리 중...";
+
+                fetch(form.action, {
+                    method: form.method,
+                    body: new FormData(form),
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        // 성공적으로 제출되었을 때의 처리
+                        alert("주문이 성공적으로 처리되었습니다!");
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        // 오류가 발생한 경우 버튼을 다시 활성화합니다.
+                        submitButton.disabled = false;
+                        submitButton.innerText = "주문";
+                        alert("주문 처리 중 오류가 발생했습니다.");
+                    });
+            }
+        </script>
 </body>
 </html>

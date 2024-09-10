@@ -40,23 +40,25 @@ public class DistributionOrderController {
     }
 
     @PostMapping("/distribution/sourceOrder")
-    public String placeOrder(@RequestParam("kitOrderId") String kitOrderId,
-                             @RequestParam("sourceId") UUID sourceId,
-                             @RequestParam("totalQuantity") int totalQuantity,
-                             @RequestParam("sourcePrice") int sourcePrice,
-                             @RequestParam("productCompanyId") UUID productCompanyId
-                             ) {
+    public String sourceOrder(@RequestParam("kitOrderId") UUID kitOrderId,
+                              @RequestParam("sourceId") UUID sourceId,
+                              @RequestParam("totalQuantity") int totalQuantity,
+                              @RequestParam("sourcePrice") int sourcePrice,
+                              @RequestParam("productCompanyId") UUID productCompanyId) {
 
-        UUID sourcePriceId = distributionOrderService.selectSourcePriceId(sourceId, productCompanyId);
+        System.out.println("kitOrderId =>>>>>>>> " + kitOrderId);
+        System.out.println("sourceId =>>>>>>>> " + sourceId);
+        System.out.println("totalQuantity =>>>>>>>> " + totalQuantity);
+        System.out.println("sourcePrice =>>>>>>>> " + sourcePrice);
+        System.out.println("productCompanyId =>>>>>>>> " + productCompanyId);
 
+        UUID productOrderId = UUID.randomUUID();
 
-        int result = distributionOrderService.insertProductOrder(sourcePriceId, totalQuantity);
-
-        if (result > 0) System.out.println("인서트 성공");
-        else System.out.println("인서트 실패 ");
+        distributionOrderService.processOrder(productOrderId, productCompanyId, sourceId, totalQuantity, sourcePrice, kitOrderId);
 
         return "redirect:/distribution/order";
     }
+
 
 
 

@@ -1,6 +1,7 @@
 package org.example.jhta_2402_2_final.controller.sales;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/sales")
@@ -144,24 +142,35 @@ public class SalesController {
     public String shinhyeok(@RequestParam("kitOrderIdForSale") UUID kitOrderId,
 
                             @RequestParam("sourceNamesForSale") String sourceNamesJson,
-                            @RequestParam("itemQuantitiesForSale") String itemQuantitiesJson) throws JsonProcessingException {
+                            @RequestParam("itemQuantitiesForSale") String itemQuantitiesJson) throws IOException {
 
+        ObjectMapper objectMapper = new ObjectMapper();
 
+        // JSON 문자열을 List로 변환
+        List<String> sourceNames = objectMapper.readValue(sourceNamesJson, new TypeReference<List<String>>() {});
+        List<Integer> itemQuantities = objectMapper.readValue(itemQuantitiesJson, new TypeReference<List<Integer>>() {});
+
+        // 검증: 두 리스트의 크기가 동일한지 확인
+        if (sourceNames.size() != itemQuantities.size()) {
+            throw new IllegalArgumentException("sourceNames와 itemQuantities의 크기가 다릅니다.");
+        }
+
+        // List<Map<String, Object>>로 변환
+        List<Map<String, Object>> combinedList = new ArrayList<>();
+        for (int i = 0; i < sourceNames.size(); i++) {
+            Map<String, Object> itemMap = new HashMap<>();
+            itemMap.put("sourceName", sourceNames.get(i));
+            itemMap.put("quantity", itemQuantities.get(i));
+            combinedList.add(itemMap);
+        }
 
         // 데이터 저장을 위한 Map 생성
         Map<String, Object> map = new HashMap<>();
         map.put("kitOrderId", kitOrderId);
-        map.put("sourceNamesJson", sourceNamesJson);
-        map.put("itemQuantitiesJson", itemQuantitiesJson);
-   ;
-
-        // Map의 모든 항목 출력
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
-        }
+        map.put("combinedList", combinedList);
 
         // 창고에서 차감
-        logisticsWareHouseService.updateStackBySourceName(map);
+        logisticsWareHouseService.updateStackBySourceName(combinedList);
 
         // KitOrder의 Status 수정
         salesService.updateKitOrderStatus(kitOrderId, 8);
@@ -177,6 +186,7 @@ public class SalesController {
         salesService.updateKitOrderCancel(kitOrderId);
         return "redirect:/sales";
     }
+
 
 
 

@@ -104,8 +104,10 @@ public class KitOrderProcessController {
     }*/
 
     // 구버전 requestProductOrder 매소드
-    @PostMapping("/distribution/requestSourceOrder")
+    @PostMapping("/requestSourceOrder")
     public ResponseEntity<?> requestSourceOrder(@RequestBody RequestOrderDto requestOrderDto) {
+
+        System.out.println("Received Request: " + requestOrderDto);
         // 서비스 로직 호출 (발주 처리)
         boolean result = kitOrderProcessService.requestProductOrders(requestOrderDto);
 

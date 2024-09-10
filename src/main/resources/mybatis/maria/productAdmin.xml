@@ -144,7 +144,8 @@
                  GROUP BY P_C.NAME;
     </select>
     <select id="getProductCountList" resultType="ProductCountDto">
-        SELECT S.NAME AS productName , P_O.QUANTITY AS quantity
+        SELECT S.NAME AS productName,
+               SUM(P_O.QUANTITY) AS quantity
         FROM SOURCE_PRICE S_P
                  JOIN SOURCE S ON S_P.SOURCE_ID = S.SOURCE_ID
                  JOIN PRODUCT_ORDER P_O ON S_P.PRICE = P_O.PRICE
@@ -154,4 +155,7 @@
     <insert id="insertProductCompany" parameterType="ProductCompanyDto">
         INSERT INTO PRODUCT_COMPANY (PRODUCT_COMPANY_ID,NAME,ADDRESS) VALUES(UUID(),#{productCompanyName},#{productCompanyAddress})
     </insert>
+    <select id="getProductCompanyId" parameterType="String">
+        SELECT P_C.PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY P_C WHERE P_C.NAME = #{productCompanyName};
+    </select>
 </mapper>

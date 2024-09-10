@@ -78,8 +78,14 @@ public class LogisticsWareHouseService {
     return distributionDao.insertKitOrderLog(kitOrderIdList);
     }
 
-    public int updateStackBySourceName(Map<String, Object> map) {
-    return distributionDao.updateStackBySourceName(map);
+    public void updateStackBySourceName(List<Map<String, Object>> combinedList) {
+        for (Map<String, Object> item : combinedList) {
+            distributionDao.updateStackBySourceName(item);
+        }
+    }
+
+    public void insertProductOrder(Map<String, Object> map) {
+    distributionDao.insertProductOrder(map);
     }
 }
 

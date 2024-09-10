@@ -19,7 +19,8 @@
                 </div>
                 <div class="card-body">
 
-                    <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                    <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3"
+                          style="width: 400px;">
                         <select class="datatable-selector" name="category">
                             <option value="All">All</option>
                             <option value="firstName">firstName</option>
@@ -88,7 +89,8 @@
 </div>
 
 <!-- 재료확인/발주 modal -->
-<div class="modal fade" id="kitSourceCheckAndOrderModal" tabindex="-1" aria-labelledby="kitOrderDetailModalLabel" aria-hidden="true">
+<div class="modal fade" id="kitSourceCheckAndOrderModal" tabindex="-1" aria-labelledby="kitOrderDetailModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="employeeForm" th:action="@{/distribution/requestSourceOrder}" th:method="post">
@@ -103,7 +105,8 @@
                     </div>
                     <div class="mb-3">
                         <label for="modalKitCompanyName" class="form-label">밀키트 회사명</label>
-                        <input type="text" class="form-control" id="modalKitCompanyName" name="modalKitCompanyName" readonly>
+                        <input type="text" class="form-control" id="modalKitCompanyName" name="modalKitCompanyName"
+                               readonly>
                     </div>
                     <div class="mb-3">
                         <label for="modalKitName" class="form-label">밀키트명</label>
@@ -321,14 +324,18 @@
 
         const orderDetails = [];
         const kitOrderId = document.getElementById('modalKitOrderID').value;
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+        console.log(csrfToken);
+        console.log(csrfHeader);
 
         // 재료 테이블에서 데이터 추출
         document.querySelectorAll("#ingredientsList tr").forEach(row => {
-            const sourceName = row.cells[0].innerText;
-            const requiredQuantity = parseInt(row.cells[1].innerText);
-            const warehouseQuantity = parseInt(row.cells[2].innerText);
-            const minPrice = parseInt(row.cells[3].innerText);
-            const supplierName = row.cells[4].innerText;
+            const sourceName = row.cells[0].innerText; // 재료이름
+            const requiredQuantity = parseInt(row.cells[1].innerText); // 필요수량
+            const warehouseQuantity = parseInt(row.cells[2].innerText); // 창고재고수량
+            const minPrice = parseInt(row.cells[3].innerText); // 현재 최소가
+            const supplierName = row.cells[4].innerText; // 재료 공급업체명
 
             // 재고 부족 시 발주 내역 추가
             if (requiredQuantity > warehouseQuantity) {
@@ -342,14 +349,32 @@
             }
         });
 
+        orderDetails.map((order) => console.log(order));
+        console.log(orderDetails);
+        console.log({kitOrderId, orderDetails}); // 서버로 보내기 전에 확인
+        console.log(JSON.stringify(orderDetails))
+        console.log(JSON.stringify({
+            orderDetails: orderDetails
+        }))
+        console.log(JSON.stringify({
+            kitOrderId: kitOrderId,
+            orderDetails: {
+                "orderDetails": orderDetails
+            }
+        }));
         // 서버로 재료 발주 요청
         if (orderDetails.length > 0) {
             fetch("/distribution/requestSourceOrder", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    [csrfHeader]: csrfToken // CSRF 토큰을 헤더에 포함
                 },
-                body: JSON.stringify({ kitOrderId, orderDetails }),
+                body: JSON.stringify({
+                    kitOrderId: kitOrderId,
+                    orderDetailList: orderDetails
+                })
+                // body: JSON.stringify({ kitOrderId, orderDetails }),
             })
                 .then(() => {
                     alert('재료 발주 요청이 완료되었습니다.');
@@ -362,10 +387,6 @@
             alert("모든 재고가 충분합니다.");
         }
     });
-
-
-
-
 
 
 </script>
