@@ -32,6 +32,10 @@ public class SalesController {
     @GetMapping
     public String salesMain(Model model) {
 
+        //업체별 누적 판매량, 판매금액
+        List<Map<String, String>> totalQuantityByCompanyNameList = salesService.selectTotalQuantityByCompanyName();
+        model.addAttribute("totalQuantityByCompanyNameList", totalQuantityByCompanyNameList);
+
         //밀키트와 해당 밀키트의 재료 가져오기
         List<KitSourceDetailDto> kitSourceDetails = salesService.getAllKitSourceDetail();
         model.addAttribute("kitSourceDetails", kitSourceDetails);
@@ -140,7 +144,6 @@ public class SalesController {
 
     @PostMapping("/shinhyeok")
     public String shinhyeok(@RequestParam("kitOrderIdForSale") UUID kitOrderId,
-
                             @RequestParam("sourceNamesForSale") String sourceNamesJson,
                             @RequestParam("itemQuantitiesForSale") String itemQuantitiesJson) throws IOException {
 
@@ -187,6 +190,12 @@ public class SalesController {
         return "redirect:/sales";
     }
 
+    @PostMapping("/insert/company")
+    public String insertCompany(@RequestParam String companyName,
+                                @RequestParam String companyAddress) {
+        salesService.insertKitCompany(companyName, companyAddress);
+        return "redirect:/sales";
+    }
 
 
 

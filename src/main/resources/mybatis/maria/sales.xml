@@ -509,5 +509,59 @@
     </resultMap>
 
 
+<!--    처리완료된(판매된) 밀키트 수량 알아내기 -->
+    <select id="selectKitTotalQuantity" resultMap="completedKitQuantityMap">
+        SELECT
+            mk.NAME AS mealkitName,
+            SUM(ko.QUANTITY) AS totalQuantity,
+            SUM(mk.PRICE * ko.QUANTITY) AS totalPrice
+        FROM
+            KIT_ORDER_LOG kol
+                JOIN KIT_ORDER ko ON kol.KIT_ORDER_ID = ko.KIT_ORDER_ID
+                JOIN MEALKIT mk ON ko.MEALKIT_ID = mk.MEALKIT_ID
+        WHERE
+            kol.STATUS_ID = 3
+        GROUP BY
+            mk.NAME
+        ORDER BY
+            totalQuantity DESC;
+    </select>
 
+    <resultMap id="completedKitQuantityMap" type="map">
+        <result property="mealkitName" column="mealkitName"/>
+        <result property="totalQuantity" column="totalQuantity"/>
+        <result property="totalPrice" column="totalPrice"/>
+    </resultMap>
+
+
+<!--    업체별 누적 판매액-->
+    <select id="selectTotalQuantityByCompanyName" resultMap="totalQuantityMapByCompanyName">
+        SELECT
+            kc.NAME AS companyName,
+            SUM(ko.QUANTITY) AS totalQuantity,
+            SUM(mk.PRICE * ko.QUANTITY) AS totalPrice
+        FROM
+            KIT_ORDER_LOG kol
+                JOIN KIT_ORDER ko ON kol.KIT_ORDER_ID = ko.KIT_ORDER_ID
+                JOIN KIT_COMPANY kc ON ko.KIT_COMPANY_ID = kc.KIT_COMPANY_ID
+                JOIN MEALKIT mk ON ko.MEALKIT_ID = mk.MEALKIT_ID
+        WHERE
+            kol.STATUS_ID = 3
+        GROUP BY
+            kc.NAME
+        ORDER BY
+            totalQuantity DESC;
+    </select>
+
+    <resultMap id="totalQuantityMapByCompanyName" type="map">
+        <result property="mealkitName" column="mealkitName"/>
+        <result property="totalQuantity" column="totalQuantity"/>
+        <result property="totalPrice" column="totalPrice"/>
+    </resultMap>
+
+    <!-- 업체 등록 -->
+    <insert id="insertKitCompany">
+        INSERT INTO KIT_COMPANY (KIT_COMPANY_ID, NAME, ADDRESS)
+        VALUES (uuid(), #{companyName}, #{companyAddress})
+    </insert>
 </mapper>

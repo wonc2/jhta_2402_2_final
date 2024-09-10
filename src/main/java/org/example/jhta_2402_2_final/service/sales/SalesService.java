@@ -213,5 +213,18 @@ public class SalesService {
     public List<Map<String, String>> selectKitStorageTotalQuantity() {
         return salesDao.selectKitStorageTotalQuantity();
     }
+
+    public List<Map<String, String>> selectKitTotalQuantity() {
+        return salesDao.selectKitTotalQuantity();
+    }
+
+    //업체별 누적 판매량 , 판매금액
+    public List<Map<String, String>> selectTotalQuantityByCompanyName() {
+        return salesDao.selectTotalQuantityByCompanyName();
+    }
+
+    public void insertKitCompany(String companyName, String companyAddress) {
+        salesDao.insertKitCompany(companyName, companyAddress);
+    }
 }
 
