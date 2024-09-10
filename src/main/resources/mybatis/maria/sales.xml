@@ -490,4 +490,122 @@
     </select>
 
 
+    <select id="selectKitStorageTotalQuantity" resultMap="mealkitQuantityMap">
+        SELECT
+            MK.NAME AS mealkitName,
+            SUM(KS.QUANTITY) AS totalQuantity
+        FROM
+            KIT_STORAGE KS
+                JOIN MEALKIT MK ON KS.MEALKIT_ID = MK.MEALKIT_ID
+        GROUP BY
+            MK.NAME
+        ORDER BY
+            totalQuantity DESC;
+    </select>
+
+    <resultMap id="mealkitQuantityMap" type="map">
+        <result property="mealkitName" column="mealkitName"/>
+        <result property="totalQuantity" column="totalQuantity"/>
+    </resultMap>
+
+
+<!--    처리완료된(판매된) 밀키트 수량 알아내기 -->
+    <select id="selectKitTotalQuantity" resultMap="completedKitQuantityMap">
+        SELECT
+            mk.NAME AS mealkitName,
+            SUM(ko.QUANTITY) AS totalQuantity,
+            SUM(mk.PRICE * ko.QUANTITY) AS totalPrice
+        FROM
+            KIT_ORDER_LOG kol
+                JOIN KIT_ORDER ko ON kol.KIT_ORDER_ID = ko.KIT_ORDER_ID
+                JOIN MEALKIT mk ON ko.MEALKIT_ID = mk.MEALKIT_ID
+        WHERE
+            kol.STATUS_ID = 3
+        GROUP BY
+            mk.NAME
+        ORDER BY
+            totalQuantity DESC;
+    </select>
+
+    <resultMap id="completedKitQuantityMap" type="map">
+        <result property="mealkitName" column="mealkitName"/>
+        <result property="totalQuantity" column="totalQuantity"/>
+        <result property="totalPrice" column="totalPrice"/>
+    </resultMap>
+
+
+<!--    업체별 누적 판매액-->
+    <select id="selectTotalQuantityByCompanyName" resultMap="totalQuantityMapByCompanyName">
+        SELECT
+            kc.NAME AS companyName,
+            SUM(ko.QUANTITY) AS totalQuantity,
+            SUM(mk.PRICE * ko.QUANTITY) AS totalPrice
+        FROM
+            KIT_ORDER_LOG kol
+                JOIN KIT_ORDER ko ON kol.KIT_ORDER_ID = ko.KIT_ORDER_ID
+                JOIN KIT_COMPANY kc ON ko.KIT_COMPANY_ID = kc.KIT_COMPANY_ID
+                JOIN MEALKIT mk ON ko.MEALKIT_ID = mk.MEALKIT_ID
+        WHERE
+            kol.STATUS_ID = 3
+        GROUP BY
+            kc.NAME
+        ORDER BY
+            totalQuantity DESC;
+    </select>
+
+    <resultMap id="totalQuantityMapByCompanyName" type="map">
+        <result property="mealkitName" column="mealkitName"/>
+        <result property="totalQuantity" column="totalQuantity"/>
+        <result property="totalPrice" column="totalPrice"/>
+    </resultMap>
+
+    <!-- 업체 등록 -->
+    <insert id="insertKitCompany">
+        INSERT INTO KIT_COMPANY (KIT_COMPANY_ID, NAME, ADDRESS)
+        VALUES (uuid(), #{companyName}, #{companyAddress})
+    </insert>
+
+    <select id="getMonthlySales" resultType="MonthlySalesDto">
+        WITH months AS (
+            -- 1월부터 12월까지 월 목록 생성
+            SELECT 1 AS month
+        UNION ALL SELECT 2
+                  UNION ALL SELECT 3
+                  UNION ALL SELECT 4
+                  UNION ALL SELECT 5
+                  UNION ALL SELECT 6
+                  UNION ALL SELECT 7
+                  UNION ALL SELECT 8
+                  UNION ALL SELECT 9
+                  UNION ALL SELECT 10
+                  UNION ALL SELECT 11
+                  UNION ALL SELECT 12
+                      ),
+company_sales AS (
+    -- 업체별로 월별 매출액 계산
+    SELECT
+        kc.NAME AS companyName,
+        MONTH(kol.PRODUCT_ORDER_DATE) AS orderMonth,
+        SUM(mk.PRICE * ko.QUANTITY) AS monthlySales
+    FROM
+        KIT_ORDER_LOG kol
+        JOIN KIT_ORDER ko ON kol.KIT_ORDER_ID = ko.KIT_ORDER_ID
+        JOIN KIT_COMPANY kc ON ko.KIT_COMPANY_ID = kc.KIT_COMPANY_ID
+        JOIN MEALKIT mk ON ko.MEALKIT_ID = mk.MEALKIT_ID
+    WHERE
+        kol.STATUS_ID = 3 -- 상태가 3인 주문만 선택
+    GROUP BY
+        kc.NAME, MONTH(kol.PRODUCT_ORDER_DATE)
+)
+        SELECT
+            c.companyName,
+            m.month AS orderMonth,
+            IFNULL(cs.monthlySales, 0) AS totalSales
+        FROM
+                (SELECT DISTINCT NAME AS companyName FROM KIT_COMPANY) c -- 업체 목록
+                    CROSS JOIN months m -- 월 목록과 조인
+                    LEFT JOIN company_sales cs ON c.companyName = cs.companyName AND m.month = cs.orderMonth
+        ORDER BY
+            c.companyName, m.month;
+    </select>
 </mapper>

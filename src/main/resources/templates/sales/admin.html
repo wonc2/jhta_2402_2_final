@@ -21,7 +21,16 @@
                 <button class="btn btn-primary"
                         data-bs-toggle="modal"
                         data-bs-target="#insertMealkitModal">
-                    밀키트 추가
+                    밀키트 등록
+                </button>
+            </div>
+
+            <!--            업체 추가 모달 버튼-->
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#insertCompanyModal">
+                    업체 등록
                 </button>
             </div>
 
@@ -34,13 +43,13 @@
                     새로운 밀키트 주문 추가
                 </button>
             </div>
-
+            <!--차트-->
             <div class="row">
                 <div class="col-xl-6">
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-chart-area me-1"></i>
-                            밀키트 업체별 판매 현황
+                            밀키트 업체별 누적 판매 금액
                         </div>
                         <div class="card-body">
                             <canvas id="myChart" width="100%" height="60"></canvas>
@@ -51,7 +60,7 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            밀키트 업체별 매출액
+                            밀키트 업체별 월별 매출액
                         </div>
                         <div class="card-body">
                             <canvas id="myChart02" width="100%" height="60"></canvas>
@@ -485,6 +494,34 @@
 
 </script>
 
+<!-- 업체 등록 모달 -->
+<div class="modal fade" id="insertCompanyModal" tabindex="-1" aria-labelledby="insertCompanyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="insertCompanyModalLabel">새 업체 등록</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="insertCompanyForm" th:action="@{/sales/insert/company}" th:method="post">
+                    <div class="mb-3">
+                        <label for="companyName" class="form-label">업체명</label>
+                        <input type="text" class="form-control" id="companyName" name="companyName" placeholder="업체명을 입력하세요" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="companyAddress" class="form-label">업체 주소</label>
+                        <input type="text" class="form-control" id="companyAddress" name="companyAddress" placeholder="업체 주소를 입력하세요" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="submit" class="btn btn-primary" id="submitCompanyBtn" form="insertCompanyForm">등록</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- 주문 추가 모달 -->
 <div class="modal fade" id="insertKitOrderModal" tabindex="-1" aria-labelledby="insertKitOrderModalLabel"
@@ -627,7 +664,7 @@
 <!--차트1-->
 <script th:inline="javascript">
 
-    const companyList = [[${companyList}]];
+    const companyList = [[${totalQuantityByCompanyNameList}]];
 
     // 데이터와 라벨 배열 초기화
     const labels = [];
@@ -636,8 +673,8 @@
 
     // companyList의 각 항목을 사용하여 라벨, 데이터, 색상 생성
     companyList.forEach(company => {
-        labels.push(company.NAME);  // 회사 이름을 라벨로 사용
-        data.push(Math.floor(Math.random() * 100));  // 임의의 데이터 생성
+        labels.push(company.companyName);  // 회사 이름을 라벨로 사용
+        data.push(company.totalPrice);  // 임의의 데이터 생성
         backgroundColors.push(getRandomColorWithOpacity(0.5));  // 랜덤 배경색 (불투명)
     });
 
@@ -680,29 +717,25 @@
 
 
 
+    // 두번째 차트
+    const monthList = [[${monthlySales}]];
+
+
     // 라벨 생성
-    const DATA_COUNT = 12;
     const month = [];
-    for (let i = 1; i < DATA_COUNT; ++i) {
+    for (let i = 1; i <= 12; ++i) {
         month.push(i.toString());
     }
 
-    // companyList의 각 항목을 사용하여 라벨, 데이터 포인트, 색상 생성
-    const datasets = companyList.map(company => {
-
-
-        // 각 회사에 대해 데이터 포인트를 생성 (임의로 생성하거나 실제 데이터를 사용할 수 있음)
-        const companyDataPoints = Array.from({ length: DATA_COUNT }, () => Math.floor(Math.random() * 500));
-
-        return {
-            label: company.NAME,  // 데이터셋의 라벨
-            data: companyDataPoints,  // 데이터 포인트
-            borderColor: backgroundColors,  // 데이터셋의 색상
-            fill: false,
-            cubicInterpolationMode: 'monotone',
-            tension: 0.4
-        };
-    });
+    // companyList의 각 항목을 사용하여 데이터 포인트와 색상 생성
+    const datasets = monthList.map(company => ({
+        label: company.companyName,  // 데이터셋의 라벨
+        data: company.monthlySales,  // 서버에서 받은 월별 매출 데이터
+        borderColor: backgroundColors,  // 데이터셋의 색상
+        fill: false,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4
+    }));
 
     // 두 번째 차트 데이터와 설정 정의
     const data02 = {
@@ -737,7 +770,7 @@
                     display: true,
                     title: {
                         display: true,
-                        text: '만원'
+                        text: '원'
                     },
                     suggestedMin: 0,
                     suggestedMax: 500

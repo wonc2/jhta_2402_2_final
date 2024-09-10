@@ -5,5 +5,6 @@ import lombok.Getter;
 @Getter
 public class ProductCompanyChartDto {
     private String sourceName;
-    private String sourceQuantity;
+    private int sourceQuantity;
+    private int sales;
 }
