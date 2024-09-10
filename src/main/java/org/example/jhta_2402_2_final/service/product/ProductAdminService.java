@@ -42,6 +42,9 @@ public class ProductAdminService {
     public List<ProductOrderViewDto> getProductOrderListCompanyName(String companyName){
         return productDao.getProductOrderListCompanyName(companyName);
     }
+    public List<ProductOrderQuantityDto> getProductOrderQuantityListCompanyName(String companyName){
+        return productDao.getProductOrderQuantityListCompanyName(companyName);
+    }
     public List<ProductOrderViewDto> getProductOrderListCompanyNameProductName(String companyName , String productName){
         return productDao.getProductOrderListCompanyNameProductName(companyName,productName);
     }
