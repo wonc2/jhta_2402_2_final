@@ -490,4 +490,24 @@
     </select>
 
 
+    <select id="selectKitStorageTotalQuantity" resultMap="mealkitQuantityMap">
+        SELECT
+            MK.NAME AS mealkitName,
+            SUM(KS.QUANTITY) AS totalQuantity
+        FROM
+            KIT_STORAGE KS
+                JOIN MEALKIT MK ON KS.MEALKIT_ID = MK.MEALKIT_ID
+        GROUP BY
+            MK.NAME
+        ORDER BY
+            totalQuantity DESC;
+    </select>
+
+    <resultMap id="mealkitQuantityMap" type="map">
+        <result property="mealkitName" column="mealkitName"/>
+        <result property="totalQuantity" column="totalQuantity"/>
+    </resultMap>
+
+
+
 </mapper>

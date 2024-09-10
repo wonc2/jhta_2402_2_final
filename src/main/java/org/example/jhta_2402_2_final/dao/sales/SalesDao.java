@@ -106,4 +106,7 @@ public interface SalesDao {
     void updateProductOrderCancel(UUID kitOrderId);
 
     List<UUID> selectProductOrderIdByKitOrderId(UUID kitOrderId);
+
+    //창고에서 밀키트 별 재고 확인
+    List<Map<String, String>> selectKitStorageTotalQuantity();
 }

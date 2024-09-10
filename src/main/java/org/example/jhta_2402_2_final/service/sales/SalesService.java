@@ -209,5 +209,9 @@ public class SalesService {
     }
 
 
+    //밀키트 별 창고 재고 확인
+    public List<Map<String, String>> selectKitStorageTotalQuantity() {
+        return salesDao.selectKitStorageTotalQuantity();
+    }
 }
 

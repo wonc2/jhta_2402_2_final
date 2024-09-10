@@ -10,11 +10,11 @@
     <!-- 페이지마다 다른 콘텐츠 -->
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-5 mb-5">밀키트 업체별 밀키트 재고 확인</h1>
+            <h1 class="mt-5 mb-5">밀키트 창고</h1>
 
 
             <div class="row mb-5">
-                <input type="hidden" th:value="${mealkitList}">
+<!--                <input type="hidden" th:value="${mealkitList}">-->
                 <div class="col-xl-6">
                     <div class="card mb-4">
                         <div class="card-header">
@@ -181,7 +181,7 @@
 <!--차트1-->
 <script th:inline="javascript">
 
-    const mealkitList = [[${mealkitList}]];
+    const kitList = [[${kitTotalQuantity}]];
 
     // 데이터와 라벨 배열 초기화
     const labels = [];
@@ -189,9 +189,9 @@
     const backgroundColors = [];
 
     // companyList의 각 항목을 사용하여 라벨, 데이터, 색상 생성
-    mealkitList.forEach(kit => {
-        labels.push(kit.NAME);  // 회사 이름을 라벨로 사용
-        data.push(Math.floor(Math.random() * 100));  // 임의의 데이터 생성
+    kitList.forEach(kit => {
+        labels.push(kit.mealkitName);  // 회사 이름을 라벨로 사용
+        data.push(kit.totalQuantity);  // 임의의 데이터 생성
         backgroundColors.push(getRandomColorWithOpacity(0.5));  // 랜덤 배경색 (불투명)
     });
 
