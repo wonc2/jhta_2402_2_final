@@ -42,6 +42,9 @@ $(document).ready(function () {
             sourceName: $('#addSourceInput').prop('disabled') ? null : $('#addSourceInput').val()
         };
 
+        $('#addSourceInput').val('').prop('disabled', false);
+        $('#addSourceSelect').val('directInput');
+
         $.ajax({
             url: '/api/product/company/add',
             type: 'POST',
@@ -54,6 +57,7 @@ $(document).ready(function () {
                 $('#addSourceModal').modal('hide');
                 $('#companySourceTable').DataTable().ajax.reload(null, false);
                 updateSourceSelectList();
+                showToast("등록 완료")
             },
             error: function (xhr) {
                 const response = JSON.parse(xhr.responseText);

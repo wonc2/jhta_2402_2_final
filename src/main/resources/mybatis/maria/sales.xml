@@ -550,7 +550,7 @@
         GROUP BY
             kc.NAME
         ORDER BY
-            totalQuantity DESC;
+            companyName;
     </select>
 
     <resultMap id="totalQuantityMapByCompanyName" type="map">

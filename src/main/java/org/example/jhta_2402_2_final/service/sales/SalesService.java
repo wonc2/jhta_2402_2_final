@@ -231,7 +231,7 @@ public class SalesService {
         List<MonthlySalesDto> dtos = salesDao.getMonthlySales();
 
         List<Map<String, Object>> resultList = new ArrayList<>();
-        Map<String, int[]> companyMap = new HashMap<>();
+        Map<String, int[]> companyMap = new LinkedHashMap<>();
 
         int index = 0;
         int[] arr = new int[12];
@@ -261,7 +261,7 @@ public class SalesService {
 
         // 결과를 리스트에 담기
         for (Map.Entry<String, int[]> entry : companyMap.entrySet()) {
-            Map<String, Object> resultMap = new HashMap<>();
+            Map<String, Object> resultMap = new LinkedHashMap<>();
             resultMap.put("companyName", entry.getKey());
             resultMap.put("monthlySales", entry.getValue());
             resultList.add(resultMap);
