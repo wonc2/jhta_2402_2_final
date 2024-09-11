@@ -59,15 +59,25 @@
                         Dashboard
                     </a>
                     <div class="sb-sidenav-menu-heading">Category</div>
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#salesMenu" aria-expanded="false" aria-controls="collapseLayouts">
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#salesAdminMenu" aria-expanded="false" aria-controls="collapseLayouts">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Sales
+                        Sales Admin Page
                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
-                    <div class="collapse" id="salesMenu" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                    <div class="collapse" id="salesAdminMenu" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                         <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="/sales">Sales Admin Page</a>
-                            <a class="nav-link" href="#">Sales User Page</a>
+                            <a class="nav-link" href="/sales">판매</a>
+                            <a class="nav-link" href="/sales/storage">판매창고</a>
+                            <a class="nav-link" href="/sales/source-price">밀키트 가격 설정</a>
+                        </nav>
+                    </div>
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#salesUserMenu" aria-expanded="false" aria-controls="collapseLayouts">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        Sales User Page
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="salesUserMenu" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
                             <a class="nav-link" href="/sales">판매</a>
                             <a class="nav-link" href="/sales/storage">판매창고</a>
                             <a class="nav-link" href="/sales/source-price">밀키트 가격 설정</a>
@@ -88,17 +98,8 @@
                             <a class="nav-link" href="/wareHouse/selectAll" th:href="@{wareHouse/selectAll}">유통창고</a>
                         </nav>
                     </div>
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#productMenu" aria-expanded="false" aria-controls="collapseLayouts">
-                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Products
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="productMenu" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="/product" th:href="@{/product/admin/main?page=1}">Products Admin Page</a>
-                            <a class="nav-link" href="/product" th:href="@{/product/company}">Products User Page</a>
-                        </nav>
-                    </div>
+                    <a class="nav-link" href="/product" th:href="@{/product/admin/main?page=1}"><div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>Products Admin Page</a>
+                    <a class="nav-link" href="/product" th:href="@{/product/company}"><div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>Products User Page</a>
                 </div>
             </div>
         </nav>
