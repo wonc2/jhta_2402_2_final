@@ -102,9 +102,59 @@
     </select>
 
 
+    <select id="selectKitOrderId" resultType="MinPriceOrderDto">
+        WITH RankedPrices AS (
+            SELECT
+                KS.SOURCE_ID AS sourceId,
+                SP.PRICE AS sourcePrice,
+                SP.PRODUCT_COMPANY_ID AS productCompanyId,
+                ROW_NUMBER() OVER (PARTITION BY KS.SOURCE_ID ORDER BY SP.PRICE ASC, SP.PRODUCT_COMPANY_ID ASC) AS rn
+            FROM
+                KIT_SOURCE KS
+                    JOIN SOURCE_PRICE SP ON KS.SOURCE_ID = SP.SOURCE_ID
+        ),
+             OrderDetails AS (
+                 SELECT
+                     KO.KIT_ORDER_ID AS kitOrderId,
+                     KO.PRODUCT_ORDER_DATE AS orderDate,
+                     MK.NAME AS mealkitName,
+                     KO.QUANTITY AS mealkitQuantity,
+                     KS.SOURCE_ID AS sourceId,
+                     KS.QUANTITY AS ingredientQuantity,
+                     RP.sourcePrice AS sourcePrice,
+                     (KS.QUANTITY * RP.sourcePrice) AS ingredientCost,
+                     PC.NAME AS supplierName
+                 FROM
+                     KIT_ORDER KO
+                         JOIN KIT_SOURCE KS ON KO.MEALKIT_ID = KS.MEALKIT_ID
+                         JOIN MEALKIT MK ON KO.MEALKIT_ID = MK.MEALKIT_ID
+                         JOIN RankedPrices RP ON KS.SOURCE_ID = RP.sourceId AND RP.rn = 1
+                         JOIN SOURCE_PRICE SP ON KS.SOURCE_ID = SP.SOURCE_ID AND SP.PRODUCT_COMPANY_ID = RP.productCompanyId
+                         JOIN PRODUCT_COMPANY PC ON SP.PRODUCT_COMPANY_ID = PC.PRODUCT_COMPANY_ID
+             )
+        SELECT
+            OD.kitOrderId,
+            OD.orderDate,
+            OD.mealkitName,
+            OD.mealkitQuantity,
+            SUM(OD.ingredientQuantity * OD.sourcePrice) AS rawCost,
+            SUM(OD.ingredientQuantity * OD.sourcePrice) * OD.mealkitQuantity AS totalCost
+        FROM
+            OrderDetails OD
+        GROUP BY
+            OD.kitOrderId,
+            OD.orderDate,
+            OD.mealkitName,
+            OD.mealkitQuantity
+        ORDER BY
+            OD.orderDate DESC;
 
 
-    <insert id="insertProductOrder">
+    </select>
+
+
+
+    <insert id="insertProductOrder" parameterType="IngredientDto">
         INSERT INTO PRODUCT_ORDER (
             PRODUCT_ORDER_ID ,
             PRODUCT_COMPANY_ID,
@@ -115,16 +165,45 @@
             STATUS_ID,
             KIT_ORDER_ID
         ) VALUES (
-                     #{productOrderId},  -- 새로운 UUID 생성
-                     #{productCompanyId},  -- 생산업체ID
-                     #{sourceId},          -- 재료ID
-                     #{totalQuantity},      -- 주문 수량
-                     #{sourcePrice},        -- 가격
+                     UUID(),  -- 새로운 UUID 생성
+                     #{supplier},  -- 생산업체ID
+                     (SELECT SOURCE_ID FROM SOURCE WHERE SOURCE.NAME = #{name}),          -- 재료ID
+                     #{quantity},      -- 주문 수량
+                     #{price},        -- 가격
                      NOW(),                -- 현재 날짜 및 시간
                      1,-- 상태 ID (기본값)
                      #{kitOrderId}
                  );
     </insert>
+    <insert id="insertProductOrder2" parameterType="IngredientDto">
+        INSERT INTO PRODUCT_ORDER (
+            PRODUCT_ORDER_ID ,
+            PRODUCT_COMPANY_ID,
+            SOURCE_ID,
+            QUANTITY,
+            PRICE,
+            PRODUCT_ORDER_DATE,
+            STATUS_ID,
+            KIT_ORDER_ID
+        ) VALUES (
+                     UUID(),  -- 새로운 UUID 생성
+                     (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE PRODUCT_COMPANY.NAME = #{supplier}),  -- 생산업체ID
+                     (SELECT SOURCE_ID FROM SOURCE WHERE SOURCE.NAME = #{name}),          -- 재료ID
+                     #{quantity},      -- 주문 수량
+                     #{price},        -- 가격
+                     NOW(),                -- 현재 날짜 및 시간
+                     1,-- 상태 ID (기본값)
+                     #{kitOrderId}
+                 );
+    </insert>
+    <select id="getProductOrderId" parameterType="IngredientDto">
+        select PRODUCT_ORDER_ID from PRODUCT_ORDER where
+            KIT_ORDER_ID =#{kitOrderId}
+            AND (select PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY where PRODUCT_COMPANY.NAME = #{supplier} )
+            AND (select SOURCE_ID FROM SOURCE where SOURCE.NAME=#{name})
+            AND PRICE = #{price}
+            AND QUANTITY = #{quantity};
+    </select>
 
     <insert id="insertProductOrderLog">
         INSERT INTO PRODUCT_ORDER_LOG (
@@ -149,4 +228,78 @@
         SET STATUS_ID = 2
         where KIT_ORDER_ID = #{kitOrderId}
     </update>
+
+    <select id="getIngredientsByKitOrderId" resultType="IngredientDto">
+        WITH RankedPrices AS (
+            SELECT
+                KS.SOURCE_ID AS sourceId,
+                SP.PRICE AS sourcePrice,
+                SP.PRODUCT_COMPANY_ID AS productCompanyId,
+                ROW_NUMBER() OVER (PARTITION BY KS.SOURCE_ID ORDER BY SP.PRICE ASC) AS rn
+            FROM
+                KIT_SOURCE KS
+                    JOIN SOURCE_PRICE SP ON KS.SOURCE_ID = SP.SOURCE_ID
+        ),
+             OrderDetails AS (
+                 SELECT
+                     KO.KIT_ORDER_ID AS kitOrderId,
+                     KS.SOURCE_ID AS sourceId,
+                     KS.QUANTITY AS ingredientQuantity,
+                     RP.sourcePrice AS sourcePrice,
+                     (KS.QUANTITY * RP.sourcePrice) AS ingredientCost,
+                     PC.NAME AS supplierName,
+                     S.NAME AS sourceName -- Add sourceName here
+                 FROM
+                     KIT_ORDER KO
+                         JOIN KIT_SOURCE KS ON KO.MEALKIT_ID = KS.MEALKIT_ID
+                         JOIN RankedPrices RP ON KS.SOURCE_ID = RP.sourceId AND RP.rn = 1
+                         JOIN SOURCE_PRICE SP ON KS.SOURCE_ID = SP.SOURCE_ID AND SP.PRICE = RP.sourcePrice
+                         JOIN PRODUCT_COMPANY PC ON SP.PRODUCT_COMPANY_ID = PC.PRODUCT_COMPANY_ID
+                         JOIN SOURCE S ON KS.SOURCE_ID = S.SOURCE_ID
+                 WHERE
+                     KO.KIT_ORDER_ID = #{kitOrderId}
+             ),
+             FinalDetails AS (
+                 SELECT
+                     OD.sourceId,
+                     OD.sourcePrice,
+                     OD.supplierName,
+                     OD.ingredientQuantity,
+                     ROW_NUMBER() OVER (PARTITION BY OD.sourceId, OD.sourcePrice ORDER BY OD.supplierName) AS rn
+                 FROM
+                     OrderDetails OD
+             )
+        SELECT
+            S.NAME AS name,
+            FD.ingredientQuantity AS quantity,
+            FD.sourcePrice AS price,
+            FD.supplierName AS supplier
+        FROM
+            FinalDetails FD
+                JOIN SOURCE S ON FD.sourceId = S.SOURCE_ID
+        WHERE
+            FD.rn = 1;
+    </select>
+
+
+    <select id="selectProductCompanyIdByName" resultType="IngredientDto">
+        SELECT
+            PRODUCT_COMPANY_ID AS productCompanyId,
+            NAME AS name
+        FROM
+            PRODUCT_COMPANY
+        WHERE
+            NAME = #{supplierName}
+    </select>
+
+    <select id="selectSourceIdByName" parameterType="String" resultType="String">
+        SELECT
+            SOURCE_ID
+        FROM
+            SOURCE
+        WHERE
+            NAME = #{ingredientName}
+    </select>
+
+
 </mapper>
