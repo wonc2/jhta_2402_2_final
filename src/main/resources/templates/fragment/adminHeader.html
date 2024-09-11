@@ -14,6 +14,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <script th:inline="javascript" th:src="@{/js/common.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 </head>
 <body class="sb-nav-fixed">
 <div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 1060;"></div>
@@ -58,21 +60,38 @@
                         Dashboard
                     </a>
                     <div class="sb-sidenav-menu-heading">Category</div>
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#salesMenu" aria-expanded="false" aria-controls="collapseLayouts">
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#salesAdminMenu" aria-expanded="false" aria-controls="collapseLayouts">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Sales
+                        Sales Admin Page
                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
-                    <div class="collapse" id="salesMenu" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                    <div class="collapse" id="salesAdminMenu" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                         <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="/sales">Sales Admin Page</a>
-                            <a class="nav-link" href="#">Sales User Page</a>
                             <a class="nav-link" href="/sales">판매</a>
                             <a class="nav-link" href="/sales/storage">판매창고</a>
                             <a class="nav-link" href="/sales/source-price">밀키트 가격 설정</a>
                         </nav>
                     </div>
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#logisticsMenu" aria-expanded="false" aria-controls="collapseLayouts">
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#salesUserMenu" aria-expanded="false" aria-controls="collapseLayouts">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        Sales User Page
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="salesUserMenu" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="/sales">판매</a>
+                            <a class="nav-link" href="/sales/storage">판매창고</a>
+                            <a class="nav-link" href="/sales/source-price">밀키트 가격 설정</a>
+                        </nav>
+                    </div>
+<!--                    <a class="nav-link collapsed" href="/wareHouse/selectAll" th:href="@{wareHouse/selectAll}" >-->
+<!--                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>-->
+<!--                        Logistics-->
+
+<!--                    </a>-->
+
+
+                    <a class="nav-link collapsed" href="/wareHouse/selectAll" th:href="@{wareHouse/selectAll}" data-bs-toggle="collapse" data-bs-target="#logisticsMenu" aria-expanded="false" aria-controls="collapseLayouts">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                         Logistics
                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>

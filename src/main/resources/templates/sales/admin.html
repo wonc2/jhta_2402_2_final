@@ -21,7 +21,16 @@
                 <button class="btn btn-primary"
                         data-bs-toggle="modal"
                         data-bs-target="#insertMealkitModal">
-                    밀키트 추가
+                    밀키트 등록
+                </button>
+            </div>
+
+            <!--            업체 추가 모달 버튼-->
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#insertCompanyModal">
+                    업체 등록
                 </button>
             </div>
 
@@ -34,16 +43,16 @@
                     새로운 밀키트 주문 추가
                 </button>
             </div>
-
+            <!--차트-->
             <div class="row">
                 <div class="col-xl-6">
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-chart-area me-1"></i>
-                            Area Chart Example
+                            밀키트 업체별 누적 판매 금액
                         </div>
                         <div class="card-body">
-                            <canvas id="myChart" width="100%" height="40"></canvas>
+                            <canvas id="myChart" width="100%" height="60"></canvas>
                         </div>
                     </div>
                 </div>
@@ -51,15 +60,15 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            Bar Chart Example
+                            밀키트 업체별 월별 매출액
                         </div>
                         <div class="card-body">
-                            <canvas id="myChart02" width="100%" height="40"></canvas>
+                            <canvas id="myChart02" width="100%" height="60"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
-<!--판매처리-->
+            <!--판매처리-->
             <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -135,7 +144,7 @@
                                     <button th:if="${details.status == '출고'}" type="submit" class="btn btn-primary">
                                         처리완료
                                     </button>
-                                    <button th:if="${details.status != '출고'}" disabled class="btn btn-primary">
+                                    <button th:if="${details.status != '출고'}" disabled class="btn btn-secondary">
                                         출고대기
                                     </button>
                                 </form>
@@ -147,7 +156,7 @@
                                     <button th:if="${details.status != '처리완료'}" type="submit" class="btn btn-danger">
                                         취소
                                     </button>
-                                    <button th:if="${details.status == '처리완료'}" disabled class="btn btn-danger">
+                                    <button th:if="${details.status == '처리완료'}" disabled class="btn btn-secondary">
                                         취소불가
                                     </button>
                                 </form>
@@ -160,7 +169,7 @@
 
                 </div>
             </div>
-<!--유통처리-->
+            <!--유통처리-->
             <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -253,7 +262,7 @@
 
                 </div>
             </div>
-<!--로그-->
+            <!--로그-->
             <div class="card mb-5">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -376,7 +385,7 @@
                         <input type="hidden" name="sourceNamesForSale" id="hiddenSourceNamesForSale">
                         <input type="hidden" name="itemQuantitiesForSale" id="hiddenItemQuantitiesForSale">
 
-                    <button type="submit" id="sellButton" class="btn btn-primary">판매</button>
+                        <button type="submit" id="sellButton" class="btn btn-primary">판매</button>
                     </form>
 
                     <!-- 판매 버튼 -->
@@ -484,6 +493,34 @@
     });
 
 </script>
+
+<!-- 업체 등록 모달 -->
+<div class="modal fade" id="insertCompanyModal" tabindex="-1" aria-labelledby="insertCompanyModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="insertCompanyModalLabel">새 업체 등록</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="insertCompanyForm" th:action="@{/sales/insert/company}" th:method="post">
+                    <div class="mb-3">
+                        <label for="companyName" class="form-label">업체명</label>
+                        <input type="text" class="form-control" id="companyName" name="companyName" placeholder="업체명을 입력하세요" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="companyAddress" class="form-label">업체 주소</label>
+                        <input type="text" class="form-control" id="companyAddress" name="companyAddress" placeholder="업체 주소를 입력하세요" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="submit" class="btn btn-primary" id="submitCompanyBtn" form="insertCompanyForm">등록</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <!-- 주문 추가 모달 -->
@@ -624,21 +661,52 @@
 <div th:replace="~{fragment/adminFooter :: footer}"></div>
 </body>
 </html>
+<!--차트1-->
+<script th:inline="javascript">
 
-<script>
-    const ctx = document.getElementById('myChart');
+    const companyList = [[${totalQuantityByCompanyNameList}]];
 
+    // 데이터와 라벨 배열 초기화
+    const labels = [];
+    const data = [];
+    const backgroundColors = [];
+
+    // companyList의 각 항목을 사용하여 라벨, 데이터, 색상 생성
+    companyList.forEach(company => {
+        labels.push(company.companyName);  // 회사 이름을 라벨로 사용
+        data.push(company.totalPrice);  // 임의의 데이터 생성
+        backgroundColors.push(getRandomColorWithOpacity(0.5));  // 랜덤 배경색 (불투명)
+    });
+
+    // 랜덤 색상을 생성하는 함수 (rgba 형식)
+    function getRandomColorWithOpacity(opacity) {
+        const r = Math.floor(Math.random() * 256);
+        const g = Math.floor(Math.random() * 256);
+        const b = Math.floor(Math.random() * 256);
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+
+
+
+    // 차트 생성
+    const ctx = document.getElementById('myChart').getContext('2d');
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            labels: labels,
             datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
+                label: '밀키트 업체별 판매 현황',
+                data: data,
+                backgroundColor: backgroundColors,
                 borderWidth: 1
             }]
         },
         options: {
+            plugins: {
+                legend: {
+                    display: false  // 범례를 숨기기
+                }
+            },
             scales: {
                 y: {
                     beginAtZero: true
@@ -646,43 +714,74 @@
             }
         }
     });
-</script>
 
-<script>
-    var ctx = document.getElementById('myChart02').getContext('2d');
-    var myChart = new Chart(ctx, {
+
+
+    // 두번째 차트
+    const monthList = [[${monthlySales}]];
+
+
+    // 라벨 생성
+    const month = [];
+    for (let i = 1; i <= 12; ++i) {
+        month.push(i.toString());
+    }
+
+    // companyList의 각 항목을 사용하여 데이터 포인트와 색상 생성
+    const datasets = monthList.map(company => ({
+        label: company.companyName,  // 데이터셋의 라벨
+        data: company.monthlySales,  // 서버에서 받은 월별 매출 데이터
+        borderColor: backgroundColors,  // 데이터셋의 색상
+        fill: false,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4
+    }));
+
+    // 두 번째 차트 데이터와 설정 정의
+    const data02 = {
+        labels: month,  // X축 라벨
+        datasets: datasets  // 생성된 데이터셋
+    };
+
+    // 차트 설정
+    const config = {
         type: 'line',
-        data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-            datasets: [{
-                label: 'Sample Data',
-                data: [10, 20, 30, 40, 50, 60, 70],
-                fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.4,  // tension 설정으로 곡선의 탄성을 조절
-                cubicInterpolationMode: 'monotone'  // 곡선 보간 방식 설정
-            }]
-        },
+        data: data02,
         options: {
             responsive: true,
+            plugins: {
+                title: {
+                    display: false,
+                    text: '매출액'
+                },
+            },
+            interaction: {
+                intersect: false,
+            },
             scales: {
                 x: {
                     display: true,
                     title: {
                         display: true,
-                        text: 'Month'
+                        text: '월'
                     }
                 },
                 y: {
                     display: true,
                     title: {
                         display: true,
-                        text: 'Value'
-                    }
+                        text: '원'
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 500
                 }
             }
-        }
-    });
+        },
+    };
+
+    const ctx02 = document.getElementById('myChart02').getContext('2d');
+    new Chart(ctx02, config);
 </script>
+
 
 

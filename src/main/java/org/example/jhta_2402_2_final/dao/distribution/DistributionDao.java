@@ -6,6 +6,7 @@ import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderDetailLogDto
 import org.example.jhta_2402_2_final.model.dto.distribution.LogisticsWareHouseDto;
 
 import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.wareHouseChartDto;
 
 import java.util.List;
 import java.util.Map;
@@ -46,4 +47,15 @@ public interface DistributionDao {
     int updateStackBySourceName(Map<String, Object> map);
 
     void insertProductOrder(Map<String, Object> map);
+
+
+    List<LogisticsWareHouseDto> selectStacksBySourceFIFO(String sourceName);
+
+    void updateStackQuantityFIFO(Map<String, Object> params);
+
+    List<Map<String, Object>> getSource();
+
+    List<Map<String, Object>> getCompanyName();
+
+    List<wareHouseChartDto> getChartData(wareHouseChartDto dto);
 }

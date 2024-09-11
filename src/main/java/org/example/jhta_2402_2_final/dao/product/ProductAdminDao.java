@@ -17,6 +17,7 @@ public interface ProductAdminDao {
     List<ProductOrderViewDto> getProductOrderList();
     List<ProductOrderViewDto> getProductOrderListProductName(String productName);
     List<ProductOrderViewDto> getProductOrderListCompanyName(String companyName);
+    List<ProductOrderQuantityDto> getProductOrderQuantityListCompanyName(String companyName);
     List<ProductOrderViewDto> getProductOrderListCompanyNameProductName (String companyName , String productName);
     List<SourcePriceViewDto> getSourcePriceListCompanyName(String companyName);
     List<SourcePriceViewDto> getSourcePriceListProductName(String productName);

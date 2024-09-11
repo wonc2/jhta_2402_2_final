@@ -7,202 +7,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js"></script>
-    <script>
-        // 단일품목 모달
-        document.addEventListener('DOMContentLoaded', function () {
-            var orderModal = document.getElementById('showOrderSingleModal');
-            var priceInput = orderModal.querySelector('#sourcePrice');
-            var quantityInput = orderModal.querySelector('#sourceQuantityInput');
-            var totalPriceInput = orderModal.querySelector('#totalPrice');
-
-            // 총 가격 계산 함수
-            function updateTotalPrice() {
-                var price = parseFloat(priceInput.value) || 0;
-                var quantity = parseInt(quantityInput.value) || 0;
-                totalPriceInput.value = price * quantity;
-            }
-
-            // 모달이 열릴 때 데이터 세팅
-            orderModal.addEventListener('show.bs.modal', function (event) {
-                var button = event.relatedTarget;
-                var companyName = button.getAttribute('data-company');
-                var sourceName = button.getAttribute('data-source');
-                var price = button.getAttribute('data-price');
-
-                var companyInput = orderModal.querySelector('#companyName');
-                var sourceInput = orderModal.querySelector('#orderSingleModalSourceName');
-
-                // 모달 내부 요소 업데이트
-                companyInput.value = companyName;
-                sourceInput.value = sourceName;
-                priceInput.value = price;
-                quantityInput.value = 0; // 개수를 초기화
-                updateTotalPrice(); // 총 가격 초기화
-            });
-
-            // 개수 입력값이 변경될 때마다 총 가격 업데이트
-            quantityInput.addEventListener('input', updateTotalPrice);
-        });
-
-
-        document.addEventListener('DOMContentLoaded', function () {
-
-            var orderDetailModal = document.getElementById('orderDetailModal');
-            var sellButton = document.getElementById('sellButton'); // 판매 버튼을 선택
-
-            orderDetailModal.addEventListener('show.bs.modal', function (event) {
-                var button = event.relatedTarget;
-                var kitOrderId = button.getAttribute('data-order-id');
-                var quantity = button.getAttribute('data-quantity');
-                var mealkitName = button.getAttribute('data-mealkit-name');
-
-                document.getElementById('mealkitNameInput').value = mealkitName;
-                document.getElementById('quantityInput').value = quantity;
-
-                const encodedKitOrderId = encodeURIComponent(kitOrderId);
-                const encodedQuantity = encodeURIComponent(quantity);
-
-                // Fetch API를 이용해 서버에서 데이터를 가져옴
-                fetch(`/sales/order/details?kitOrderId=${encodedKitOrderId}&quantity=${encodedQuantity}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            console.error('HTTP 오류:', response.status, response.statusText);
-                            throw new Error('네트워크 응답에 문제가 있습니다.');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        const tbody = document.querySelector('#orderDetailModal .modal-body tbody');
-                        tbody.innerHTML = ''; // 기존 데이터를 지움
-
-                        const sourceNames = [];
-                        const itemQuantities = [];
-                        const stackQuantities = [];
-                        const minPrices = [];
-                        const companyNames = [];
-
-                        let canSell = true; // 판매 가능 여부를 추적
-
-                        data.forEach(item => {
-                            let rowHtml = `
-                        <tr>
-                            <td>${item.sourceName}</td>
-                            <td>${item.quantity}</td>
-                            <td>${item.stackQuantity}`;
-
-                            // 창고재고가 재료수량보다 적을 경우 시각적으로 표시
-                            if (item.stackQuantity < item.quantity) {
-                                rowHtml += ` <span style="color: red;">(부족)</span>`;
-                                canSell = false; // 판매 불가능
-                            }
-
-                            rowHtml += `</td>
-                                <td>${item.minPrice}</td>
-                                <td>${item.companyName}</td>
-                            </tr>`;
-
-                            tbody.innerHTML += rowHtml;
-
-                            sourceNames.push(item.sourceName);
-                            itemQuantities.push(item.quantity);
-                            stackQuantities.push(item.stackQuantity);
-                            minPrices.push(item.minPrice);
-                            companyNames.push(item.companyName);
-                        });
-
-                        document.getElementById('hiddenSourceNames').value = JSON.stringify(sourceNames);
-                        document.getElementById('hiddenItemQuantities').value = JSON.stringify(itemQuantities);
-                        document.getElementById('hiddenStackQuantities').value = JSON.stringify(stackQuantities);
-                        document.getElementById('hiddenMinPrices').value = JSON.stringify(minPrices);
-                        document.getElementById('hiddenCompanyNames').value = JSON.stringify(companyNames);
-                        document.getElementById('hiddenKitOrderId').value = kitOrderId;
-
-                        document.getElementById('hiddenSourceNamesForSale').value = JSON.stringify(sourceNames);
-                        document.getElementById('hiddenItemQuantitiesForSale').value = JSON.stringify(itemQuantities);
-                        ;
-                        document.getElementById('hiddenKitOrderIdForSale').value = kitOrderId;
-                        // 판매 버튼 활성화/비활성화
-                        if (canSell) {
-                            sellButton.classList.remove('btn-secondary');
-                            sellButton.classList.add('btn-primary');
-                            sellButton.disabled = false;
-                        } else {
-                            sellButton.classList.remove('btn-primary');
-                            sellButton.classList.add('btn-secondary');
-                            sellButton.disabled = true;
-                        }
-
-                    })
-                    .catch(error => {
-                        console.error('Fetch 오류:', error);
-                    });
-            });
-
-        });
-
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // 날짜 포맷 함수 정의
-            function formatDate(dateString) {
-                const date = new Date(dateString);
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
-                const day = String(date.getDate()).padStart(2, '0'); // 날짜에 0을 추가하여 두 자리로 맞춤
-
-                return `${year}-${month}-${day}`;
-            }
-
-            // 모달이 열릴 때 이벤트 리스너 설정
-            var LogModal = document.getElementById('LogModal');
-
-            LogModal.addEventListener('show.bs.modal', function (event) {
-                var button = event.relatedTarget;
-                var sourceId = button.getAttribute('data-source-id');
-                console.log("sourceId>>>>>>> " + sourceId);
-
-                if (sourceId) {
-                    const encodedSourceId = encodeURIComponent(sourceId);
-
-                    // Fetch API를 이용해 서버에서 데이터를 가져옴
-                    fetch(`/wareHouse/selectLog?sourceId=${encodedSourceId}`)
-                        .then(response => {
-                            if (!response.ok) {
-                                console.error('HTTP 오류:', response.status, response.statusText);
-                                throw new Error('네트워크 응답에 문제가 있습니다.');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            // 서버로부터 받은 데이터를 모달에 채움
-                            const tbody = document.querySelector('#LogModal .modal-body tbody');
-                            tbody.innerHTML = ''; // 기존 데이터를 지움
-
-                            data.forEach(item => {
-                                const formattedDate = formatDate(item.orderDate);
-
-                                tbody.innerHTML += `
-                            <tr>
-                                <td>${item.companyName}</td>
-                                <td>${item.sourceName}</td>
-                                <td>${item.quantity}</td>
-                                <td>${formattedDate}</td>
-
-                                <td>${item.status}</td>
-                            </tr>
-                        `;
-                            });
-
-                            // 모달을 보여줌 (이 부분은 이미 처리되므로 중복 호출을 제거함)
-                        })
-                        .catch(error => {
-                            console.error('Fetch 오류:', error);
-                        });
-                } else {
-                    console.error('sourceId가 정의되지 않았습니다.');
-                }
-            });
-        });
-    </script>
+    <link href="../../static/css/styles.css" th:href="@{/css/warehouse.css}" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 </head>
 <body>
 <th:block th:replace="fragment/adminHeader :: body"></th:block>
@@ -211,14 +17,73 @@
 
 
         <div class="container-fluid px-4">
-            <h1 class="mt-4 mb-4">창고 재고 확인</h1>
+            <h1 class="mt-4 mb-4">유통 통합</h1>
 
             <div class="card mb-5">
-                <div class="card-header">
-                    <i class="fas fa-table me-1"></i>
+                <div class="card-header toggle-header">
+                    <i class="fas fa-chevron-down me-1"></i> <!-- 아이콘을 클릭 가능하게 보이도록 변경 -->
+                    창고 재고 확인
+                </div>
+                <div class="card-body slide-container">
+                    <form action="/wareHouse/selectBySourceName" method="get"
+                          class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+
+                        <input type="text" class="form-control" name="keyword" placeholder="재료명 입력">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                        <a href="/wareHouse/selectAll">
+                            <button class="btn btn-primary" type="button">전체검색</button>
+                        </a>
+                    </form>
+
+
+                    <table id="datatablesSimple">
+                        <thead>
+                        <tr>
+                            <th>창고이름</th>
+                            <th>재료명</th>
+                            <th>수량</th>
+                            <th>상세</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>창고이름</th>
+                            <th>재료명</th>
+                            <th>수량</th>
+                            <th>상세</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        <tr th:each="items : ${warehouseList}">
+                            <td th:text="${items.wareHouseName}"></td>
+                            <td th:text="${items.sourceName}"></td>
+                            <td th:text="${items.quantity}"></td>
+                            <td>
+                                <button class="btn btn-primary"
+                                        type="button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#LogModal"
+                                        th:attr="data-source-id=${items.sourceUUID}"
+                                >
+                                    <!-- 상세--> 로그버튼
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+            <div class="card mb-5">
+
+                <div class="card-header toggle-header">
+                    <i class="fas fa-chevron-down me-1"></i> <!-- 아이콘을 클릭 가능하게 보이도록 변경 -->
                     밀키트 주문 상세 [유통 처리]
                 </div>
-                <div class="card-body">
+
+
+                <div class="card-body slide-container">
 
                     <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3"
                           style="width: 400px;">
@@ -281,7 +146,7 @@
                             <td th:text="${details.status}"></td>
                             <td>
                                 <button
-                                        th:if="${details.status == '처리전'}"
+                                        th:if="${details.status == '처리전' }"
                                         class="btn btn-primary"
                                         data-bs-toggle="modal"
                                         data-bs-target="#orderDetailModal"
@@ -289,87 +154,44 @@
                                         data-order-id=${details.kitOrderId},
                                         data-quantity=${details.quantity},
                                         data-mealkit-name=${details.mealkitName}">
-                                    발주 요청
+                                    상세확인
+                                </button>
+                                <button
+                                        th:if="${details.status == '처리중' }"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#orderDetailModal"
+                                        th:attr="
+                                        data-order-id=${details.kitOrderId},
+                                        data-quantity=${details.quantity},
+                                        data-mealkit-name=${details.mealkitName}">
+                                    처리중
                                 </button>
 
                                 <button
-                                        th:if="${details.status != '처리전'}"
+                                        th:if="${details.status != '처리전' && details.status !='처리중'}"
                                         class="btn btn-secondary"
                                         disabled>
-                                    발주 요청
+                                    처리완료
                                 </button>
                             </td>
 
                         </tr>
                         </tbody>
                     </table>
-
-
                 </div>
+
             </div>
 
-            <div class="card mb-5">
-                <div class="card-header">
-                    <i class="fas fa-table me-1"></i>
-                    창고 재고 확인
-                </div>
-                <div class="card-body">
-                    <form action="/wareHouse/selectBySourceName" method="get"
-                          class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
-
-                        <input type="text" class="form-control" name="keyword" placeholder="재료명 입력">
-                        <button type="submit" class="btn btn-primary">검색</button>
-                        <a href="/wareHouse/selectAll">
-                            <button class="btn btn-primary" type="button">전체검색</button>
-                        </a>
-                    </form>
-
-                    <table id="datatablesSimple">
-                        <thead>
-                        <tr>
-                            <th>창고이름</th>
-                            <th>재료명</th>
-                            <th>수량</th>
-                            <th>상세</th>
-                        </tr>
-                        </thead>
-                        <tfoot>
-                        <tr>
-                            <th>창고이름</th>
-                            <th>재료명</th>
-                            <th>수량</th>
-                            <th>상세</th>
-                        </tr>
-                        </tfoot>
-                        <tbody>
-                        <tr th:each="items : ${warehouseList}">
-                            <td th:text="${items.wareHouseName}"></td>
-                            <td th:text="${items.sourceName}"></td>
-                            <td th:text="${items.quantity}"></td>
-                            <td>
-                                <button class="btn btn-primary"
-                                        type="button"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#LogModal"
-                                        th:attr="data-source-id=${items.sourceUUID}"
-
-                                >
-                                    <!-- 상세-->                          로그버튼
-                                </button>
-
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
 
             <div class="card mb-5">
-                <div class="card-header">
-                    재료 최저가 확인
+                <div class="card-header toggle-header">
+                    <i class="fas fa-chevron-down me-1"></i> <!-- 아이콘을 클릭 가능하게 보이도록 변경 -->
+                    최저가 확인
                 </div>
-                <div class="card-body">
 
+                <div class="card-body slide-container">
+                    <!-- 검색 폼 -->
                     <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3"
                           style="width: 400px;">
                         <select class="datatable-selector" name="category">
@@ -385,6 +207,7 @@
                     </form>
 
 
+                    <!-- 테이블 -->
                     <table id="datatablesSimple03">
                         <thead>
                         <tr>
@@ -404,7 +227,6 @@
                             <th>발주</th>
                         </tr>
                         </tfoot>
-                        <!--tbody > tr > td-->
                         <tbody>
                         <tr th:each="min, iterStat : ${minSourcePrice}">
                             <td th:text="${iterStat.count}"></td>
@@ -427,159 +249,566 @@
                 </div>
             </div>
 
-
-            <!-- 로그 모달 Modal -->
-            <div class="modal fade" id="LogModal" tabindex="-1" aria-labelledby="LogModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="LogModalLabel">발주</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>업체명</th>
-                                    <th>재료명</th>
-                                    <th>수량</th>
-                                    <th>날짜</th>
-                                    <th>상태</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <!-- 여기에 Fetch API로 데이터가 채워짐 -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            <div class="card mb-5">
+                <div class="card-header toggle-header">
+                    <i class="fas fa-chevron-down me-1"></i> <!-- 아이콘을 클릭 가능하게 보이도록 변경 -->
+                    최저가 차트 확인
                 </div>
-            </div>
-            <!-- Modal div end -->
 
-            <!--            <div class="d-flex justify-content-end">-->
-            <!--                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">추가</button>-->
-            <!--            </div>-->
-        </div>
 
-        <!-- 발주모달 -->
-        <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="orderDetailModalLabel">발주 상세 정보</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="orderForm" th:action="@{/sales/order/create}" th:method="post">
-                            <div id="kitInfo">
-
-                                <div class="mb-3">
-                                    <label for="mealkitNameInput" class="form-label">밀키트명</label>
-                                    <input type="text" class="form-control" id="mealkitNameInput" name="mealkitName"
-                                           readonly>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="quantityInput" class="form-label">주문 개수</label>
-                                    <input type="text" class="form-control" id="quantityInput" name="quantity" readonly>
-                                </div>
-                            </div>
-
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>재료명</th>
-                                    <th>재료수량</th>
-                                    <th>창고재고</th>
-                                    <th>최저가</th>
-                                    <th>생산업체명</th>
-                                </tr>
-                                </thead>
-                                <tbody id="orderDetailsTableBody">
-                                <!-- 데이터가 여기에 삽입됩니다 -->
-                                </tbody>
-                            </table>
-
-                            <!-- 숨겨진 필드들 -->
-
-                            <input type="hidden" name="kitOrderId" id="hiddenKitOrderId">
-                            <input type="hidden" name="sourceNames" id="hiddenSourceNames">
-                            <input type="hidden" name="itemQuantities" id="hiddenItemQuantities">
-                            <input type="hidden" name="stackQuantities" id="hiddenStackQuantities">
-                            <input type="hidden" name="minPrices" id="hiddenMinPrices">
-                            <input type="hidden" name="companyNames" id="hiddenCompanyNames">
-                        </form>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                            <button type="submit" class="btn btn-primary" form="orderForm">발주 요청</button>
-                            <form th:action="@{/sales/shinhyeok}" th:method="post">
-                                <input type="hidden" name="kitOrderIdForSale" id="hiddenKitOrderIdForSale">
-                                <input type="hidden" name="sourceNamesForSale" id="hiddenSourceNamesForSale">
-                                <input type="hidden" name="itemQuantitiesForSale" id="hiddenItemQuantitiesForSale">
-
-                                <button type="submit" id="sellButton" class="btn btn-primary">판매</button>
-                            </form>
-
-                            <!-- 판매 버튼 -->
-                        </div>
-                    </div>
-
+                <div class="card-body slide-container">
+                    <!-- 검색 버튼 (모달 열기 버튼) -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchModal">
+                        검색 조건 입력
+                    </button>
+                    <canvas id="line-chart" width="420" height="200"></canvas>
                 </div>
             </div>
         </div>
 
 
-        <!-- 단일 품목 발주모달 -->
-        <div class="modal fade" id="showOrderSingleModal" tabindex="-1" aria-labelledby="orderSingleModalLabel"
-             aria-hidden="true">
+        <!-- 검색 조건 입력 모달 -->
+        <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="orderSingleModalLabel">발주 상세 정보</h5>
+                        <h5 class="modal-title" id="searchModalLabel">검색 조건 입력</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="orderSingleModalForm" th:action="@{/wareHouse/singleOrder}" th:method="post">
-                            <div id="sourceName">
-                                <div class="mb-3">
-                                    <label for="companyName" class="form-label">업체명</label>
-                                    <input type="text" value="" class="form-control" id="companyName" name="companyName"
-                                           readonly>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="sourceName" class="form-label">재료명</label>
-                                    <input type="text" value="" class="form-control" id="orderSingleModalSourceName"
-                                           name="sourceName" readonly>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="sourcePrice" class="form-label">가격</label>
-                                    <input type="number" class="form-control" id="sourcePrice" name="price" readonly>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="sourceQuantityInput" class="form-label">개수</label>
-                                    <input type="number" class="form-control" id="sourceQuantityInput" name="quantity">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="totalPrice" class="form-label">총 가격</label>
-                                    <input type="number" class="form-control" id="totalPrice" name="totalPrice"
-                                           readonly>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                                    <button type="submit" class="btn btn-primary" >발주 요청</button>
-                                </div>
+                        <form id="searchForm">
+                            <div class="mb-3">
+                                <label for="sourceNameForChart" class="form-label">Source Name</label>
+                                <select class="form-select" id="sourceNameForChart" name="sourceName" required>
+                                    <option value="">Choose Source Name</option>
+                                    <!-- DB에서 받아온 값들이 들어감 -->
+                                </select>
                             </div>
+
+                            <div class="mb-3">
+                                <label for="companyNameForChart" class="form-label">Company Name</label>
+                                <select class="form-select" id="companyNameForChart" name="companyName" required>
+                                    <option value="">Choose Company Name</option>
+                                    <!-- DB에서 받아온 값들이 들어감 -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="startDateForChart" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="startDateForChart" name="startDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="endDateForChart" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="endDateForChart" name="endDate" required>
+                            </div>
+                            <button type="button" class="btn btn-primary" id="searchBtn">데이터 추가</button>
+                            <button type="button" class="btn btn-secondary" id="resetBtn">차트 초기화</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
 
-    </main>
+
+        <!-- 로그 모달 Modal -->
+        <div class="modal fade" id="LogModal" tabindex="-1" aria-labelledby="LogModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="LogModalLabel">발주</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>업체명</th>
+                                <th>재료명</th>
+                                <th>수량</th>
+                                <th>날짜</th>
+                                <th>상태</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <!-- 여기에 Fetch API로 데이터가 채워짐 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal div end -->
+
+        <!--            <div class="d-flex justify-content-end">-->
+        <!--                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">추가</button>-->
+        <!--            </div>-->
 </div>
 
+<!-- 발주모달 -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderDetailModalLabel">발주 상세 정보</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="orderForm" th:action="@{/sales/order/create}" th:method="post">
+                    <div id="kitInfo">
+
+                        <div class="mb-3">
+                            <label for="mealkitNameInput" class="form-label">밀키트명</label>
+                            <input type="text" class="form-control" id="mealkitNameInput" name="mealkitName"
+                                   readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quantityInput" class="form-label">주문 개수</label>
+                            <input type="text" class="form-control" id="quantityInput" name="quantity" readonly>
+                        </div>
+                    </div>
+
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>재료명</th>
+                            <th>재료수량</th>
+                            <th>창고재고</th>
+                            <th>최저가</th>
+                            <th>생산업체명</th>
+                        </tr>
+                        </thead>
+                        <tbody id="orderDetailsTableBody">
+                        <!-- 데이터가 여기에 삽입됩니다 -->
+                        </tbody>
+                    </table>
+
+                    <!-- 숨겨진 필드들 -->
+
+                    <input type="hidden" name="kitOrderId" id="hiddenKitOrderId">
+                    <input type="hidden" name="sourceNames" id="hiddenSourceNames">
+                    <input type="hidden" name="itemQuantities" id="hiddenItemQuantities">
+                    <input type="hidden" name="stackQuantities" id="hiddenStackQuantities">
+                    <input type="hidden" name="minPrices" id="hiddenMinPrices">
+                    <input type="hidden" name="companyNames" id="hiddenCompanyNames">
+                </form>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button type="submit" class="btn btn-primary" form="orderForm">발주 요청</button>
+                    <form th:action="@{/sales/shinhyeok}" th:method="post">
+                        <input type="hidden" name="kitOrderIdForSale" id="hiddenKitOrderIdForSale">
+                        <input type="hidden" name="sourceNamesForSale" id="hiddenSourceNamesForSale">
+                        <input type="hidden" name="itemQuantitiesForSale" id="hiddenItemQuantitiesForSale">
+
+                        <button type="submit" id="sellButton" class="btn btn-primary">출고</button>
+                    </form>
+
+                    <!-- 판매 버튼 -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- 단일 품목 발주모달 -->
+<div class="modal fade" id="showOrderSingleModal" tabindex="-1" aria-labelledby="orderSingleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderSingleModalLabel">발주 상세 정보</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="orderSingleModalForm" th:action="@{/wareHouse/singleOrder}" th:method="post">
+                    <div id="sourceName">
+                        <div class="mb-3">
+                            <label for="companyName" class="form-label">업체명</label>
+                            <input type="text" value="" class="form-control" id="companyName" name="companyName"
+                                   readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sourceName" class="form-label">재료명</label>
+                            <input type="text" value="" class="form-control" id="orderSingleModalSourceName"
+                                   name="sourceName" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sourcePrice" class="form-label">가격</label>
+                            <input type="number" class="form-control" id="sourcePrice" name="price" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sourceQuantityInput" class="form-label">개수</label>
+                            <input type="number" class="form-control" id="sourceQuantityInput" name="quantity">
+                        </div>
+                        <div class="mb-3">
+                            <label for="totalPrice" class="form-label">총 가격</label>
+                            <input type="number" class="form-control" id="totalPrice" name="totalPrice"
+                                   readonly>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                            <button type="submit" class="btn btn-primary">발주 요청</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</main>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('line-chart').getContext('2d');
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [], // 날짜
+                datasets: [] // 가격 데이터
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: '상품별 가격 변동차트'
+                }
+            }
+        });
+
+        // 데이터 추가 버튼 클릭 이벤트
+        document.getElementById('searchBtn').addEventListener('click', function () {
+            var sourceName = document.getElementById('sourceNameForChart').value;
+            var companyName = document.getElementById('companyNameForChart').value;
+            var startDate = document.getElementById('startDateForChart').value;
+            var endDate = document.getElementById('endDateForChart').value;
+
+            fetch(`/api/wareHouse/chart?sourceName=${encodeURIComponent(sourceName)}&companyName=${encodeURIComponent(companyName)}&startDate=${startDate}&endDate=${endDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 데이터 가공
+                    const newLabels = [...new Set(data.map(item => item.date))]; // 새로운 날짜 목록
+                    newLabels.sort((a, b) => new Date(a) - new Date(b)); // 날짜 정렬
+
+                    // 데이터셋 업데이트
+                    data.forEach(item => {
+                        let dataset = myLineChart.data.datasets.find(ds => ds.label === item.companyName + " " + item.sourceName);
+                        if (!dataset) {
+                            dataset = {
+                                label: item.companyName + " " + item.sourceName,
+                                data: new Array(newLabels.length).fill(null), // 정렬된 레이블 수만큼 빈 데이터 배열 생성
+                                borderColor: getRandomColor(),
+                                fill: false
+                            };
+                            myLineChart.data.datasets.push(dataset);
+                        }
+
+                        // 데이터 포인트 반영
+                        const index = newLabels.indexOf(item.date);
+                        if (index !== -1) {
+                            dataset.data[index] = item.price;
+                        }
+                    });
+
+                    // 기존 레이블과 데이터셋을 날짜 순으로 정렬
+                    myLineChart.data.labels = newLabels;
+                    myLineChart.data.datasets.forEach(dataset => {
+                        dataset.data = newLabels.map(date => dataset.data[newLabels.indexOf(date)] || null);
+                    });
+
+                    // 차트 업데이트
+                    myLineChart.update();
+
+                    // 모달 닫기
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('searchModal'));
+                    modal.hide();
+                })
+                .catch(error => console.error('Error fetching data:', error));
+        });
+
+        // 차트 초기화 버튼 클릭 이벤트
+        document.getElementById('resetBtn').addEventListener('click', function () {
+            // 차트 데이터 초기화
+            myLineChart.data.labels = [];
+            myLineChart.data.datasets = [];
+            myLineChart.update();
+        });
+
+        // 색상 생성 함수
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+    });
+
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // sourceName과 companyName을 가져와서 셀렉트 옵션을 채우는 함수
+        function loadSelectOptions() {
+            // sourceName을 DB에서 받아오기
+            fetch('/api/wareHouse/getSource')
+                .then(response => response.json())
+                .then(data => {
+                    const sourceSelect = document.getElementById('sourceNameForChart');
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.NAME;
+                        option.text = item.NAME;
+                        sourceSelect.add(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching source names:', error));
+
+            // companyName을 DB에서 받아오기
+            fetch('/api/wareHouse/getCompany')
+                .then(response => response.json())
+                .then(data => {
+                    const companySelect = document.getElementById('companyNameForChart');
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.NAME;
+                        option.text = item.NAME;
+                        companySelect.add(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching company names:', error));
+        }
+
+        // 페이지 로드 시 옵션 목록 로드
+        loadSelectOptions();
+    });
+
+
+
+
+
+
+    // 슬라이드
+    document.addEventListener('DOMContentLoaded', function () {
+        // 모든 .toggle-header 요소와 해당 .slide-container 요소를 선택
+        var toggleHeaders = document.querySelectorAll('.toggle-header');
+
+        toggleHeaders.forEach(function (header) {
+            // 헤더의 클릭 이벤트 리스너 추가
+            header.addEventListener('click', function () {
+                // 해당 헤더의 다음 형제 요소를 선택 (슬라이드 컨테이너)
+                var slideContainer = header.nextElementSibling;
+
+                // 슬라이드 컨테이너가 .slide-container 클래스를 가지고 있는지 확인
+                if (slideContainer && slideContainer.classList.contains('slide-container')) {
+                    // .show 클래스가 있는지 확인
+                    if (slideContainer.classList.contains('show')) {
+                        // .show 클래스 제거
+                        slideContainer.classList.remove('show');
+                    } else {
+                        // .show 클래스 추가
+                        slideContainer.classList.add('show');
+                    }
+                }
+            });
+        });
+    });
+    // 단일품목 모달
+    document.addEventListener('DOMContentLoaded', function () {
+        var orderModal = document.getElementById('showOrderSingleModal');
+        var priceInput = orderModal.querySelector('#sourcePrice');
+        var quantityInput = orderModal.querySelector('#sourceQuantityInput');
+        var totalPriceInput = orderModal.querySelector('#totalPrice');
+
+        // 총 가격 계산 함수
+        function updateTotalPrice() {
+            var price = parseFloat(priceInput.value) || 0;
+            var quantity = parseInt(quantityInput.value) || 0;
+            totalPriceInput.value = price * quantity;
+        }
+
+        // 모달이 열릴 때 데이터 세팅
+        orderModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var companyName = button.getAttribute('data-company');
+            var sourceName = button.getAttribute('data-source');
+            var price = button.getAttribute('data-price');
+
+            var companyInput = orderModal.querySelector('#companyName');
+            var sourceInput = orderModal.querySelector('#orderSingleModalSourceName');
+
+            // 모달 내부 요소 업데이트
+            companyInput.value = companyName;
+            sourceInput.value = sourceName;
+            priceInput.value = price;
+            quantityInput.value = 0; // 개수를 초기화
+            updateTotalPrice(); // 총 가격 초기화
+        });
+
+        // 개수 입력값이 변경될 때마다 총 가격 업데이트
+        quantityInput.addEventListener('input', updateTotalPrice);
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var orderDetailModal = document.getElementById('orderDetailModal');
+        var sellButton = document.getElementById('sellButton'); // 판매 버튼을 선택
+
+        orderDetailModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var kitOrderId = button.getAttribute('data-order-id');
+            var quantity = button.getAttribute('data-quantity');
+            var mealkitName = button.getAttribute('data-mealkit-name');
+
+            document.getElementById('mealkitNameInput').value = mealkitName;
+            document.getElementById('quantityInput').value = quantity;
+
+            const encodedKitOrderId = encodeURIComponent(kitOrderId);
+            const encodedQuantity = encodeURIComponent(quantity);
+
+            // Fetch API를 이용해 서버에서 데이터를 가져옴
+            fetch(`/sales/order/details?kitOrderId=${encodedKitOrderId}&quantity=${encodedQuantity}`)
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('HTTP 오류:', response.status, response.statusText);
+                        throw new Error('네트워크 응답에 문제가 있습니다.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tbody = document.querySelector('#orderDetailModal .modal-body tbody');
+                    tbody.innerHTML = ''; // 기존 데이터를 지움
+
+                    const sourceNames = [];
+                    const itemQuantities = [];
+                    const stackQuantities = [];
+                    const minPrices = [];
+                    const companyNames = [];
+
+                    let canSell = true; // 판매 가능 여부를 추적
+
+                    data.forEach(item => {
+                        let rowHtml = `
+                        <tr>
+                            <td>${item.sourceName}</td>
+                            <td>${item.quantity}</td>
+                            <td>${item.stackQuantity}`;
+
+                        // 창고재고가 재료수량보다 적을 경우 시각적으로 표시
+                        if (item.stackQuantity < item.quantity) {
+                            rowHtml += ` <span style="color: red;">(부족)</span>`;
+                            canSell = false; // 판매 불가능
+                        }
+
+                        rowHtml += `</td>
+                                <td>${item.minPrice}</td>
+                                <td>${item.companyName}</td>
+                            </tr>`;
+
+                        tbody.innerHTML += rowHtml;
+
+                        sourceNames.push(item.sourceName);
+                        itemQuantities.push(item.quantity);
+                        stackQuantities.push(item.stackQuantity);
+                        minPrices.push(item.minPrice);
+                        companyNames.push(item.companyName);
+                    });
+
+                    document.getElementById('hiddenSourceNames').value = JSON.stringify(sourceNames);
+                    document.getElementById('hiddenItemQuantities').value = JSON.stringify(itemQuantities);
+                    document.getElementById('hiddenStackQuantities').value = JSON.stringify(stackQuantities);
+                    document.getElementById('hiddenMinPrices').value = JSON.stringify(minPrices);
+                    document.getElementById('hiddenCompanyNames').value = JSON.stringify(companyNames);
+                    document.getElementById('hiddenKitOrderId').value = kitOrderId;
+
+                    document.getElementById('hiddenSourceNamesForSale').value = JSON.stringify(sourceNames);
+                    document.getElementById('hiddenItemQuantitiesForSale').value = JSON.stringify(itemQuantities);
+                    ;
+                    document.getElementById('hiddenKitOrderIdForSale').value = kitOrderId;
+                    // 판매 버튼 활성화/비활성화
+                    if (canSell) {
+                        sellButton.classList.remove('btn-secondary');
+                        sellButton.classList.add('btn-primary');
+                        sellButton.disabled = false;
+                    } else {
+                        sellButton.classList.remove('btn-primary');
+                        sellButton.classList.add('btn-secondary');
+                        sellButton.disabled = true;
+                    }
+
+                })
+                .catch(error => {
+                    console.error('Fetch 오류:', error);
+                });
+        });
+
+    });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // 날짜 포맷 함수 정의
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // 월은 0부터 시작하므로 +1
+            const day = String(date.getDate()).padStart(2, '0'); // 날짜에 0을 추가하여 두 자리로 맞춤
+
+            return `${year}-${month}-${day}`;
+        }
+
+        // 모달이 열릴 때 이벤트 리스너 설정
+        var LogModal = document.getElementById('LogModal');
+
+        LogModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var sourceId = button.getAttribute('data-source-id');
+            console.log("sourceId>>>>>>> " + sourceId);
+
+            if (sourceId) {
+                const encodedSourceId = encodeURIComponent(sourceId);
+
+                // Fetch API를 이용해 서버에서 데이터를 가져옴
+                fetch(`/wareHouse/selectLog?sourceId=${encodedSourceId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error('HTTP 오류:', response.status, response.statusText);
+                            throw new Error('네트워크 응답에 문제가 있습니다.');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // 서버로부터 받은 데이터를 모달에 채움
+                        const tbody = document.querySelector('#LogModal .modal-body tbody');
+                        tbody.innerHTML = ''; // 기존 데이터를 지움
+
+                        data.forEach(item => {
+                            const formattedDate = formatDate(item.orderDate);
+
+                            tbody.innerHTML += `
+                            <tr>
+                                <td>${item.companyName}</td>
+                                <td>${item.sourceName}</td>
+                                <td>${item.quantity}</td>
+                                <td>${formattedDate}</td>
+
+                                <td>${item.status}</td>
+                            </tr>
+                        `;
+                        });
+
+                        // 모달을 보여줌 (이 부분은 이미 처리되므로 중복 호출을 제거함)
+                    })
+                    .catch(error => {
+                        console.error('Fetch 오류:', error);
+                    });
+            } else {
+                console.error('sourceId가 정의되지 않았습니다.');
+            }
+        });
+    });
+</script>
 
 <th:block th:replace="fragment/adminFooter :: footer"></th:block>
 </body>

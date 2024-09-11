@@ -6,9 +6,7 @@ import org.example.jhta_2402_2_final.model.dto.sales.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 
 @Service
@@ -208,6 +206,78 @@ public class SalesService {
 
     }
 
+
+    //밀키트 별 창고 재고 확인
+    public List<Map<String, String>> selectKitStorageTotalQuantity() {
+        return salesDao.selectKitStorageTotalQuantity();
+    }
+
+    public List<Map<String, String>> selectKitTotalQuantity() {
+        return salesDao.selectKitTotalQuantity();
+    }
+
+    //업체별 누적 판매량 , 판매금액
+    public List<Map<String, String>> selectTotalQuantityByCompanyName() {
+        return salesDao.selectTotalQuantityByCompanyName();
+    }
+
+    public void insertKitCompany(String companyName, String companyAddress) {
+        salesDao.insertKitCompany(companyName, companyAddress);
+    }
+
+    //업체별 월별 매출액
+    public List<Map<String, Object>> getMonthlySales() {
+
+        List<MonthlySalesDto> dtos = salesDao.getMonthlySales();
+
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        Map<String, int[]> companyMap = new LinkedHashMap<>();
+
+        int index = 0;
+        int[] arr = new int[12];
+        String prevCompany = null;  // 이전 회사명을 저장하기 위한 변수
+
+        for (MonthlySalesDto dto : dtos) {
+            String key = dto.getCompanyName();
+
+            // 회사가 바뀌었을 때 배열을 맵에 저장하고 새로운 배열을 시작
+            if (prevCompany != null && !prevCompany.equals(key)) {
+                companyMap.put(prevCompany, arr.clone());  // 배열을 깊은 복사하여 저장
+                arr = new int[12];  // 새 배열 초기화
+                index = 0;  // 인덱스도 다시 0으로 초기화
+            }
+
+            arr[index] = dto.getTotalSales();
+            index++;
+
+            // 회사명 갱신
+            prevCompany = key;
+        }
+
+        // 마지막 회사에 대해 배열을 저장
+        if (prevCompany != null) {
+            companyMap.put(prevCompany, arr.clone());  // 마지막으로 배열 저장
+        }
+
+        // 결과를 리스트에 담기
+        for (Map.Entry<String, int[]> entry : companyMap.entrySet()) {
+            Map<String, Object> resultMap = new LinkedHashMap<>();
+            resultMap.put("companyName", entry.getKey());
+            resultMap.put("monthlySales", entry.getValue());
+            resultList.add(resultMap);
+        }
+
+
+        // 결과 출력
+        for (Map<String, Object> map : resultList) {
+            System.out.println("회사명: " + map.get("companyName"));
+            System.out.println("매출액 배열: " + Arrays.toString((int[]) map.get("monthlySales")));
+        }
+
+        return resultList;
+
+
+    }
 
 }
 
