@@ -2,10 +2,6 @@
 <html lang="en">
 <head>
     <div th:replace="~{fragment/adminHeader :: head}"></div>
-
-
-
-
 </head>
 
 
@@ -16,35 +12,25 @@
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4">밀키트 주문 확인</h1>
 
-            <button onclick="showToast('Hello, World!')">Show Toast</button>
-
-            <!--            밀키트 추가 모달 버튼-->
-            <div class="d-flex justify-content-end mb-3">
-                <button class="btn btn-primary"
+            <!-- 3개의 버튼을 일렬로 배치 -->
+            <div class="d-flex justify-content-end mb-4">
+                <button class="btn btn-primary mx-2"
                         data-bs-toggle="modal"
                         data-bs-target="#insertMealkitModal">
                     밀키트 등록
                 </button>
-            </div>
-
-            <!--            업체 추가 모달 버튼-->
-            <div class="d-flex justify-content-end mb-3">
-                <button class="btn btn-primary"
+                <button class="btn btn-primary mx-2"
                         data-bs-toggle="modal"
                         data-bs-target="#insertCompanyModal">
                     업체 등록
                 </button>
-            </div>
-
-
-            <!--           주문 추가 모달 버튼-->
-            <div class="d-flex justify-content-end mb-3">
-                <button class="btn btn-primary"
+                <button class="btn btn-primary mx-2"
                         data-bs-toggle="modal"
                         data-bs-target="#insertKitOrderModal">
-                    새로운 밀키트 주문 추가
+                    밀키트 주문 추가
                 </button>
             </div>
+
             <!--차트-->
             <div class="row">
                 <div class="col-xl-6">
