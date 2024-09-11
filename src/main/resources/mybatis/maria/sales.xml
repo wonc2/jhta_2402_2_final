@@ -1,7 +1,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.sales.SalesDao">
 
-<!--    그냥 디비 가져오기-->
+    <!--    그냥 디비 가져오기-->
     <select id="findAll" resultType="KitOrderDto">
         SELECT KIT_ORDER_ID AS KitOrderId,
                KIT_COMPANY_ID AS KitCompanyId,
@@ -13,7 +13,7 @@
         order by ProductOrderDate DESC
     </select>
 
-<!--    조인해서 상세정보까지 가져오기-->
+    <!--    조인해서 상세정보까지 가져오기-->
     <select id="findAllDetail" resultType="KitOrderDetailDto">
         SELECT
             o.KIT_ORDER_ID AS kitOrderId,
@@ -35,14 +35,14 @@
         order by orderDate DESC
     </select>
 
-<!--    새로운 주문 추가-->
+    <!--    새로운 주문 추가-->
     <insert id="insert">
         INSERT INTO KIT_ORDER (KIT_ORDER_ID, KIT_COMPANY_ID, MEALKIT_ID, PRICE, QUANTITY, PRODUCT_ORDER_DATE, STATUS_ID)
         VALUES (#{kitOrderId}, #{kitCompanyId}, #{mealkitId},#{price}, #{quantity}, NOW(), #{statusId})
     </insert>
 
 
-<!--    밀키트 업체 이름과 pk값 가져오기-->
+    <!--    밀키트 업체 이름과 pk값 가져오기-->
     <select id="findAllIdAndName">
         select KIT_COMPANY_ID as kitCompanyId,
                NAME
@@ -84,7 +84,7 @@
 
 
 
-<!--밀키트별 필요한 재료 셀렉-->
+    <!--밀키트별 필요한 재료 셀렉-->
     <select id="findAllKitSourceDetail" resultType="KitSourceDetailDto">
         SELECT
             ks.KIT_SOURCE_ID AS kitSourceId,
@@ -102,7 +102,7 @@
     </select>
 
 
-<!--    재료명, pk 가져오기-->
+    <!--    재료명, pk 가져오기-->
     <resultMap id="sourceMap" type="java.util.HashMap">
         <result column="SOURCE_ID" property="sourceId"/>
         <result column="NAME" property="name"/>
@@ -116,7 +116,7 @@
     </select>
 
 
-<!--    -->
+    <!--    -->
 
     <!-- 밀키트를 데이터베이스에 삽입 -->
     <insert id="insertMealkit" >
@@ -171,7 +171,7 @@
     </insert>
 
 
-<!--    업체별 밀키트 재고 확인-->
+    <!--    업체별 밀키트 재고 확인-->
     <select id="selectKitStorage" resultType="KitStorageDto">
         SELECT
             KS.KIT_STORAGE_ID as kitStorageId,
@@ -188,7 +188,7 @@
         order by KC.NAME
     </select>
 
-<!--    주문 처리 완료된 애들만 모아 보기-->
+    <!--    주문 처리 완료된 애들만 모아 보기-->
     <select id="findAllCompleted" resultType="KitCompletedDto">
         SELECT
             kol.KIT_ORDER_LOG_ID AS kitOrderLogId,
@@ -249,7 +249,7 @@
     </insert>
 
 
-<!--    생산 업체별 재료 가격 셀렉-->
+    <!--    생산 업체별 재료 가격 셀렉-->
     <select id="selectAllSourcePrice" resultType="SourcePriceDto">
         SELECT
             sp.SOURCE_PRICE_ID as sourcePriceId,
@@ -265,7 +265,7 @@
     </select>
 
 
-<!--    최소 재료값-->
+    <!--    최소 재료값-->
     <select id="selectMinSourcePrice" resultType="SourcePriceDto">
         SELECT
             sp.SOURCE_PRICE_ID as sourcePriceId,
@@ -335,14 +335,14 @@
             d.mealkitId, d.sourceName;
     </select>
 
-<!--밀키트 가격 수정-->
+    <!--밀키트 가격 수정-->
     <update id="updateKitPrice">
         UPDATE MEALKIT
         SET PRICE = #{minPrice}
         WHERE MEALKIT_ID = #{mealkitId}
     </update>
 
-<!--    발주 요청을 위한 상세정보 가져오기-->
+    <!--    발주 요청을 위한 상세정보 가져오기-->
     <select id="selectOrderDetail" resultType="OrderDetailDto">
         SELECT
             KO.KIT_ORDER_ID AS kitOrderId,         -- 주문 ID
@@ -413,7 +413,7 @@
     </insert>
 
 
-<!--    product_order 테이블 조회-->
+    <!--    product_order 테이블 조회-->
     <select id="selectProductOrder" resultType="ProductOrderDetailDto">
         SELECT
             po.PRODUCT_ORDER_ID as productOrderId,
@@ -432,7 +432,7 @@
             orderDate DESC;
     </select>
 
-<!--    product_order_log 인서트-->
+    <!--    product_order_log 인서트-->
     <insert id="insertProductOrderLog">
         INSERT INTO PRODUCT_ORDER_LOG (
             PRODUCT_ORDER_LOG_ID,
@@ -470,7 +470,7 @@
             orderDate DESC;
     </select>
 
-<!--    취소-->
+    <!--    취소-->
     <update id="updateKitOrderCancel">
         UPDATE KIT_ORDER
         SET STATUS_ID = 4
@@ -509,7 +509,7 @@
     </resultMap>
 
 
-<!--    처리완료된(판매된) 밀키트 수량 알아내기 -->
+    <!--    처리완료된(판매된) 밀키트 수량 알아내기 -->
     <select id="selectKitTotalQuantity" resultMap="completedKitQuantityMap">
         SELECT
             mk.NAME AS mealkitName,
@@ -534,7 +534,7 @@
     </resultMap>
 
 
-<!--    업체별 누적 판매액-->
+    <!--    업체별 누적 판매액-->
     <select id="selectTotalQuantityByCompanyName" resultMap="totalQuantityMapByCompanyName">
         SELECT
             kc.NAME AS companyName,
@@ -562,7 +562,19 @@
     <!-- 업체 등록 -->
     <insert id="insertKitCompany">
         INSERT INTO KIT_COMPANY (KIT_COMPANY_ID, NAME, ADDRESS)
-        VALUES (uuid(), #{companyName}, #{companyAddress})
+        VALUES (#{kitCompanyId}, #{companyName}, #{address});
+
+
+    </insert>
+    <!--유저등록-->
+    <insert id="insertUser">
+        INSERT INTO USER (USER_PK, USER_NAME, USER_ID, USER_PASSWORD, USER_EMAIL, USER_TEL, ROLE_NAME)
+        VALUES (#{userPk}, #{userName}, #{userId}, #{password}, #{email}, #{tel}, #{role})
+    </insert>
+
+    <insert id="insertKitCompanyMember">
+        INSERT INTO KIT_COMPANY_MEMBER (KIT_COMPANY_MEMBER_ID, USER_PK, KIT_COMPANY_ID)
+        VALUES (UUID(), #{userPk}, #{kitCompanyId});
     </insert>
 
     <select id="getMonthlySales" resultType="MonthlySalesDto">

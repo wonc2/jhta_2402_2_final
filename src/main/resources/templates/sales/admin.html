@@ -16,6 +16,8 @@
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4">밀키트 주문 확인</h1>
 
+            <button onclick="showToast('Hello, World!')">Show Toast</button>
+
             <!--            밀키트 추가 모달 버튼-->
             <div class="d-flex justify-content-end mb-3">
                 <button class="btn btn-primary"
@@ -495,6 +497,8 @@
 </script>
 
 <!-- 업체 등록 모달 -->
+<!-- Modal -->
+
 <div class="modal fade" id="insertCompanyModal" tabindex="-1" aria-labelledby="insertCompanyModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -504,14 +508,51 @@
             </div>
             <div class="modal-body">
                 <form id="insertCompanyForm" th:action="@{/sales/insert/company}" th:method="post">
+
                     <div class="mb-3">
-                        <label for="companyName" class="form-label">업체명</label>
-                        <input type="text" class="form-control" id="companyName" name="companyName" placeholder="업체명을 입력하세요" required>
+                        <label class="form-label">밀키트 업체 ID</label>
+                        <input type="text" class="form-control" name="userId" placeholder="아이디를 입력하세요." required>
                     </div>
+
                     <div class="mb-3">
-                        <label for="companyAddress" class="form-label">업체 주소</label>
-                        <input type="text" class="form-control" id="companyAddress" name="companyAddress" placeholder="업체 주소를 입력하세요" required>
+                        <label class="form-label">비밀번호</label>
+                        <input type="password" class="form-control" name="password" placeholder="비밀번호를 입력하세요" required>
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">비밀번호 확인</label>
+                        <input type="password" class="form-control"  name="passwordConfirm" placeholder="비밀번호를 입력하세요" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">업체명</label>
+                        <input type="text" class="form-control" name="companyName" placeholder="업체명을 입력하세요" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">사업자명</label>
+                        <input type="text" class="form-control" name="userName" placeholder="이름을 입력하세요" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">이메일</label>
+                        <input type="email" class="form-control" name="email" placeholder="example@gmail.com" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">전화번호</label>
+                        <input type="tel" class="form-control" name="tel" placeholder="010-1234-5678" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">업체 주소</label>
+                        <input type="text" class="form-control"  name="address" placeholder="주소를 입력하세요." required>
+                    </div>
+
+
+                    <input type="hidden" name="role" value="ROLE_SALES_MANAGER">
+
+
                 </form>
             </div>
             <div class="modal-footer">
@@ -616,7 +657,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                        <button type="submit" class="btn btn-primary" form="mealkitForm">저장</button>
+                        <button type="submit" class="btn btn-primary" form="mealkitForm" >저장</button>
                     </div>
                 </form>
             </div>

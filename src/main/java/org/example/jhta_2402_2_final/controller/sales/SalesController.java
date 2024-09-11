@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.*;
@@ -29,8 +30,15 @@ public class SalesController {
     private final SalesService salesService;
     private final LogisticsWareHouseService logisticsWareHouseService;
 
+    String toastMessage = null;
+    String toastStatus = null;
+
     @GetMapping
     public String salesMain(Model model) {
+
+        model.addAttribute("toastMessage", toastMessage);
+        model.addAttribute("toastStatus", toastStatus);
+
 
         //업체별 월별 판매량
         List<Map<String, Object>> monthlySales = salesService.getMonthlySales();
@@ -73,11 +81,25 @@ public class SalesController {
     }
 
     @PostMapping("/insert")
-    public String insert(@ModelAttribute KitOrderDto kitOrderDto) {
-        salesService.createKitOrder(kitOrderDto);
+    public String insert(@ModelAttribute KitOrderDto kitOrderDto,
+                         RedirectAttributes redirectAttributes,
+                         Model model) {
+        int result = salesService.createKitOrder(kitOrderDto);
 
-        UUID kitOrderId = kitOrderDto.getKitOrderId();
-        salesService.insertKitOrderLog(kitOrderId);
+        if (result > 0) {
+
+            toastMessage = "성공";
+            toastStatus = "success";
+
+            UUID kitOrderId = kitOrderDto.getKitOrderId();
+            salesService.insertKitOrderLog(kitOrderId);
+        }
+
+        else {
+            redirectAttributes.addFlashAttribute("toastMessage", "주문 추가에 실패했습니다.");
+            redirectAttributes.addFlashAttribute("toastStatus", "error");
+        }
+
         return "redirect:/sales";
     }
 
@@ -196,9 +218,8 @@ public class SalesController {
     }
 
     @PostMapping("/insert/company")
-    public String insertCompany(@RequestParam String companyName,
-                                @RequestParam String companyAddress) {
-        salesService.insertKitCompany(companyName, companyAddress);
+    public String insertCompany(@ModelAttribute InsertKitCompanyDto insertKitCompanyDto) {
+        salesService.insertKitCompany(insertKitCompanyDto);
         return "redirect:/sales";
     }
 
