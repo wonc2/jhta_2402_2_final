@@ -1,0 +1,27 @@
+version: '3.9'
+services:
+  springboot_3.1.11:
+    image: ${IMAGE_NAME}
+    build:
+      context: .
+      args:
+        APP_DIR_NAME: ${APP_DIR_NAME}
+      dockerfile: Dockerfile
+    volumes:
+      - ./application.yml:/app/${APP_DIR_NAME}/src/main/resources/application.yml
+    ports:
+      - "8081:8080"  
+  mariadb_11.4.2:
+    image: mariadb:11.4.2
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: cocolabhub
+      MYSQL_DATABASE: final
+      MYSQL_USER: cocolabhub
+      MYSQL_PASSWORD: cocolabhub
+    ports:
+      - "33306:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+# docker-compose --project-name mariadb_kimpitang up -d
