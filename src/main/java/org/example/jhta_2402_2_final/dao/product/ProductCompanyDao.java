@@ -7,13 +7,13 @@ import org.example.jhta_2402_2_final.model.dto.productCompany.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Mapper
 public interface ProductCompanyDao {
 
     // 유저 인증
-    String getUserUidByUserId(String userName);
-    String getCompanyIdByUserUid(String userUid);
+    Optional<String> getCompanyIdByUserId(String userId);
 
     // 생산업체에 등록된 생산품 리스트 가져옴
     List<CompanySourceDto> getSourcesByCompanyName(String companyId);

@@ -25,12 +25,8 @@ public class ProductCompanyService {
 
     // 유저 인증
     public String getCompanyIdByUserId(String userId) {
-        String userUid = productCompanyDao.getUserUidByUserId(userId);
-        String companyId = productCompanyDao.getCompanyIdByUserUid(userUid);
-        if (companyId == null || companyId.isEmpty()) {
-            throw new IllegalArgumentException("생산 업체 직원이 아니거나 권한이 없음");
-        }
-        return companyId;
+        return productCompanyDao.getCompanyIdByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("생산 업체 직원이 아니거나 권한이 없음"));
     }
 
     /* CompanySource Table */

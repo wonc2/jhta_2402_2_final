@@ -236,6 +236,7 @@ $(document).ready(function () {
                 $('#orderProcessModal').modal('hide');
                 showToast("주문 번호: '" + orderId.substring(0, 8) + "' 의 출하가 완료되었습니다.")
                 updateWarehouseChart();
+                updateOrderChart();
                 $('#orderTable').DataTable().ajax.reload(function () {
                 }, false);
             },

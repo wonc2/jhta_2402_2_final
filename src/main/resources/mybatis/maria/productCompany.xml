@@ -1,11 +1,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.product.ProductCompanyDao">
     <!-- 유저 인증 -->
-    <select id="getUserUidByUserId" parameterType="String" resultType="String">
-        select user_pk as userUid from USER where USER_ID = #{userId}
-    </select>
-    <select id="getCompanyIdByUserUid" parameterType="String" resultType="String">
-        select PRODUCT_COMPANY_ID as companyId from PRODUCT_COMPANY_MEMBER where USER_ID = #{userUid}
+    <select id="getCompanyIdByUserId" parameterType="String" resultType="String">
+        select PRODUCT_COMPANY_ID as companyId from PRODUCT_COMPANY_MEMBER
+        where USER_ID = (select user_pk as userUid from USER where USER_ID = #{userId})
     </select>
 
     <!-- 생산 업체의 현재 생산품 리스트 가져옴 -->
