@@ -141,6 +141,15 @@ CREATE TABLE KIT_STORAGE (
                              FOREIGN KEY (MEALKIT_ID) REFERENCES MEALKIT(MEALKIT_ID)
 );
 
+CREATE TABLE KIT_COMPANY_MEMBER (
+                                    KIT_COMPANY_MEMBER_ID VARCHAR(50) PRIMARY KEY,  -- 관계를 위한 기본 키
+                                    USER_PK VARCHAR(50),                 -- USER 테이블의 외래 키
+                                    KIT_COMPANY_ID VARCHAR(50),
+
+                                    FOREIGN KEY (KIT_COMPANY_ID) REFERENCES KIT_COMPANY(KIT_COMPANY_ID),
+                                    FOREIGN KEY (USER_PK) REFERENCES USER(USER_PK)
+);
+
 
 -- 웨어하우스 관련
 -- 17. LOGISTICS_WAREHOUSE 테이블 생성

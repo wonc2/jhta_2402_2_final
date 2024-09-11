@@ -116,9 +116,17 @@ public interface SalesDao {
     //업체별 누적 판매량과 금액
     List<Map<String, String>> selectTotalQuantityByCompanyName();
 
-    //새로운 업체 등록
-    void insertKitCompany(String companyName, String companyAddress);
+
 
     //월별 업체별
     List<MonthlySalesDto> getMonthlySales();
+
+    //새로운 업체 등록
+    int insertKitCompany(InsertKitCompanyDto insertKitCompanyDto);
+
+    //유저 등록
+    int insertUser(InsertKitCompanyDto insertKitCompanyDto);
+
+    //업체 유저 테이블 등록
+    int insertKitCompanyMember(InsertKitCompanyDto insertKitCompanyDto);
 }

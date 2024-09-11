@@ -62,8 +62,8 @@ public class SalesService {
 
     // 상태 변경하기
     public void updateKitOrderStatus(UUID kitOrderId, int statusId) {
-         salesDao.updateKitOrderStatus(kitOrderId, statusId);
-         salesDao.insertKitOrderLog(kitOrderId);
+        salesDao.updateKitOrderStatus(kitOrderId, statusId);
+        salesDao.insertKitOrderLog(kitOrderId);
     }
 
     //밀키트랑 재료 가져오기
@@ -221,9 +221,6 @@ public class SalesService {
         return salesDao.selectTotalQuantityByCompanyName();
     }
 
-    public void insertKitCompany(String companyName, String companyAddress) {
-        salesDao.insertKitCompany(companyName, companyAddress);
-    }
 
     //업체별 월별 매출액
     public List<Map<String, Object>> getMonthlySales() {
@@ -267,17 +264,30 @@ public class SalesService {
             resultList.add(resultMap);
         }
 
-
-        // 결과 출력
-        for (Map<String, Object> map : resultList) {
-            System.out.println("회사명: " + map.get("companyName"));
-            System.out.println("매출액 배열: " + Arrays.toString((int[]) map.get("monthlySales")));
-        }
-
         return resultList;
-
-
     }
 
+    public void insertKitCompany(InsertKitCompanyDto insertKitCompanyDto) {
+        UUID kitCompanyId = UUID.randomUUID();
+        insertKitCompanyDto.setKitCompanyId(kitCompanyId);
+
+        UUID userPk = UUID.randomUUID();
+        insertKitCompanyDto.setUserPk(userPk);
+
+        System.out.println("insertKitCompanyDto = >>>>>" + insertKitCompanyDto);
+
+        int result01 = salesDao.insertKitCompany(insertKitCompanyDto);
+        if (result01 > 0) System.out.println("킷 컴퍼니 인서트 성공");
+        else System.out.println("킷 컴퍼니 인서트 실패");
+
+        int result02 = salesDao.insertUser(insertKitCompanyDto);
+        if (result02>0) System.out.println("유저 인서트 성공");
+        else System.out.println("유저 인서트 실패");
+
+
+        int result03 = salesDao.insertKitCompanyMember(insertKitCompanyDto);
+        if (result03 > 0) System.out.println("반정규화 인서트 성공");
+        else System.out.println("반정규화 인서트 실패 ");
+    }
 }
 
