@@ -70,10 +70,23 @@
                                 </button>
                             </td>
                             <td>
-                                <form th:action="@{/distribution/kitOrderRelease}" method="post">
+
+                                <!--<form th:action="@{/distribution/kitOrderRelease}" method="post">
                                     <input type="hidden" name="kitOrderId" th:value="${kitOrderProcess.kitOrderID}"/>
-                                    <button type="submit" class="btn btn-info btn-sm">판매</button>
-                                </form>
+                                    <button id="sourceSellOutButton" type="button" class="btn btn-info btn-sm">판매
+                                    </button>
+                                </form>-->
+
+                                <!--<button th:onclick="test([[${kitOrderProcess.kitOrderID}]])" id="test" type="button" class="btn btn-info btn-sm">판매test
+                                </button>-->
+
+                                <!--제발되라-->
+                                <button th:onclick="processKitOrder([[${kitOrderProcess.kitOrderID}]])" id="sourceSellOutButton" type="button" class="btn btn-info btn-sm">판매</button>
+
+
+                                <!--<input type="hidden" name="kitOrderId" th:value="${kitOrderProcess.kitOrderID}"/>
+                                <button onclick="sell()" id="sourceSellOutButton" class="btn btn-info btn-sm">판매</button>-->
+
                             </td>
                         </tr>
                         </tbody>
@@ -197,126 +210,7 @@
         }
     });
 
-    // 구버전 재료발주요청 스크립트
-    /*document.getElementById('requestOrderButton').addEventListener('click', function (event) {
-
-        event.preventDefault();
-        const orderDetails = [];
-        const kitSourceCheckAndOrderModal = document.getElementById('kitSourceCheckAndOrderModal');
-
-        const kitOrderId = document.getElementById('modalKitOrderID').value;
-
-        document.querySelectorAll("#ingredientsList tr").forEach(row => {
-            const sourceName = row.cells[0].innerText;
-            const requiredQuantity = parseInt(row.cells[1].innerText);
-            const warehouseQuantity = parseInt(row.cells[2].innerText);
-            const minPrice = parseInt(row.cells[3].innerText);
-            const supplierName = row.cells[4].innerText;
-
-            if (requiredQuantity > warehouseQuantity) {
-                const insufficientQuantity = requiredQuantity - warehouseQuantity;
-                orderDetails.push({
-                    sourceName: sourceName,
-                    supplierName: supplierName,
-                    minPrice: minPrice,
-                    insufficientQuantity: insufficientQuantity
-                });
-            }
-        });
-
-        // 서버로 재료 발주 요청
-        if (orderDetails.length > 0) {
-            fetch("/distribution/requestSourceOrder", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ orderDetails: orderDetails })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    alert('재료 발주 요청이 완료되었습니다.');
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                });
-        } else {
-            alert("모든 재고가 충분합니다.");
-        }
-    });*/
-
-    // form.submit() 방법
-    /*document.getElementById('requestOrderButton').addEventListener('click', function (event) {
-        event.preventDefault(); // 기본 폼 제출 방지
-
-        const form = document.getElementById('employeeForm'); // 이미 존재하는 폼을 사용할 수도 있습니다.
-
-        // 기존에 추가된 숨겨진 필드를 모두 삭제 (중복 방지)
-        form.querySelectorAll('input[type="hidden"]').forEach(input => input.remove());
-
-        const kitOrderId = document.getElementById('modalKitOrderID').value;
-        const orderDetails = [];
-
-        // 재료 테이블에서 데이터 추출
-        document.querySelectorAll("#ingredientsList tr").forEach(row => {
-            const sourceName = row.cells[0].innerText;
-            const requiredQuantity = parseInt(row.cells[1].innerText);
-            const warehouseQuantity = parseInt(row.cells[2].innerText);
-            const minPrice = parseInt(row.cells[3].innerText);
-            const supplierName = row.cells[4].innerText;
-
-            // 재고 부족 시 발주 내역 추가
-            if (requiredQuantity > warehouseQuantity) {
-                const insufficientQuantity = requiredQuantity - warehouseQuantity;
-                orderDetails.push({
-                    kitOrderId: kitOrderId,
-                    sourceName: sourceName,
-                    supplierName: supplierName,
-                    minPrice: minPrice,
-                    insufficientQuantity: insufficientQuantity
-                });
-
-                // 동적으로 폼 필드 추가
-                const inputSourceName = document.createElement('input');
-                inputSourceName.type = 'hidden';
-                inputSourceName.name = 'sourceName[]';  // 배열 형식으로 보냄
-                inputSourceName.value = sourceName;
-                form.appendChild(inputSourceName);
-
-                const inputSupplierName = document.createElement('input');
-                inputSupplierName.type = 'hidden';
-                inputSupplierName.name = 'supplierName[]';
-                inputSupplierName.value = supplierName;
-                form.appendChild(inputSupplierName);
-
-                const inputMinPrice = document.createElement('input');
-                inputMinPrice.type = 'hidden';
-                inputMinPrice.name = 'minPrice[]';
-                inputMinPrice.value = minPrice;
-                form.appendChild(inputMinPrice);
-
-                const inputInsufficientQuantity = document.createElement('input');
-                inputInsufficientQuantity.type = 'hidden';
-                inputInsufficientQuantity.name = 'insufficientQuantity[]';
-                inputInsufficientQuantity.value = insufficientQuantity;
-                form.appendChild(inputInsufficientQuantity);
-            }
-        });
-
-        // kitOrderId를 숨겨진 필드로 추가
-        const inputKitOrderId = document.createElement('input');
-        inputKitOrderId.type = 'hidden';
-        inputKitOrderId.name = 'kitOrderId';
-        inputKitOrderId.value = kitOrderId;
-        form.appendChild(inputKitOrderId);
-
-        // 폼 제출
-        if (orderDetails.length > 0) {
-            form.submit(); // 폼을 일반적인 방식으로 제출
-        } else {
-            alert("모든 재고가 충분합니다.");
-        }
-    });*/
+    const test = (id) => console.log(id);
 
     // json 방법
     document.getElementById('requestOrderButton').addEventListener('click', function (event) {
@@ -329,7 +223,7 @@
         console.log(csrfToken);
         console.log(csrfHeader);
 
-        // 재료 테이블에서 데이터 추출
+        // 재료 테이블에서 데이터 추출(모달 안에 적혀있는 값을 불러옴)
         document.querySelectorAll("#ingredientsList tr").forEach(row => {
             const sourceName = row.cells[0].innerText; // 재료이름
             const requiredQuantity = parseInt(row.cells[1].innerText); // 필요수량
@@ -387,6 +281,145 @@
             alert("모든 재고가 충분합니다.");
         }
     });
+
+/*$(document).ready(function (){
+    $("#sourceSellOutButton").on("click",function (){
+        $("#").submit
+    })
+})*/
+    // 판매 버튼 ajax
+    /*document.addEventListener('DOMContentLoaded', () => {
+        const sellOutButtons = document.querySelectorAll('#sourceSellOutButton');
+
+        sellOutButtons.forEach((button) => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault(); // 기본 폼 제출 방지
+
+                const form = this.closest('form'); // 클릭한 버튼의 form을 찾음
+                const kitOrderId = form.querySelector('input[name="kitOrderId"]').value; // form에서 주문 번호 추출(input 안에 있는 name
+                // 값을 value 로 가져옴
+                console.log(kitOrderId);
+
+                // CSRF 토큰 설정 (Spring Security 사용 시)
+                const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+                console.log(csrfToken);
+                console.log(csrfHeader);
+
+                // AJAX 요청 보내기
+                fetch("/distribution/kitOrderRelease", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        [csrfHeader]: csrfToken // CSRF 토큰 포함
+                    },
+                    body: JSON.stringify({kitOrderId: kitOrderId})
+                })
+                    .then(response => response.json()) // JSON 응답 받기 (컨트롤러에서 return ResponseEntity.ok(response); 한 것을 받아옴)
+                    .then(data => {
+                        if (data.status === "success") {
+                            alert(data.message); // 성공 메시지
+                            window.location.href = '/distribution/main?success=true'; // 성공 시 리다이렉트
+                        } else {
+                            alert(data.message); // 실패 메시지
+                            window.location.href = '/distribution/main?error=insufficientStock'; // 실패 시 리다이렉트
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert('오류가 발생했습니다. 다시 시도해 주세요.');
+                    });
+            });
+        });
+    });*/
+
+
+    /*document.addEventListener('DOMContentLoaded', () => {
+        const sellOutButtons = document.querySelectorAll('#sourceSellOutButton');
+        //console.log(sellOutButtons)
+
+        sellOutButtons.forEach((button) => {
+            //console.log(button)
+            button.addEventListener('click', (event) => {
+
+                //console.log('test')
+                event.preventDefault(); // 기본 폼 제출 방지
+
+                // 주문 번호를 인자로 받아서 처리하는 함수
+                const processKitOrder = (kitOrderId) => {
+                    console.log(kitOrderId); // 서버에서 넘어온 kitOrderId 값 확인
+
+                    // CSRF 토큰 설정 (Spring Security 사용 시)
+                    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+                    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+                    console.log(csrfToken);
+                    console.log(csrfHeader);
+
+                    // AJAX 요청 보내기
+                    fetch("/distribution/kitOrderRelease", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            [csrfHeader]: csrfToken // CSRF 토큰 포함
+                        },
+                        body: JSON.stringify({ kitOrderId: kitOrderId }) // 서버로 전달할 JSON 데이터
+                    })
+                        .then(response => response.json()) // JSON 응답 받기
+                        .then(data => {
+                            if (data.status === "success") {
+                                alert(data.message); // 성공 메시지
+                                window.location.href = '/distribution/main?success=true'; // 성공 시 리다이렉트
+                            } else {
+                                alert(data.message); // 실패 메시지
+                                window.location.href = '/distribution/main?error=insufficientStock'; // 실패 시 리다이렉트
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert('오류가 발생했습니다. 다시 시도해 주세요.');
+                        });
+                };
+
+
+
+            });
+        });
+    });*/
+
+    // 주문 번호를 인자로 받아서 처리하는 함수 (전역에 정의)
+    const processKitOrder = (kitOrderId) => {
+        console.log(kitOrderId); // 서버에서 넘어온 kitOrderId 값 확인
+
+        // CSRF 토큰 설정 (Spring Security 사용 시)
+        const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+        // AJAX 요청 보내기
+        fetch("/distribution/kitOrderRelease", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                [csrfHeader]: csrfToken // CSRF 토큰 포함
+            },
+            body: JSON.stringify({ kitOrderId: kitOrderId }) // 서버로 전달할 JSON 데이터
+        })
+            .then(response => response.json()) // JSON 응답 받기
+            .then(data => {
+                if (data.status === "success") {
+                    alert(data.message); // 성공 메시지
+                    window.location.href = '/distribution/main?success=true'; // 성공 시 리다이렉트
+                } else {
+                    alert(data.message); // 실패 메시지
+                    window.location.href = '/distribution/main?error=insufficientStock'; // 실패 시 리다이렉트
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert('오류가 발생했습니다. 다시 시도해 주세요.');
+            });
+    };
+
+
 
 
 </script>

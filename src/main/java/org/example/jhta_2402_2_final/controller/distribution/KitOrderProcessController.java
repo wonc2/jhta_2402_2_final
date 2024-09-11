@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.plaf.PanelUI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,13 +61,10 @@ public class KitOrderProcessController {
         // 인스턴스를 사용해 메소드 호출
         return kitOrderProcessService.findKitRecipeWithStockAndSupplier(mealKitId, orderQuantity);
 
-
-        //return kitOrderProcessService.findKitRecipeWithStock(kitOrderId);
-
-        // return kitOrderProcessService.findKitRecipe(kitOrderId); // 이 리턴 부분은 바뀔수도 있을 것 같음
     }
 
-    @PostMapping("/kitOrderRelease")
+    // 구버전 재료판매 컨트롤러
+    /*@PostMapping("/kitOrderRelease")
     public String completeKitOrderRelease(@RequestParam("kitOrderId") String kitOrderId) {
         // 나중에 재고관련된 동시성 처리도 구현해야 함
         boolean success = kitOrderProcessService.processKitOrder(kitOrderId);
@@ -76,34 +74,54 @@ public class KitOrderProcessController {
         } else {
             return "redirect:/distribution/main?error=insufficientStock";
         }
+    }*/
+
+    // AJAX 처리한 재료판매 컨트롤러 메소드
+    /*@PostMapping("/kitOrderRelease")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> completeKitOrderRelease(@RequestParam("kitOrderId") String kitOrderId) {
+        boolean success = kitOrderProcessService.processKitOrder(kitOrderId);
+        Map<String, Object> response = new HashMap<>();
+
+        if (success) {
+            response.put("status", "success");
+            response.put("message", "재료 출고가 성공적으로 완료되었습니다.");
+        } else {
+            response.put("status", "error");
+            response.put("message", "재고가 부족하여 출고에 실패했습니다. 재고를 다시 확인하세요.");
+        }
+
+        return ResponseEntity.ok(response); // JSON 형식으로 응답을 보냄
+    }*/
+
+    @PostMapping("/kitOrderRelease")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> completeKitOrderRelease(@RequestBody Map<String, String> requestBody) {
+        String kitOrderId = requestBody.get("kitOrderId");
+        Map<String, Object> response = new HashMap<>();
+
+        if (kitOrderId == null) {
+            response.put("status", "error");
+            response.put("message", "Required parameter 'kitOrderId' is not present.");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        boolean success = kitOrderProcessService.processKitOrder(kitOrderId);
+
+        if (success) {
+            response.put("status", "success");
+            response.put("message", "재료 출고가 성공적으로 완료되었습니다.");
+        } else {
+            response.put("status", "error");
+            response.put("message", "재고가 부족하여 출고에 실패했습니다. 재고를 다시 확인하세요.");
+        }
+
+        return ResponseEntity.ok(response); // JSON 형식으로 응답
     }
 
-    /*@PostMapping("/requestSourceOrder")
-    @ResponseBody
-    public ResponseEntity<String> requestProductOrder(@RequestBody Map<String, Object> orderData) {
-        String kitOrderId = (String) orderData.get("kitOrderId");
-        List<Map<String, Object>> orderDetails = (List<Map<String, Object>>) orderData.get("orderDetails");
 
-        // 서비스 호출
-        kitOrderProcessService.requestProductOrders(kitOrderId, orderDetails);
 
-        // 요청이 성공했음을 알리는 메시지 반환
-        return ResponseEntity.ok("재료 발주 요청이 완료되었습니다.");
-    }*/
-
-    /*@PostMapping("/requestSourceOrder")
-    public String requestProductOrder(@RequestParam Map<String, Object> orderData, Model model) {
-        String kitOrderId = (String) orderData.get("kitOrderId");
-        List<Map<String, Object>> orderDetails = (List<Map<String, Object>>) orderData.get("orderDetails");
-
-        // 서비스 호출
-        kitOrderProcessService.requestProductOrders(kitOrderId, orderDetails);
-
-        // 처리 후 리다이렉트 (성공 페이지나 메인 페이지로)
-        return "redirect:/distribution/main";
-    }*/
-
-    // 구버전 requestProductOrder 매소드
+    // ResponseEntity 를 사용한 재료발주요청 메서드
     @PostMapping("/requestSourceOrder")
     public ResponseEntity<?> requestSourceOrder(@RequestBody RequestOrderDto requestOrderDto) {
 
@@ -117,39 +135,6 @@ public class KitOrderProcessController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to process the order.");
         }
     }
-
-
-
-    // form.submit()받는 컨트롤러 메소드
-    /*@PostMapping("/requestSourceOrder")
-    public String requestSourceOrder(
-            @RequestParam("kitOrderId") String kitOrderId,
-            @RequestParam("sourceName[]") List<String> sourceNames,
-            @RequestParam("supplierName[]") List<String> supplierNames,
-            @RequestParam("minPrice[]") List<Integer> minPrices,
-            @RequestParam("insufficientQuantity[]") List<Integer> insufficientQuantities) {
-
-        // 디버깅 출력
-        boolean success = kitOrderProcessService.requestProductOrders(kitOrderId, sourceNames, supplierNames, minPrices, insufficientQuantities);
-
-        // 요청에 대한 비즈니스 로직 처리
-
-        if (success) {
-            return "redirect:/distribution/main?success=true";
-        } else {
-            return "redirect:/distribution/main?error=insufficientStock";
-        }
-    }*/
-
-
-
-
-
-
-
-
-
-
 
 }
 

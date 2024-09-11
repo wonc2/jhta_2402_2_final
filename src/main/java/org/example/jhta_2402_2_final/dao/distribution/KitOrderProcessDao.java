@@ -68,4 +68,9 @@ public interface KitOrderProcessDao {
     List<String> findProductOrderIds(@Param("kitOrderId") String kitOrderId);
 
     void insertProductOrderLog(@Param("productOrderId") String productOrderId);
+
+    // 유통 창고에서 재고 리스트를 오래된 순서대로 가져오는 쿼리 메소드
+    List<Map<String, Object>> findWarehouseStacks(String sourceId);
+
+    void updateWarehouseStockWithStackId(String stackId, int required);
 }
