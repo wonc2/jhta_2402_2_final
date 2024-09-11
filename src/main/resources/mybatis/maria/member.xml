@@ -9,7 +9,7 @@
         VALUES (UUID(), #{userName}, #{userPassword}, #{userId}, #{userEmail}, #{userTel}, #{roleId})
     </insert>
     <update id="insertRole" parameterType="String" >
-        UPDATE USER SET ROLE_NAME = CASE WHEN ROLE_NAME = '1' THEN 'ROLE_ADMIN' WHEN ROLE_NAME = '2' THEN 'ROLE_KIT_MANAGER' WHEN ROLE_NAME = 3 THEN 'ROLE_PRODUCT_MANAGER' END WHERE USER_ID = #{userId};
+        UPDATE USER SET ROLE_NAME = CASE WHEN ROLE_NAME = '1' THEN 'ROLE_ADMIN' WHEN ROLE_NAME = '2' THEN 'ROLE_LOGISTICS_MANAGER' WHEN ROLE_NAME = 3 THEN 'ROLE_PRODUCT_MANAGER' WHEN ROLE_NAME = 4 THEN 'ROLE_SALES_MANAGER' END WHERE USER_ID = #{userId};
     </update>
     <!-- USER 테이블과 ROLE 테이블을 조인하여 사용자 정보를 조회하는 쿼리 -->
     <select id="selectUserWithRole" parameterType="String" resultType="MemberDto">

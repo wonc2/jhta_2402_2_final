@@ -39,15 +39,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
         httpSecurity.authorizeHttpRequests((auth)->auth
-                .requestMatchers("/","/member/**","/test","/adminMain/**","/sales/**","/distribution/**","/wareHouse/**","/distributionOrder/**" ,"/api/**")
+                .requestMatchers("/","/member/**","/api/**")
                 .permitAll()
-                .requestMatchers("/product/role").hasAuthority("ROLE_PRODUCT_MANAGER")
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/user/**").hasAnyRole("ADMIN","USER")
-                .requestMatchers("/manager/**").hasAnyRole("ADMIN","MANAGER")
-                .requestMatchers("/distribution/**").hasAnyRole("ADMIN","MANAGER")
-//                .requestMatchers("/product/company/**").hasAnyRole("ADMIN","PRODUCT_MANAGER")
-//                .requestMatchers("/**").hasRole("ADMIN")
+                .requestMatchers("/product/company/**").hasAnyRole("ADMIN","PRODUCT_MANAGER")
+                .requestMatchers("/sales/**").hasAnyRole("ADMIN","SALES_MANAGER")
+                .requestMatchers("/wareHouse/**").hasAnyRole("ADMIN","LOGISTICS_MANAGER")
+                .requestMatchers("/**").hasRole("ADMIN")
                 .anyRequest()
                 .authenticated()
         );
