@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SSE Example</title>
+</head>
+<body>
+<h1>SSE Time Updates</h1>
+<div id="time"></div>
+
+<script>
+  const eventSource = new EventSource('/sse/stream');
+
+  eventSource.addEventListener('time', function(event) {
+    document.getElementById('time').innerText = 'Current time: ' + event.data;
+  });
+
+  eventSource.addEventListener('error', function(event) {
+    console.error('SSE error:', event);
+  });
+
+  eventSource.addEventListener('open', function(event) {
+    console.log('Connection to server opened.');
+  });
+</script>
+</body>
+</html>

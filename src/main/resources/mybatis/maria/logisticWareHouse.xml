@@ -213,7 +213,7 @@
     <update id="updateStackBySourceName" parameterType="map">
         UPDATE LOGISTICS_WAREHOUSE_STACK
         SET QUANTITY = QUANTITY - #{quantity}
-        WHERE SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = #{sourceName})
+        WHERE SOURCE_ID = (SELECT SOURCE_ID FROM SOURCE WHERE NAME = #{sourceName}
     </update>
 
 
@@ -227,7 +227,7 @@
         WHERE SOURCE_ID = #{sourceFk}
           AND LOGISTICS_WAREHOUSE_STACK_ID = (SELECT MIN(LOGISTICS_WAREHOUSE_STACK_ID)
                                               FROM LOGISTICS_WAREHOUSE_STACK
-                                              WHERE SOURCE_ID = #{sourceFk})
+                                              WHERE SOURCE_ID = #{sourceFk} )
     </update>
 
 

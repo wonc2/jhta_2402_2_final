@@ -15,6 +15,7 @@ import org.example.jhta_2402_2_final.service.distribution.LogisticsWareHouseServ
 //import org.example.jhta_2402_2_final.util.SmsUtil;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -89,7 +90,7 @@ public class WareHouseController {
 
 
     @PostMapping("/sales")
-    public String shinhyeok(@RequestParam("kitOrderIdForSale") String kitOrderId,
+    public String sales(@RequestParam("kitOrderIdForSale") String kitOrderId,
                             @RequestParam("sourceNamesForSale") String sourceNamesJson,
                             @RequestParam("itemQuantitiesForSale") String itemQuantitiesJson) throws IOException {
 
