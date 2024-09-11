@@ -144,7 +144,7 @@
                                     <button th:if="${details.status == '출고'}" type="submit" class="btn btn-primary">
                                         처리완료
                                     </button>
-                                    <button th:if="${details.status != '출고'}" disabled class="btn btn-primary">
+                                    <button th:if="${details.status != '출고'}" disabled class="btn btn-secondary">
                                         출고대기
                                     </button>
                                 </form>
@@ -156,7 +156,7 @@
                                     <button th:if="${details.status != '처리완료'}" type="submit" class="btn btn-danger">
                                         취소
                                     </button>
-                                    <button th:if="${details.status == '처리완료'}" disabled class="btn btn-danger">
+                                    <button th:if="${details.status == '처리완료'}" disabled class="btn btn-secondary">
                                         취소불가
                                     </button>
                                 </form>
