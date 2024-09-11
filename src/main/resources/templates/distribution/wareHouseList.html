@@ -146,7 +146,7 @@
                             <td th:text="${details.status}"></td>
                             <td>
                                 <button
-                                        th:if="${details.status == '처리전'|| details.status == '처리중' }"
+                                        th:if="${details.status == '처리전' }"
                                         class="btn btn-primary"
                                         data-bs-toggle="modal"
                                         data-bs-target="#orderDetailModal"
@@ -154,14 +154,25 @@
                                         data-order-id=${details.kitOrderId},
                                         data-quantity=${details.quantity},
                                         data-mealkit-name=${details.mealkitName}">
-                                    발주요청 상세
+                                    처리전
+                                </button>
+                                <button
+                                        th:if="${details.status == '처리중' }"
+                                        class="btn btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#orderDetailModal"
+                                        th:attr="
+                                        data-order-id=${details.kitOrderId},
+                                        data-quantity=${details.quantity},
+                                        data-mealkit-name=${details.mealkitName}">
+                                    발주요청
                                 </button>
 
                                 <button
                                         th:if="${details.status != '처리전' && details.status !='처리중'}"
                                         class="btn btn-secondary"
                                         disabled>
-                                    요청 처리 중
+                                    처리완료
                                 </button>
                             </td>
 
