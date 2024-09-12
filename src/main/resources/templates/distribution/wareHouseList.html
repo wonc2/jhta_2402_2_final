@@ -289,7 +289,7 @@
                                 <label for="companyNameForChart" class="form-label">Company Name</label>
                                 <select class="form-select" id="companyNameForChart" name="companyName" required>
                                     <option value="">Choose Company Name</option>
-                                    <option value="avg">평균</option>
+                                    <option value="avg">평균--아직구현 안함</option>
                                     <!-- DB에서 받아온 값들이 들어감 -->
                                 </select>
                             </div>
@@ -462,6 +462,58 @@
 </main>
 </div>
 <script>
+
+
+
+//socket 소켓
+    var stompClient = null;
+
+    function connect() {
+        var socket = new SockJS('/websocket-endpoint');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/messages', function (messageOutput) {
+                showMessage(JSON.parse(messageOutput.body));
+            });
+        });
+    }
+
+
+    function sendWareHouseDto(){
+
+    }
+
+
+
+function sendMessage() {
+    var sender = document.getElementById('sender').value;
+    var content = document.getElementById('message').value;
+    stompClient.send("/app/chat", {}, JSON.stringify({'sender': sender, 'content': content}));
+}
+
+function showMessage(message) {
+    var messageElement = document.createElement('li');
+    messageElement.appendChild(document.createTextNode(message.sender + ": " + message.content));
+    document.getElementById('messages').appendChild(messageElement);
+}
+
+
+
+
+window.onload = function() {
+    connect();
+};
+
+
+
+
+
+
+
+
+
+
     document.addEventListener('DOMContentLoaded', function () {
         var ctx = document.getElementById('line-chart').getContext('2d');
         var myLineChart = new Chart(ctx, {

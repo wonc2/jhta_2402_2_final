@@ -71,6 +71,7 @@ public class LogisticsWareHouseService {
 
     public int insertProductOrderLog(List<String> productOrderIdList) {
         return distributionDao.insertProductOrderLog(productOrderIdList);
+
     }
 
     public List<String> selectKitOrderIdByStatus(int i) {
