@@ -3,6 +3,7 @@ package org.example.jhta_2402_2_final.service.sales;
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.dao.sales.SalesDao;
 import org.example.jhta_2402_2_final.model.dto.sales.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +15,7 @@ import java.util.*;
 public class SalesService {
 
     private final SalesDao salesDao;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public List<KitOrderDto> getAllKitOrder() {
         return salesDao.findAll();
@@ -273,6 +275,10 @@ public class SalesService {
 
         UUID userPk = UUID.randomUUID();
         insertKitCompanyDto.setUserPk(userPk);
+
+        insertKitCompanyDto.setPassword(bCryptPasswordEncoder.encode(insertKitCompanyDto.getPassword()));
+
+
 
         System.out.println("insertKitCompanyDto = >>>>>" + insertKitCompanyDto);
 

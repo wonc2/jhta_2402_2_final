@@ -18,22 +18,6 @@
                 </div>
                 <div class="card-body">
 
-                    <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
-                        <select class="datatable-selector" name="category">
-                            <option value="All">All</option>
-                            <option value="firstName">firstName</option>
-                            <option value="lastName">lastName</option>
-                            <option value="email">email</option>
-                            <option value="department">department</option>
-                            <option value="hiredate">hiredate</option>
-                        </select>
-                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
-                        <button type="submit" class="btn btn-primary">검색</button>
-                    </form>
-
-
-
-
                     <table id="datatablesSimple">
                         <thead>
                         <tr>
@@ -78,22 +62,6 @@
                     Product_Order_Log 테이블 조회
                 </div>
                 <div class="card-body">
-
-                    <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
-                        <select class="datatable-selector" name="category">
-                            <option value="All">All</option>
-                            <option value="firstName">firstName</option>
-                            <option value="lastName">lastName</option>
-                            <option value="email">email</option>
-                            <option value="department">department</option>
-                            <option value="hiredate">hiredate</option>
-                        </select>
-                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
-                        <button type="submit" class="btn btn-primary">검색</button>
-                    </form>
-
-
-
 
                     <table id="datatablesSimple02">
                         <thead>
@@ -151,6 +119,6 @@
 
 
 
-<th:block th:replace="fragment/adminFooter :: footer"></th:block>
+<th:block th:replace="fragment/adminFooterWithSearch :: footer"></th:block>
 </body>
 </html>

@@ -36,6 +36,7 @@ public class SalesController {
     @GetMapping
     public String salesMain(Model model) {
 
+
         model.addAttribute("toastMessage", toastMessage);
         model.addAttribute("toastStatus", toastStatus);
 

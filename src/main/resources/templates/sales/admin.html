@@ -64,21 +64,6 @@
                 </div>
                 <div class="card-body">
 
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3"
-                          style="width: 400px;">
-                        <select class="datatable-selector" name="category">
-                            <option value="All">All</option>
-                            <option value="firstName">firstName</option>
-                            <option value="lastName">lastName</option>
-                            <option value="email">email</option>
-                            <option value="department">department</option>
-                            <option value="hiredate">hiredate</option>
-                        </select>
-                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
-                        <button type="submit" class="btn btn-primary">검색</button>
-                    </form>
-
-
                     <table id="datatablesSimple">
                         <thead>
                         <tr>
@@ -165,21 +150,6 @@
                 </div>
                 <div class="card-body">
 
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3"
-                          style="width: 400px;">
-                        <select class="datatable-selector" name="category">
-                            <option value="All">All</option>
-                            <option value="firstName">firstName</option>
-                            <option value="lastName">lastName</option>
-                            <option value="email">email</option>
-                            <option value="department">department</option>
-                            <option value="hiredate">hiredate</option>
-                        </select>
-                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
-                        <button type="submit" class="btn btn-primary">검색</button>
-                    </form>
-
-
                     <table id="datatablesSimple02">
                         <thead>
                         <tr>
@@ -250,6 +220,7 @@
 
                 </div>
             </div>
+
             <!--로그-->
             <div class="card mb-5">
                 <div class="card-header">
@@ -257,22 +228,6 @@
                     밀키트 주문 로그
                 </div>
                 <div class="card-body">
-
-                    <form action="/sales" method="get" class="input-group justify-content-end ms-auto mb-3"
-                          style="width: 400px;">
-                        <select class="datatable-selector" name="category">
-                            <option value="All">All</option>
-                            <option value="firstName">firstName</option>
-                            <option value="lastName">lastName</option>
-                            <option value="email">email</option>
-                            <option value="department">department</option>
-                            <option value="hiredate">hiredate</option>
-                        </select>
-                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
-                        <button type="submit" class="btn btn-primary">검색</button>
-                    </form>
-
-
                     <table id="datatablesSimple03">
                         <thead>
                         <tr>
@@ -685,7 +640,7 @@
 </script>
 
 
-<div th:replace="~{fragment/adminFooter :: footer}"></div>
+<div th:replace="~{fragment/adminFooterWithSearch :: footer}"></div>
 </body>
 </html>
 <!--차트1-->
@@ -811,4 +766,16 @@
 </script>
 
 
+<script>
+    document.getElementById('submitCompanyBtn').addEventListener('click', function(event) {
+        var password = document.querySelector('input[name="password"]').value;
+        var passwordConfirm = document.querySelector('input[name="passwordConfirm"]').value;
+
+        if (password !== passwordConfirm) {
+            event.preventDefault();  // 서브밋을 막음
+            alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+            document.querySelector('input[name="passwordConfirm"]').focus();
+        }
+    });
+</script>
 
