@@ -53,7 +53,6 @@ public class ProductCompanyRestController {
 
     @PostMapping("produce")
     public ResponseEntity<Void> produce(@RequestBody Map<String ,Object> paramData){
-        // RequestBody: { "sourcePriceId": "sourcePriceUUID 넣어야함", "sourceQuantity": 30 }
         productCompanyService.produceSource(paramData);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -94,18 +93,4 @@ public class ProductCompanyRestController {
         List<ProductCompanyChartDto> response = productCompanyService.orderChart(searchOptionDto);
         return ResponseEntity.ok().body(response);
     }
-
-
-
-    /* 할일 list */
-
-    // 실제생산 리스트? 생산품중 생산중인 리스트 ?
-    // 실제생산 수정
-    // 실제생산 삭제?
-
-    // 등록된 생산품 상세조회?  / 지금까지 생산한거 품목별로 리스트로 보여주기 ?
-    // 등록된 생산품 수정 Put (일단 가격 ?)
-    // 등록된 생산품 삭제 Delete
-
-    // 차트에 입력할 값
 }

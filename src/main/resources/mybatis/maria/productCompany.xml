@@ -121,9 +121,6 @@
         VALUES (UUID(), -#{sourceQuantity}, NOW(), #{sourcePriceId})
     </insert>
 
-    <select id="getOrderStatus" parameterType="String" resultType="int">
-        select STATUS_ID FROM PRODUCT_ORDER where PRODUCT_ORDER_ID = #{orderId}
-    </select>
     <!-- 주문 끝 -->
 
 
@@ -147,18 +144,6 @@
     <insert id="addSource" parameterType="map">
         INSERT INTO SOURCE (SOURCE_ID, NAME) VALUES (#{sourceId}, #{sourceName})
     </insert>
-
-    <select id="getSourceQuantityFromWarehouse" parameterType="String" resultType="int">
-        select SUM(quantity) from SOURCE_WAREHOUSE WHERE SOURCE_PRICE_ID = #{sourcePriceId}
-    </select>
-
-    <select id="checkDuplicateCompanySource" parameterType="AddSourceDto" resultType="boolean">
-        SELECT COUNT(*)
-        FROM SOURCE_PRICE sp
-                 JOIN SOURCE s on sp.SOURCE_ID = s.SOURCE_ID
-                 JOIN PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
-        WHERE pc.PRODUCT_COMPANY_ID = #{companyId} and (s.SOURCE_ID = #{sourceId} or s.NAME = #{sourceName})
-    </select>
 
     <select id="selectAllCompanySource" parameterType="String" resultType="String">
         SELECT s.NAME as sourceName
@@ -196,6 +181,26 @@
         group by sp.SOURCE_PRICE_ID
     </select>
 
+
+    <!-- 동시성 처리용 -->
+    <select id="getSourcePriceById" parameterType="String" resultType="int">
+        select PRICE FROM SOURCE_PRICE where SOURCE_PRICE_ID = #{companySourceId} for update
+    </select>
+    <select id="getOrderStatus" parameterType="String" resultType="int">
+        select STATUS_ID FROM PRODUCT_ORDER where PRODUCT_ORDER_ID = #{orderId} for update
+    </select>
+    <select id="checkDuplicateCompanySource" parameterType="AddSourceDto" resultType="boolean">
+        SELECT COUNT(*)
+        FROM SOURCE_PRICE sp
+                 JOIN SOURCE s on sp.SOURCE_ID = s.SOURCE_ID
+                 JOIN PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+        WHERE pc.PRODUCT_COMPANY_ID = #{companyId} and (s.SOURCE_ID = #{sourceId} or s.NAME = #{sourceName})
+        for update
+    </select>
+    <select id="getSourceQuantityFromWarehouse" parameterType="String" resultType="int">
+        select SUM(quantity) from SOURCE_WAREHOUSE WHERE SOURCE_PRICE_ID = #{sourcePriceId} for update
+    </select>
+
     <!--    SELECT-->
     <!--    s.NAME as sourceName,-->
     <!--    SUM(CASE-->
@@ -210,4 +215,6 @@
     <!--    WHERE pc.NAME = #{companyName}-->
     <!--    AND sw.PRODUCE_DATE LIKE CONCAT(YEAR(CURDATE()), '-', LPAD(#{orderChartMonthOption}, 2, '0'), '%')-->
     <!--    GROUP BY sp.SOURCE_PRICE_ID-->
+
+    <!-- test 용 -->
 </mapper>
