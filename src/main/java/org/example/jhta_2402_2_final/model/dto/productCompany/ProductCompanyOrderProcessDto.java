@@ -1,9 +1,11 @@
 package org.example.jhta_2402_2_final.model.dto.productCompany;
 
+import lombok.Builder;
 import lombok.Getter;
 
 // 주문 처리 dto
 @Getter
+@Builder // test 용
 public class ProductCompanyOrderProcessDto {
     private String orderId;
     private Integer orderStatus;
