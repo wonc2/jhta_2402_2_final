@@ -111,25 +111,28 @@
                             <td th:text="${details.status}"></td>
 
                             <td>
-                                <form th:action="@{/sales/update-status}" method="post" class="cancel-form">
+                                <form th:action="@{/sales/admin/update-status}" method="post" class="cancel-form">
                                     <input type="hidden" name="kitOrderId" th:value="${details.kitOrderId}">
                                     <input type="hidden" name="statusId" th:value="3">
-                                    <button th:if="${details.status == '출고'}" type="submit" class="btn btn-primary">
+                                    <button th:if="${details.status == '출고'}" type="submit" class="btn btn-primary btn-sm">
                                         처리완료
                                     </button>
-                                    <button th:if="${details.status != '출고'}" disabled class="btn btn-secondary">
+                                    <button th:if="${details.status != '출고'}" disabled class="btn btn-secondary btn-sm">
                                         출고대기
                                     </button>
                                 </form>
                             </td>
 
                             <td>
-                                <form th:action="@{/sales/cancel}" method="post" class="cancel-form">
+                                <form th:action="@{/sales/admin/cancel}" method="post" class="cancel-form">
                                     <input type="hidden" name="kitOrderId" th:value="${details.kitOrderId}">
-                                    <button th:if="${details.status != '처리완료'}" type="submit" class="btn btn-danger">
+                                    <button th:if="${details.status == '취소'}" disabled class="btn btn-secondary btn-sm" >
+                                        취소완료
+                                    </button>
+                                    <button th:if="${details.status != '처리완료' && details.status != '취소'}" type="submit" class="btn btn-danger btn-sm">
                                         취소
                                     </button>
-                                    <button th:if="${details.status == '처리완료'}" disabled class="btn btn-secondary">
+                                    <button th:if="${details.status == '처리완료'}" disabled class="btn btn-secondary btn-sm" >
                                         취소불가
                                     </button>
                                 </form>
@@ -282,7 +285,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="orderForm" th:action="@{/sales/order/create}" th:method="post">
+                <form id="orderForm" th:action="@{/sales/admin/order/create}" th:method="post">
                     <div id="kitInfo">
 
                         <div class="mb-3">
@@ -323,7 +326,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                     <button type="submit" class="btn btn-primary" form="orderForm">발주 요청</button>
-                    <form th:action="@{/sales/shinhyeok}" th:method="post">
+                    <form th:action="@{/sales/admin/shinhyeok}" th:method="post">
                         <input type="hidden" name="kitOrderIdForSale" id="hiddenKitOrderIdForSale">
                         <input type="hidden" name="sourceNamesForSale" id="hiddenSourceNamesForSale">
                         <input type="hidden" name="itemQuantitiesForSale" id="hiddenItemQuantitiesForSale">
@@ -359,7 +362,7 @@
             const encodedQuantity = encodeURIComponent(quantity);
 
             // Fetch API를 이용해 서버에서 데이터를 가져옴
-            fetch(`/sales/order/details?kitOrderId=${encodedKitOrderId}&quantity=${encodedQuantity}`)
+            fetch(`/sales/admin/order/details?kitOrderId=${encodedKitOrderId}&quantity=${encodedQuantity}`)
                 .then(response => {
                     if (!response.ok) {
                         console.error('HTTP 오류:', response.status, response.statusText);
@@ -448,7 +451,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="insertCompanyForm" th:action="@{/sales/insert/company}" th:method="post">
+                <form id="insertCompanyForm" th:action="@{/sales/admin/insert/company}" th:method="post">
 
                     <div class="mb-3">
                         <label class="form-label">밀키트 업체 ID</label>
@@ -515,7 +518,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="insertKitOrderForm" th:action="@{/sales/insert}" th:method="post">
+                <form id="insertKitOrderForm" th:action="@{/sales/admin/insert}" th:method="post">
                     <div class="mb-3">
                         <label for="kitCompanyId" class="form-label">밀키트 업체명</label>
                         <select class="form-control" id="kitCompanyId" name="kitCompanyId" required>
@@ -569,7 +572,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="mealkitForm" th:method="post" th:action="@{/sales/insert-mealkit}">
+                <form id="mealkitForm" th:method="post" th:action="@{/sales/admin/insert-mealkit}">
                     <div class="mb-3">
                         <label for="mealkitName" class="form-label">밀키트 이름</label>
                         <input type="text" class="form-control" id="mealkitName" name="mealkitName" required>
