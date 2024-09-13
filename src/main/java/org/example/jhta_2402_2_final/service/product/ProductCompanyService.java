@@ -50,9 +50,9 @@ public class ProductCompanyService {
         String sourceName = addSourceDto.getSourceName();
         String sourceId = addSourceDto.getSourceId();
 
-        // : 생산품 등록 중복 검사 한 업체에 동일한 이름을 가진 제품 중복 등록 불가능
+        // : 생산품 등록 중복 검사 한 업체에 동일한 이름을 가진 제품 중복 등록 불가능 + 동시에 등록시 누군가 먼저 등록해도 불가능
         if (productCompanyDao.checkDuplicateCompanySource(addSourceDto)) {
-            throw new CompanySourceException("이미 등록된 제품 입니다.", HttpStatus.BAD_REQUEST);
+            throw new CompanySourceException("이미 등록된 제품 입니다.", HttpStatus.CONFLICT);
         }
         // : 제품 이름으로 공백이나 null 값 입력 불가능
         if (sourceId == null && (sourceName == null || sourceName.isEmpty() || sourceName.isBlank())) {
@@ -74,8 +74,12 @@ public class ProductCompanyService {
     /* 등록된 생산품 Update ( 가격 수정 ) */
     @Transactional
     public void sourcePriceUpdate(SourcePriceUpdateDto updateDto) {
+        int price = productCompanyDao.getSourcePriceById(updateDto.getCompanySourceId());
+        if (updateDto.getOldPrice() != price){
+            throw new CompanySourceException("가격 수정 실패: 수정도중 값에 변경사항 있음", HttpStatus.CONFLICT);
+        }
         if (updateDto.getSourcePrice() == updateDto.getOldPrice()) {
-            throw new CompanySourceException("가격 변동 사항이 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new CompanySourceException("수정된 사항이 없습니다.", HttpStatus.BAD_REQUEST);
         }
         productCompanyDao.sourcePriceUpdate(updateDto);
         productCompanyDao.sourcePriceHistory(updateDto);
@@ -95,6 +99,9 @@ public class ProductCompanyService {
     @Transactional
     public void produceSource(Map<String, Object> paramData) {
         String sourceQuantityStr = (String) paramData.get("sourceQuantity");
+        String sourcePriceId = (String) paramData.get("sourcePriceId");
+
+
         // : 빈값 입력 제한
         if (sourceQuantityStr.isBlank()) {
             throw new ProduceSourceException("입력된 값이 없습니다", HttpStatus.BAD_REQUEST);
@@ -108,6 +115,12 @@ public class ProductCompanyService {
         } catch (NumberFormatException e) {
             // : 문자나 기타 등등 입력 제한
             throw new ProduceSourceException("정수만 입력할 수 있습니다.", HttpStatus.BAD_REQUEST);
+        }
+        int checkQuantity =  Integer.parseInt(paramData.get("checkQuantity").toString());
+
+        // 동시 처리 제한 todo: 이거 위로 옮겨야함, map -> dto
+        if (checkQuantity != productCompanyDao.getSourceQuantityFromWarehouse(sourcePriceId)){
+            throw new ProduceSourceException("재고 등록중 값이 변경되었습니다", HttpStatus.CONFLICT);
         }
         productCompanyDao.produceSource(paramData);
     }
@@ -139,16 +152,11 @@ public class ProductCompanyService {
     @Transactional
     public void orderProcess(ProductCompanyOrderProcessDto orderProcessDto) {
         int sourceQuantity = orderProcessDto.getSourceQuantity();
-        int paramStockBalance = orderProcessDto.getStockBalance();
         int orderStatus = productCompanyDao.getOrderStatus(orderProcessDto.getOrderId());
         int sourceStockBalance = productCompanyDao.getSourceQuantityFromWarehouse(orderProcessDto.getSourcePriceId());
 
-        // : 주문 처리중 취소된거 출하 안되게 막기
+        // : 서로 다른 유저가 동시에 주문 처리하는거 막기
         if (orderStatus != 1) {
-            throw new ProductCompanyOrderProcessException("취소된 주문 입니다", HttpStatus.CONFLICT);
-        }
-        // : 서로 다른 유저가 같은 주문 처리할 때 중복으로 안되게 막기
-        if (paramStockBalance != sourceStockBalance) {
             throw new ProductCompanyOrderProcessException("이미 처리된 주문 입니다", HttpStatus.CONFLICT);
         }
         // : 창고 적재량은 음수로 갈 수 없음

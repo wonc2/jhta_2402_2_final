@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RequestMapping("/sales/source-price")
+@RequestMapping("/sales/admin/source-price")
 @Controller
 @Slf4j
 public class SourcePriceController {
@@ -50,6 +50,6 @@ public class SourcePriceController {
                                  @RequestParam("minPrice") int minPrice){
 
         salesService.updateKitPrice(mealkitId, minPrice);
-        return "redirect:/sales/source-price";
+        return "redirect:/sales/admin/source-price";
     }
 }

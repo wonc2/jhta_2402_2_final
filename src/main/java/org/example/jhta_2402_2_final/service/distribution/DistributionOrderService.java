@@ -91,13 +91,10 @@ public class DistributionOrderService {
     }*/
 
     private UUID getProductCompanyId(String supplierName) {
-
         return distributionOrderDao.selectProductCompanyIdByName(supplierName);
     }
 
     private UUID getSourceId(String ingredientName) {
-
-
         return distributionOrderDao.selectSourceIdByName(ingredientName);
     }
 

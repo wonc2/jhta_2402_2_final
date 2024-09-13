@@ -16,7 +16,7 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/sales/storage")
+@RequestMapping("/sales/admin/storage")
 public class StorageController {
     private final SalesService salesService;
 

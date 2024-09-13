@@ -45,13 +45,14 @@ public interface ProductCompanyDao {
     int orderLog(ProductCompanyOrderProcessDto orderProcessDto);
     int outboundSource(ProductCompanyOrderProcessDto orderProcessDto);
 
-    int getSourceQuantityFromWarehouse(String sourcePriceId);
-
     List<ProductCompanyChartDto> getChart(String companyId);
     List<ProductCompanyChartDto> orderChart(ProductCompanySearchOptionDto searchOptionDto);
 
     // 등록된 모든 재료 리스트 (검색용)
     List<String> selectAllCompanySource (String companyId);
 
+    // 동시성처리
     int getOrderStatus(String orderId);
+    int getSourcePriceById(String companySourceId);
+    int getSourceQuantityFromWarehouse(String sourcePriceId);
 }

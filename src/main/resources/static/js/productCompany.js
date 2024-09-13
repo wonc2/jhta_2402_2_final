@@ -61,8 +61,13 @@ $(document).ready(function () {
             },
             error: function (xhr) {
                 const response = JSON.parse(xhr.responseText);
-                if (xhr.status === 400) alert(response.message);
-                else alert('알 수 없는 에러가 발생');
+                if (xhr.status === 400) {
+                    alert(response.message)
+                } else if (xhr.status === 409){
+                    $('#addSourceModal').modal('hide');
+                    $('#companySourceTable').DataTable().ajax.reload(null, false);
+                    alert(response.message);
+                } else alert('알 수 없는 에러가 발생');
             }
         });
     });
@@ -75,16 +80,19 @@ $(document).ready(function () {
         $('#produceSourceName').val(data.sourceName);
         $('#produceSourcePrice').val(data.sourcePrice);
         $('#sourcePriceId').val(data.companySourceId);
+        $('#checkWarehouseQuantity').val(data.totalQuantity);
         $('#produceSourceModal').modal('show');
     });
     $('#produceSourceBtn').on('click', function () {
         const sourceQuantity = $('#sourceQuantity').val();
         const sourcePriceId = $('#sourcePriceId').val();
         const sourceName = $('#produceSourceName').val();
+        const checkQuantity = $('#checkWarehouseQuantity').val();
 
         const data = {
             sourceQuantity: sourceQuantity,
-            sourcePriceId: sourcePriceId
+            sourcePriceId: sourcePriceId,
+            checkQuantity: checkQuantity
         };
         $.ajax({
             url: '/api/product/company/produce',
@@ -105,8 +113,15 @@ $(document).ready(function () {
             },
             error: function (xhr) {
                 const response = JSON.parse(xhr.responseText);
-                if (xhr.status === 400) alert(response.message);
-                else alert('알 수 없는 에러가 발생');
+                if (xhr.status === 400) {
+                    alert(response.message);
+                } else if (xhr.status === 409){
+                    $('#companySourceTable').DataTable().ajax.reload(null, false);
+                    updateWarehouseChart();
+                    $('#produceSourceModal').modal('hide');
+                    alert(response.message);
+                    $('#sourceQuantity').val(10);
+                } else alert('알 수 없는 에러가 발생');
             }
         });
     });
@@ -172,8 +187,16 @@ $(document).ready(function () {
             },
             error: function (xhr) {
                 const response = JSON.parse(xhr.responseText);
-                if (xhr.status === 400) alert(response.message);
-                else alert('알 수 없는 에러가 발생');
+                if (xhr.status === 400) {
+                    alert(response.message);
+                } else if (xhr.status === 409) {
+                    $('#updateSourceModal').modal('hide');
+                    $('#companySourceTable').DataTable().ajax.reload(null, false);
+                    alert(response.message);
+                }
+                else {
+                    alert('알 수 없는 에러가 발생');
+                }
             }
         });
     });
@@ -214,14 +237,14 @@ $(document).ready(function () {
         // const orderStatus = $('#orderStatusSelect').val();
         const sourcePriceId = $('#orderSourcePriceId').val();
         const orderQuantity = $('#orderQuantity').val();
-        const stockBalance = $('#orderStockBalance').val();
+        // const stockBalance = $('#orderStockBalance').val();
 
         const data = {
             orderId: orderId,
             orderStatus: 5,
             sourceQuantity: orderQuantity,
             sourcePriceId: sourcePriceId,
-            stockBalance: stockBalance
+            // stockBalance: stockBalance
         };
 
         $.ajax({
@@ -243,12 +266,14 @@ $(document).ready(function () {
             error: function (xhr) {
                 $('#orderProcessModal').modal('hide');
                 const response = JSON.parse(xhr.responseText);
-                if (xhr.status === 400) alert(response.message);
-                if (xhr.status === 409) {
+                if (xhr.status === 400) {
+                    alert(response.message);
+                } else if (xhr.status === 409) {
                     $('#orderTable').DataTable().ajax.reload(null, false);
                     alert(response.message);
+                } else {
+                    alert('알 수 없는 에러가 발생');
                 }
-                else alert('알 수 없는 에러가 발생');
             }
         });
     });

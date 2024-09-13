@@ -5,13 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jhta_2402_2_final.model.dto.Employee;
 import org.example.jhta_2402_2_final.model.dto.sales.*;
 import org.example.jhta_2402_2_final.service.distribution.LogisticsWareHouseService;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
-import org.mybatis.logging.Logger;
-import org.mybatis.logging.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -22,29 +18,21 @@ import java.io.IOException;
 import java.util.*;
 
 @RequiredArgsConstructor
-@RequestMapping("/sales")
+@RequestMapping("/sales/admin")
 @Controller
 @Slf4j
-public class SalesController {
+public class SalesAdminController {
 
     private final SalesService salesService;
     private final LogisticsWareHouseService logisticsWareHouseService;
 
-    String toastMessage = null;
-    String toastStatus = null;
 
     @GetMapping
     public String salesMain(Model model) {
 
-
-        model.addAttribute("toastMessage", toastMessage);
-        model.addAttribute("toastStatus", toastStatus);
-
-
         //업체별 월별 판매량
         List<Map<String, Object>> monthlySales = salesService.getMonthlySales();
         model.addAttribute("monthlySales",monthlySales);
-
 
         //업체별 누적 판매량, 판매금액
         List<Map<String, String>> totalQuantityByCompanyNameList = salesService.selectTotalQuantityByCompanyName();
@@ -82,26 +70,12 @@ public class SalesController {
     }
 
     @PostMapping("/insert")
-    public String insert(@ModelAttribute KitOrderDto kitOrderDto,
-                         RedirectAttributes redirectAttributes,
-                         Model model) {
-        int result = salesService.createKitOrder(kitOrderDto);
+    public String insert(@ModelAttribute KitOrderDto kitOrderDto) {
+        salesService.createKitOrder(kitOrderDto);
 
-        if (result > 0) {
-
-            toastMessage = "성공";
-            toastStatus = "success";
-
-            UUID kitOrderId = kitOrderDto.getKitOrderId();
-            salesService.insertKitOrderLog(kitOrderId);
-        }
-
-        else {
-            redirectAttributes.addFlashAttribute("toastMessage", "주문 추가에 실패했습니다.");
-            redirectAttributes.addFlashAttribute("toastStatus", "error");
-        }
-
-        return "redirect:/sales";
+        UUID kitOrderId = kitOrderDto.getKitOrderId();
+        salesService.insertKitOrderLog(kitOrderId);
+        return "redirect:/sales/admin";
     }
 
     // 상태 변경
@@ -112,13 +86,8 @@ public class SalesController {
 
         salesService.updateKitOrderStatus(kitOrderId, statusId);
 
-        //만약 상태 아이디가 3인 경우에 재고 테이블에 해당 밀키트 추가
-        if (statusId == 3) {
-            salesService.updateKitStorage(kitOrderId);
-            return "redirect:/sales/storage";
-        }
-
-        return "redirect:/sales";
+        salesService.updateKitStorage(kitOrderId);
+        return "redirect:/sales/admin/storage";
     }
 
     @PostMapping("/insert-mealkit")
@@ -130,7 +99,7 @@ public class SalesController {
         // 서비스에서 밀키트 추가 로직 호출
         salesService.insertMealkit(mealkitName, sourceIds, quantities);
 
-        return "redirect:/sales";  // 완료 후 목록 페이지로 리다이렉트
+        return "redirect:/sales/admin";  // 완료 후 목록 페이지로 리다이렉트
     }
 
     //주문별 최소 재료값 포함한 상세정보
@@ -209,21 +178,19 @@ public class SalesController {
         // KitOrderLog 기입
         salesService.insertKitOrderLog(kitOrderId);
 
-        return "redirect:/sales";
+        return "redirect:/sales/admin";
     }
 
     @PostMapping("/cancel")
     public String cancel (@RequestParam UUID kitOrderId) {
         salesService.updateKitOrderCancel(kitOrderId);
-        return "redirect:/sales";
+        return "redirect:/sales/admin";
     }
 
     @PostMapping("/insert/company")
     public String insertCompany(@ModelAttribute InsertKitCompanyDto insertKitCompanyDto) {
         salesService.insertKitCompany(insertKitCompanyDto);
-        return "redirect:/sales";
+        return "redirect:/sales/admin";
     }
-
-
 
 }

@@ -99,6 +99,8 @@ public class DistributionOrderController {
         System.out.println("result=="+result);
         return ResponseEntity.ok(result.toString());
     }
+
+
     @GetMapping("/distribution/getIngredients2")
     @ResponseBody
     public int getIngredients2(@RequestParam("kitOrderId") UUID kitOrderId) {
