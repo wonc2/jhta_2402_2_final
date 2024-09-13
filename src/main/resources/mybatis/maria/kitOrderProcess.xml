@@ -1,6 +1,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.distribution.KitOrderProcessDao">
-    <select id="findAllOrder" resultType="Map">
+
+    <select id="findNewOrders" resultType="Map">
         SELECT
             KO.KIT_ORDER_ID AS kitOrderID,
             KC.NAME AS kitCompanyName,
@@ -14,8 +15,29 @@
             KIT_ORDER KO
                 JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
                 JOIN MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
-                JOIN STATUS S ON KO.STATUS_ID = S.STATUS_ID;
+                JOIN STATUS S ON KO.STATUS_ID = S.STATUS_ID
+        WHERE S.STATUS_ID = 1;
     </select>
+
+    <select id="findProcessedOrders" resultType="Map">
+        SELECT
+            KO.KIT_ORDER_ID AS kitOrderID,
+            KC.NAME AS kitCompanyName,
+            M.NAME AS kitName,
+            M.PRICE AS kitPrice,
+            KO.QUANTITY AS quantity,
+            KO.QUANTITY * M.PRICE AS totalPrice,
+            KO.PRODUCT_ORDER_DATE AS kitOrderDate,
+            S.STATUS AS status
+        FROM
+            KIT_ORDER KO
+                JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
+                JOIN MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
+                JOIN STATUS S ON KO.STATUS_ID = S.STATUS_ID
+        WHERE S.STATUS_ID != 1;
+    </select>
+
+
 
     <!--원래 사용하던 밀키트 주문별로 필요 재료랑 수량 나타내던 쿼리-->
     <select id="findKitRecipe" resultType="Map">
@@ -220,10 +242,10 @@
          STATUS_ID,
          PRODUCT_ORDER_DATE)
         VALUES (
-                UUID(),
-                #{productOrderId},
-                1,
-                NOW()
+                   UUID(),
+                   #{productOrderId},
+                   1,
+                   NOW()
                )
     </insert>
 
@@ -247,6 +269,20 @@
         SET QUANTITY = QUANTITY - #{required}
         WHERE LOGISTICS_WAREHOUSE_STACK_ID = #{stackId}
     </update>
+
+
+    <select id="findAllWarehouseStocks" resultType="WareHouseStockChartDto" parameterType="String">
+        SELECT
+            s.NAME AS sourceName,
+                SUM(lws.QUANTITY) AS sourceQuantity
+                /*lws.SOURCE_ID AS '재료ID'*/
+        FROM
+            SOURCE s
+                JOIN
+            LOGISTICS_WAREHOUSE_STACK lws ON s.SOURCE_ID = lws.SOURCE_ID
+        GROUP BY s.NAME
+
+    </select>
 
 
 

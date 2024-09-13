@@ -196,7 +196,8 @@
                                                  data-kitCompanyName=${kitOrderProcess.kitCompanyName},
                                                  data-kitName=${kitOrderProcess.kitName},
                                                  data-quantity=${kitOrderProcess.quantity},
-                                                 data-kitOrderDate=${#dates.format(kitOrderProcess.kitOrderDate, 'yyyy-MM-dd')}">
+                                                 data-kitOrderDate=${#dates.format(kitOrderProcess.kitOrderDate, 'yyyy-MM-dd')},
+                                                 data-kitOrderStatus=${kitOrderProcess.status}">
                                     재료확인/발주
                                 </button>
                             </td>
@@ -208,7 +209,9 @@
                                 </form>-->
 
                                 <!--제발되라-->
-                                <button th:onclick="processKitOrder([[${kitOrderProcess.kitOrderID}]])" id="sourceSellOutButton02" type="button" class="btn btn-info btn-sm">판매</button>
+                                <button type="button" class="btn btn-info btn-sm"
+                                        th:disabled="${kitOrderProcess.status != '처리전' and kitOrderProcess.status != '처리완료'}"
+                                        th:onclick="processKitOrder([[${kitOrderProcess.kitOrderID}]])" id="sourceSellOutButton02">판매</button>
 
                             </td>
                         </tr>
@@ -348,6 +351,7 @@
                 const kitName = button.getAttribute('data-kitName');
                 const kitQuantity = button.getAttribute('data-quantity');
                 const kitOrderDate = button.getAttribute('data-kitOrderDate');
+                const kitOrderStatus = button.getAttribute('data-kitOrderStatus');
 
                 // 폼 필드에 값 설정
                 document.getElementById('modalKitOrderID').value = kitOrderId;
@@ -355,6 +359,13 @@
                 document.getElementById('modalKitName').value = kitName;
                 document.getElementById('modalQuantity').value = kitQuantity;
                 document.getElementById('modalDate').value = kitOrderDate;
+
+                const requestOrderButton = document.getElementById('requestOrderButton');
+                if (kitOrderStatus !== '처리전' && kitOrderStatus !== '처리완료') {
+                    requestOrderButton.disabled = true;  // 상태가 처리중 또는 처리완료가 아니면 비활성화
+                } else {
+                    requestOrderButton.disabled = false;  // 상태가 맞으면 활성화
+                }
 
                 // 주문에 해당하는 밀키트 재료 목록을 로드
                 fetch(`/distribution/kitOrderRecipe?kitOrderID=${kitOrderId}`)
