@@ -42,7 +42,7 @@
     </delete>
 
     <!-- 생산품 실제 생산 -->
-    <insert id="produceSource" parameterType="map">
+    <insert id="produceSource" parameterType="CompanySourceStackDto">
         INSERT into SOURCE_WAREHOUSE (SOURCE_WAREHOUSE_ID, QUANTITY, PRODUCE_DATE, SOURCE_PRICE_ID)
         VALUES (UUID(), #{sourceQuantity}, NOW(), #{sourcePriceId})
     </insert>

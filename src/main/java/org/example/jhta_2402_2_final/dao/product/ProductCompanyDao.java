@@ -33,7 +33,7 @@ public interface ProductCompanyDao {
     // 생산 창고 리스트
     List<ProductCompanyWarehouseDto> getWarehouseSources(String companyId);
     // 제품 생산
-    int produceSource(Map<String, Object> paramData);
+    int produceSource(CompanySourceStackDto sourceStackDto);
 
 
     boolean checkDuplicateCompanySource(AddSourceDto addSourceDto);

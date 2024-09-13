@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -25,11 +24,8 @@ public class ProductCompanyService {
     private final SimpMessagingTemplate messagingTemplate;
 
     // todo:
-    //  1. 소켓: 작업중 접근 금지 걸기, 웹소켓 적용한거 코드 이해하기
-    //  2. 예외처리: 가격 수정 예외처리 해야함 (음수, 0 x), 동시성문제 처리 안한거 체크
-    //  3. test: TDD 작성하기
-    //  4. model: 생산품 등록 로직 파라미터 map -> dto
-    //  5. js: 차트 초기화 두개 나눠져있는데 합칠 수 있는지 확인, 라벨 제대로 못쓰고 있음 확인
+    //  4. 소켓: 작업중 접근 금지 걸기, 웹소켓 적용한거 코드 이해하기
+    //  5. test: TDD 작성
 
     // 유저 인증
     public String getCompanyIdByUserId(String userId) {
@@ -60,11 +56,11 @@ public class ProductCompanyService {
 
         // : 생산품 등록 중복 검사 한 업체에 동일한 이름을 가진 제품 중복 등록 불가능 + 동시에 등록시 누군가 먼저 등록해도 불가능
         if (productCompanyDao.checkDuplicateCompanySource(addSourceDto)) {
-            throw new CompanySourceException("이미 등록된 제품 입니다.", HttpStatus.CONFLICT);
+            throw new CompanySourceException("fail: 이미 등록된 제품 입니다.", HttpStatus.CONFLICT);
         }
         // : 제품 이름으로 공백이나 null 값 입력 불가능
         if (sourceId == null && (sourceName == null || sourceName.isEmpty() || sourceName.isBlank())) {
-            throw new CompanySourceException("빈 값 입력 안됩니다.", HttpStatus.BAD_REQUEST);
+            throw new CompanySourceException("fail: 빈 값 입력 안됩니다.", HttpStatus.BAD_REQUEST);
         }
         // 셀렉트로 sourceId 가져왔으면 if문 스킵 else -> sourceName 으로 sourceId 가져옴 없으면 SOURCE 테이블에 등록
         if (sourceId == null) {
@@ -77,6 +73,8 @@ public class ProductCompanyService {
         }
         // 생산품 등록
         productCompanyDao.addSourceToCompany(addSourceDto);
+
+        messagingTemplate.convertAndSend("/topic/product/company", new ProductCompanyUpdateMessage());
     }
 
     /* 등록된 생산품 Update ( 가격 수정 ) */
@@ -84,13 +82,15 @@ public class ProductCompanyService {
     public void sourcePriceUpdate(SourcePriceUpdateDto updateDto) {
         int price = productCompanyDao.getSourcePriceById(updateDto.getCompanySourceId());
         if (updateDto.getOldPrice() != price){
-            throw new CompanySourceException("가격 수정 실패: 수정도중 값에 변경사항 있음", HttpStatus.CONFLICT);
+            throw new CompanySourceException("fail: 수정도중 값에 변경사항 있음", HttpStatus.CONFLICT);
         }
         if (updateDto.getSourcePrice() == updateDto.getOldPrice()) {
-            throw new CompanySourceException("수정된 사항이 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new CompanySourceException("fail: 수정된 사항이 없습니다.", HttpStatus.BAD_REQUEST);
         }
         productCompanyDao.sourcePriceUpdate(updateDto);
         productCompanyDao.sourcePriceHistory(updateDto);
+
+        messagingTemplate.convertAndSend("/topic/product/company", new ProductCompanyUpdateMessage());
     }
 
     /* 등록된 생산품 Delete */
@@ -105,32 +105,18 @@ public class ProductCompanyService {
 
     /* 등록된 상품 생산 -> 창고에 적재 */
     @Transactional
-    public void produceSource(Map<String, Object> paramData) {
-        String sourceQuantityStr = (String) paramData.get("sourceQuantity");
-        String sourcePriceId = (String) paramData.get("sourcePriceId");
+    public void produceSource(CompanySourceStackDto sourceStackDto) {
+        String sourcePriceId = sourceStackDto.getSourcePriceId();
+        int checkQuantity =  sourceStackDto.getCheckQuantity();
+        int warehouseSourceQuantity = productCompanyDao.getSourceQuantityFromWarehouse(sourcePriceId);
 
+        if (checkQuantity != warehouseSourceQuantity){
+            throw new ProduceSourceException("fail: 재고 등록중 값이 변경되었습니다", HttpStatus.CONFLICT);
+        }
 
-        // : 빈값 입력 제한
-        if (sourceQuantityStr.isBlank()) {
-            throw new ProduceSourceException("입력된 값이 없습니다", HttpStatus.BAD_REQUEST);
-        }
-        try {
-            int sourceQuantity = Integer.parseInt(sourceQuantityStr);
-            // : 1 미만 숫자 입력 제한
-            if (sourceQuantity < 1) {
-                throw new ProduceSourceException("1 이상만 등록할 수 있습니다.", HttpStatus.BAD_REQUEST);
-            }
-        } catch (NumberFormatException e) {
-            // : 문자나 기타 등등 입력 제한
-            throw new ProduceSourceException("정수만 입력할 수 있습니다.", HttpStatus.BAD_REQUEST);
-        }
-        int checkQuantity =  Integer.parseInt(paramData.get("checkQuantity").toString());
+        productCompanyDao.produceSource(sourceStackDto);
 
-        if (checkQuantity != productCompanyDao.getSourceQuantityFromWarehouse(sourcePriceId)){
-            throw new ProduceSourceException("재고 등록중 값이 변경되었습니다", HttpStatus.CONFLICT);
-        }
-        productCompanyDao.produceSource(paramData);
-        messagingTemplate.convertAndSend("/topic/charts", new ChartUpdateMessage("차트가 업데이트되었습니다."));
+        messagingTemplate.convertAndSend("/topic/product/company", new ProductCompanyUpdateMessage());
     }
 
 
@@ -179,6 +165,7 @@ public class ProductCompanyService {
         productCompanyDao.orderProcess(orderProcessDto); // product_order 상태 업데이트 -> 입고대기
         productCompanyDao.orderLog(orderProcessDto); // product_order_log insert
 
+        messagingTemplate.convertAndSend("/topic/product/company", new ProductCompanyUpdateMessage());
     }
 
     public List<ProductCompanyChartDto> getChart(String companyId) {

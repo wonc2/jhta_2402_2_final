@@ -8,7 +8,7 @@ $(document).ready(function () {
 
     // 차트 초기화 아무 값 없는 빈 차트
     initChart(chartType);
-    initOrderChart(oderChartType);
+    initOrderChart();
 
     // 위에서 초기화한 차트에 첫번째 값 넣음 이거 사용해서 계속 값 업데이트 해주면됨
     updateWarehouseChart();
@@ -104,7 +104,7 @@ $(document).ready(function () {
                 xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
             },
             success: function () {
-                showToast("입고 요청이 완료 되었습니다: " + sourceName + " " + sourceQuantity + " 개");
+                showToast("입고 완료 되었습니다: " + sourceName + " " + sourceQuantity + " 개");
                 $('#companySourceTable').DataTable().ajax.reload(null, false);
                 updateWarehouseChart();
                 $('#produceSourceModal').modal('hide');
@@ -115,7 +115,8 @@ $(document).ready(function () {
             error: function (xhr) {
                 const response = JSON.parse(xhr.responseText);
                 if (xhr.status === 400) {
-                    alert(response.message);
+                    const errors = response.errors || [];
+                    alert(errors[0] || response.message);
                 } else if (xhr.status === 409){
                     $('#companySourceTable').DataTable().ajax.reload(null, false);
                     updateWarehouseChart();
@@ -189,13 +190,13 @@ $(document).ready(function () {
             error: function (xhr) {
                 const response = JSON.parse(xhr.responseText);
                 if (xhr.status === 400) {
-                    alert(response.message);
+                    const errors = response.errors || [];
+                    alert(errors[0] || response.message);
                 } else if (xhr.status === 409) {
                     $('#updateSourceModal').modal('hide');
                     $('#companySourceTable').DataTable().ajax.reload(null, false);
                     alert(response.message);
-                }
-                else {
+                } else {
                     alert('알 수 없는 에러가 발생');
                 }
             }
@@ -326,30 +327,41 @@ $(document).ready(function () {
     });
 })
 
-// 소켓 관련
-$(document).ready(function (){
-    $(document).on('click', '.sourceInsertModalOpenBtn', function() {
-        const sourcePriceId = $(this).data('id');
-        $(`.sourceInsertModalOpenBtn[data-id=${sourcePriceId}]`).prop('disabled', true);
-        $(`.sourceInsertModalOpenBtn[data-id=${sourcePriceId}]`).text('asdf');
-
-    });
-
-    // 모달 열기 시 WebSocket을 통해 알림 전송
-    $('#produceSourceModal').on('show.bs.modal', function () {
-        // console.log("열림");
-        if (stompClient && stompClient.connected) {
-            stompClient.send("/app/produceModal/open", {}, JSON.stringify({ modalStatus: "open" }));
-        }
-    });
-    // 모달 닫기 시 WebSocket을 통해 알림 전송
-    $('#produceSourceModal').on('hide.bs.modal', function () {
-        // console.log("닫힘");
-        if (stompClient && stompClient.connected) {
-            stompClient.send("/app/produceModal/close", {}, JSON.stringify({ modalStatus: "closed" }));
-        }
-    });
-});
+// // 소켓 관련
+// $(document).ready(function (){
+//     $(document).on('click', '.sourceInsertModalOpenBtn', function() {
+//         const sourcePriceId = $(this).data('id');
+//
+//         $('#produceSourceModal').data('source-id', sourcePriceId);
+//
+//         // 모달 열기 시 WebSocket을 통해 알림 전송
+//         if (stompClient && stompClient.connected) {
+//             stompClient.send("/app/produceModal/open", {}, JSON.stringify({
+//                 modalStatus: "open",
+//                 sourcePriceId: sourcePriceId
+//             }));
+//         }
+//     });
+//
+//     // 모달 열기 시 WebSocket을 통해 알림 전송
+//     $('#produceSourceModal').on('hide.bs.modal', function () {
+//         const sourcePriceId = $('#produceSourceModal').data('source-id'); // 모달에 저장된 source-id
+//
+//         if (stompClient && stompClient.connected) {
+//             stompClient.send("/app/produceModal/close", {}, JSON.stringify({
+//                 modalStatus: "closed",
+//                 sourcePriceId: sourcePriceId
+//             }));
+//         }
+//     });
+//
+//     // 모달 열릴 때 source-id 설정
+//     $('#produceSourceModal').on('show.bs.modal', function (event) {
+//         const button = $(event.relatedTarget); // 클릭한 버튼
+//         const sourcePriceId = button.data('id');
+//         $(this).data('source-id', sourcePriceId); // 모달에 source-id 저장
+//     });
+// });
 
 /* 여기부턴 전역함수, 전역변수 */
 /* 여기부턴 전역함수, 전역변수 */
@@ -527,24 +539,25 @@ function connect() {
         console.log('Connected: ' + frame);
 
         // 서버에서 차트 업데이트 메시지를 받으면 처리
-        stompClient.subscribe('/topic/charts', function (message) {
+        stompClient.subscribe('/topic/product/company', function (message) {
             handleChartUpdate(message);
         });
 
         // 다른 유저가 작업중이면 버튼 비활성화
-        stompClient.subscribe('/topic/produceModal', function (message) {
-            const body = JSON.parse(message.body);
-
-            // if (body.modalStatus === "open") {
-            //     // 모달이 이미 열려 있으면 비활성화
-            //     $(`#sourceInsertModalOpenBtn[data-id="${companySourceId}"]`).prop('disabled', true);
-            //     // alert("다른 사용자가 작업 중입니다. 모달이 비활성화되었습니다.");
-            // } else if (body.modalStatus === "closed") {
-            //     // 모달이 닫히면 활성화
-            //     $(`#sourceInsertModalOpenBtn[data-id="${companySourceId}"]`).prop('disabled', false);
-            // }
-        });
-
+        // stompClient.subscribe('/topic/produceModal', function (message) {
+        //     const body = JSON.parse(message.body);
+        //     const sourcePriceId = body.sourcePriceId; // sourcePriceId: message.body 에 포함되어있음
+        //
+        //     if (body.modalStatus === "open") {
+        //         // 모달이 열릴 때 해당 버튼 비활성화
+        //         $(`.sourceInsertModalOpenBtn[data-id="${sourcePriceId}"]`).prop('disabled', true);
+        //         $(`.sourceInsertModalOpenBtn[data-id="${sourcePriceId}"]`).text('작업중...');
+        //     } else if (body.modalStatus === "closed") {
+        //         // 모달이 닫힐 때 해당 버튼 활성화
+        //         $(`.sourceInsertModalOpenBtn[data-id="${sourcePriceId}"]`).prop('disabled', false);
+        //         $(`.sourceInsertModalOpenBtn[data-id="${sourcePriceId}"]`).text('재고 등록');
+        //     }
+        // });
     });
 }
 
@@ -553,6 +566,8 @@ function handleChartUpdate(message) {
     // console.log('Chart Update:', body.message);
     updateWarehouseChart();
     updateOrderChart();
+    $('#orderTable').DataTable().ajax.reload(null, false);
+    $('#warehouseTable').DataTable().ajax.reload(null, false);
     $('#companySourceTable').DataTable().ajax.reload(null, false);
 }
 
@@ -639,16 +654,11 @@ function initChart(type) {
     });
 }
 
-function initOrderChart(type) {
+function initOrderChart() {
     const ctx = $('#orderChart')[0].getContext('2d');
 
-    // 기존 차트가 있으면 삭제하고 새로 생성
-    if (orderChart) {
-        orderChart.destroy(); // 기존 차트 삭제
-    }
-
     orderChart = new Chart(ctx, {
-        type: type, // 동적으로 받은 차트 타입
+        type: 'bar', // 동적으로 받은 차트 타입
         data: {
             labels: [], // 초기 레이블
             datasets: [{
