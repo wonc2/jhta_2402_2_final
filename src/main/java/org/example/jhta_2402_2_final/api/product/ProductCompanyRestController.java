@@ -32,27 +32,27 @@ public class ProductCompanyRestController {
     }
 
     @PostMapping("add")
-    public ResponseEntity<Void> addSourceToCompany(@ModelAttribute("companyId") String companyId, @RequestBody AddSourceDto paramData){
+    public ResponseEntity<?> addSourceToCompany(@ModelAttribute("companyId") String companyId, @RequestBody AddSourceDto paramData){
         AddSourceDto addSourceDto = paramData.toBuilder().companyId(companyId).build();
         productCompanyService.addSourceToCompany(addSourceDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("add/{companySourceId}")
-    public ResponseEntity<Void> updateSource(@PathVariable String companySourceId, @RequestBody SourcePriceUpdateDto paramData){
+    public ResponseEntity<?> updateSource(@PathVariable String companySourceId, @RequestBody SourcePriceUpdateDto paramData){
         SourcePriceUpdateDto updateDto = paramData.toBuilder().companySourceId(companySourceId).build();
         productCompanyService.sourcePriceUpdate(updateDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("add/{companySourceId}")
-    public ResponseEntity<Void> deleteSourceFromCompany(@PathVariable String companySourceId){
+    public ResponseEntity<?> deleteSourceFromCompany(@PathVariable String companySourceId){
         productCompanyService.deleteSourceFromCompany(companySourceId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("produce")
-    public ResponseEntity<Void> produce(@RequestBody Map<String ,Object> paramData){
+    public ResponseEntity<?> produce(@RequestBody Map<String ,Object> paramData){
         productCompanyService.produceSource(paramData);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -72,7 +72,7 @@ public class ProductCompanyRestController {
     }
 
     @PostMapping("order")
-    public ResponseEntity<Void> orderProcess(@RequestBody ProductCompanyOrderProcessDto paramData){
+    public ResponseEntity<?> orderProcess(@RequestBody ProductCompanyOrderProcessDto paramData){
         productCompanyService.orderProcess(paramData);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

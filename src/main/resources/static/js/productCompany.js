@@ -13,6 +13,7 @@ $(document).ready(function () {
     // 위에서 초기화한 차트에 첫번째 값 넣음 이거 사용해서 계속 값 업데이트 해주면됨
     updateWarehouseChart();
     updateOrderChart();
+    connect();
 
     // 테이블 불러오고 숨김
     // 처음 페이지에 접속할때 초기화 하는 이유: 테이블 나중에 초기화하면 화면이 새로고침 비슷하게 되는 버그?가 있음.. @@:로딩 오래걸리면 로직 원래대로 변경
@@ -325,6 +326,31 @@ $(document).ready(function () {
     });
 })
 
+// 소켓 관련
+$(document).ready(function (){
+    $(document).on('click', '.sourceInsertModalOpenBtn', function() {
+        const sourcePriceId = $(this).data('id');
+        $(`.sourceInsertModalOpenBtn[data-id=${sourcePriceId}]`).prop('disabled', true);
+        $(`.sourceInsertModalOpenBtn[data-id=${sourcePriceId}]`).text('asdf');
+
+    });
+
+    // 모달 열기 시 WebSocket을 통해 알림 전송
+    $('#produceSourceModal').on('show.bs.modal', function () {
+        // console.log("열림");
+        if (stompClient && stompClient.connected) {
+            stompClient.send("/app/produceModal/open", {}, JSON.stringify({ modalStatus: "open" }));
+        }
+    });
+    // 모달 닫기 시 WebSocket을 통해 알림 전송
+    $('#produceSourceModal').on('hide.bs.modal', function () {
+        // console.log("닫힘");
+        if (stompClient && stompClient.connected) {
+            stompClient.send("/app/produceModal/close", {}, JSON.stringify({ modalStatus: "closed" }));
+        }
+    });
+});
+
 /* 여기부턴 전역함수, 전역변수 */
 /* 여기부턴 전역함수, 전역변수 */
 /* 여기부턴 전역함수, 전역변수 */
@@ -350,11 +376,11 @@ function getCompanySourceTable() {
             {
                 data: null,
                 orderable: false,
-                render: function () {
+                render: function (data) {
                     return `
                             <div class="d-flex justify-content-between">
                             <div>
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-action="produce">재고 등록</button>
+                            <button type="button" class="btn btn-outline-primary btn-sm sourceInsertModalOpenBtn" data-id="${data.companySourceId}" data-action="produce">재고 등록</button>
                             </div>
                             <div>
                             <button type="button" class="btn btn-outline-info btn-sm" data-action="update">가격 수정</button>
@@ -489,6 +515,47 @@ let orderChart; // 전역 변수로 차트 객체를 선언
 let chartType = 'bar'; // 기본 차트 타입은 'bar'
 let oderChartType = 'bar'; // 기본 차트 타입은 'bar'
 let orderChartMonthOption = '';
+let stompClient = null;
+
+// WebSocket 연결 함수
+function connect() {
+    let socket = new SockJS('/websocket-endpoint');
+    stompClient = Stomp.over(socket);
+
+    // WebSocket 연결 시작
+    stompClient.connect({}, function (frame) {
+        console.log('Connected: ' + frame);
+
+        // 서버에서 차트 업데이트 메시지를 받으면 처리
+        stompClient.subscribe('/topic/charts', function (message) {
+            handleChartUpdate(message);
+        });
+
+        // 다른 유저가 작업중이면 버튼 비활성화
+        stompClient.subscribe('/topic/produceModal', function (message) {
+            const body = JSON.parse(message.body);
+
+            // if (body.modalStatus === "open") {
+            //     // 모달이 이미 열려 있으면 비활성화
+            //     $(`#sourceInsertModalOpenBtn[data-id="${companySourceId}"]`).prop('disabled', true);
+            //     // alert("다른 사용자가 작업 중입니다. 모달이 비활성화되었습니다.");
+            // } else if (body.modalStatus === "closed") {
+            //     // 모달이 닫히면 활성화
+            //     $(`#sourceInsertModalOpenBtn[data-id="${companySourceId}"]`).prop('disabled', false);
+            // }
+        });
+
+    });
+}
+
+function handleChartUpdate(message) {
+    // const body = JSON.parse(message.body);
+    // console.log('Chart Update:', body.message);
+    updateWarehouseChart();
+    updateOrderChart();
+    $('#companySourceTable').DataTable().ajax.reload(null, false);
+}
+
 
 function updateWarehouseChart() {
     $.ajax({

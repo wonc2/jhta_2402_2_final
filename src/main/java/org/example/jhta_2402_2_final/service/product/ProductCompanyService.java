@@ -10,6 +10,7 @@ import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyChartDto;
 import org.example.jhta_2402_2_final.model.dto.productCompany.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ProductCompanyService {
     private final ProductCompanyDao productCompanyDao;
-    private final ProductCompanyUtil productCompanyUtil;
+    private final SimpMessagingTemplate messagingTemplate;
+
+    // todo:
+    //  1. 소켓: 작업중 접근 금지 걸기, 웹소켓 적용한거 코드 이해하기
+    //  2. 예외처리: 가격 수정 예외처리 해야함 (음수, 0 x), 동시성문제 처리 안한거 체크
+    //  3. test: TDD 작성하기
+    //  4. model: 생산품 등록 로직 파라미터 map -> dto
+    //  5. js: 차트 초기화 두개 나눠져있는데 합칠 수 있는지 확인, 라벨 제대로 못쓰고 있음 확인
 
     // 유저 인증
     public String getCompanyIdByUserId(String userId) {
@@ -118,11 +126,11 @@ public class ProductCompanyService {
         }
         int checkQuantity =  Integer.parseInt(paramData.get("checkQuantity").toString());
 
-        // 동시 처리 제한 todo: 이거 위로 옮겨야함, map -> dto
         if (checkQuantity != productCompanyDao.getSourceQuantityFromWarehouse(sourcePriceId)){
             throw new ProduceSourceException("재고 등록중 값이 변경되었습니다", HttpStatus.CONFLICT);
         }
         productCompanyDao.produceSource(paramData);
+        messagingTemplate.convertAndSend("/topic/charts", new ChartUpdateMessage("차트가 업데이트되었습니다."));
     }
 
 
