@@ -201,21 +201,21 @@
                             <td>
                                 <button
                                         th:if="${details.status == '처리전'}"
-                                        class="btn btn-primary"
+                                        class="btn btn-primary btn-sm"
                                         data-bs-toggle="modal"
                                         data-bs-target="#orderDetailModal"
                                         th:attr="
                                         data-order-id=${details.kitOrderId},
                                         data-quantity=${details.quantity},
                                         data-mealkit-name=${details.mealkitName}">
-                                    발주 요청
+                                    발주요청
                                 </button>
 
                                 <button
                                         th:if="${details.status != '처리전'}"
-                                        class="btn btn-secondary"
+                                        class="btn btn-secondary btn-sm"
                                         disabled>
-                                    발주 요청
+                                    발주요청
                                 </button>
                             </td>
 
@@ -334,7 +334,7 @@
                         <input type="hidden" name="sourceNamesForSale" id="hiddenSourceNamesForSale">
                         <input type="hidden" name="itemQuantitiesForSale" id="hiddenItemQuantitiesForSale">
 
-                        <button type="submit" id="sellButton" class="btn btn-primary">판매</button>
+                        <button type="submit" id="sellButton" class="btn btn-primary">출고</button>
                     </form>
 
                     <!-- 판매 버튼 -->

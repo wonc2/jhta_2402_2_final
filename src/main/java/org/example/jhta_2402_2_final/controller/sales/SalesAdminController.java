@@ -185,7 +185,8 @@ public class SalesAdminController {
     @PostMapping("/shinhyeok")
     public String shinhyeok(@RequestParam("kitOrderIdForSale") UUID kitOrderId,
                             @RequestParam("sourceNamesForSale") String sourceNamesJson,
-                            @RequestParam("itemQuantitiesForSale") String itemQuantitiesJson) throws IOException {
+                            @RequestParam("itemQuantitiesForSale") String itemQuantitiesJson,
+                            RedirectAttributes redirectAttributes) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -220,6 +221,8 @@ public class SalesAdminController {
 
         // KitOrderLog 기입
         salesService.insertKitOrderLog(kitOrderId);
+
+        alter(redirectAttributes, "출고되었습니다.");
 
         return "redirect:/sales/admin";
     }
