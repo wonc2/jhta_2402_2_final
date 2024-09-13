@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static org.example.jhta_2402_2_final.controller.sales.SalesAdminController.alter;
+
 
 @Service
 @RequiredArgsConstructor
@@ -200,6 +202,7 @@ public class SalesService {
     }
 
     public void updateKitOrderCancel(UUID kitOrderId) {
+
         salesDao.updateKitOrderCancel(kitOrderId);
         salesDao.updateProductOrderCancel(kitOrderId);
         salesDao.insertKitOrderLog(kitOrderId);
@@ -281,10 +284,7 @@ public class SalesService {
 
         insertKitCompanyDto.setPassword(bCryptPasswordEncoder.encode(insertKitCompanyDto.getPassword()));
 
-
-
         System.out.println("insertKitCompanyDto = >>>>>" + insertKitCompanyDto);
-
         int result01 = salesDao.insertKitCompany(insertKitCompanyDto);
         if (result01 > 0) System.out.println("킷 컴퍼니 인서트 성공");
         else System.out.println("킷 컴퍼니 인서트 실패");
@@ -297,6 +297,14 @@ public class SalesService {
         int result03 = salesDao.insertKitCompanyMember(insertKitCompanyDto);
         if (result03 > 0) System.out.println("반정규화 인서트 성공");
         else System.out.println("반정규화 인서트 실패 ");
+    }
+
+    public String getKitOrderStatus(UUID kitOrderId) {
+        return salesDao.getKitOrderStatus(kitOrderId);
+    }
+
+    public KitPriceDto getCurrentPriceAndMinPrice (String mealkitId) {
+        return salesDao.getCurrentPriceAndMinPrice(mealkitId);
     }
 }
 

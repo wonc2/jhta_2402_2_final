@@ -563,8 +563,6 @@
     <insert id="insertKitCompany">
         INSERT INTO KIT_COMPANY (KIT_COMPANY_ID, NAME, ADDRESS)
         VALUES (#{kitCompanyId}, #{companyName}, #{address});
-
-
     </insert>
     <!--유저등록-->
     <insert id="insertUser">
@@ -619,5 +617,53 @@ company_sales AS (
                     LEFT JOIN company_sales cs ON c.companyName = cs.companyName AND m.month = cs.orderMonth
         ORDER BY
             c.companyName, m.month;
+    </select>
+
+    <!--동시성 처리용-->
+    <select id="getKitOrderStatus" resultType="String">
+        select STATUS
+        from KIT_ORDER ko join STATUS s on ko.STATUS_ID = s.STATUS_ID
+        where KIT_ORDER_ID = #{kitOrderId}
+    </select>
+
+<!--    현재 밀키트 가격과 밀키트의 최소가격 비교-->
+    <select id="getCurrentPriceAndMinPrice" resultType="KitPriceDto">
+        WITH MealkitDetails AS (
+            SELECT
+                m.MEALKIT_ID AS mealkitId,
+                m.name AS mealkitName,
+                s.name AS sourceName,
+                MIN(sp.price) AS minPrice,
+                ks.QUANTITY AS quantity,
+                (MIN(sp.price) * ks.QUANTITY) AS total
+            FROM
+                MEALKIT m
+                    JOIN KIT_SOURCE ks ON m.MEALKIT_ID = ks.MEALKIT_ID
+                    JOIN SOURCE s ON ks.SOURCE_ID = s.source_id
+                    JOIN SOURCE_PRICE sp ON s.source_id = sp.source_id
+            GROUP BY
+                m.MEALKIT_ID, m.name, s.name, ks.QUANTITY
+        ),
+             MealkitTotal AS (
+                 SELECT
+                     mealkitId,
+                     mealkitName,
+                     SUM(total) AS minMealkitPrice
+                 FROM
+                     MealkitDetails
+                 GROUP BY
+                     mealkitId, mealkitName
+             )
+        SELECT
+            d.mealkitId,
+            d.mealkitName,
+            t.minMealkitPrice,
+            m.PRICE AS currentMealkitPrice
+        FROM
+            MealkitDetails d
+                JOIN MealkitTotal t ON d.mealkitId = t.mealkitId
+                JOIN MEALKIT m ON d.mealkitId = m.MEALKIT_ID
+        where MEALKIT_ID = #{mealkitId}
+        group by MEALKIT_ID;
     </select>
 </mapper>

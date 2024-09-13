@@ -2,6 +2,7 @@ package org.example.jhta_2402_2_final.controller.sales;
 
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.model.dto.CustomUserDetails;
+import org.example.jhta_2402_2_final.model.dto.sales.KitPriceDto;
 import org.example.jhta_2402_2_final.model.dto.salesUser.UserKitOrderDto;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
 import org.example.jhta_2402_2_final.service.sales.SalesUserService;
@@ -56,9 +57,23 @@ public class SalesUserController {
     }
 
     @PostMapping("/insert")
-    public String insert(@ModelAttribute UserKitOrderDto dto,
+    public String insert(@ModelAttribute UserKitOrderDto userKitOrderDto,
                          RedirectAttributes redirectAttributes) {
-        salesUserService.insertKitOrder(dto);
+
+        String mealkitId = userKitOrderDto.getMealkitId();
+
+        KitPriceDto dto = salesService.getCurrentPriceAndMinPrice(mealkitId);
+
+        int currentPrice = dto.getCurrentMealkitPrice();
+        int minPrice = dto.getMinMealkitPrice();
+
+        //현재 가격이 최소가격보다 낮을경우 판매 불가능 하도록
+        if (currentPrice < minPrice) {
+            alter(redirectAttributes, "밀키트 가격이 변동되었습니다. 해당 밀키트는 현재 주문이 불가합니다.");
+            return "redirect:/sales/user";
+        }
+
+        salesUserService.insertKitOrder(userKitOrderDto);
         alter(redirectAttributes, "새로운 주문이 추가되었습니다.");
         return "redirect:/sales/user";
     }

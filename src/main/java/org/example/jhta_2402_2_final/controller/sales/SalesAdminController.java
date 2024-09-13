@@ -76,6 +76,20 @@ public class SalesAdminController {
     @PostMapping("/insert")
     public String insert(@ModelAttribute KitOrderDto kitOrderDto,
                          RedirectAttributes redirectAttributes) {
+        String mealkitId = kitOrderDto.getMealkitId();
+
+        KitPriceDto dto = salesService.getCurrentPriceAndMinPrice(mealkitId);
+
+        int currentPrice = dto.getCurrentMealkitPrice();
+        int minPrice = dto.getMinMealkitPrice();
+
+        //현재 가격이 최소가격보다 낮을경우 판매 불가능 하도록
+        if (currentPrice < minPrice) {
+            alter(redirectAttributes, "밀키트 가격이 변동되었습니다. 해당 밀키트는 현재 주문이 불가합니다.");
+            return "redirect:/sales/admin";
+        }
+
+
         int isSuccess = salesService.createKitOrder(kitOrderDto);
 
         UUID kitOrderId = kitOrderDto.getKitOrderId();
@@ -95,6 +109,16 @@ public class SalesAdminController {
             @RequestParam("kitOrderId") UUID kitOrderId,
             @RequestParam("statusId") int statusId,
             RedirectAttributes redirectAttributes) {
+
+        // 현재 상태 확인
+        String currentStatus = salesService.getKitOrderStatus(kitOrderId);
+
+        // 출고상태가 아닌경우 처리완료 못하도록
+        if (!"출고".equals(currentStatus)) {
+            alter(redirectAttributes, "출고 상태인 경우에만 처리 완료가 가능합니다. 주문 상태를 다시 확인하세요.");
+            return "redirect:/sales/admin";
+        }
+
 
         salesService.updateKitOrderStatus(kitOrderId, statusId);
         salesService.updateKitStorage(kitOrderId);
@@ -203,6 +227,14 @@ public class SalesAdminController {
     @PostMapping("/cancel")
     public String cancel (@RequestParam UUID kitOrderId,
                           RedirectAttributes redirectAttributes) {
+        // 현재 상태 확인
+        String currentStatus = salesService.getKitOrderStatus(kitOrderId);
+
+        if ("처리완료".equals(currentStatus) || "취소".equals(currentStatus)) {
+            alter(redirectAttributes, "이미 취소되었거나 처리완료된 주문입니다.");
+            return "redirect:/sales/admin";
+        }
+
         salesService.updateKitOrderCancel(kitOrderId);
         alter(redirectAttributes, "주문이 취소되었습니다.");
         return "redirect:/sales/admin";
@@ -211,6 +243,7 @@ public class SalesAdminController {
     @PostMapping("/insert/company")
     public String insertCompany(@ModelAttribute InsertKitCompanyDto insertKitCompanyDto,
                                 RedirectAttributes redirectAttributes) {
+
         salesService.insertKitCompany(insertKitCompanyDto);
         alter(redirectAttributes, "새로운 업체가 등록되었습니다.");
         return "redirect:/sales/admin";

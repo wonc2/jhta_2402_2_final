@@ -129,4 +129,8 @@ public interface SalesDao {
 
     //업체 유저 테이블 등록
     int insertKitCompanyMember(InsertKitCompanyDto insertKitCompanyDto);
+
+    String getKitOrderStatus(UUID kitOrderId);
+
+    KitPriceDto getCurrentPriceAndMinPrice(String mealkitId);
 }
