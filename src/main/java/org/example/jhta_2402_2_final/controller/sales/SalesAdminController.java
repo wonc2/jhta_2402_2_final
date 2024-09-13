@@ -138,7 +138,8 @@ public class SalesAdminController {
             @RequestParam("itemQuantities") String itemQuantitiesJson,
             @RequestParam("stackQuantities") String stackQuantitiesJson,
             @RequestParam("minPrices") String minPricesJson,
-            @RequestParam("companyNames") String companyNamesJson) throws JsonProcessingException {
+            @RequestParam("companyNames") String companyNamesJson,
+            RedirectAttributes redirectAttributes) throws JsonProcessingException {
 
         // JSON 문자열을 배열로 변환
         ObjectMapper mapper = new ObjectMapper();
@@ -151,6 +152,8 @@ public class SalesAdminController {
 
         salesService.processOrder(sourceNames, companyNames, itemQuantities, stackQuantities, minPrices, kitOrderId);
         salesService.updateKitOrderStatus(kitOrderId, 2);
+
+        alter(redirectAttributes, "발주 요청 되었습니다.");
 
         return "redirect:/sales/product/order";
     }

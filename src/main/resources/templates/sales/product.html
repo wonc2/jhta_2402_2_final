@@ -9,6 +9,7 @@
 <div id="layoutSidenav_content">
     <!-- 페이지마다 다른 콘텐츠 -->
     <main>
+        <div id="alertMessage" th:if="${message}" class="alert alert-info" role="alert" th:text="${message}"></div>
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-5">Product_Order 테이블 조회 </h1>
 
