@@ -9,10 +9,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static org.example.jhta_2402_2_final.controller.sales.SalesAdminController.alter;
 
 @Controller
 @RequiredArgsConstructor
@@ -53,15 +56,19 @@ public class SalesUserController {
     }
 
     @PostMapping("/insert")
-    public String insert(@ModelAttribute UserKitOrderDto dto) {
+    public String insert(@ModelAttribute UserKitOrderDto dto,
+                         RedirectAttributes redirectAttributes) {
         salesUserService.insertKitOrder(dto);
+        alter(redirectAttributes, "새로운 주문이 추가되었습니다.");
         return "redirect:/sales/user";
     }
 
     @PostMapping("/cancel")
-    public String cancel (@RequestParam UUID kitOrderId) {
+    public String cancel (@RequestParam UUID kitOrderId,
+                          RedirectAttributes redirectAttributes) {
         System.out.println("kitOrderId>>>>>>"+kitOrderId);
         salesService.updateKitOrderCancel(kitOrderId);
+        alter(redirectAttributes,"주문이 취소되었습니다.");
         return "redirect:/sales/user";
     }
 }

@@ -26,6 +26,10 @@ public class SalesAdminController {
     private final SalesService salesService;
     private final LogisticsWareHouseService logisticsWareHouseService;
 
+    public static void alter(RedirectAttributes redirectAttributes, String content) {
+        redirectAttributes.addFlashAttribute("message", content);
+    }
+
 
     @GetMapping
     public String salesMain(Model model) {
@@ -70,11 +74,18 @@ public class SalesAdminController {
     }
 
     @PostMapping("/insert")
-    public String insert(@ModelAttribute KitOrderDto kitOrderDto) {
-        salesService.createKitOrder(kitOrderDto);
+    public String insert(@ModelAttribute KitOrderDto kitOrderDto,
+                         RedirectAttributes redirectAttributes) {
+        int isSuccess = salesService.createKitOrder(kitOrderDto);
 
         UUID kitOrderId = kitOrderDto.getKitOrderId();
-        salesService.insertKitOrderLog(kitOrderId);
+        if (isSuccess > 0) {
+            salesService.insertKitOrderLog(kitOrderId);
+            alter(redirectAttributes, "밀키트 주문이 추가되었습니다.");
+        } else {
+            alter(redirectAttributes,"밀키트 주문에 실패하였습니다.");
+        }
+
         return "redirect:/sales/admin";
     }
 
@@ -82,11 +93,14 @@ public class SalesAdminController {
     @PostMapping("/update-status")
     public String changeKitOrderStatus(
             @RequestParam("kitOrderId") UUID kitOrderId,
-            @RequestParam("statusId") int statusId) {
+            @RequestParam("statusId") int statusId,
+            RedirectAttributes redirectAttributes) {
 
         salesService.updateKitOrderStatus(kitOrderId, statusId);
-
         salesService.updateKitStorage(kitOrderId);
+
+        alter(redirectAttributes,"밀키트 주문이 처리완료 되었습니다.");
+
         return "redirect:/sales/admin/storage";
     }
 
@@ -94,10 +108,12 @@ public class SalesAdminController {
     public String insertMealkit(
             @RequestParam("mealkitName") String mealkitName,
             @RequestParam("sourceIds") List<String> sourceIds,
-            @RequestParam(value = "quantities", required = false) List<Integer> quantities) {
+            @RequestParam(value = "quantities", required = false) List<Integer> quantities,
+            RedirectAttributes redirectAttributes) {
 
         // 서비스에서 밀키트 추가 로직 호출
         salesService.insertMealkit(mealkitName, sourceIds, quantities);
+        alter(redirectAttributes,"새로운 밀키트가 등록되었습니다.");
 
         return "redirect:/sales/admin";  // 완료 후 목록 페이지로 리다이렉트
     }
@@ -182,14 +198,18 @@ public class SalesAdminController {
     }
 
     @PostMapping("/cancel")
-    public String cancel (@RequestParam UUID kitOrderId) {
+    public String cancel (@RequestParam UUID kitOrderId,
+                          RedirectAttributes redirectAttributes) {
         salesService.updateKitOrderCancel(kitOrderId);
+        alter(redirectAttributes, "주문이 취소되었습니다.");
         return "redirect:/sales/admin";
     }
 
     @PostMapping("/insert/company")
-    public String insertCompany(@ModelAttribute InsertKitCompanyDto insertKitCompanyDto) {
+    public String insertCompany(@ModelAttribute InsertKitCompanyDto insertKitCompanyDto,
+                                RedirectAttributes redirectAttributes) {
         salesService.insertKitCompany(insertKitCompanyDto);
+        alter(redirectAttributes, "새로운 업체가 등록되었습니다.");
         return "redirect:/sales/admin";
     }
 

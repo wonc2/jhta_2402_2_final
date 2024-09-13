@@ -63,9 +63,12 @@ public class SalesService {
     }
 
     // 상태 변경하기
-    public void updateKitOrderStatus(UUID kitOrderId, int statusId) {
-        salesDao.updateKitOrderStatus(kitOrderId, statusId);
-        salesDao.insertKitOrderLog(kitOrderId);
+    public int updateKitOrderStatus(UUID kitOrderId, int statusId) {
+        int result = salesDao.updateKitOrderStatus(kitOrderId, statusId);
+        int result02 = salesDao.insertKitOrderLog(kitOrderId);
+
+        if (result > 0 && result02 > 0) return 1;
+        else return 0;
     }
 
     //밀키트랑 재료 가져오기

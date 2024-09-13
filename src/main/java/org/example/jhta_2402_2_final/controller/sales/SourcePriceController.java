@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+
+import static org.example.jhta_2402_2_final.controller.sales.SalesAdminController.alter;
 
 @RequiredArgsConstructor
 @RequestMapping("/sales/admin/source-price")
@@ -47,9 +50,11 @@ public class SourcePriceController {
 
     @PostMapping("/updateKitPrice")
     public String updateKitPrice(@RequestParam("mealkitId") String mealkitId,
-                                 @RequestParam("minPrice") int minPrice){
+                                 @RequestParam("minPrice") int minPrice,
+                                 RedirectAttributes redirectAttributes){
 
         salesService.updateKitPrice(mealkitId, minPrice);
+        alter(redirectAttributes, "밀키트 가격이 변경되었습니다.");
         return "redirect:/sales/admin/source-price";
     }
 }
