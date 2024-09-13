@@ -1,17 +1,22 @@
 package org.example.jhta_2402_2_final.api.product;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.model.dto.CustomUserDetails;
+import org.example.jhta_2402_2_final.model.dto.common.ErrorResponse;
 import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyChartDto;
 import org.example.jhta_2402_2_final.model.dto.productCompany.*;
 import org.example.jhta_2402_2_final.service.product.ProductCompanyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,69 +31,81 @@ public class ProductCompanyRestController {
     }
 
     @GetMapping("add")
-    public ResponseEntity<CompanySourceTableDto> getSourcesByCompanyName(@ModelAttribute("companyId") String companyId){
+    public ResponseEntity<CompanySourceTableDto> getSourcesByCompanyName(@ModelAttribute("companyId") String companyId) {
         CompanySourceTableDto response = productCompanyService.findAll(companyId);
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("add")
-    public ResponseEntity<?> addSourceToCompany(@ModelAttribute("companyId") String companyId, @RequestBody AddSourceDto paramData){
+    public ResponseEntity<?> addSourceToCompany(@ModelAttribute("companyId") String companyId, @RequestBody AddSourceDto paramData) {
         AddSourceDto addSourceDto = paramData.toBuilder().companyId(companyId).build();
         productCompanyService.addSourceToCompany(addSourceDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("add/{companySourceId}")
-    public ResponseEntity<?> updateSource(@PathVariable String companySourceId, @RequestBody SourcePriceUpdateDto paramData){
+    public ResponseEntity<?> updateSource(@PathVariable String companySourceId, @Valid @RequestBody SourcePriceUpdateDto paramData, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<String> errorMessages = bindingResult.getAllErrors().stream()
+                    .map(ObjectError::getDefaultMessage).collect(Collectors.toList());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(errorMessages));
+        }
         SourcePriceUpdateDto updateDto = paramData.toBuilder().companySourceId(companySourceId).build();
         productCompanyService.sourcePriceUpdate(updateDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @DeleteMapping("add/{companySourceId}")
-    public ResponseEntity<?> deleteSourceFromCompany(@PathVariable String companySourceId){
+    public ResponseEntity<?> deleteSourceFromCompany(@PathVariable String companySourceId) {
         productCompanyService.deleteSourceFromCompany(companySourceId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @PostMapping("produce")
-    public ResponseEntity<?> produce(@RequestBody Map<String ,Object> paramData){
+    public ResponseEntity<?> produce(@Valid @RequestBody CompanySourceStackDto paramData, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<String> errorMessages = bindingResult.getAllErrors().stream()
+                    .map(ObjectError::getDefaultMessage).collect(Collectors.toList());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(errorMessages));
+        }
         productCompanyService.produceSource(paramData);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // @@: produce -> warehouse ?
     @GetMapping("produce")
-    public ResponseEntity<List<ProductCompanyWarehouseDto>> getWarehouseSources(@ModelAttribute("companyId") String companyId){
+    public ResponseEntity<List<ProductCompanyWarehouseDto>> getWarehouseSources(@ModelAttribute("companyId") String companyId) {
         List<ProductCompanyWarehouseDto> response = productCompanyService.getWarehouseSources(companyId);
         return ResponseEntity.ok().body(response);
     }
 
     @GetMapping("order")
-    public ResponseEntity<List<ProductCompanyOrderDto>> getOrderList(@ModelAttribute("companyId") String companyId, @ModelAttribute ProductCompanySearchOptionDto paramData){
+    public ResponseEntity<List<ProductCompanyOrderDto>> getOrderList(@ModelAttribute("companyId") String companyId, @ModelAttribute ProductCompanySearchOptionDto paramData) {
         ProductCompanySearchOptionDto searchOptionDto = paramData.toBuilder().companyId(companyId).build();
-        List<ProductCompanyOrderDto> response= productCompanyService.getProductOrderList(searchOptionDto);
+        List<ProductCompanyOrderDto> response = productCompanyService.getProductOrderList(searchOptionDto);
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("order")
-    public ResponseEntity<?> orderProcess(@RequestBody ProductCompanyOrderProcessDto paramData){
+    public ResponseEntity<?> orderProcess(@RequestBody ProductCompanyOrderProcessDto paramData) {
         productCompanyService.orderProcess(paramData);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
     @GetMapping("allCompanySources")
-    public ResponseEntity<List<String>> selectAllCompanySource(@ModelAttribute("companyId") String companyId){
+    public ResponseEntity<List<String>> selectAllCompanySource(@ModelAttribute("companyId") String companyId) {
         List<String> responseData = productCompanyService.selectAllCompanySource(companyId);
         return ResponseEntity.ok().body(responseData);
     }
 
     @GetMapping("chart")
-    public ResponseEntity<List<ProductCompanyChartDto>> getChart(@ModelAttribute("companyId") String companyId){
+    public ResponseEntity<List<ProductCompanyChartDto>> getChart(@ModelAttribute("companyId") String companyId) {
         List<ProductCompanyChartDto> response = productCompanyService.getChart(companyId);
         return ResponseEntity.ok().body(response);
     }
+
     @GetMapping("orderChart")
-    public ResponseEntity<List<ProductCompanyChartDto>> orderChart(@ModelAttribute("companyId") String companyId, @ModelAttribute ProductCompanySearchOptionDto paramData){
+    public ResponseEntity<List<ProductCompanyChartDto>> orderChart(@ModelAttribute("companyId") String companyId, @ModelAttribute ProductCompanySearchOptionDto paramData) {
         ProductCompanySearchOptionDto searchOptionDto = paramData.toBuilder().companyId(companyId).build();
         List<ProductCompanyChartDto> response = productCompanyService.orderChart(searchOptionDto);
         return ResponseEntity.ok().body(response);

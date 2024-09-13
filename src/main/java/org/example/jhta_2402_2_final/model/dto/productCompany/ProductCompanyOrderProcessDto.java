@@ -5,7 +5,6 @@ import lombok.Getter;
 
 // 주문 처리 dto
 @Getter
-@Builder // test 용
 public class ProductCompanyOrderProcessDto {
     private String orderId;
     private Integer orderStatus;

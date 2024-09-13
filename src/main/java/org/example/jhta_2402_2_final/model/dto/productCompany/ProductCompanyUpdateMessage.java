@@ -6,6 +6,6 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ChartUpdateMessage {
+public class ProductCompanyUpdateMessage {
     private String message;
 }
