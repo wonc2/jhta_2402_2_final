@@ -4,7 +4,10 @@
         SELECT
             kcm.KIT_COMPANY_ID AS kitCompanyId,
             kc.NAME AS kitCompanyName,
-            kc.ADDRESS
+            kc.ADDRESS,
+            u.USER_EMAIL as email,
+            u.USER_TEL as tel,
+            u.USER_NAME as userName
         FROM KIT_COMPANY_MEMBER kcm
                  JOIN USER u ON kcm.USER_PK = u.USER_PK
                  JOIN KIT_COMPANY kc ON kcm.KIT_COMPANY_ID = kc.KIT_COMPANY_ID

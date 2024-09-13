@@ -11,28 +11,6 @@
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4">판매 유저 페이지</h1>
-            <div class="card mt-4 mb-5">
-                <div class="card-header">
-                    <span th:text="${userId}"></span>님의 밀키트 주문정보
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <strong class="mb-1">업체명</strong>
-                            <p class="card-text">
-                                <span th:text="${info.kitCompanyName}"></span>
-                            </p>
-                        </div>
-                        <div class="col-md-6">
-                            <strong class="mb-1">업체주소</strong>
-                            <p class="card-text">
-                                <span th:text="${info.address}"></span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- 3개의 버튼을 일렬로 배치 -->
             <div class="d-flex justify-content-end mb-4">
                 <button class="btn btn-primary mx-2"
@@ -42,13 +20,56 @@
                 </button>
             </div>
 
+                <div class="card mt-4 mb-5">
+                    <div class="card-header">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span th:text="${userId}"></span>님의 정보
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <i class="fa-solid fa-circle-user"></i>
+                                <strong class="mb-1">업체명</strong>
+                                <p class="card-text">
+                                    <span th:text="${info.kitCompanyName}"></span>
+                                </p>
+                            </div>
+                            <div class="col-md-3">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <strong class="mb-1">업체주소</strong>
+                                <p class="card-text">
+                                    <span th:text="${info.address}"></span>
+                                </p>
+                            </div>
+                            <div class="col-md-3">
+                                <i class="fa-solid fa-envelope"></i>
+                                <strong class="mb-1">이메일</strong>
+                                <p class="card-text">
+                                    <span th:text="${info.email}"></span>
+                                </p>
+                            </div>
+                            <div class="col-md-3">
+                                <i class="fa-solid fa-phone"></i>
+                                <strong class="mb-1">전화번호</strong>
+                                <p class="card-text">
+                                    <span th:text="${info.tel}"></span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+
             <!--차트-->
             <div class="row">
                 <div class="col-xl-6">
                     <div class="card mb-4">
                         <div class="card-header">
-                            <i class="fas fa-chart-area me-1"></i>
-                            밀키트 재고 수량
+                            <i class="fa-solid fa-chart-column"></i>
+                            <span th:text="${info.kitCompanyName}"></span> 업체 밀키트 재고 수량
                         </div>
                         <div class="card-body">
                             <canvas id="myChart" width="100%" height="60"></canvas>
@@ -58,8 +79,8 @@
                 <div class="col-xl-6">
                     <div class="card mb-4">
                         <div class="card-header">
-                            <i class="fas fa-chart-bar me-1"></i>
-                            월별 매출액
+                            <i class="fa-solid fa-chart-line"></i>
+                            <span th:text="${info.kitCompanyName}"></span> 업체 월별 매출액
                         </div>
                         <div class="card-body">
                             <canvas id="myChart02" width="100%" height="60"></canvas>
@@ -70,8 +91,8 @@
             <!--판매처리-->
             <div class="card mb-5">
                 <div class="card-header">
-                    <i class="fas fa-table me-1"></i>
-                    밀키트 주문 내역
+                    <i class="fa-solid fa-list"></i>
+                    <span th:text="${info.kitCompanyName}"></span> 업체 밀키트 주문 내역
                 </div>
                 <div class="card-body">
 

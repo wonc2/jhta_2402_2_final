@@ -10,6 +10,9 @@ public class UserKitOrderDto {
     private String address;
     private String mealkitName;
     private String mealkitId;
+    private String tel;
+    private String email;
+    private String userName;
     private int quantity;
     private int price;
     private int total;

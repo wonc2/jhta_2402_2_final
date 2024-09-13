@@ -28,6 +28,7 @@ public class SalesUserController {
         String userId = userDetails.getMemberDto().getUserId();
         model.addAttribute("userId",userId);
 
+
         //로그인한 userId를 통해 kitCompanyId 가져오기
         UserKitOrderDto info = salesUserService.selectKitCompanyIdByUserId(userId);
         String kitCompanyId = info.getKitCompanyId();
