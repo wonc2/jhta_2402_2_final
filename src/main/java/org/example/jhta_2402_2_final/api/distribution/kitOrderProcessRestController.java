@@ -1,4 +1,3 @@
-/*
 package org.example.jhta_2402_2_final.api.distribution;
 
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/distribution")
+@RequestMapping("distribution/api")
 public class kitOrderProcessRestController {
     private final KitOrderProcessService kitOrderProcessService;
 
@@ -26,4 +25,3 @@ public class kitOrderProcessRestController {
     }
 }
 
-*/

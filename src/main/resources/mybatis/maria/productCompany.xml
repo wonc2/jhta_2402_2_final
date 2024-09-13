@@ -198,7 +198,7 @@
         for update
     </select>
     <select id="getSourceQuantityFromWarehouse" parameterType="String" resultType="int">
-        select SUM(quantity) from SOURCE_WAREHOUSE WHERE SOURCE_PRICE_ID = #{sourcePriceId} for update
+        select COALESCE(SUM(quantity), 0) from SOURCE_WAREHOUSE WHERE SOURCE_PRICE_ID = #{sourcePriceId} for update
     </select>
 
     <!--    SELECT-->
