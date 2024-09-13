@@ -8,10 +8,8 @@ import org.example.jhta_2402_2_final.dao.sales.SalesDao;
 import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderProcessDto;
 import org.example.jhta_2402_2_final.model.dto.distribution.OrderDetail;
 import org.example.jhta_2402_2_final.model.dto.distribution.RequestOrderDto;
-import org.example.jhta_2402_2_final.model.dto.sales.KitOrderDto;
-import org.example.jhta_2402_2_final.model.dto.sales.KitStorageDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.WareHouseStockChartDto;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +28,12 @@ public class KitOrderProcessService {
     private final SalesService salesService;
     private final SalesDao salesDao;
 
-    public List<Map<String, Object>> findAllOrder() {
-        return kitOrderProcessDao.findAllOrder();
+    public List<Map<String, Object>> findNewOrders() {
+        return kitOrderProcessDao.findNewOrders();
+    }
+
+    public List<Map<String, Object>> findProcessedOrders() {
+        return kitOrderProcessDao.findProcessedOrders();
     }
 
     public void requestKitSourceOrder(Map<String, Object> requestKitSourceMap) {
@@ -62,67 +64,6 @@ public class KitOrderProcessService {
     public List<Map<String, Object>> findKitRecipeWithStockAndSupplier(String mealKitId, int orderQuantity) {
         return kitOrderProcessDao.findKitRecipeWithStockAndSupplier(mealKitId, orderQuantity);
     }
-
-    /*@Transactional
-    public boolean processKitOrder(String kitOrderId) {
-        // 1. 주문에 해당하는 재료 목록과 필요 수량 가져옴
-        Integer orderQuantity = findOrderQuantityByKitOrderId(kitOrderId);
-
-        // 2. 밀키트 주문에 해당하는 밀키트 ID 가져오기
-        String mealKitId = findMealKitByKitOrderId(kitOrderId);
-
-        // 3. 주문에 해당하는 재료 목록과 필요 수량을 가져옴(각 재료별)
-        List<Map<String, Object>> ingredients = kitOrderProcessDao.findKitRecipeWithStock(mealKitId, orderQuantity);
-
-        // 4. 각 재료의 재고가 충분한지 확인 및 재고 차감
-        for (Map<String, Object> ingredient : ingredients) { // 각각의 재료별로 처리할것
-            String sourceId = (String) ingredient.get("재료번호");
-            int required = (int) ingredient.get("필요수량"); // 넘겨줘야 할 김치의 수량
-            int totalStockOfSameSource = (int) ingredient.get("창고재고수량"); // 창고에 있는 모든 김치의 수량
-            // totalStockOfSameSource = IFNULL(SUM(LWS.QUANTITY), 0) AS 창고재고수량
-
-            if (totalStockOfSameSource >= required) { // 각 재료별로 창고 재고의 합이 요구하는 것 보다 크거나 같아면 로직 진행
-
-                // 재고 리스트를 오래된 순서로 가져옴
-                List<Map<String, Object>> warehouseStacks = kitOrderProcessDao.findWarehouseStacks(sourceId);
-
-                // FIFO 방식으로 재고 차감
-                for (Map<String, Object> stack : warehouseStacks) {
-
-                    int stackId = (int) stack.get("유통창고ID");
-                    int stock = (int) stack.get("재고수량"); // 현재 stackId 에 해당하는 재료의 재고
-
-                    if (required <= 0) {
-                        kitOrderProcessDao.updateKitOrderStatus(kitOrderId, 6);
-                        kitOrderProcessDao.insertKitOrderLog(kitOrderId, 6);
-                        return true; // 필요수량 만큼 전부 꺼내 갔으면 로그 업데이트 및 생성, 그리고 true 리턴
-                    }
-
-                    if (stock > 0) {
-                        if (stock >= required) {
-                            kitOrderProcessDao.updateWarehouseStockWithStackId(stackId, required);
-                            required = 0;
-                            kitOrderProcessDao.updateKitOrderStatus(kitOrderId, 6);
-                            kitOrderProcessDao.insertKitOrderLog(kitOrderId, 6);
-                            return true;
-                        } else {
-                            kitOrderProcessDao.updateWarehouseStockWithStackId(stackId, stock);
-                            required -= stock;
-                        }
-                    }
-                }
-
-            } else {
-                return false;
-            }
-
-            *//*if (required > 0) {
-                return false;
-            }*//*
-        }
-
-        return false;
-    }*/
 
     @Transactional
     public boolean processKitOrder(String kitOrderId) {
@@ -185,8 +126,6 @@ public class KitOrderProcessService {
     }
 
 
-
-
     public List<KitOrderProcessDto> findOrdersByKeyword(String orderKeyword) {
         List<Map<String, Object>> results = kitOrderProcessDao.findOrdersByKeyword(orderKeyword);
         return results.stream()
@@ -232,4 +171,11 @@ public class KitOrderProcessService {
 
         return true;
     }
+
+    public List<WareHouseStockChartDto> findLogisticsWarehouseStock() {
+
+        return kitOrderProcessDao.findAllWarehouseStocks();
+    }
+
+
 }

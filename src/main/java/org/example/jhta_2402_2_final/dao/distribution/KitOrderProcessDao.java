@@ -3,13 +3,17 @@ package org.example.jhta_2402_2_final.dao.distribution;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderProcessDto;
+import org.example.jhta_2402_2_final.model.dto.distribution.WareHouseStockChartDto;
+
 import java.util.List;
 import java.util.Map;
 
 @Mapper
 public interface KitOrderProcessDao {
 
-    List<Map<String, Object>> findAllOrder();
+    List<Map<String, Object>> findNewOrders();
+
+    List<Map<String, Object>> findProcessedOrders();
 
     void requestKitSourceOrder(KitOrderProcessDto kitOrderProcessDto);
 
@@ -73,4 +77,6 @@ public interface KitOrderProcessDao {
     List<Map<String, Object>> findWarehouseStacks(String sourceId);
 
     void updateWarehouseStockWithStackId(String stackId, int required);
+
+    List<WareHouseStockChartDto> findAllWarehouseStocks();
 }
