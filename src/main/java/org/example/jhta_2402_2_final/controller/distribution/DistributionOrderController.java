@@ -20,31 +20,31 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
-@Controller
-public class DistributionOrderController {
+//@RequiredArgsConstructor
+//@Controller
+//public class DistributionOrderController {
 
-    private final DistributionOrderService distributionOrderService;
+//    private final DistributionOrderService distributionOrderService;
 
-    @GetMapping("/distribution/order")
-    public String order(Model model) {
-        List<KitOrderDistDto> kitOrderDtos = distributionOrderService.getAllKitOrderDto();
-        model.addAttribute("kitOrderDtos", kitOrderDtos);
-
-        List<KitOrderNameDto> kitOrderNameDtos = distributionOrderService.kitOrderNameDto();
-        model.addAttribute("kitOrderNameDtos", kitOrderNameDtos);
-
-        List<KitOrderSourceNameDto> kitOrderSourceNameDtos = distributionOrderService.kitOrderSourceNameDto();
-        model.addAttribute("kitOrderSourceNameDtos", kitOrderSourceNameDtos);
-
-        List<MinPriceSourceDto> minPriceSourceDtos = distributionOrderService.minPriceSourceDto();
-        model.addAttribute("minPriceSourceDtos", minPriceSourceDtos);
-
-        List<MinPriceOrderDto> minPriceOrderDtos = distributionOrderService.minPriceOrderDto();
-        model.addAttribute("minPriceOrderDtos", minPriceOrderDtos);
-
-        return "distribution/order";
-    }
+//    @GetMapping("/distribution/order")
+//    public String order(Model model) {}
+//        List<KitOrderDistDto> kitOrderDtos = distributionOrderService.getAllKitOrderDto();
+//        model.addAttribute("kitOrderDtos", kitOrderDtos);
+//
+//        List<KitOrderNameDto> kitOrderNameDtos = distributionOrderService.kitOrderNameDto();
+//        model.addAttribute("kitOrderNameDtos", kitOrderNameDtos);
+//
+//        List<KitOrderSourceNameDto> kitOrderSourceNameDtos = distributionOrderService.kitOrderSourceNameDto();
+//        model.addAttribute("kitOrderSourceNameDtos", kitOrderSourceNameDtos);
+//
+//        List<MinPriceSourceDto> minPriceSourceDtos = distributionOrderService.minPriceSourceDto();
+//        model.addAttribute("minPriceSourceDtos", minPriceSourceDtos);
+//
+//        List<MinPriceOrderDto> minPriceOrderDtos = distributionOrderService.minPriceOrderDto();
+//        model.addAttribute("minPriceOrderDtos", minPriceOrderDtos);
+//
+//        return "distribution/order";
+   // }
 
     /*@PostMapping("/distribution/sourceOrder")
     public String sourceOrder(@RequestParam("kitOrderId") UUID kitOrderId,
@@ -85,39 +85,39 @@ public class DistributionOrderController {
 
         return "redirect:/distribution/order";
     };*/
-    @GetMapping("/distribution/getIngredients")
-    public ResponseEntity<String> getIngredients(@RequestParam("kitOrderId") UUID kitOrderId) {
-        List<IngredientDto> ingredients = distributionOrderService.getIngredientsByKitOrderId(kitOrderId);
-        System.out.println(ingredients);
-        // Convert the list of ingredients to a plain text format
-        StringBuilder result = new StringBuilder();
-        for (IngredientDto ingredient : ingredients) {
-            result.append(String.format("%s, %d,  %d, %s\n",
-                    ingredient.getName(), ingredient.getQuantity(),
-                    ingredient.getPrice(), ingredient.getSupplier()));
-        }
-        System.out.println("result=="+result);
-        return ResponseEntity.ok(result.toString());
-    }
+//    @GetMapping("/distribution/getIngredients")
+//    public ResponseEntity<String> getIngredients(@RequestParam("kitOrderId") UUID kitOrderId) {
+//        List<IngredientDto> ingredients = distributionOrderService.getIngredientsByKitOrderId(kitOrderId);
+//        System.out.println(ingredients);
+//        // Convert the list of ingredients to a plain text format
+//        StringBuilder result = new StringBuilder();
+//        for (IngredientDto ingredient : ingredients) {
+//            result.append(String.format("%s, %d,  %d, %s\n",
+//                    ingredient.getName(), ingredient.getQuantity(),
+//                    ingredient.getPrice(), ingredient.getSupplier()));
+//        }
+//        System.out.println("result=="+result);
+//        return ResponseEntity.ok(result.toString());
+//    }
 
 
-    @GetMapping("/distribution/getIngredients2")
-    @ResponseBody
-    public int getIngredients2(@RequestParam("kitOrderId") UUID kitOrderId) {
-        List<IngredientDto> ingredients = distributionOrderService.getIngredientsByKitOrderId(kitOrderId);
-        int result =0;
-        for(int i=0; i<ingredients.size(); i++){
-            ingredients.get(i).setKitOrderId(kitOrderId);
-            result = distributionOrderService.insertProductOrder(ingredients.get(i));
-            String productOrderId = distributionOrderService.getProductOrderId(ingredients.get(i));
-            distributionOrderService.insertProductOrderLog(productOrderId);
-            System.out.println(result);
-            result=0;
-        }
-
-
-        return 0;
-    }
+//    @GetMapping("/distribution/getIngredients2")
+//    @ResponseBody
+//    public int getIngredients2(@RequestParam("kitOrderId") UUID kitOrderId) {
+//        List<IngredientDto> ingredients = distributionOrderService.getIngredientsByKitOrderId(kitOrderId);
+//        int result =0;
+//        for(int i=0; i<ingredients.size(); i++){
+//            ingredients.get(i).setKitOrderId(kitOrderId);
+//            result = distributionOrderService.insertProductOrder(ingredients.get(i));
+//            String productOrderId = distributionOrderService.getProductOrderId(ingredients.get(i));
+//            distributionOrderService.insertProductOrderLog(productOrderId);
+//            System.out.println(result);
+//            result=0;
+//        }
+//
+//
+//        return 0;
+//    }
     /*@PostMapping("/distribution/insertIngredients")
     public ResponseEntity<String> insertIngredients(@RequestBody String requestBody) {
         try {
@@ -156,4 +156,4 @@ public class DistributionOrderController {
 
 
 
-}
+//}

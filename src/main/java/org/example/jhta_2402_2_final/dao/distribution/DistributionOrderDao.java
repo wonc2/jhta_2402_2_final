@@ -9,7 +9,11 @@ import java.util.UUID;
 
 @Mapper
 public interface DistributionOrderDao {
-    // kit_order 테이블 전체 셀렉
+    //
+    List<KitOrderDistDto> selectNewOrder();
+
+
+    // kit_order 주문 정보 확인
     List<KitOrderDistDto> selectKitOrder();
 
     //kit_order 테이블 조인해서 상세정보 보기 편하게 셀렉

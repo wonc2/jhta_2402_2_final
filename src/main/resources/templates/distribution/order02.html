@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <th:block th:replace="fragment/adminHeader :: head"></th:block>
+</head>
+<body>
+
+<th:block th:replace="fragment/adminHeader :: body"></th:block>
+<div id="layoutSidenav_content">
+    <!-- 페이지마다 다른 콘텐츠 -->
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Dashboard</h1>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    KIT_ORDER 테이블 정보 가져오기
+                </div>
+                <div class="card-body">
+
+                    <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3"
+                          style="width: 400px;">
+                        <select class="datatable-selector" name="category">
+                            <option value="All">All</option>
+                            <option value="firstName">firstName</option>
+                            <option value="lastName">lastName</option>
+                            <option value="email">email</option>
+                            <option value="department">department</option>
+                            <option value="hiredate">hiredate</option>
+                        </select>
+                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+
+                    <table id="datatablesSimple">
+                        <thead>
+                        <tr>
+                            <th>주문ID</th>
+                            <th>밀키트 업체ID</th>
+                            <th>밀키트 ID</th>
+                            <th>밀키트 가격</th>
+                            <th>주문 수량</th>
+                            <th>주문 날짜</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>주문ID</th>
+                            <th>밀키트 업체ID</th>
+                            <th>밀키트 ID</th>
+                            <th>밀키트 가격</th>
+                            <th>주문 수량</th>
+                            <th>주문 날짜</th>
+                            <th>상태</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        <tr th:each="kitOrderDtos : ${kitOrderDtos}">
+                            <td th:text="${kitOrderDtos.kitOrderId}"></td>
+                            <td th:text="${kitOrderDtos.kitCompanyId}"></td>
+                            <td th:text="${kitOrderDtos.mealkitId}"></td>
+                            <td th:text="${kitOrderDtos.price}"></td>
+                            <td th:text="${kitOrderDtos.quantity}"></td>
+                            <td th:text="${kitOrderDtos.orderDate}"></td>
+                            <td th:text="${kitOrderDtos.statusId}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    KIT_ORDER 테이블 정보 조인 셀렉 가져오기
+                </div>
+
+                <div class="card-body">
+                    <table id="datatablesSimple02">
+                        <thead>
+                        <tr>
+                            <th>주문ID</th>
+                            <th>밀키트 업체</th>
+                            <th>밀키트 이름</th>
+                            <th>밀키트 가격</th>
+                            <th>주문 수량</th>
+                            <th>주문 총합</th>
+                            <th>주문 날짜</th>
+                            <th>상태</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>주문ID</th>
+                            <th>밀키트 업체</th>
+                            <th>밀키트 이름</th>
+                            <th>밀키트 가격</th>
+                            <th>주문 수량</th>
+                            <th>주문 총합</th>
+                            <th>주문 날짜</th>
+                            <th>상태</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        <tr th:each="kitOrderNameDtos : ${kitOrderNameDtos}">
+                            <td th:text="${kitOrderNameDtos.kitOrderId}"></td>
+                            <td th:text="${kitOrderNameDtos.companyId}"></td>
+                            <td th:text="${kitOrderNameDtos.mealkitName}"></td>
+                            <td th:text="${kitOrderNameDtos.price}"></td>
+                            <td th:text="${kitOrderNameDtos.quantity}"></td>
+                            <td th:text="${kitOrderNameDtos.totalPrice}"></td>
+                            <td th:text="${kitOrderNameDtos.orderDate}"></td>
+                            <td th:text="${kitOrderNameDtos.status}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    KIT_ORDER 밀키트 재료 정보 가져오기
+                </div>
+                <div class="card-body">
+
+                    <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3"
+                          style="width: 400px;">
+                        <select class="datatable-selector" name="category">
+                            <option value="All">All</option>
+                            <option value="firstName">firstName</option>
+                            <option value="lastName">lastName</option>
+                            <option value="email">email</option>
+                            <option value="department">department</option>
+                            <option value="hiredate">hiredate</option>
+                        </select>
+                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+
+                    <table id="datatablesSimple03">
+                        <thead>
+                        <tr>
+                            <th>주문ID</th>
+                            <th>밀키트 이름</th>
+                            <th>재료ID</th>
+                            <th>재료명</th>
+                            <th>재료 수량</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>주문ID</th>
+                            <th>밀키트 이름</th>
+                            <th>재료ID</th>
+                            <th>재료명</th>
+                            <th>재료 수량</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        <tr th:each="kitOrderSourceNameDtos : ${kitOrderSourceNameDtos}">
+                            <td th:text="${kitOrderSourceNameDtos.kitOrderId}"></td>
+                            <td th:text="${kitOrderSourceNameDtos.mealkitName}"></td>
+                            <td th:text="${kitOrderSourceNameDtos.sourceId}"></td>
+                            <td th:text="${kitOrderSourceNameDtos.sourceName}"></td>
+                            <td th:text="${kitOrderSourceNameDtos.quantity}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    밀키트 재료 주문하기
+                </div>
+                <div class="card-body">
+
+                    <!-- 검색 폼 -->
+                    <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+                        <select class="datatable-selector" name="category">
+                            <option value="All">All</option>
+                            <option value="firstName">firstName</option>
+                            <option value="lastName">lastName</option>
+                            <option value="email">email</option>
+                            <option value="department">department</option>
+                            <option value="hiredate">hiredate</option>
+                        </select>
+                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+
+                    <!-- 데이터 테이블 -->
+                    <table id="datatablesSimple04">
+                        <thead>
+                        <tr>
+                            <th>주문ID</th>
+                            <th>밀키트</th>
+                            <th>주문 수량</th>
+                            <th>재료명</th>
+                            <th>총 주문해야 하는 재료 개수</th>
+                            <th>재료 최저가</th>
+                            <th>재료 최저가 판매업체</th>
+                            <th>주문하기</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>주문ID</th>
+                            <th>밀키트</th>
+                            <th>주문 수량</th>
+                            <th>재료명</th>
+                            <th>총 주문해야 하는 재료 개수</th>
+                            <th>재료 최저가</th>
+                            <th>재료 최저가 판매업체</th>
+                            <th>주문하기</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        <tr th:each="minPriceSourceDto : ${minPriceSourceDtos}">
+                            <td th:text="${minPriceSourceDto.kitOrderId}"></td>
+                            <td th:text="${minPriceSourceDto.mealkitName}"></td>
+                            <td th:text="${minPriceSourceDto.mealkitQuantity}"></td>
+                            <td th:text="${minPriceSourceDto.sourceName}"></td>
+                            <td th:text="${minPriceSourceDto.totalQuantity}"></td>
+                            <td th:text="${minPriceSourceDto.sourcePrice}"></td>
+                            <td th:text="${minPriceSourceDto.productCompanyName}"></td>
+
+                            <!-- 주문하기 버튼 -->
+                            <td>
+                                <form th:action="@{/distribution/sourceOrder}" th:method="post" onsubmit="handleSubmit(event, this);">
+                                    <input type="hidden" th:value="${minPriceSourceDto.kitOrderId}" name="kitOrderId"/>
+                                    <input type="hidden" th:value="${minPriceSourceDto.sourceId}" name="sourceId"/>
+                                    <input type="hidden" th:value="${minPriceSourceDto.productCompanyId}" name="productCompanyId"/>
+                                    <input type="hidden" th:value="${minPriceSourceDto.totalQuantity}" name="totalQuantity"/>
+                                    <input type="hidden" th:value="${minPriceSourceDto.sourcePrice}" name="sourcePrice"/>
+                                    <button type="submit" class="btn btn-primary">주문</button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    밀키트 재료 한번에 주문하기
+                </div>
+                <div class="card-body">
+
+                    <!-- 검색 폼 -->
+                    <form action="/adminMain" method="get" class="input-group justify-content-end ms-auto mb-3"
+                          style="width: 400px;">
+                        <select class="datatable-selector" name="category">
+                            <option value="All">All</option>
+                            <option value="firstName">firstName</option>
+                            <option value="lastName">lastName</option>
+                            <option value="email">email</option>
+                            <option value="department">department</option>
+                            <option value="hiredate">hiredate</option>
+                        </select>
+                        <input type="text" class="form-control" name="keyword" placeholder="Search...">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </form>
+
+                    <!-- 데이터 테이블 -->
+                    <table id="datatablesSimple05">
+                        <thead>
+                        <tr>
+                            <th>주문ID</th>
+                            <th>주문 날짜</th>
+                            <th>밀키트</th>
+                            <th>주문 수량</th>
+                            <th>총 재료 원가</th>
+                            <th>재료 주문</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>주문ID</th>
+                            <th>주문 날짜</th>
+                            <th>밀키트</th>
+                            <th>주문 수량</th>
+                            <th>총 재료 원가</th>
+                            <th>재료 주문</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        <tr th:each="MinPriceOrderDto : ${minPriceOrderDtos}">
+                            <td th:text="${MinPriceOrderDto.kitOrderId}"></td>
+                            <td th:text="${MinPriceOrderDto.orderDate}"></td>
+                            <td th:text="${MinPriceOrderDto.mealkitName}"></td>
+                            <td th:text="${MinPriceOrderDto.mealkitQuantity}"></td>
+                            <td th:text="${MinPriceOrderDto.totalCost}"></td>
+                            <td>
+                                <button type="button" class="btn btn-info btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#OrderModal"
+                                        th:attr="data-kit-order-id=${MinPriceOrderDto.kitOrderId},
+                                                data-order-date=${MinPriceOrderDto.orderDate},
+                                                data-mealkit-name=${MinPriceOrderDto.mealkitName},
+                                                data-mealkit-quantity=${MinPriceOrderDto.mealkitQuantity},
+                                                data-mealkit-total-cost=${MinPriceOrderDto.totalCost}">
+                                    재료확인/발주
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- footer.html 파일을 포함합니다 -->
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="OrderModal" tabindex="-1" aria-labelledby="OrderModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="OrderModalLabel">Order Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Order ID:</strong> <span id="modal-kit-order-id"></span></p>
+                        <p><strong>Order Date:</strong> <span id="modal-order-date"></span></p>
+                        <p><strong>Meal Kit Name:</strong> <span id="modal-mealkit-name"></span></p>
+                        <p><strong>Quantity:</strong> <span id="modal-mealkit-quantity"></span></p>
+                        <p><strong>Total Cost:</strong> <span id="modal-mealkit-total-cost"></span></p>
+                        <!-- Ingredients Table -->
+                        <h5>재료 상세 정보</h5>
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>재료</th>
+                                <th>수량</th>
+                                <th>최저가</th>
+                                <th>업체</th>
+                            </tr>
+                            </thead>
+                            <tbody id="modal-ingredients-table">
+                            <!-- Ingredient rows will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="placeOrderButton">Place Order</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <th:block th:replace="fragment/adminFooter :: footer"></th:block>
+    </main>
+    </div>
+</body>
+
+</html>
+
+<script>
+    function handleSubmit(event, form) {
+        event.preventDefault(); // 폼의 기본 제출 동작을 방지합니다.
+
+        const submitButton = form.querySelector("button[type='submit']");
+        submitButton.disabled = true;
+        submitButton.innerText = "주문 처리 중...";
+
+        fetch(form.action, {
+            method: form.method,
+            body: new FormData(form),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                // 성공적으로 제출되었을 때의 처리
+                alert("주문이 성공적으로 처리되었습니다!");
+            })
+            .catch(error => {
+                console.error(error);
+                // 오류가 발생한 경우 버튼을 다시 활성화합니다.
+                submitButton.disabled = false;
+                submitButton.innerText = "주문";
+                alert("주문 처리 중 오류가 발생했습니다.");
+            });
+    }
+</script>
+
+<script>
+    document.addEventListener('shown.bs.modal', function (event) {
+        var button = event.relatedTarget; // Button that triggered the modal
+        var kitOrderId = button.getAttribute('data-kit-order-id');
+        var orderDate = button.getAttribute('data-order-date');
+        var mealkitName = button.getAttribute('data-mealkit-name');
+        var mealkitQuantity = button.getAttribute('data-mealkit-quantity');
+        var totalCost = button.getAttribute('data-mealkit-total-cost');
+
+        // Update the modal's content.
+        document.getElementById('modal-kit-order-id').textContent = kitOrderId;
+        document.getElementById('modal-order-date').textContent = orderDate;
+        document.getElementById('modal-mealkit-name').textContent = mealkitName;
+        document.getElementById('modal-mealkit-quantity').textContent = mealkitQuantity;
+        document.getElementById('modal-mealkit-total-cost').textContent = totalCost;
+
+        fetch(`/distribution/getIngredients?kitOrderId=${kitOrderId}`)
+            .then(response => response.text()) // 텍스트 형식으로 데이터 받기
+            .then(text => {
+                var ingredientTable = document.getElementById('modal-ingredients-table');
+                ingredientTable.innerHTML = ''; // Clear previous items
+
+                var lines = text.trim().split('\n'); // Split the text into lines
+                lines.forEach((line, index) => {
+                    if (line.trim()) { // Ignore empty lines
+                        var columns = line.split(','); // Split each line by comma
+
+                        // Skip the header line if it exists (assumes the first line is a header)
+                        if (index === 0) return;
+
+                        if (columns.length === 4) { // Ensure correct format
+                            var row = document.createElement('tr');
+
+                            // Create table cells based on CSV columns
+                            var ingredientCell = document.createElement('td');
+                            ingredientCell.textContent = columns[0].trim(); // 재료명
+                            row.appendChild(ingredientCell);
+
+                            var quantityCell = document.createElement('td');
+                            quantityCell.textContent = columns[1].trim(); // 수량
+                            row.appendChild(quantityCell);
+
+                            var priceCell = document.createElement('td');
+                            priceCell.textContent = columns[2].trim(); // 최저가
+                            row.appendChild(priceCell);
+
+                            var supplierCell = document.createElement('td');
+                            supplierCell.textContent = columns[3].trim(); // 업체
+                            row.appendChild(supplierCell);
+
+                            ingredientTable.appendChild(row); // Append the row to the table
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching ingredients:', error);
+            });
+    });
+
+    /*document.getElementById('placeOrderButton').addEventListener('click', function() {
+        // Get the kitOrderId from the modal
+        const kitOrderId = document.getElementById('modal-kit-order-id').textContent.trim();
+
+        // Prepare ingredients data (this should be dynamic based on modal content)
+        const ingredients = Array.from(document.querySelectorAll('#modal-ingredients-table tr')).map(row => {
+            const cells = row.getElementsByTagName('td');
+            return {
+                name: cells[0].textContent.trim(),
+                quantity: cells[1].textContent.trim(),
+                price: cells[2].textContent.trim(),
+                supplier: cells[3].textContent.trim()
+            };
+        });
+        console.log("kitOrderId=="+kitOrderId)
+        console.log("ingredients=="+ingredients)
+        // AJAX request to place the order
+        // AJAX request to place the order
+        fetch('/distribution/insertIngredients', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'text/plain'
+            },
+            body: `ingredients=${encodeURIComponent(JSON.stringify(ingredients))}&kitOrderId=${encodeURIComponent(kitOrderId)}`
+        })
+            .then(response => response.text())
+            .then(result => {
+                alert('Order placed successfully: ' + result);
+            })
+            .catch(error => {
+                console.error('Error placing order:', error);
+                alert('Error placing order.');
+            });
+    })*/
+    document.getElementById("placeOrderButton").addEventListener("click",function (){
+        const kitOrderId = document.getElementById('modal-kit-order-id').textContent
+        $.ajax({
+            url : "/distribution/getIngredients2",
+            method: "GET",
+            data : {
+                kitOrderId : kitOrderId
+            },
+            success : function (response){
+                console.log(response)
+            },
+            error: function (xhr, status, error) {
+                console.error('데이터 가져오는데 실패함:', error);
+            }
+
+        })
+    })
+</script>

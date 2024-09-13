@@ -3,17 +3,37 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.jhta_2402_2_final.dao.distribution.DistributionOrderDao">
 
- <select id="selectKitOrder" resultType="KitOrderDistDto">
+ <select id="selectKitNewOrder" resultType="KitOrderDistDto">
      SELECT
-         KIT_ORDER_ID as kitOrderId,      -- 주문PK
-         KIT_COMPANY_ID as kitCompanyId,     -- 밀키트판매업체FK
-         MEALKIT_ID as mealkitId,         -- 밀키트FK
-         PRICE,              -- 밀키트 가격
-         QUANTITY,           -- 개수
-         PRODUCT_ORDER_DATE as orderDate, -- 주문 일자
-         STATUS_ID as statusId           -- 상태FK
-     FROM
-         KIT_ORDER
+         KO.KIT_ORDER_ID AS kitOrderId,
+         KC.NAME AS kitCompanyName,
+         M.NAME AS mealkitName,
+         KO.QUANTITY,
+         DATE_FORMAT(KO.PRODUCT_ORDER_DATE, '%Y-%m-%d %H:%i:%s') AS productOrderDate,
+         S.STATUS,
+         KO.PRICE
+     FROM KIT_ORDER KO
+              JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
+              JOIN MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
+              JOIN STATUS S ON KO.STATUS_ID = S.STATUS_ID
+     WHERE S.STATUS_ID = 1
+     ORDER BY productOrderDate DESC;
+ </select>
+
+    <select id="selectKitOrder" resultType="KitOrderDistDto">
+     SELECT
+         KO.KIT_ORDER_ID AS kitOrderId,
+             KC.NAME AS kitCompanyName,
+             M.NAME AS mealkitName,
+             KO.QUANTITY,
+             KO.PRODUCT_ORDER_DATE AS productOrderDate,
+             S.STATUS,
+             KO.PRICE
+     FROM KIT_ORDER KO
+              JOIN KIT_COMPANY KC ON KO.KIT_COMPANY_ID = KC.KIT_COMPANY_ID
+              JOIN MEALKIT M ON KO.MEALKIT_ID = M.MEALKIT_ID
+              JOIN STATUS S ON KO.STATUS_ID = S.STATUS_ID
+     ORDER BY productOrderDate DESC;
  </select>
 
 

@@ -15,32 +15,58 @@ import java.util.*;
 public class DistributionOrderService {
 
     private final DistributionOrderDao distributionOrderDao;
+    private final WebSocketNotificationService webSocketNotificationService; // 웹소켓 서비스 주입
 
 
-    public List<KitOrderDistDto> getAllKitOrderDto() {
-        return distributionOrderDao.selectKitOrder();
+    public List<KitOrderDistDto> getNewOrders() {
+        return distributionOrderDao.selectNewOrder();
     }
 
-    public List<KitOrderNameDto> kitOrderNameDto() {
-        return distributionOrderDao.selectKitNameOrder();
+    public void checkAndNotifyNewOrders() {
+        List<KitOrderDistDto> newOrders = getNewOrders();
+        if (!newOrders.isEmpty()) {
+            for (KitOrderDistDto order : newOrders) {
+                webSocketNotificationService.sendNewOrderNotification(order);
+            }
+        }
     }
 
-    public List<KitOrderSourceNameDto> kitOrderSourceNameDto() {
-        return distributionOrderDao.selectSourceNameOrder();
-    }
+    public void confirmOrder(UUID kitOrderId) {
 
-    public List<MinPriceSourceDto> minPriceSourceDto() {
-        return distributionOrderDao.selectMinPriceSource();
     }
-    public int insertProductOrder(IngredientDto ingredientDto){
-        return distributionOrderDao.insertProductOrder2(ingredientDto);
-    }
-    public int insertProductOrderLog(String productOrderId){
-        return distributionOrderDao.insertProductOrderLog(productOrderId);
-    }
-    public String getProductOrderId(IngredientDto ingredientDto){
-        return distributionOrderDao.getProductOrderId(ingredientDto);
-    }
+}
+
+
+
+
+
+
+
+//    //controller
+//    public List<KitOrderDistDto> getAllKitOrderDto() {
+//        return distributionOrderDao.selectKitOrder();
+//    }
+//
+//    public List<KitOrderNameDto> kitOrderNameDto() {
+//        return distributionOrderDao.selectKitNameOrder();
+//    }
+//
+//    public List<KitOrderSourceNameDto> kitOrderSourceNameDto() {
+//        return distributionOrderDao.selectSourceNameOrder();
+//    }
+//
+//    public List<MinPriceSourceDto> minPriceSourceDto() {
+//        return distributionOrderDao.selectMinPriceSource();
+//    }
+//    public int insertProductOrder(IngredientDto ingredientDto){
+//        return distributionOrderDao.insertProductOrder2(ingredientDto);
+//    }
+//    public int insertProductOrderLog(String productOrderId){
+//        return distributionOrderDao.insertProductOrderLog(productOrderId);
+//    }
+//    public String getProductOrderId(IngredientDto ingredientDto){
+//        return distributionOrderDao.getProductOrderId(ingredientDto);
+//    }
 
     /*public void processOrder(UUID productOrderId, UUID productCompanyId, UUID sourceId, int totalQuantity, int sourcePrice, UUID kitOrderId) {
         // 상품 주문을 데이터베이스에 저장
@@ -61,13 +87,13 @@ public class DistributionOrderService {
         distributionOrderDao.insertProductOrderLog(dto);
     }*/
 
-    public List<MinPriceOrderDto> minPriceOrderDto(){
-        return distributionOrderDao.selectKitOrderId();
-    }
-
-    public List<IngredientDto> getIngredientsByKitOrderId(UUID kitOrderId) {
-        return distributionOrderDao.getIngredientsByKitOrderId(kitOrderId);
-    }
+//    public List<MinPriceOrderDto> minPriceOrderDto(){
+//        return distributionOrderDao.selectKitOrderId();
+//    }
+//
+//    public List<IngredientDto> getIngredientsByKitOrderId(UUID kitOrderId) {
+//        return distributionOrderDao.getIngredientsByKitOrderId(kitOrderId);
+//    }
 
 
 
@@ -89,14 +115,15 @@ public class DistributionOrderService {
         // 3. Update KIT_ORDER status
         distributionOrderDao.updateKitOrderStatus(kitOrderId);
     }*/
-
-    private UUID getProductCompanyId(String supplierName) {
-        return distributionOrderDao.selectProductCompanyIdByName(supplierName);
-    }
-
-    private UUID getSourceId(String ingredientName) {
-        return distributionOrderDao.selectSourceIdByName(ingredientName);
-    }
-
-
-}
+//
+//    private UUID getProductCompanyId(String supplierName) {
+//        return distributionOrderDao.selectProductCompanyIdByName(supplierName);
+//    }
+//
+//    private UUID getSourceId(String ingredientName) {
+//        return distributionOrderDao.selectSourceIdByName(ingredientName);
+//    }
+//
+//
+//
+//}
