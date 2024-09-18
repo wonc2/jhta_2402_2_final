@@ -1,27 +1,31 @@
 version: '3.9'
 services:
   springboot_3.1.11:
-    image: ${IMAGE_NAME}
+    image: ${SPRING_IMAGE_NAME}
+    restart: always
     build:
       context: .
       args:
         APP_DIR_NAME: ${APP_DIR_NAME}
+        GIT_REPO_URL: ${GIT_REPO_URL}
+        DOCKER_FOLDER_YML_PATH: ${DOCKER_FOLDER_YML_PATH}
+        CONTAINER_YML_PATH: ${CONTAINER_YML_PATH}
       dockerfile: Dockerfile
+    command:
+      ["java", "-jar", "${JAR_FILE_PATH}"]
     volumes:
-      - ./application.yml:/app/${APP_DIR_NAME}/src/main/resources/application.yml
+      - ${DOCKER_FOLDER_YML_PATH}:${CONTAINER_YML_PATH}
     ports:
-      - "8081:8080"  
+      - "8081:8080"
   mariadb_11.4.2:
     image: mariadb:11.4.2
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: cocolabhub
-      MYSQL_DATABASE: final
-      MYSQL_USER: cocolabhub
-      MYSQL_PASSWORD: cocolabhub
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "33306:3306"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-
-# docker-compose --project-name mariadb_kimpitang up -d
