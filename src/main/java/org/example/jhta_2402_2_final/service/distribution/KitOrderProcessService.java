@@ -67,6 +67,13 @@ public class KitOrderProcessService {
 
     @Transactional
     public boolean processKitOrder(String kitOrderId) {
+
+        // 처리 전 상태(1) 이 아니면 로직 안 수행되게 false 로 리턴
+        int currentStatus = kitOrderProcessDao.findKitOrderStatus(kitOrderId);
+        if (currentStatus != 1) {
+            return false;
+        }
+
         // 1. 주문에 해당하는 재료 목록과 필요 수량 가져옴
         Integer orderQuantity = findOrderQuantityByKitOrderId(kitOrderId);
 

@@ -284,6 +284,12 @@
 
     </select>
 
+    <select id="findKitOrderStatus" resultType="Integer" parameterType="String">
+        SELECT STATUS_ID
+        FROM KIT_ORDER
+        WHERE KIT_ORDER_ID = #{kitOrderId}
+    </select>
+
 
 
 

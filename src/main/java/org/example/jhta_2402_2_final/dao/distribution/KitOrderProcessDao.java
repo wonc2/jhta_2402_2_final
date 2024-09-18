@@ -79,4 +79,6 @@ public interface KitOrderProcessDao {
     void updateWarehouseStockWithStackId(String stackId, int required);
 
     List<WareHouseStockChartDto> findAllWarehouseStocks();
+
+    int findKitOrderStatus(String kitOrderId);
 }
