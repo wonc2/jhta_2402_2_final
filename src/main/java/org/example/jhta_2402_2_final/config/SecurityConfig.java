@@ -39,7 +39,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
         httpSecurity.authorizeHttpRequests((auth)->auth
-                .requestMatchers("/","/member/**","/api/**")
+                .requestMatchers("/member/**","/api/**")
                 .permitAll()
                 .requestMatchers("/product/company/**").hasAnyRole("ADMIN","PRODUCT_MANAGER")
                 .requestMatchers("/sales/**").hasAnyRole("ADMIN","SALES_MANAGER")
@@ -53,8 +53,8 @@ public class SecurityConfig {
                 .loginProcessingUrl("/member/login")
                 .usernameParameter("userId")
                 .passwordParameter("userPassword")
-                .defaultSuccessUrl("/",true) //true를 쓰지 않으면 이전 페이지로 간다.
-//                .successHandler(customLoginSuccessHandler())
+//                .defaultSuccessUrl("/",true) //true를 쓰지 않으면 이전 페이지로 간다.
+                .successHandler(customLoginSuccessHandler())
                 .failureHandler(customFailureHandler)  //로그인 실패시 어떻게 할건지를 니가 만들어서 처리해라
                 .permitAll()
         );
