@@ -22,7 +22,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
         }else if(authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_LOGISTICS_MANAGER"))){
             response.sendRedirect("/");
         }else if(authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SALES_MANAGER"))){
-            response.sendRedirect("/");
+            response.sendRedirect("/sales/user");
         }
     }
 }
