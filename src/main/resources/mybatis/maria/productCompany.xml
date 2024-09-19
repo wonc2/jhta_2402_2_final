@@ -75,6 +75,9 @@
             <otherwise></otherwise>
         </choose>
     </select>
+    <delete id="deleteWarehouseProduceLog" parameterType="String">
+        delete from SOURCE_WAREHOUSE WHERE SOURCE_WAREHOUSE_ID = #{sourceWarehouseId}
+    </delete>
 
     <!-- 주문 주문 주문 주문 주문 -->
     <insert id="orderStatusTempInsert" parameterType="ProductCompanyOrderProcessDto">

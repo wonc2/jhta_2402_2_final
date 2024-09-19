@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/distribution/**").hasAnyRole("ADMIN","LOGISTICS_MANAGER")
                         .requestMatchers("/sales/user/**").hasAnyRole("ADMIN","SALES_MANAGER")
                         .requestMatchers("/product/company/**").hasAnyRole("ADMIN","PRODUCT_MANAGER")
+                        .requestMatchers("/websocket-endpoint/**").permitAll()
                         .anyRequest()
                         .authenticated()
         );
