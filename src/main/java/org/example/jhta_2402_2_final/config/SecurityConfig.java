@@ -56,7 +56,8 @@ public class SecurityConfig {
                         .loginProcessingUrl("/member/login")
                         .usernameParameter("userId")
                         .passwordParameter("userPassword")
-                        .successHandler(customLoginSuccessHandler())
+                        .defaultSuccessUrl("/",true) //true를 쓰지 않으면 이전 페이지로 간다.
+//                .successHandler(customLoginSuccessHandler())
                         .failureHandler(customFailureHandler)  //로그인 실패시 어떻게 할건지를 니가 만들어서 처리해라
                         .permitAll()
         );

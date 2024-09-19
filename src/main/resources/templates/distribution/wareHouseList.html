@@ -20,59 +20,91 @@
             <h1 class="mt-4 mb-4">유통 통합</h1>
 
             <div class="card mb-5">
-                <div class="card-header toggle-header">
+                <div class="card-header toggle-header show-stock">
                     <i class="fas fa-chevron-down me-1"></i> <!-- 아이콘을 클릭 가능하게 보이도록 변경 -->
                     창고 재고 확인
                 </div>
-                <div class="card-body slide-container">
-                    <form action="/wareHouse/selectBySourceName" method="get"
-                          class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
 
-                        <input type="text" class="form-control" name="keyword" placeholder="재료명 입력">
-                        <button type="submit" class="btn btn-primary">검색</button>
-                        <a href="/wareHouse/selectAll">
-                            <button class="btn btn-primary" type="button">전체검색</button>
-                        </a>
-                    </form>
+                    <div class="card-body slide-container">
 
 
-                    <table id="datatablesSimple">
-                        <thead>
-                        <tr>
-                            <th>창고이름</th>
-                            <th>재료명</th>
-                            <th>수량</th>
-                            <th>상세</th>
-                        </tr>
-                        </thead>
-                        <tfoot>
-                        <tr>
-                            <th>창고이름</th>
-                            <th>재료명</th>
-                            <th>수량</th>
-                            <th>상세</th>
-                        </tr>
-                        </tfoot>
-                        <tbody>
-                        <tr th:each="items : ${warehouseList}">
-                            <td th:text="${items.wareHouseName}"></td>
-                            <td th:text="${items.sourceName}"></td>
-                            <td th:text="${items.quantity}"></td>
-                            <td>
-                                <button class="btn btn-primary"
-                                        type="button"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#LogModal"
-                                        th:attr="data-source-id=${items.sourceUUID}"
-                                >
-                                    <!-- 상세--> 로그버튼
-                                </button>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+
+
+                        <div class="row"> <!-- 여기에 데이터 차트 들어갑니다 -->
+                            <div class="col-xl-12"> <!-- 차트1(유통창고 재료 재고 조회 차트-->
+                                <div class="card mb-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="fas fa-chart-area me-1"></i>
+                                            재고 현황
+                                        </div>
+                                        <!-- 드롭다운 버튼 -->
+
+                                    </div>
+                                    <div class="card-body stockChart">
+                                        <canvas id="logisticsWarehouseStockChart" style="max-width: 2000px; max-height: 500px;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+
+
+
+
+
+
+                        <form action="/wareHouse/selectBySourceName" method="get"
+                              class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+
+                            <input type="text" class="form-control" name="keyword" placeholder="재료명 입력">
+                            <button type="submit" class="btn btn-primary">검색</button>
+                            <a href="/wareHouse/selectAll">
+                                <button class="btn btn-primary" type="button">전체검색</button>
+                            </a>
+                        </form>
+
+
+                        <table id="datatablesSimple">
+                            <thead>
+                            <tr>
+                                <th>창고이름</th>
+                                <th>재료명</th>
+                                <th>수량</th>
+                                <th>상세</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>창고이름</th>
+                                <th>재료명</th>
+                                <th>수량</th>
+                                <th>상세</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            <tr th:each="items : ${warehouseList}">
+                                <td th:text="${items.wareHouseName}"></td>
+                                <td th:text="${items.sourceName}"></td>
+                                <td th:text="${items.quantity}"></td>
+                                <td>
+                                    <button class="btn btn-primary"
+                                            type="button"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#LogModal"
+                                            th:attr="data-source-id=${items.sourceUUID}"
+                                    >
+                                        <!-- 상세--> 로그버튼
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
 
 
             <div class="card mb-5">
@@ -258,7 +290,8 @@
 
                 <div class="card-body slide-container">
                     <!-- 검색 버튼 (모달 열기 버튼) -->
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#searchModal">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#searchModal">
                         검색 조건 입력
                     </button>
                     <canvas id="line-chart" width="420" height="200"></canvas>
@@ -268,7 +301,8 @@
 
 
         <!-- 검색 조건 입력 모달 -->
-        <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+        <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel"
+             aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -295,11 +329,13 @@
                             </div>
                             <div class="mb-3">
                                 <label for="startDateForChart" class="form-label">Start Date</label>
-                                <input type="date" class="form-control" id="startDateForChart" name="startDate" required>
+                                <input type="date" class="form-control" id="startDateForChart" name="startDate"
+                                       required>
                             </div>
                             <div class="mb-3">
                                 <label for="endDateForChart" class="form-label">End Date</label>
-                                <input type="date" class="form-control" id="endDateForChart" name="endDate" required>
+                                <input type="date" class="form-control" id="endDateForChart" name="endDate"
+                                       required>
                             </div>
                             <button type="button" class="btn btn-primary" id="searchBtn">데이터 추가</button>
                             <button type="button" class="btn btn-secondary" id="resetBtn">차트 초기화</button>
@@ -464,8 +500,7 @@
 <script>
 
 
-
-//socket 소켓
+    //socket 소켓
     var stompClient = null;
 
     function connect() {
@@ -480,38 +515,96 @@
     }
 
 
-    function sendWareHouseDto(){
+    function sendWareHouseDto() {
 
     }
 
 
+    function sendMessage() {
+        var sender = document.getElementById('sender').value;
+        var content = document.getElementById('message').value;
+        stompClient.send("/app/chat", {}, JSON.stringify({'sender': sender, 'content': content}));
+    }
 
-function sendMessage() {
-    var sender = document.getElementById('sender').value;
-    var content = document.getElementById('message').value;
-    stompClient.send("/app/chat", {}, JSON.stringify({'sender': sender, 'content': content}));
-}
-
-function showMessage(message) {
-    var messageElement = document.createElement('li');
-    messageElement.appendChild(document.createTextNode(message.sender + ": " + message.content));
-    document.getElementById('messages').appendChild(messageElement);
-}
-
+    function showMessage(message) {
+        var messageElement = document.createElement('li');
+        messageElement.appendChild(document.createTextNode(message.sender + ": " + message.content));
+        document.getElementById('messages').appendChild(messageElement);
+    }
 
 
-
-window.onload = function() {
-    connect();
-};
-
+    window.onload = function () {
+        connect();
+    };
 
 
+    let warehouseStockChart;
 
+    function initChart() { // 여기 안에 type
+        const ctx = $('#logisticsWarehouseStockChart')[0].getContext('2d');
 
+        if (warehouseStockChart) {
+            warehouseStockChart.destroy(); // 기존 모양의 차트 삭제하고 새 유형의 차트 다시 로딩
+        }
 
+        warehouseStockChart = new Chart(ctx, {
+            type: 'bar', // 동적으로 받은 차트 타입, 'bar' 대신 type 적어보면되나
+            data: {
+                labels: [], // 초기 레이블
+                datasets: [{
+                    label: '총 재고량',
+                    data: [],
+                    backgroundColor: [],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
 
+    function updateLogisticesWarehouseChart() {
+        $.ajax({
+            url: '/distribution/api/warehouseStockChart', // 창고 데이터를 가져오는 URL
+            type: 'GET',
+            contentType: 'application/json',
+            success: function (response) {
+                const labels = [];
+                const data = [];
 
+                // response 데이터를 순회하며 필요한 정보 추출
+                response.forEach(function (item) {
+                    labels.push(item.sourceName); // sourceName을 labels로 사용
+                    data.push(item.sourceQuantity); // sourceQuantity 값을 data로 사용
+                });
+
+                warehouseStockChart.data.labels = labels;
+                warehouseStockChart.data.datasets[0].data = data;
+                warehouseStockChart.data.datasets[0].backgroundColor = colors.slice(0, data.length);
+                warehouseStockChart.update();
+            },
+            error: function (xhr, status, error) {
+                console.error('차트 데이터 가져오는데 실패함:', error);
+            }
+        });
+    }
+
+    const colors = [
+        '#E57373', '#F06292', '#BA68C8', '#64B5F6', '#4FC3F7',
+        '#4DD0E1', '#4DB6AC', '#81C784', '#AED581', '#DCE775',
+        '#FFD54F', '#FFB74D', '#FF8A65', '#A1887F', '#90A4AE',
+        '#FF6F61', '#6D4C41', '#5C6BC0', '#EF5350', '#AB47BC',
+        '#7E57C2', '#42A5F5', '#29B6F6', '#26C6DA', '#1E88E5',
+        '#039BE5', '#0288D1', '#0277BD', '#01579B', '#C2185B',
+        '#D81B60', '#E91E63', '#F06292', '#EC407A', '#AB47BC',
+        '#8E24AA', '#7B1FA2', '#6D1B9D', '#4A148C', '#2C6C9A',
+        '#00838F', '#00695C', '#004D40', '#004D40', '#1B5E20'
+    ];
 
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -600,8 +693,7 @@ window.onload = function() {
     });
 
 
-
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // sourceName과 companyName을 가져와서 셀렉트 옵션을 채우는 함수
         function loadSelectOptions() {
             // sourceName을 DB에서 받아오기
@@ -640,6 +732,20 @@ window.onload = function() {
 
 
 
+    document.addEventListener('DOMContentLoaded', function () {
+        // .show-stock 클래스를 가진 요소를 선택
+        var showStockElement = document.querySelector('.show-stock');
+
+        // .show-stock 요소가 존재하는 경우에만 이벤트 리스너 추가
+        if (showStockElement) {
+            showStockElement.addEventListener('click', function () {
+                // updateLogisticesWarehouseChart 함수 호출
+                console.log("dddddd")
+                initChart();
+                updateLogisticesWarehouseChart();
+            });
+        }
+    });
 
 
     // 슬라이드
