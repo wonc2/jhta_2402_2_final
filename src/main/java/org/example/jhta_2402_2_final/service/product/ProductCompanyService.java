@@ -132,6 +132,11 @@ public class ProductCompanyService {
     public List<ProductCompanyWarehouseDto> getWarehouseSources(ProductCompanySearchOptionDto paramData) {
         return productCompanyDao.getWarehouseSources(paramData);
     }
+    public void deleteWarehouseProduceLog(String sourceWarehouseId) {
+        if (productCompanyDao.deleteWarehouseProduceLog(sourceWarehouseId) == 0){
+            throw new RuntimeException();
+        };
+    }
 
 
     /* Order Table */

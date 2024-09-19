@@ -185,7 +185,20 @@ function getWarehouseTable() {
                 data: 'type',
                 orderable: false
             },
-            {data: 'produceDate'}
+            {data: 'produceDate'},
+            {
+                data: null,
+                orderable: false,
+                render: function (data, type, row) {
+                    console.log(row.sourceQuantity);
+                    if (row.sourceQuantity > 0) {
+                        return `<button type="button" class="btn btn-outline-danger btn-sm"
+                        data-id="${data.sourceWarehouseId}" data-action="delete">삭제</button>`;
+                    } else {
+                        return '';
+                    }
+                }
+            }
         ],
         order: [[0, 'desc']],
         language: {emptyTable: '데이터가 없습니다.'},
@@ -539,6 +552,32 @@ function addSourceProcess() {
             });
         }
     });
+
+    // 생산 기록 ( 창고 ) 삭제
+    $('#warehouseTable').on('click', 'button[data-action="delete"]', function () {
+        const row = $(this).closest('tr');
+        const data = $('#warehouseTable').DataTable().row(row).data();
+        const sourceWarehouseId = data.sourceWarehouseId;
+
+        if (confirm('정말로 이 항목을 삭제하시겠습니까?')) {
+            $.ajax({
+                url: `/api/product/company/warehouse/${sourceWarehouseId}`,
+                type: 'DELETE',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
+                },
+                success: function () {
+                    $('#warehouseTable').DataTable().ajax.reload(null, false);
+                    showToast("삭제 완료")
+                },
+                error: function () {
+                    $('#warehouseTable').DataTable().ajax.reload(null, false);
+                    alert('이미 삭제된 데이터 입니다');
+                }
+            });
+        }
+    });
+
 
     // view
     $('#companySourceTable').on('click', 'button[data-action="view"]', function () {

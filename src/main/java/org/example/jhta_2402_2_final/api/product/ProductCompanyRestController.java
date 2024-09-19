@@ -84,6 +84,13 @@ public class ProductCompanyRestController {
         return ResponseEntity.ok().body(response);
     }
 
+    // 창고 입고 기록 삭제
+    @DeleteMapping("warehouse/{sourceWarehouseId}")
+    public ResponseEntity<?> deleteWarehouseProduceLog(@PathVariable String sourceWarehouseId) {
+        productCompanyService.deleteWarehouseProduceLog(sourceWarehouseId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
     // 주문 리스트 조회
     @GetMapping("order")
     public ResponseEntity<List<ProductCompanyOrderDto>> getOrderList(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute ProductCompanySearchOptionDto paramData) {
