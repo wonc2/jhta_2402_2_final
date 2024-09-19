@@ -1,4 +1,4 @@
-package org.example.jhta_2402_2_final.model.dto.product;
+package org.example.jhta_2402_2_final.model.dto.productCompany;
 
 import lombok.Getter;
 

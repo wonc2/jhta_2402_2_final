@@ -23,7 +23,8 @@
                                 <!-- 드롭다운 버튼 -->
                                 <select id="chartMonthSelect" class="form-select" style="width: 100px;">
                                     <option value="" selected>2024년</option>
-                                    <option th:each="i : ${#numbers.sequence(1, 12)}" th:value="${i}" th:text="${i}+월"></option>
+                                    <option th:each="i : ${#numbers.sequence(1, 12)}" th:value="${i}"
+                                            th:text="${i}+월"></option>
                                 </select>
                             </div>
                             <div class="card-body">
@@ -40,13 +41,27 @@
                                 </div>
                                 <!-- 드롭다운 버튼 -->
                                 <div class="dropdown">
-                                    <button class="btn btn-secondary dropdown-toggle" type="button" id="warehouseChartDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <button class="btn btn-secondary dropdown-toggle" type="button"
+                                            id="warehouseChartDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                         막대 차트
                                     </button>
-                                    <ul class="dropdown-menu" id="chartDropDownMenu" aria-labelledby="warehouseChartDropdown">
-                                        <li><button class="dropdown-item warehouse-dropdown-item" data-value="bar" data-name="막대 차트 ">막대 차트</button></li>
-                                        <li><button class="dropdown-item warehouse-dropdown-item" data-value="line" data-name="선형 차트 ">선형 차트</button></li>
-                                        <li><button class="dropdown-item warehouse-dropdown-item" data-value="doughnut" data-name="도넛 차트 ">도넛 차트</button></li>
+                                    <ul class="dropdown-menu" id="chartDropDownMenu"
+                                        aria-labelledby="warehouseChartDropdown">
+                                        <li>
+                                            <button class="dropdown-item warehouse-dropdown-item" data-value="bar"
+                                                    data-name="막대 차트 ">막대 차트
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item warehouse-dropdown-item" data-value="line"
+                                                    data-name="선형 차트 ">선형 차트
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button class="dropdown-item warehouse-dropdown-item" data-value="doughnut"
+                                                    data-name="도넛 차트 ">도넛 차트
+                                            </button>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -59,26 +74,41 @@
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between">
                         <i class="fas fa-table me-1"></i>
-                        <button class="btn btn-secondary dropdown-toggle ms-2" type="button" id="tableDropDown" data-bs-toggle="dropdown" aria-expanded="false">
-                            생산품 현황
+                        <button class="btn btn-secondary dropdown-toggle ms-2" type="button" id="tableDropDown"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            주문 처리
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="tableDropDown">
-                            <li><button class="dropdown-item table-dropdown-item" data-value="companySourceList" data-name="생산품 현황 " type="button">생산품 현황</button></li>
-                            <li><button class="dropdown-item table-dropdown-item" data-value="warehouseList" data-name="창고 현황 " type="button">창고 현황</button></li>
-                            <li><button class="dropdown-item table-dropdown-item" data-value="orderList" data-name="주문 현황 " type="button">주문 현황</button></li>
+                            <li>
+                                <button class="dropdown-item table-dropdown-item" data-value="orderList"
+                                        data-name="주문 처리 " type="button">주문 처리
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item table-dropdown-item" data-value="companySourceList"
+                                        data-name="생산품 관리 " type="button">생산품 관리
+                                </button>
+                            </li>
+                            <li>
+                                <button class="dropdown-item table-dropdown-item" data-value="warehouseList"
+                                        data-name="입출고 기록 " type="button">입출고 기록
+                                </button>
+                            </li>
                         </ul>
-                        <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal" data-bs-target="#addSourceModal">신규 생산품목</button>
+                        <button type="button" class="btn btn-primary ms-auto" data-bs-toggle="modal"
+                                data-bs-target="#addSourceModal">신규 생산품목 등록
+                        </button>
                     </div>
                     <div class="card-body">
-                        <div id="companySourceTableContainer">
-                            <table id="companySourceTable" class="table table-bordered" style="table-layout: fixed;">
+                        <div id="companySourceTableContainer" style="display:none;">
+                            <table id="companySourceTable" class="table table-bordered">
                                 <thead>
                                 <tr>
                                     <th>no</th>
                                     <!--                                    <th>등록 번호</th>-->
                                     <th>생산품명</th>
                                     <th>가격</th>
-                                    <th>현재 창고 재고량</th>
+                                    <th>창고 재고</th>
                                     <th>작업</th>
                                 </tr>
                                 </thead>
@@ -95,11 +125,14 @@
                                     <!--                                    <th>입출번호</th>-->
                                     <th>생산품명</th>
                                     <th>입출량</th>
-                                    <th>구분</th>
+                                    <th>
+                                        <select id="warehouseTypeSelect" class="form-select-sm" style="width: 80px;">
+                                            <option value="구분" selected>구분</option>
+                                            <option value="입고">입고</option>
+                                            <option value="출고">출고</option>
+                                        </select>
+                                    </th>
                                     <th>입출시간</th>
-                                    <!-- 출고량 / 입고량  이렇게 나오면되나 ? -->
-                                    <!--                                    <th>생산(입고)일자</th>-->
-                                    <!--                                    <th>납품일자</th> &lt;!&ndash; 30 / 100 이었다가 100 / 100 되면 100 / 100 되는 순간의 납품일자로 업데이트 &ndash;&gt;-->
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -107,17 +140,17 @@
                             </table>
                         </div>
 
-                        <div id="orderTableContainer" style="display:none;">
+                        <div id="orderTableContainer" style="table-layout: fixed;">
                             <table id="orderTable" class="table table-bordered">
                                 <thead>
                                 <tr>
                                     <th>no</th>
                                     <th>주문번호</th>
-                                    <th>주문한 재료</th>
-                                    <th>재료 가격</th>
+                                    <th>주문 재료</th>
+                                    <!--                                    <th>재료 가격</th>-->
                                     <th>주문한 갯수</th>
-                                    <th>총 주문 가격</th>
-                                    <th>주문 일자</th>
+                                    <th>주문 가격</th>
+                                    <th>주문 시간</th>
                                     <th>주문 상태</th>
                                     <th>작업</th>
                                 </tr>
@@ -127,13 +160,38 @@
                             </table>
                         </div>
 
+                        <!-- source view 모달 -->
+                        <div class="modal fade" id="viewSourceModal" tabindex="-1"
+                             aria-labelledby="viewSourceModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="viewSourceModalLabel">ㅁㅁㅁㅁ</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="container">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- view 모달 끝 -->
+
                         <!-- 업데이트(update) 모달 -->
-                        <div class="modal fade" id="updateSourceModal" tabindex="-1" aria-labelledby="updateSourceModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="updateSourceModal" tabindex="-1"
+                             aria-labelledby="updateSourceModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h1 class="modal-title fs-5" id="updateSourceModalLabel">판매 가격 수정</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <form id="updateSourceForm">
@@ -142,15 +200,20 @@
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">생산품명</label>
                                                     <div class="col-sm-9">
-                                                        <input type="text" class="form-control" id="updateSourceName" disabled>
+                                                        <input type="text" class="form-control" id="updateSourceName"
+                                                               disabled>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">가격</label>
                                                     <div class="col-sm-9">
                                                         <div class="input-group">
-                                                            <input type="number" id="updateSourcePrice" class="form-control" min="50" max="100000" value="50" step="50" required>
+                                                            <input type="number" id="updateSourcePrice"
+                                                                   class="form-control is-invalid" min="50" max="100000"
+                                                                   value="50" step="50" required>
                                                             <span class="input-group-text">₩</span>
+                                                            <div id="updateSourcePriceError"
+                                                                 class="invalid-feedback"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -159,8 +222,9 @@
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                                        <button type="button" class="btn btn-primary" id="updateSourceBtn">수정</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="updateSourceBtn">저장</button>
                                     </div>
                                 </div>
                             </div>
@@ -169,12 +233,14 @@
 
 
                         <!-- 생산(produce) 모달 -->
-                        <div class="modal fade" id="produceSourceModal" tabindex="-1" aria-labelledby="produceSourceModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="produceSourceModal" tabindex="-1"
+                             aria-labelledby="produceSourceModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h1 class="modal-title fs-5" id="produceSourceModalLabel">창고에 재고 등록</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <h1 class="modal-title fs-5" id="produceSourceModalLabel">입고 수량 입력</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <form id="produceSourceForm">
@@ -182,13 +248,18 @@
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">생산품명</label>
                                                     <div class="col-sm-9">
-                                                        <input type="text" class="form-control" id="produceSourceName" disabled>
+                                                        <input type="text" class="form-control" id="produceSourceName"
+                                                               disabled>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">생산품가격</label>
                                                     <div class="col-sm-9">
-                                                        <input type="text" class="form-control" id="produceSourcePrice" disabled>
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control"
+                                                                   id="produceSourcePrice" disabled>
+                                                            <span class="input-group-text">₩</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row align-items-center">
@@ -204,8 +275,9 @@
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                                        <button type="button" class="btn btn-primary" id="produceSourceBtn">생산</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기
+                                        </button>
+                                        <button type="button" class="btn btn-primary" id="produceSourceBtn">확인</button>
                                     </div>
                                 </div>
                             </div>
@@ -213,26 +285,31 @@
                         <!-- 생산 모달 끝 -->
 
                         <!-- 생산품 등록 모달 -->
-                        <div class="modal fade" id="addSourceModal" tabindex="-1" aria-labelledby="addSourceModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="addSourceModal" tabindex="-1" aria-labelledby="addSourceModalLabel"
+                             aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h1 class="modal-title fs-5" id="addSourceModalLabel">신규 생산품 등록</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <form id="addSourceForm">
                                             <div class="container">
                                                 <!-- 제품 선택 및 자동완성 -->
                                                 <div class="mb-3 row align-items-center">
-                                                    <label for="addSourceSelect" class="col-sm-3 col-form-label">제품</label>
+                                                    <label for="addSourceSelect"
+                                                           class="col-sm-3 col-form-label">제품</label>
                                                     <div class="col-sm-9">
                                                         <!-- 셀렉트 박스 -->
                                                         <select id="addSourceSelect" class="form-select addSource">
                                                             <option value="directInput">직접입력</option>
                                                         </select>
                                                         <!-- 인풋 필드 -->
-                                                        <input type="text" id="addSourceInput" class="form-control mt-2 addSource" placeholder="제품을 입력하세요">
+                                                        <input type="text" id="addSourceInput"
+                                                               class="form-control mt-2 addSource"
+                                                               placeholder="제품을 입력하세요">
                                                     </div>
                                                 </div>
 
@@ -241,7 +318,9 @@
                                                     <label for="sourcePrice" class="col-sm-3 col-form-label">가격</label>
                                                     <div class="col-sm-9">
                                                         <div class="input-group">
-                                                            <input type="number" id="sourcePrice" class="form-control" min="50" max="100000" value="50" step="50" name="sourcePrice" required>
+                                                            <input type="number" id="sourcePrice" class="form-control"
+                                                                   min="50" max="100000" value="50" step="50"
+                                                                   name="sourcePrice" required>
                                                             <span class="input-group-text">₩</span>
                                                         </div>
                                                     </div>
@@ -250,7 +329,8 @@
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기
+                                        </button>
                                         <button type="button" class="btn btn-primary" id="addSourceBtn">등록</button>
                                     </div>
                                 </div>
@@ -259,46 +339,60 @@
                         <!-- 생산품 등록 모달 끝 -->
 
                         <!-- 주문 처리(orderProcess) 모달 -->
-                        <div class="modal fade" id="orderProcessModal" tabindex="-1" aria-labelledby="orderProcessModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="orderProcessModal" tabindex="-1"
+                             aria-labelledby="orderProcessModalLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
                                         <h1 class="modal-title fs-5" id="orderProcessModalLabel">주문서 확인</h1>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <form id="orderProcessForm">
                                             <div class="container">
                                                 <input type="hidden" class="form-control" id="orderId" disabled>
-                                                <input type="hidden" class="form-control" id="orderSourcePriceId" disabled>
+                                                <input type="hidden" class="form-control" id="orderSourcePriceId"
+                                                       disabled>
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">주문번호</label>
                                                     <div class="col-sm-9">
-                                                        <input type="text" class="form-control" id="orderIdView" disabled>
+                                                        <input type="text" class="form-control" id="orderIdView"
+                                                               disabled>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">주문한 재료</label>
                                                     <div class="col-sm-9">
-                                                        <input type="text" class="form-control" id="orderSourceName" disabled>
+                                                        <input type="text" class="form-control" id="orderSourceName"
+                                                               disabled>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">재료 가격</label>
                                                     <div class="col-sm-9">
-                                                        <input type="text" class="form-control" id="orderSourcePrice" disabled>
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control"
+                                                                   id="orderSourcePrice" disabled>
+                                                            <span class="input-group-text">₩</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">갯수</label>
                                                     <div class="col-sm-9">
-                                                        <input type="text" class="form-control" id="orderQuantity" disabled>
+                                                        <input type="text" class="form-control" id="orderQuantity"
+                                                               disabled>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row align-items-center">
                                                     <label class="col-sm-3 col-form-label">총 주문 가격</label>
                                                     <div class="col-sm-9">
-                                                        <input type="text" class="form-control" id="orderTotalPrice" disabled>
+                                                        <div class="input-group">
+                                                            <input type="text" class="form-control" id="orderTotalPrice"
+                                                                   disabled>
+                                                            <span class="input-group-text">₩</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row align-items-center">
@@ -308,16 +402,18 @@
                                                     </div>
                                                 </div>
                                                 <div class="mb-3 row align-items-center">
-                                                    <label class="col-sm-3 col-form-label">현재 창고 재고량</label>
+                                                    <label class="col-sm-3 col-form-label">창고 재고</label>
                                                     <div class="col-sm-9">
-                                                        <input type="text" class="form-control" id="orderStockBalance" disabled>
+                                                        <input type="text" class="form-control" id="orderStockBalance"
+                                                               disabled>
                                                     </div>
                                                 </div>
                                             </div>
                                         </form>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기
+                                        </button>
                                         <button type="button" class="btn btn-primary" id="orderProcessBtn">확인</button>
                                     </div>
                                 </div>

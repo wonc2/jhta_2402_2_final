@@ -19,6 +19,7 @@
                  join SOURCE s ON s.source_id = sp.source_id
                  join PRODUCT_COMPANY pc ON pc.product_company_id = sp.product_company_id
         where pc.PRODUCT_COMPANY_ID = #{companyId}
+        order by sp.SOURCE_PRICE_ID asc
     </select>
 
     <!-- 생산업체 생산품 등록 Create, Update, Delete -->
@@ -48,41 +49,71 @@
     </insert>
 
     <!-- 창고 입출고 리스트 가져옴 -->
-    <select id="getWarehouseSources" resultType="ProductCompanyWarehouseDto" parameterType="String">
+    <select id="getWarehouseSources" resultType="ProductCompanyWarehouseDto" parameterType="ProductCompanySearchOptionDto">
         SELECT ROW_NUMBER() OVER (order by sw.produce_date asc) AS rowNum,
-                sw.source_warehouse_id                   as sourceWarehouseId,
-               sw.QUANTITY                              as sourceQuantity,
-               DATE_FORMAT(sw.produce_date, '%Y-%m-%d %h:%m') as produceDate,
-               s.name                                   as sourceName,
-               CASE
-                   WHEN sw.QUANTITY > 0 THEN '입고'
-                   ELSE '출고'
-                   END                                  as type
+        sw.source_warehouse_id                   as sourceWarehouseId,
+        sw.QUANTITY                              as sourceQuantity,
+        DATE_FORMAT(sw.produce_date, '%Y-%m-%d %h:%m') as produceDate,
+        s.name                                   as sourceName,
+        CASE
+        WHEN sw.QUANTITY &gt; 0 THEN '입고'
+        WHEN sw.QUANTITY &lt; 0 THEN '출고'
+        ELSE 'N/A'
+        END as type
         FROM SOURCE_WAREHOUSE sw
-                 JOIN SOURCE_PRICE sp on sp.SOURCE_PRICE_ID = sw.SOURCE_PRICE_ID
-                 JOIN SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
-                 JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
+        JOIN SOURCE_PRICE sp on sp.SOURCE_PRICE_ID = sw.SOURCE_PRICE_ID
+        JOIN SOURCE s on s.SOURCE_ID = sp.SOURCE_ID
+        JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         WHERE pc.PRODUCT_COMPANY_ID = #{companyId}
+        <choose>
+            <when test="type == '입고'">
+                and sw.QUANTITY &gt; 0
+            </when>
+            <when test="type == '출고'">
+                and sw.QUANTITY &lt; 0
+            </when>
+            <otherwise></otherwise>
+        </choose>
     </select>
 
     <!-- 주문 주문 주문 주문 주문 -->
+    <insert id="orderStatusTempInsert" parameterType="ProductCompanyOrderProcessDto">
+        insert into PRODUCT_ORDER_STATUS_TEMP (POST_ID, STATUS_ID)
+        VALUES (#{orderId}, #{orderStatus})
+    </insert>
+    <delete id="orderStatusTempDel" parameterType="String">
+        DELETE FROM PRODUCT_ORDER_STATUS_TEMP WHERE POST_ID = #{orderId}
+    </delete>
+    <update id="updateOrderTime" parameterType="String">
+        update PRODUCT_ORDER_STATUS_TEMP set POST_ID = POST_ID where POST_ID = #{orderId}
+    </update>
+    <select id="checkOrderLocks" resultType="boolean">
+        SELECT COUNT(*) FROM PRODUCT_ORDER_STATUS_TEMP
+    </select>
+    <select id="checkExpiredOrderLocks" resultType="boolean">
+        SELECT COUNT(*) FROM PRODUCT_ORDER_STATUS_TEMP WHERE LAST_UPDATED &lt; NOW() - INTERVAL 15 SECOND
+    </select>
+    <delete id="deleteExpiredOrderLocks">
+        DELETE FROM PRODUCT_ORDER_STATUS_TEMP WHERE LAST_UPDATED &lt; NOW() - INTERVAL 15 SECOND
+    </delete>
+
     <select id="getProductOrderList" resultType="ProductCompanyOrderDto" parameterType="ProductCompanySearchOptionDto">
         SELECT
-        ROW_NUMBER() OVER (ORDER BY po.PRODUCT_ORDER_DATE asc) AS rowNum,
+        ROW_NUMBER() OVER (ORDER BY po.PRODUCT_ORDER_DATE asc, po.PRODUCT_ORDER_ID DESC) AS rowNum,
         po.PRODUCT_ORDER_ID as orderId,
         s.NAME AS sourceName,
         po.PRICE AS sourcePrice,
         po.QUANTITY AS quantity,
         (po.PRICE * po.QUANTITY) AS totalPrice,
         DATE_FORMAT(po.PRODUCT_ORDER_DATE, '%Y-%m-%d %h:%m') AS orderDate,
-        st.STATUS AS orderStatus,
+        COALESCE(post.STATUS_ID, po.STATUS_ID) AS orderStatus,
         sp.SOURCE_PRICE_ID as sourcePriceId,
         COALESCE(sw.totalQuantity, 0) AS stockBalance
         FROM PRODUCT_ORDER po
         JOIN SOURCE_PRICE sp ON po.SOURCE_ID = sp.SOURCE_ID
         JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
-        JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
+        --         JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
         LEFT JOIN (
         SELECT
         SOURCE_PRICE_ID,
@@ -90,13 +121,14 @@
         FROM SOURCE_WAREHOUSE
         GROUP BY SOURCE_PRICE_ID
         ) sw ON sw.SOURCE_PRICE_ID = sp.SOURCE_PRICE_ID
+        LEFT JOIN PRODUCT_ORDER_STATUS_TEMP post ON po.PRODUCT_ORDER_ID = post.POST_ID
         WHERE pc.PRODUCT_COMPANY_ID = #{companyId}
         <choose>
             <when test="statusId == 1">
-                and st.STATUS_ID = 1
+                and po.STATUS_ID = 1
             </when>
             <when test="statusId == 2">
-                and st.STATUS_ID != 1
+                and po.STATUS_ID != 1
             </when>
             <otherwise></otherwise>
         </choose>
@@ -104,7 +136,7 @@
             and s.name = #{sourceName}
         </if>
         GROUP BY po.PRODUCT_ORDER_ID
-        order by po.PRODUCT_ORDER_DATE DESC
+        order by po.PRODUCT_ORDER_DATE DESC, po.PRODUCT_ORDER_ID ASC
     </select>
 
     <update id="orderProcess" parameterType="ProductCompanyOrderProcessDto">
@@ -195,7 +227,7 @@
                  JOIN SOURCE s on sp.SOURCE_ID = s.SOURCE_ID
                  JOIN PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         WHERE pc.PRODUCT_COMPANY_ID = #{companyId} and (s.SOURCE_ID = #{sourceId} or s.NAME = #{sourceName})
-        for update
+            for update
     </select>
     <select id="getSourceQuantityFromWarehouse" parameterType="String" resultType="int">
         select COALESCE(SUM(quantity), 0) from SOURCE_WAREHOUSE WHERE SOURCE_PRICE_ID = #{sourcePriceId} for update

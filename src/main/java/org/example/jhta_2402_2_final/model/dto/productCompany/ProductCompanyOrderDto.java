@@ -10,7 +10,7 @@ public class ProductCompanyOrderDto {
     private int quantity;
     private int totalPrice;
     private int rowNum;
-    private String orderStatus;
+    private Integer orderStatus;
     private int stockBalance;
     private String sourceName;
     private String orderDate; // @@: String -> Date

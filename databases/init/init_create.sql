@@ -162,11 +162,11 @@ CREATE TABLE `LOGISTICS_WAREHOUSE`
 
 -- 18. LOGISTICS_WAREHOUSE_SOURCE 테이블 생성
 CREATE TABLE LOGISTICS_WAREHOUSE_STACK (
-    LOGISTICS_WAREHOUSE_STACK_ID VARCHAR(50) PRIMARY KEY,
-    SOURCE_ID VARCHAR(50),
-    LOGISTICS_WAREHOUSE_ID VARCHAR(50),
-    QUANTITY INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                                           LOGISTICS_WAREHOUSE_STACK_ID VARCHAR(50) PRIMARY KEY,
+                                           SOURCE_ID VARCHAR(50),
+                                           LOGISTICS_WAREHOUSE_ID VARCHAR(50),
+                                           QUANTITY INT,
+                                           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 19 농장별 생산 재고 테이블
@@ -178,4 +178,15 @@ CREATE TABLE `SOURCE_WAREHOUSE`
     `SOURCE_PRICE_ID`       VARCHAR(50) ,
     PRIMARY KEY(`SOURCE_WAREHOUSE_ID`),
     FOREIGN KEY (`SOURCE_PRICE_ID`) REFERENCES `SOURCE_PRICE` (`SOURCE_PRICE_ID`)
+);
+
+-- 추가 테이블
+-- 20 작업중인 주문 임시 저장 테이블 (비어있어야함 더미데이터 x)
+CREATE TABLE PRODUCT_ORDER_STATUS_TEMP (
+                                           POST_ID VARCHAR(50),
+                                           STATUS_ID INT,
+                                           LAST_UPDATED TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                                           PRIMARY KEY (POST_ID),
+                                           CONSTRAINT FK_PRODUCT_ORDER_STATUS_TEMP_PRODUCT_ORDER FOREIGN KEY (POST_ID)
+                                               REFERENCES PRODUCT_ORDER(PRODUCT_ORDER_ID)
 );
