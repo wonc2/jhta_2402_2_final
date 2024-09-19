@@ -5,7 +5,9 @@ import lombok.Getter;
 
 // 주문 처리 dto
 @Getter
+@Builder(toBuilder = true)
 public class ProductCompanyOrderProcessDto {
+    private String companyId;
     private String orderId;
     private Integer orderStatus;
     private int sourceQuantity;

@@ -2,11 +2,10 @@ package org.example.jhta_2402_2_final.dao.product;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.example.jhta_2402_2_final.model.dto.common.SourceDto;
-import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyChartDto;
+import org.example.jhta_2402_2_final.model.dto.productCompany.ProductCompanyChartDto;
 import org.example.jhta_2402_2_final.model.dto.productCompany.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Mapper
@@ -31,7 +30,7 @@ public interface ProductCompanyDao {
     int addSource(String sourceId, String sourceName);
 
     // 생산 창고 리스트
-    List<ProductCompanyWarehouseDto> getWarehouseSources(String companyId);
+    List<ProductCompanyWarehouseDto> getWarehouseSources(ProductCompanySearchOptionDto paramData);
     // 제품 생산
     int produceSource(CompanySourceStackDto sourceStackDto);
 
@@ -44,6 +43,12 @@ public interface ProductCompanyDao {
     int orderProcess(ProductCompanyOrderProcessDto orderProcessDto);
     int orderLog(ProductCompanyOrderProcessDto orderProcessDto);
     int outboundSource(ProductCompanyOrderProcessDto orderProcessDto);
+    int orderStatusTempInsert(ProductCompanyOrderProcessDto orderProcessDto);
+    int orderStatusTempDel(String orderId);
+    int updateOrderTime(String orderId);
+    boolean checkOrderLocks();
+    boolean checkExpiredOrderLocks();
+    int deleteExpiredOrderLocks();
 
     List<ProductCompanyChartDto> getChart(String companyId);
     List<ProductCompanyChartDto> orderChart(ProductCompanySearchOptionDto searchOptionDto);

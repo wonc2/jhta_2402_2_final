@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.jhta_2402_2_final.model.dto.CustomUserDetails;
 import org.example.jhta_2402_2_final.model.dto.common.ErrorResponse;
-import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyChartDto;
 import org.example.jhta_2402_2_final.model.dto.productCompany.*;
 import org.example.jhta_2402_2_final.service.product.ProductCompanyService;
 import org.springframework.http.HttpStatus;
@@ -24,26 +23,29 @@ import java.util.stream.Collectors;
 public class ProductCompanyRestController {
     private final ProductCompanyService productCompanyService;
 
-    // companyId 가져와서 모든 컨트롤러에서 사용함
-    @ModelAttribute("companyId")
-    public String getCompanyId(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return productCompanyService.getCompanyIdByUserId(userDetails.getMemberDto().getUserId());
+    // companyId ( 사용자 정보 기반 단일 값 ) 조회
+    @GetMapping("info")
+    public  Map<String, String> getCompanyIdInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return Map.of("companyId", getCompanyId(userDetails));
     }
 
-    @GetMapping("add")
-    public ResponseEntity<CompanySourceTableDto> getSourcesByCompanyName(@ModelAttribute("companyId") String companyId) {
-        CompanySourceTableDto response = productCompanyService.findAll(companyId);
+    // 등록된 생산품 리스트, 등록안된 생산품 리스트 조회
+    @GetMapping("sources")
+    public ResponseEntity<CompanySourceTableDto> getSourcesByCompanyName(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        CompanySourceTableDto response = productCompanyService.findAll(getCompanyId(userDetails));
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("add")
-    public ResponseEntity<?> addSourceToCompany(@ModelAttribute("companyId") String companyId, @RequestBody AddSourceDto paramData) {
-        AddSourceDto addSourceDto = paramData.toBuilder().companyId(companyId).build();
+    // 신규 생산품 등록
+    @PostMapping("sources")
+    public ResponseEntity<?> addSourceToCompany(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody AddSourceDto paramData) {
+        AddSourceDto addSourceDto = paramData.toBuilder().companyId(getCompanyId(userDetails)).build();
         productCompanyService.addSourceToCompany(addSourceDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("add/{companySourceId}")
+    // 생산품 가격 수정
+    @PutMapping("sources/{companySourceId}")
     public ResponseEntity<?> updateSource(@PathVariable String companySourceId, @Valid @RequestBody SourcePriceUpdateDto paramData, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errorMessages = bindingResult.getAllErrors().stream()
@@ -55,12 +57,14 @@ public class ProductCompanyRestController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @DeleteMapping("add/{companySourceId}")
+    // 생산품 삭제
+    @DeleteMapping("sources/{companySourceId}")
     public ResponseEntity<?> deleteSourceFromCompany(@PathVariable String companySourceId) {
         productCompanyService.deleteSourceFromCompany(companySourceId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    // 생산품 입고 ( 창고에 입고할 갯수 입력 후 등록 )
     @PostMapping("produce")
     public ResponseEntity<?> produce(@Valid @RequestBody CompanySourceStackDto paramData, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -72,42 +76,68 @@ public class ProductCompanyRestController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    // @@: produce -> warehouse ?
-    @GetMapping("produce")
-    public ResponseEntity<List<ProductCompanyWarehouseDto>> getWarehouseSources(@ModelAttribute("companyId") String companyId) {
-        List<ProductCompanyWarehouseDto> response = productCompanyService.getWarehouseSources(companyId);
+    // 창고 입출고 기록 리스트 조회
+    @GetMapping("warehouse")
+    public ResponseEntity<List<ProductCompanyWarehouseDto>> getWarehouseSources(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute ProductCompanySearchOptionDto paramData) {
+        ProductCompanySearchOptionDto searchOptionDto = paramData.toBuilder().companyId(getCompanyId(userDetails)).build();
+        List<ProductCompanyWarehouseDto> response = productCompanyService.getWarehouseSources(searchOptionDto);
         return ResponseEntity.ok().body(response);
     }
 
+    // 주문 리스트 조회
     @GetMapping("order")
-    public ResponseEntity<List<ProductCompanyOrderDto>> getOrderList(@ModelAttribute("companyId") String companyId, @ModelAttribute ProductCompanySearchOptionDto paramData) {
-        ProductCompanySearchOptionDto searchOptionDto = paramData.toBuilder().companyId(companyId).build();
+    public ResponseEntity<List<ProductCompanyOrderDto>> getOrderList(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute ProductCompanySearchOptionDto paramData) {
+        ProductCompanySearchOptionDto searchOptionDto = paramData.toBuilder().companyId(getCompanyId(userDetails)).build();
         List<ProductCompanyOrderDto> response = productCompanyService.getProductOrderList(searchOptionDto);
         return ResponseEntity.ok().body(response);
     }
 
+    // 주문 처리
     @PostMapping("order")
-    public ResponseEntity<?> orderProcess(@RequestBody ProductCompanyOrderProcessDto paramData) {
-        productCompanyService.orderProcess(paramData);
+    public ResponseEntity<?> orderProcess(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ProductCompanyOrderProcessDto paramData) {
+        ProductCompanyOrderProcessDto orderProcessDto = paramData.toBuilder().companyId(getCompanyId(userDetails)).build();
+        productCompanyService.orderProcess(orderProcessDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    // 주문 잠금 ( 다른 유저 접근 방지 )
+    @PostMapping("lockOrder")
+    public ResponseEntity<?> orderProcessLock(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody ProductCompanyOrderProcessDto paramData) {
+        ProductCompanyOrderProcessDto orderProcessDto = paramData.toBuilder().companyId(getCompanyId(userDetails)).build();
+        productCompanyService.orderProcessLock(orderProcessDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    // 주문 처리중 ( 주문 처리중인지 아닌지 확인 처리중이면 시간 업데이트 -> 스케줄러 삭제 방지 )
+    @PutMapping("lockOrder/{orderId}")
+    public ResponseEntity<?> updateOrderTime(@PathVariable String orderId){
+        productCompanyService.updateOrderTime(orderId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 주문 잠금 해제 ( 작업 완료, 작업 중단시 -> 잠금 해제 )
+    @DeleteMapping("lockOrder/{orderId}")
+    public ResponseEntity<?> unlockOrder(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String orderId) {
+        productCompanyService.unlockOrder(getCompanyId(userDetails), orderId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 등록된 생산품 리스트 조회
     @GetMapping("allCompanySources")
-    public ResponseEntity<List<String>> selectAllCompanySource(@ModelAttribute("companyId") String companyId) {
-        List<String> responseData = productCompanyService.selectAllCompanySource(companyId);
+    public ResponseEntity<List<String>> selectAllCompanySource(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<String> responseData = productCompanyService.selectAllCompanySource(getCompanyId(userDetails));
         return ResponseEntity.ok().body(responseData);
     }
 
+    // 차트 리스트 ( order, warehouse ) 조회
     @GetMapping("chart")
-    public ResponseEntity<List<ProductCompanyChartDto>> getChart(@ModelAttribute("companyId") String companyId) {
-        List<ProductCompanyChartDto> response = productCompanyService.getChart(companyId);
+    public ResponseEntity<ProductCompanyChartResponseDto> getChart(@AuthenticationPrincipal CustomUserDetails userDetails, @ModelAttribute ProductCompanySearchOptionDto paramData) {
+        ProductCompanySearchOptionDto searchOptionDto = paramData.toBuilder().companyId(getCompanyId(userDetails)).build();
+        ProductCompanyChartResponseDto response = productCompanyService.getChart(searchOptionDto);
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("orderChart")
-    public ResponseEntity<List<ProductCompanyChartDto>> orderChart(@ModelAttribute("companyId") String companyId, @ModelAttribute ProductCompanySearchOptionDto paramData) {
-        ProductCompanySearchOptionDto searchOptionDto = paramData.toBuilder().companyId(companyId).build();
-        List<ProductCompanyChartDto> response = productCompanyService.orderChart(searchOptionDto);
-        return ResponseEntity.ok().body(response);
+    private String getCompanyId(@AuthenticationPrincipal CustomUserDetails userDetails){
+        return productCompanyService.getCompanyIdByUserId(userDetails.getMemberDto().getUserId());
     }
 }

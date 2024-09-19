@@ -12,7 +12,7 @@ import lombok.Getter;
 public class SourcePriceUpdateDto {
     private String companyId;
     private String companySourceId;
-    @Positive(message = "fail: 0 이하로 변경 불가")
+    @Positive(message = "0 이하의 수, 문자, 공백 입력 x")
     private int sourcePrice;
     private int oldPrice;
 }

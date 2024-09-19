@@ -11,4 +11,5 @@ public class ProductCompanySearchOptionDto {
     private String sourceName;
     private String companyId;
     private Integer month;
+    private String type; // 입출고
 }

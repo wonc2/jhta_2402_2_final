@@ -1,7 +1,6 @@
 package org.example.jhta_2402_2_final.dao;
 
 import org.example.jhta_2402_2_final.dao.product.ProductCompanyDao;
-import org.example.jhta_2402_2_final.model.dto.product.ProductCompanyChartDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
