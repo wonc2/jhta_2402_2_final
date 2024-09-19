@@ -8,7 +8,7 @@
 
 /* 슬라이드가 보일 때의 높이와 불투명도 */
 .slide-container.show {
-    max-height: 1000px; /* 충분히 큰 값으로 설정하여 모든 내용이 보이도록 함 */
+    max-height: 3000px; /* 충분히 큰 값으로 설정하여 모든 내용이 보이도록 함 */
     opacity: 1; /* 완전 불투명 */
 }
 
@@ -27,3 +27,4 @@
     background-color: #e9ecef; /* 호버 시 배경색 변경 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
 }
+

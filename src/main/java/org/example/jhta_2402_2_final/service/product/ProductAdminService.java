@@ -85,7 +85,9 @@ public class ProductAdminService {
                 .productCompanyName(productCompanyInsertDto.getProductCompanyName())
                 .productCompanyAddress(productCompanyInsertDto.getProductCompanyAddress())
                 .build();
-        productDao.insertProductCompany(productCompanyDto);
+        if(productDao.getProductCompanyId(productCompanyDto.getProductCompanyName()).isEmpty()){
+            productDao.insertProductCompany(productCompanyDto);
+        }
         return 0;
     }
 }
