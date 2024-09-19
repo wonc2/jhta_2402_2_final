@@ -42,18 +42,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)throws Exception{
         httpSecurity.authorizeHttpRequests((auth)->auth
-                        .requestMatchers("/","/member/**","/test","/adminMain/**","/distribution/**","/wareHouse/**","/distributionOrder/**")
+                        .requestMatchers("/api/**","/member/**")
                         .permitAll()
-                        .requestMatchers("/product/role").hasAuthority("ROLE_PRODUCT_MANAGER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/user/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers("/manager/**").hasAnyRole("ADMIN","MANAGER")
-                        .requestMatchers("/distribution/**").hasAnyRole("ADMIN","MANAGER")
-                        .requestMatchers("/sales/user").hasAuthority("ROLE_SALES_MANAGER")
-                        .requestMatchers("/sales/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/product/company/**").hasAnyRole("PRODUCT_MANAGER")
-                        .requestMatchers("/api/product/company/**").hasAnyRole("PRODUCT_MANAGER")
-//                .requestMatchers("/**").hasRole("ADMIN")
+                        .requestMatchers("/wareHouse/selectAll").hasAnyRole("ADMIN","LOGISTICS_MANAGER")
+                        .requestMatchers("/distribution/**").hasAnyRole("LOGISTICS_MANAGER")
+                        .requestMatchers("/sales/user").hasAnyRole("SALES_MANAGER")
+                        .requestMatchers("/product/company/**").hasAnyRole("ADMIN","PRODUCT_MANAGER")
+                        .requestMatchers("/**").hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()
         );
@@ -62,8 +57,7 @@ public class SecurityConfig {
                         .loginProcessingUrl("/member/login")
                         .usernameParameter("userId")
                         .passwordParameter("userPassword")
-                        .defaultSuccessUrl("/",true) //true를 쓰지 않으면 이전 페이지로 간다.
-//                .successHandler(customLoginSuccessHandler())
+                        .successHandler(customLoginSuccessHandler())
                         .failureHandler(customFailureHandler)  //로그인 실패시 어떻게 할건지를 니가 만들어서 처리해라
                         .permitAll()
         );
