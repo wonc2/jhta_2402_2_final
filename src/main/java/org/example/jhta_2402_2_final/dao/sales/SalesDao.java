@@ -133,4 +133,15 @@ public interface SalesDao {
     String getKitOrderStatus(UUID kitOrderId);
 
     KitPriceDto getCurrentPriceAndMinPrice(String mealkitId);
+
+    //유저아이디 중복검사
+    boolean checkUserIdExists(String userId);
+
+    boolean checkCompanyNameExists(String companyName);
+
+    boolean checkEmailExists(String email);
+
+    boolean checkTelExists(String tel);
+
+    boolean checkAddressExists(String address);
 }

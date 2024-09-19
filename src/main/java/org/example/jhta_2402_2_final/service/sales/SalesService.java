@@ -306,5 +306,28 @@ public class SalesService {
     public KitPriceDto getCurrentPriceAndMinPrice (String mealkitId) {
         return salesDao.getCurrentPriceAndMinPrice(mealkitId);
     }
+
+    //유저아이디 중복 검사
+    public boolean checkUserIdExists(String userId) {
+        return salesDao.checkUserIdExists(userId);
+    }
+
+    //업체명 중복검사
+    public boolean checkCompanyNameExists(String companyName) {
+        return salesDao.checkCompanyNameExists(companyName);
+    }
+
+    //이메일 중복검사
+    public boolean checkEmailExists(String email) {
+        return salesDao.checkEmailExists(email);
+    }
+
+    public boolean checkTelExists(String tel) {
+        return salesDao.checkTelExists(tel);
+    }
+
+    public boolean checkAddressExists(String address) {
+        return salesDao.checkAddressExists(address);
+    }
 }
 

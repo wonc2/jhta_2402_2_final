@@ -252,4 +252,41 @@ public class SalesAdminController {
         return "redirect:/sales/admin";
     }
 
+    @ResponseBody
+    @GetMapping("/checkUserId")
+    public String checkUserId(@RequestParam String userId) {
+        boolean exists = salesService.checkUserIdExists(userId);  // 중복 여부 확인 로직
+        return exists ? "duplicate" : "available";
+    }
+
+    @ResponseBody
+    @GetMapping("/checkCompanyName")
+    public String checkCompanyName(@RequestParam String companyName) {
+        System.out.println("companyName =>>>>>>> " + companyName);
+        boolean exists = salesService.checkCompanyNameExists(companyName);  // 중복 여부 확인 로직
+        return exists ? "duplicate" : "available";
+    }
+
+    @ResponseBody
+    @GetMapping("/checkEmail")
+    public String checkEmail(@RequestParam String email) {
+        boolean exists = salesService.checkEmailExists(email);  // 이메일 중복 여부 확인 로직
+        return exists ? "duplicate" : "available";
+    }
+
+    @ResponseBody
+    @GetMapping("/checkTel")
+    public String checkTel(@RequestParam String tel) {
+        boolean exists = salesService.checkTelExists(tel);
+        return exists ? "duplicate" : "available";
+    }
+
+    @ResponseBody
+    @GetMapping("/checkAddress")
+    public String checkAddress(@RequestParam String address) {
+        boolean exists = salesService.checkAddressExists(address);
+        return exists ? "duplicate" : "available";
+    }
+
+
 }

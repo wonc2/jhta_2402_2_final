@@ -666,4 +666,37 @@ company_sales AS (
         where MEALKIT_ID = #{mealkitId}
         group by MEALKIT_ID;
     </select>
+
+    <select id="checkUserIdExists" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+        FROM USER
+        WHERE USER_ID = #{userId}
+    </select>
+
+    <select id="checkCompanyNameExists" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+        FROM KIT_COMPANY
+        WHERE NAME = #{companyName}
+    </select>
+
+
+    <select id="checkEmailExists" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+        FROM USER
+        WHERE USER_EMAIL = #{email}
+    </select>
+
+    <select id="checkTelExists" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+        FROM USER
+        WHERE USER_TEL = #{tel}
+    </select>
+
+    <select id="checkAddressExists" resultType="boolean">
+        SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+        FROM KIT_COMPANY
+        WHERE ADDRESS = #{address}
+    </select>
+
+
 </mapper>
