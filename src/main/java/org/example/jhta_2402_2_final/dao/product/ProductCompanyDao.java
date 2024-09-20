@@ -14,6 +14,7 @@ public interface ProductCompanyDao {
 
     // 유저 인증
     Optional<String> getCompanyIdByUserId(String userId);
+    Optional<String> getCompanyNameByUserId(String userId); // 한번만 씀
 
     // 생산업체에 등록된 생산품 리스트 가져옴
     List<CompanySourceDto> getSourcesByCompanyName(String companyId);
@@ -35,6 +36,7 @@ public interface ProductCompanyDao {
     // 제품 생산
     int produceSource(CompanySourceStackDto sourceStackDto);
     int deleteWarehouseProduceLog(String sourceWarehouseId);
+    Map<String, Object> getSourcePriceIdBySourceWarehouseId(String sourceWarehouseId);
 
     boolean checkDuplicateCompanySource(AddSourceDto addSourceDto);
 
@@ -61,6 +63,4 @@ public interface ProductCompanyDao {
     int getOrderStatus(String orderId);
     int getSourcePriceById(String companySourceId);
     int getSourceQuantityFromWarehouse(String sourcePriceId);
-
-    Map<String, Object> getSourcePriceIdBySourceWarehouseId(String sourceWarehouseId);
 }

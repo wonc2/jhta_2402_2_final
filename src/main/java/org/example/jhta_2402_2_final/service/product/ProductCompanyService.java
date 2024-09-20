@@ -34,6 +34,10 @@ public class ProductCompanyService {
         return productCompanyDao.getCompanyIdByUserId(userId)
                 .orElseThrow(() -> new ProductCompanyAccessException("회사 정보를 찾을 수 없습니다.", HttpStatus.FORBIDDEN));
     }
+    public String getCompanyNameByUserId(String userId) {
+        return productCompanyDao.getCompanyNameByUserId(userId)
+                .orElseThrow(() -> new ProductCompanyAccessException("회사 정보를 찾을 수 없습니다.", HttpStatus.FORBIDDEN));
+    }
 
     /* CompanySource Table */
 
@@ -81,7 +85,7 @@ public class ProductCompanyService {
 
     /* 등록된 생산품 Update ( 가격 수정 ) */
     @Transactional
-    public void sourcePriceUpdate(SourcePriceUpdateDto updateDto) {
+    public void sourcePriceUpdate(String companyId, SourcePriceUpdateDto updateDto) {
         int price = productCompanyDao.getSourcePriceById(updateDto.getCompanySourceId());
         if (updateDto.getOldPrice() != price){
             throw new CompanySourceException("실패: 가격 수정중 다른 사용자에 의해 가격이 수정 되었음", HttpStatus.CONFLICT);
@@ -92,7 +96,7 @@ public class ProductCompanyService {
         productCompanyDao.sourcePriceUpdate(updateDto);
         productCompanyDao.sourcePriceHistory(updateDto);
 
-//        messagingTemplate.convertAndSend("/topic/product/company", new ProductCompanyUpdateMessage());
+        messagingTemplate.convertAndSend("/topic/product/company/" + companyId, "updated");
     }
 
     /* 등록된 생산품 Delete */
@@ -107,7 +111,7 @@ public class ProductCompanyService {
 
     /* 등록된 상품 생산 -> 창고에 적재 */
     @Transactional
-    public void produceSource(CompanySourceStackDto sourceStackDto) {
+    public void produceSource(String companyId, CompanySourceStackDto sourceStackDto) {
         String sourcePriceId = sourceStackDto.getSourcePriceId();
         int checkQuantity =  sourceStackDto.getCheckQuantity();
         int warehouseSourceQuantity = productCompanyDao.getSourceQuantityFromWarehouse(sourcePriceId);
@@ -118,7 +122,7 @@ public class ProductCompanyService {
 
         productCompanyDao.produceSource(sourceStackDto);
 
-//        messagingTemplate.convertAndSend("/topic/product/company", new ProductCompanyUpdateMessage());
+        messagingTemplate.convertAndSend("/topic/product/company/" + companyId, "updated");
     }
 
 
@@ -129,7 +133,7 @@ public class ProductCompanyService {
         return productCompanyDao.getWarehouseSources(paramData);
     }
     @Transactional
-    public void deleteWarehouseProduceLog(String sourceWarehouseId) {
+    public void deleteWarehouseProduceLog(String companyId,String sourceWarehouseId) {
         Map<String, Object> warehouseMap = productCompanyDao.getSourcePriceIdBySourceWarehouseId(sourceWarehouseId);
         String sourcePriceId = warehouseMap.get("sourcePriceId").toString();
         int checkQuantity = (int) warehouseMap.get("quantity");
@@ -138,6 +142,7 @@ public class ProductCompanyService {
             throw new RuntimeException();
         }
         productCompanyDao.deleteWarehouseProduceLog(sourceWarehouseId);
+        messagingTemplate.convertAndSend("/topic/product/company/" + companyId, "updated");
     }
 
 
