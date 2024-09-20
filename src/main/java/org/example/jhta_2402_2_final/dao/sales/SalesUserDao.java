@@ -18,4 +18,12 @@ public interface SalesUserDao {
     List<Map<String, Object>> selectKitStorage(String kitCompanyId);
 
     List<Integer> selectMonthly(String kitCompanyId);
+
+    int getTotalMonthSale(int year, int month, String kitCompanyId);
+
+    int getTotalYearSale(int year, String kitCompanyId);
+
+    int getProcessingCount(String kitCompanyId);
+
+    int getCompleteCount(String kitCompanyId);
 }

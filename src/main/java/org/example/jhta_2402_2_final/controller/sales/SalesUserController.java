@@ -12,7 +12,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -37,6 +40,39 @@ public class SalesUserController {
         UserKitOrderDto info = salesUserService.selectKitCompanyIdByUserId(userId);
         String kitCompanyId = info.getKitCompanyId();
         model.addAttribute("info",info);
+
+        // 현재 날짜를 가져옴
+        LocalDate currentDate = LocalDate.now();
+
+        // 년도와 달을 구함
+        int currentYear = currentDate.getYear();
+        int currentMonth = currentDate.getMonthValue();
+
+        model.addAttribute("currentYear", currentYear);
+        model.addAttribute("currentMonth", currentMonth);
+
+
+        //월 매출액
+        int totalMonthSale = salesUserService.getTotalMonthSale(currentYear, currentMonth, kitCompanyId);
+
+        // 숫자를 3자리마다 콤마로 구분하는 포맷 설정
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.KOREA);
+        String formattedMonthSale = numberFormat.format(totalMonthSale);
+
+        model.addAttribute("totalMonthSale", formattedMonthSale);
+
+        //연매출액
+        int totalYearSale = salesUserService.getTotalYearSale(currentYear, kitCompanyId);
+        String formattedYearSale = numberFormat.format(totalYearSale);
+        model.addAttribute("totalYearSale", formattedYearSale);
+
+        //처리중인 주문 개수
+        int processingCount = salesUserService.getProcessCount(kitCompanyId);
+        model.addAttribute("processingCount",processingCount);
+
+        //처리완료된 주문 개수
+        int completeCount = salesUserService.getCompleteCount(kitCompanyId);
+        model.addAttribute("completeCount",completeCount);
 
         //해당 업체 주문 정보 가져오기
         List<UserKitOrderDto> list = salesUserService.selectKitOrderByKitCompanyId(kitCompanyId);

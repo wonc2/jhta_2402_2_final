@@ -144,4 +144,14 @@ public interface SalesDao {
     boolean checkTelExists(String tel);
 
     boolean checkAddressExists(String address);
+
+    //월매출가져오기
+    int getTotalMonthSale(int year, int month);
+
+    //연매출가져오기
+    int getTotalYearSale(int year);
+
+    int getProcessingCount();
+
+    int getCompleteCount();
 }

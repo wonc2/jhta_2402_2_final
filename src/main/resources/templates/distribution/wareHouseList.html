@@ -432,7 +432,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                     <button type="submit" class="btn btn-primary" form="orderForm">발주 요청</button>
-                    <form th:action="@{/sales/shinhyeok}" th:method="post">
+                    <form th:action="@{/wareHouse/sales}" th:method="post">
                         <input type="hidden" name="kitOrderIdForSale" id="hiddenKitOrderIdForSale">
                         <input type="hidden" name="sourceNamesForSale" id="hiddenSourceNamesForSale">
                         <input type="hidden" name="itemQuantitiesForSale" id="hiddenItemQuantitiesForSale">

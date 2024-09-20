@@ -39,4 +39,20 @@ public class SalesUserService {
     public List<Integer> selectMonthly(String kitCompanyId) {
         return salesUserDao.selectMonthly(kitCompanyId);
     }
+
+    public int getTotalMonthSale(int currentYear, int currentMonth, String kitCompanyId) {
+        return salesUserDao.getTotalMonthSale(currentYear, currentMonth, kitCompanyId);
+    }
+
+    public int getTotalYearSale(int currentYear, String kitCompanyId) {
+        return salesUserDao.getTotalYearSale(currentYear, kitCompanyId);
+    }
+
+    public int getProcessCount(String kitCompanyId) {
+        return salesUserDao.getProcessingCount(kitCompanyId);
+    }
+
+    public int getCompleteCount(String kitCompanyId) {
+        return salesUserDao.getCompleteCount(kitCompanyId);
+    }
 }

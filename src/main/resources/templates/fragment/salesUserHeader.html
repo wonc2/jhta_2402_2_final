@@ -1,45 +1,13 @@
 <!-- adminHeader.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <!-- 여기에 기존의 <head> 태그 안의 내용을 복사 -->
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
-    <title>SCM</title>
-    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-    <link href="/css/styles.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    <script th:inline="javascript" th:src="@{/js/common.js}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const alertMessage = document.getElementById('alertMessage');
-
-            if (alertMessage) {
-                // 3초 후 알림 메시지를 숨김
-                setTimeout(function() {
-                    alertMessage.style.opacity = 0;
-                    setTimeout(function() {
-                        alertMessage.style.display = 'none';
-                    }, 1000); // 1초 후 display: none; 설정
-                }, 3000); // 3초 후
-            }
-        });
-    </script>
-
-</head>
 <body>
 <div id="toastContainer" style="position: fixed; bottom: 20px; right: 20px; z-index: 1060;"></div>
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- 여기에 기존의 <nav> 태그 안의 내용을 복사 -->
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="#">SCM</a>
+    <a class="navbar-brand ps-3" href="/sales/user">SCM</a>
 
     <!-- Navbar Search-->
     <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">

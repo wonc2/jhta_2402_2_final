@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
+import java.text.NumberFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -30,9 +32,41 @@ public class SalesAdminController {
         redirectAttributes.addFlashAttribute("message", content);
     }
 
-
     @GetMapping
     public String salesMain(Model model) {
+
+        // 현재 날짜를 가져옴
+        LocalDate currentDate = LocalDate.now();
+
+        // 년도와 달을 구함
+        int currentYear = currentDate.getYear();
+        int currentMonth = currentDate.getMonthValue();
+
+        model.addAttribute("currentYear", currentYear);
+        model.addAttribute("currentMonth", currentMonth);
+
+
+        //월 매출액
+        int totalMonthSale = salesService.getTotalMonthSale(currentYear, currentMonth);
+
+        // 숫자를 3자리마다 콤마로 구분하는 포맷 설정
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.KOREA);
+        String formattedMonthSale = numberFormat.format(totalMonthSale);
+
+        model.addAttribute("totalMonthSale", formattedMonthSale);
+
+        //연매출액
+        int totalYearSale = salesService.getTotalYearSale(currentYear);
+        String formattedYearSale = numberFormat.format(totalYearSale);
+        model.addAttribute("totalYearSale", formattedYearSale);
+
+        //처리중인 주문 개수
+        int processingCount = salesService.getProcessCount();
+        model.addAttribute("processingCount",processingCount);
+
+        //처리완료된 주문 개수
+        int completeCount = salesService.getCompleteCount();
+        model.addAttribute("completeCount",completeCount);
 
         //업체별 월별 판매량
         List<Map<String, Object>> monthlySales = salesService.getMonthlySales();
@@ -45,10 +79,6 @@ public class SalesAdminController {
         //밀키트와 해당 밀키트의 재료 가져오기
         List<KitSourceDetailDto> kitSourceDetails = salesService.getAllKitSourceDetail();
         model.addAttribute("kitSourceDetails", kitSourceDetails);
-
-        //디비 테이블 그대로 가져오기
-        List<KitOrderDto> kitOrders = salesService.getAllKitOrder();
-        model.addAttribute("kitOrders", kitOrders);
 
         //상세정보 조인해서 가져오기
         List<KitOrderDetailDto> kitOrderDetails = salesService.getAllKitOrderDetail();

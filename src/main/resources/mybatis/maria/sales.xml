@@ -698,5 +698,73 @@ company_sales AS (
         WHERE ADDRESS = #{address}
     </select>
 
+<!--    월매출가져오기-->
+    <select id="getTotalMonthSale" resultType="int">
+        SELECT
+            SUM(o.QUANTITY * m.PRICE) AS totalSum
+        FROM
+            KIT_ORDER o
+                JOIN
+            KIT_COMPANY c ON o.KIT_COMPANY_ID = c.KIT_COMPANY_ID
+                JOIN
+            MEALKIT m ON o.MEALKIT_ID = m.MEALKIT_ID
+                JOIN
+            STATUS s ON o.STATUS_ID = s.STATUS_ID
+        WHERE
+            o.STATUS_ID = 3 AND
+            YEAR(o.PRODUCT_ORDER_DATE) = #{year} AND
+            MONTH(o.PRODUCT_ORDER_DATE) = #{month};
+
+    </select>
+
+    <!--    연매출가져오기-->
+    <select id="getTotalYearSale" resultType="int">
+        SELECT
+            SUM(o.QUANTITY * m.PRICE) AS totalSum
+        FROM
+            KIT_ORDER o
+                JOIN
+            KIT_COMPANY c ON o.KIT_COMPANY_ID = c.KIT_COMPANY_ID
+                JOIN
+            MEALKIT m ON o.MEALKIT_ID = m.MEALKIT_ID
+                JOIN
+            STATUS s ON o.STATUS_ID = s.STATUS_ID
+        WHERE
+            o.STATUS_ID = 3 AND
+            YEAR(o.PRODUCT_ORDER_DATE) = #{year}
+
+    </select>
+
+
+    <select id="getProcessingCount" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            KIT_ORDER o
+                JOIN
+            KIT_COMPANY c ON o.KIT_COMPANY_ID = c.KIT_COMPANY_ID
+                JOIN
+            MEALKIT m ON o.MEALKIT_ID = m.MEALKIT_ID
+                JOIN
+            STATUS s ON o.STATUS_ID = s.STATUS_ID
+        WHERE
+            o.STATUS_ID NOT IN (3, 4)
+    </select>
+
+    <select id="getCompleteCount" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            KIT_ORDER o
+                JOIN
+            KIT_COMPANY c ON o.KIT_COMPANY_ID = c.KIT_COMPANY_ID
+                JOIN
+            MEALKIT m ON o.MEALKIT_ID = m.MEALKIT_ID
+                JOIN
+            STATUS s ON o.STATUS_ID = s.STATUS_ID
+        WHERE
+            o.STATUS_ID = 3
+    </select>
+
 
 </mapper>

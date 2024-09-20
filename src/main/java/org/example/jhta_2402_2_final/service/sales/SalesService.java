@@ -19,36 +19,14 @@ public class SalesService {
     private final SalesDao salesDao;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public List<KitOrderDto> getAllKitOrder() {
-        return salesDao.findAll();
-    }
-
-    public KitOrderDto getKitOrderById(UUID id) {
-        return salesDao.findById(id).get();
-    }
-
     public int createKitOrder(KitOrderDto kitOrderDto) {
-
         UUID newKitOrderId = UUID.randomUUID();
         kitOrderDto.setKitOrderId(newKitOrderId);
         kitOrderDto.setStatusId(1);
-        System.out.println("kitOrderDto =>>>>>>>>> " + kitOrderDto);
         return salesDao.insert(kitOrderDto);
     }
 
-    public int updateKitOrder(KitOrderDto kitOrderDto) {
-        return salesDao.update(kitOrderDto);
-    }
-
-    public int deleteKitOrder(UUID id) {
-        return salesDao.delete(id);
-    }
-
-    public List<KitOrderDto> searchKitOrder(String category, String keyword) {return  salesDao.search(category, keyword);}
-
-
     public List<KitOrderDetailDto> getAllKitOrderDetail() {
-
         return salesDao.findAllDetail();
     }
 
@@ -328,6 +306,22 @@ public class SalesService {
 
     public boolean checkAddressExists(String address) {
         return salesDao.checkAddressExists(address);
+    }
+
+    public int getTotalMonthSale(int currentYear, int currentMonth) {
+        return salesDao.getTotalMonthSale(currentYear, currentMonth);
+    }
+
+    public int getTotalYearSale(int currentYear) {
+        return salesDao.getTotalYearSale(currentYear);
+    }
+
+    public int getProcessCount() {
+        return salesDao.getProcessingCount();
+    }
+
+    public int getCompleteCount() {
+        return salesDao.getCompleteCount();
     }
 }
 

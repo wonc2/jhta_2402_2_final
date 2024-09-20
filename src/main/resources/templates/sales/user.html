@@ -5,16 +5,16 @@
 </head>
 
 
-<div th:replace="~{fragment/userHeader02 :: body}"></div>
+<div th:replace="~{fragment/salesUserHeader :: body}"></div>
 <div id="layoutSidenav_content">
     <!-- 페이지마다 다른 콘텐츠 -->
     <main>
-            <div id="alertMessage" th:if="${message}" class="alert alert-info" role="alert" th:text="${message}"></div>
+        <div id="alertMessage" th:if="${message}" class="alert alert-info" role="alert" th:text="${message}"></div>
 
         <div class="container-fluid px-4">
-            <h1 class="mt-4 mb-4">판매 유저 페이지</h1>
+
             <!-- 3개의 버튼을 일렬로 배치 -->
-            <div class="d-flex justify-content-end mb-4">
+            <div class="d-flex justify-content-end mb-4 mt-4">
                 <button class="btn btn-primary mx-2"
                         data-bs-toggle="modal"
                         data-bs-target="#insertKitOrderModal">
@@ -22,12 +22,81 @@
                 </button>
             </div>
 
-                <div class="card mt-4 mb-5">
+            <div class="row mb-3">
+                <!--               월매출 카드-->
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col ms-2 mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" >
+                                        월 매출액</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="'₩'+${totalMonthSale}">40,000</div>
+                                </div>
+                                <div class="col-auto mr-1">
+                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--                연매출 카드-->
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col ms-2 mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        연 매출액</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800" th:text="'₩'+${totalYearSale}">215,000</div>
+                                </div>
+                                <div class="col-auto mr-1">
+                                    <i class="fa-solid fa-won-sign fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--                주문 처리중-->
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col ms-2 mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        주문 처리중
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">1000</div>
+                                </div>
+                                <div class="col-auto mr-1">
+                                    <i class="fa-solid fa-bars-progress fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--                주문 완료-->
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col ms-2 mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        주문 완료</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                                </div>
+                                <div class="col-auto mr-1">
+                                    <i class="fa-solid fa-check fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+<!--로그인 정보-->
+                <div class="card shadow mt-4 mb-5">
                     <div class="card-header">
-<!--                        <i class="fa-solid fa-user-minus"></i>-->
-<!--                        <i class="fa-solid fa-info"></i>-->
-<!--                        <i class="fa-solid fa-circle-info"></i>-->
-                        <i class="fa-solid fa-user"></i>
+                        <i class="fa-solid fa-user mr-1"></i>
                         <span th:text="${userId}"></span>님의 정보
                     </div>
                     <div class="card-body">
@@ -63,15 +132,10 @@
                         </div>
                     </div>
                 </div>
-
-
-
-
-
             <!--차트-->
             <div class="row">
                 <div class="col-xl-6">
-                    <div class="card mb-4">
+                    <div class="card shadow mb-4">
                         <div class="card-header">
                             <i class="fa-solid fa-chart-column"></i>
                             <span th:text="${info.kitCompanyName}"></span> 업체 밀키트 재고 수량
@@ -82,7 +146,7 @@
                     </div>
                 </div>
                 <div class="col-xl-6">
-                    <div class="card mb-4">
+                    <div class="card shadow mb-4">
                         <div class="card-header">
                             <i class="fa-solid fa-chart-line"></i>
                             <span th:text="${info.kitCompanyName}"></span> 업체 월별 매출액
@@ -94,7 +158,7 @@
                 </div>
             </div>
             <!--판매처리-->
-            <div class="card mb-5">
+            <div class="card shadow mb-5">
                 <div class="card-header">
                     <i class="fa-solid fa-list"></i>
                     <span th:text="${info.kitCompanyName}"></span> 업체 밀키트 주문 내역
