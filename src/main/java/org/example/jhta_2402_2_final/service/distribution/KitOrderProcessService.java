@@ -10,6 +10,7 @@ import org.example.jhta_2402_2_final.model.dto.distribution.OrderDetail;
 import org.example.jhta_2402_2_final.model.dto.distribution.RequestOrderDto;
 import org.example.jhta_2402_2_final.model.dto.distribution.WareHouseStockChartDto;
 import org.example.jhta_2402_2_final.service.sales.SalesService;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class KitOrderProcessService {
     private final KitOrderProcessDao kitOrderProcessDao;
     private final SalesService salesService;
     private final SalesDao salesDao;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public List<Map<String, Object>> findNewOrders() {
         return kitOrderProcessDao.findNewOrders();
@@ -128,6 +130,8 @@ public class KitOrderProcessService {
         // 6. 모든 재료가 성공적으로 출고되었으면 주문 상태를 '처리 완료'로 업데이트
         kitOrderProcessDao.updateKitOrderStatus(kitOrderId, 6); // 상태 6으로 변경
         kitOrderProcessDao.insertKitOrderLog(kitOrderId, 6); // 로그 기록 추가
+
+        messagingTemplate.convertAndSend("/topic/warehouse/update", "update");
 
         return true; // 성공적으로 처리 완료
     }

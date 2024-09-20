@@ -8,6 +8,8 @@ import org.example.jhta_2402_2_final.service.sales.SalesService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,12 @@ public class KitOrderProcessController {
 
     private final KitOrderProcessService kitOrderProcessService;
     private final SalesService salesService;
+
+    @MessageMapping("/kitOrderProcess/update")
+    @SendTo("/topic/warehouse/update")
+    public String sendUpdate() {
+        return "connected";
+    }
 
     @GetMapping("/main")
     public String kitOrderProcessMainPage(Model model) {

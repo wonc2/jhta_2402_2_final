@@ -297,49 +297,27 @@
 
 <!-- Script block to handle modals -->
 <script th:inline="javascript">
-    // 재료확인/발주 modal 안의 정보들을 나타내는 것과 판매 버튼에 관한 document
-    /*document.addEventListener('DOMContentLoaded', () => {
-        const form = document.getElementById('employeeForm');
-        const kitSourceCheckAndOrderModal = document.getElementById('kitSourceCheckAndOrderModal');
 
-        if (kitSourceCheckAndOrderModal) {
-            kitSourceCheckAndOrderModal.addEventListener('show.bs.modal', event => {
-                const button = event.relatedTarget; // 클릭된 버튼
-                const kitOrderId = button.getAttribute('data-kitOrderID');
-                const kitCompanyName = button.getAttribute('data-kitCompanyName');
-                const kitName = button.getAttribute('data-kitName');
-                const kitQuantity = button.getAttribute('data-quantity');
-                const kitOrderDate = button.getAttribute('data-kitOrderDate');
+    function webSocketConnect() {
+        const socket = new SockJS('/websocket-endpoint');
+        const stompClient = Stomp.over(socket);
 
-                // 폼 필드에 값 설정
-                document.getElementById('modalKitOrderID').value = kitOrderId;
-                document.getElementById('modalKitCompanyName').value = kitCompanyName;
-                document.getElementById('modalKitName').value = kitName;
-                document.getElementById('modalQuantity').value = kitQuantity;
-                document.getElementById('modalDate').value = kitOrderDate;
+        // 웹소켓 연결 시작
+        stompClient.connect({}, function () {
+            // 창고 재고 업데이트를 위한 경로 구독
+            stompClient.subscribe('/topic/warehouse/update', function (message) {
+                const payload = message.body;
 
-                // 주문에 해당하는 밀키트 재료 목록을 로드
-                fetch(`/distribution/kitOrderRecipe?kitOrderID=${kitOrderId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const ingredientsList = document.getElementById('ingredientsList');
-                        ingredientsList.innerHTML = ''; // 기존 내용을 초기화
+                if (payload === 'update') {
+                    // pageUpdate 함수를 호출하여 차트 데이터를 새로 고침
+                    updateLogisticesWarehouseChart();  // 차트를 업데이트하는 함수
+                }
 
-                        data.forEach(ingredient => {
-                            const row = `<tr>
-                                <td>${ingredient['재료명']}</td>
-                                <td>${ingredient['필요수량']}</td>
-                                <td>${ingredient['창고재고수량']}</td>
-                                <td>${ingredient['현재최소가']}</td>
-                                <td>${ingredient['공급업체명']}</td>
-                            </tr>`;
-                            ingredientsList.innerHTML += row;
-                        });
-                    })
-                    .catch(error => console.error('Error fetching the ingredients:', error));
             });
-        }
-    });*/
+        });
+    }
+    webSocketConnect();
+
     document.addEventListener('DOMContentLoaded', () => {
         const kitSourceCheckAndOrderModal = document.getElementById('kitSourceCheckAndOrderModal');
 
@@ -362,6 +340,8 @@
                 document.getElementById('modalKitName').value = kitName;
                 document.getElementById('modalQuantity').value = kitQuantity;
                 document.getElementById('modalDate').value = kitOrderDate;
+
+                console.log('kitOrderStatus:', kitOrderStatus);
 
                 const requestOrderButton = document.getElementById('requestOrderButton');
                 if (kitOrderStatus !== '처리전' && kitOrderStatus !== '처리완료') {
@@ -394,6 +374,12 @@
                                 shortageText = `<span style="color: red;">(부족)</span>`;
                                 isStockSufficient = false;
                             }
+
+                            if (!isStockSufficient) {
+                                requestOrderButton.disabled = true;   // 재고가 부족하면 버튼 비활성화
+                            }
+
+                            console.log('isStockSufficient:', isStockSufficient);
 
                             const row = `
                             <tr>
