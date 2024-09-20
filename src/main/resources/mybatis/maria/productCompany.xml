@@ -78,6 +78,9 @@
     <delete id="deleteWarehouseProduceLog" parameterType="String">
         delete from SOURCE_WAREHOUSE WHERE SOURCE_WAREHOUSE_ID = #{sourceWarehouseId}
     </delete>
+    <select id="getSourcePriceIdBySourceWarehouseId" parameterType="String" resultType="map">
+        select source_price_id as sourcePriceId, quantity as quantity from SOURCE_WAREHOUSE where source_warehouse_id = #{sourceWarehouseId}
+    </select>
 
     <!-- 주문 주문 주문 주문 주문 -->
     <insert id="orderStatusTempInsert" parameterType="ProductCompanyOrderProcessDto">
@@ -88,7 +91,7 @@
         DELETE FROM PRODUCT_ORDER_STATUS_TEMP WHERE POST_ID = #{orderId}
     </delete>
     <update id="updateOrderTime" parameterType="String">
-        update PRODUCT_ORDER_STATUS_TEMP set POST_ID = POST_ID where POST_ID = #{orderId}
+        update PRODUCT_ORDER_STATUS_TEMP set LAST_UPDATED = NOW() where POST_ID = #{orderId}
     </update>
     <select id="checkOrderLocks" resultType="boolean">
         SELECT COUNT(*) FROM PRODUCT_ORDER_STATUS_TEMP

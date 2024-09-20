@@ -48,10 +48,10 @@ public class SecurityConfig {
                         .requestMatchers("/distribution/**").hasAnyRole("ADMIN","LOGISTICS_MANAGER")
                         .requestMatchers("/sales/user/**").hasRole("SALES_MANAGER")
                         .requestMatchers("/sales/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/product/company/**").hasAnyRole("ADMIN","PRODUCT_MANAGER")
-                        .requestMatchers("/websocket-endpoint/**").permitAll()
+                        .requestMatchers("/product/company/**").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/product/admin/**").hasRole("ADMIN")
                         .requestMatchers("/").hasRole("ADMIN")
-                        .requestMatchers("/index").hasRole("ADMIN")
+                        .requestMatchers("/websocket-endpoint/**").permitAll()
                         .anyRequest()
                         .authenticated()
         );
@@ -67,7 +67,7 @@ public class SecurityConfig {
         );
         httpSecurity.logout((auth)->auth
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("/member/login")
                 .invalidateHttpSession(true)
         );
         httpSecurity.csrf(csrf -> csrf

@@ -59,7 +59,7 @@ public class SalesUserController {
     @PostMapping("/insert")
     public String insert(@ModelAttribute UserKitOrderDto userKitOrderDto,
                          RedirectAttributes redirectAttributes) {
-
+        System.out.println("kit order insert" +userKitOrderDto);
         String mealkitId = userKitOrderDto.getMealkitId();
 
         KitPriceDto dto = salesService.getCurrentPriceAndMinPrice(mealkitId);

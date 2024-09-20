@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -26,11 +27,6 @@ public class ProductCompanyService {
     private final ProductCompanyDao productCompanyDao;
     private final SimpMessagingTemplate messagingTemplate;
     private boolean isSchedulerActive = false;
-
-    // to do:
-    //  1. 생산품 등록, 입고 BadRequest -> @Valid
-    //  2. 입고 기록 Delete 기능 추가
-    //  3. companyId 매번 가져오지말고 캐싱해놓고 쓰고 싶은데
 
 
     // 유저 인증
@@ -132,10 +128,16 @@ public class ProductCompanyService {
     public List<ProductCompanyWarehouseDto> getWarehouseSources(ProductCompanySearchOptionDto paramData) {
         return productCompanyDao.getWarehouseSources(paramData);
     }
+    @Transactional
     public void deleteWarehouseProduceLog(String sourceWarehouseId) {
-        if (productCompanyDao.deleteWarehouseProduceLog(sourceWarehouseId) == 0){
+        Map<String, Object> warehouseMap = productCompanyDao.getSourcePriceIdBySourceWarehouseId(sourceWarehouseId);
+        String sourcePriceId = warehouseMap.get("sourcePriceId").toString();
+        int checkQuantity = (int) warehouseMap.get("quantity");
+        int sourceStockBalance = productCompanyDao.getSourceQuantityFromWarehouse(sourcePriceId);
+        if (checkQuantity > sourceStockBalance){
             throw new RuntimeException();
-        };
+        }
+        productCompanyDao.deleteWarehouseProduceLog(sourceWarehouseId);
     }
 
 
