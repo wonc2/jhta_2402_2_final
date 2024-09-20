@@ -122,10 +122,11 @@ function getCompanySourceTable() {
             {data: null, render: (data, type, row, meta) => meta.row + 1},
             // {data: 'companySourceId', render: data => data.substring(0, 8)},
             {
-                data: 'sourceName',
-                render: function (data) {
-                    return `<button type="button" class="btn btn-light btn-sm" data-action="view">${data.toString()}</button>`;
-                }
+                data: 'sourceName'
+                // ,
+                // render: function (data) {
+                //     return `<button type="button" class="btn btn-light btn-sm" data-action="view">${data.toString()}</button>`;
+                // }
             },
             {
                 data: 'sourcePrice',
