@@ -46,10 +46,10 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/wareHouse/**").hasAnyRole("ADMIN","LOGISTICS_MANAGER")
                         .requestMatchers("/distribution/**").hasAnyRole("ADMIN","LOGISTICS_MANAGER")
-                        .requestMatchers("/sales/user/**").hasAnyRole("ADMIN","SALES_MANAGER")
-                        .requestMatchers("/sales/admin/**").hasAnyRole("ADMIN")
-                        .requestMatchers("/product/company/**").hasAnyRole("ADMIN","PRODUCT_MANAGER")
-                        .requestMatchers("/product/admin/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/sales/user/**").hasRole("SALES_MANAGER")
+                        .requestMatchers("/sales/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/product/company/**").hasRole("PRODUCT_MANAGER")
+                        .requestMatchers("/product/admin/**").hasRole("ADMIN")
                         .requestMatchers("/").hasRole("ADMIN")
                         .requestMatchers("/websocket-endpoint/**").permitAll()
                         .anyRequest()
@@ -60,8 +60,6 @@ public class SecurityConfig {
                         .loginProcessingUrl("/member/login")
                         .usernameParameter("userId")
                         .passwordParameter("userPassword")
-//                        .defaultSuccessUrl("/",true) //true를 쓰지 않으면 이전 페이지로 간다.
-                        .successHandler(customLoginSuccessHandler())
                         .failureHandler(customFailureHandler)  //로그인 실패시 어떻게 할건지를 니가 만들어서 처리해라
                         .permitAll()
         );
