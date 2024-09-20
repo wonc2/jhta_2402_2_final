@@ -458,7 +458,7 @@ function addSourceProcess() {
             },
             success: function () {
                 $('#addSourceModal').modal('hide');
-                $('#companySourceTable').DataTable().ajax.reload(null, false);
+                // $('#companySourceTable').DataTable().ajax.reload(null, false);
                 updateSourceSelectList();
                 showToast("등록 완료")
             },
@@ -508,7 +508,7 @@ function addSourceProcess() {
             },
             success: function () {
                 showToast("입고 완료 되었습니다: " + sourceName + " " + sourceQuantity + " 개");
-                $('#companySourceTable').DataTable().ajax.reload(null, false);
+                // $('#companySourceTable').DataTable().ajax.reload(null, false);
                 updateChart();
                 $('#produceSourceModal').modal('hide');
             },
@@ -542,7 +542,7 @@ function addSourceProcess() {
                     xhr.setRequestHeader(csrfHeader, csrfToken);  // CSRF 헤더와 토큰을 함께 보냄
                 },
                 success: function () {
-                    $('#companySourceTable').DataTable().ajax.reload(null, false);
+                    // $('#companySourceTable').DataTable().ajax.reload(null, false);
                     showToast("삭제 완료")
                 },
                 error: function (xhr) {
@@ -573,7 +573,7 @@ function addSourceProcess() {
                 },
                 error: function () {
                     $('#warehouseTable').DataTable().ajax.reload(null, false);
-                    alert('삭제 실패');
+                    alert('삭제 실패: 해당 입고 기록을 삭제할 수 없음\n( 현재 창고 재고보다 많은 입고 기록 삭제 불가 )');
                 }
             });
         }
@@ -629,7 +629,7 @@ function addSourceProcess() {
             success: function () {
                 $('#updateSourceModal').modal('hide');
                 showToast('생산품 가격 수정이 완료되었습니다.');
-                $('#companySourceTable').DataTable().ajax.reload(null, false);
+                // $('#companySourceTable').DataTable().ajax.reload(null, false);
             },
             error: function (xhr) {
                 const response = JSON.parse(xhr.responseText);

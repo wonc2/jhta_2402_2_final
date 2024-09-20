@@ -5,6 +5,13 @@
         select PRODUCT_COMPANY_ID as companyId from PRODUCT_COMPANY_MEMBER
         where USER_ID = (select user_pk as userUid from USER where USER_ID = #{userId})
     </select>
+    <!-- 페이지에 업체 이름 띄우기용 -->
+    <select id="getCompanyNameByUserId" parameterType="String" resultType="String">
+        select NAME as companyName FROM PRODUCT_COMPANY_MEMBER pcm
+        join PRODUCT_COMPANY pc on pc.PRODUCT_COMPANY_ID = pcm.PRODUCT_COMPANY_ID
+        where pcm.user_id = (select user_pk as userUid from USER where USER_ID = #{userId})
+    </select>
+
 
     <!-- 생산 업체의 현재 생산품 리스트 가져옴 -->
     <select id="getSourcesByCompanyName" resultType="CompanySourceDto" parameterType="String">

@@ -46,14 +46,14 @@ public class ProductCompanyRestController {
 
     // 생산품 가격 수정
     @PutMapping("sources/{companySourceId}")
-    public ResponseEntity<?> updateSource(@PathVariable String companySourceId, @Valid @RequestBody SourcePriceUpdateDto paramData, BindingResult bindingResult) {
+    public ResponseEntity<?> updateSource(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String companySourceId, @Valid @RequestBody SourcePriceUpdateDto paramData, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errorMessages = bindingResult.getAllErrors().stream()
                     .map(ObjectError::getDefaultMessage).collect(Collectors.toList());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(errorMessages));
         }
         SourcePriceUpdateDto updateDto = paramData.toBuilder().companySourceId(companySourceId).build();
-        productCompanyService.sourcePriceUpdate(updateDto);
+        productCompanyService.sourcePriceUpdate(getCompanyId(userDetails), updateDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -66,13 +66,13 @@ public class ProductCompanyRestController {
 
     // 생산품 입고 ( 창고에 입고할 갯수 입력 후 등록 )
     @PostMapping("produce")
-    public ResponseEntity<?> produce(@Valid @RequestBody CompanySourceStackDto paramData, BindingResult bindingResult) {
+    public ResponseEntity<?> produce(@AuthenticationPrincipal CustomUserDetails userDetails, @Valid @RequestBody CompanySourceStackDto paramData, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errorMessages = bindingResult.getAllErrors().stream()
                     .map(ObjectError::getDefaultMessage).collect(Collectors.toList());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(errorMessages));
         }
-        productCompanyService.produceSource(paramData);
+        productCompanyService.produceSource(getCompanyId(userDetails), paramData);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -86,8 +86,8 @@ public class ProductCompanyRestController {
 
     // 창고 입고 기록 삭제
     @DeleteMapping("warehouse/{sourceWarehouseId}")
-    public ResponseEntity<?> deleteWarehouseProduceLog(@PathVariable String sourceWarehouseId) {
-        productCompanyService.deleteWarehouseProduceLog(sourceWarehouseId);
+    public ResponseEntity<?> deleteWarehouseProduceLog(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable String sourceWarehouseId) {
+        productCompanyService.deleteWarehouseProduceLog(getCompanyId(userDetails), sourceWarehouseId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
