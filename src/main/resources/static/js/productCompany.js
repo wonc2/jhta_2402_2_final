@@ -572,7 +572,7 @@ function addSourceProcess() {
                 },
                 error: function () {
                     $('#warehouseTable').DataTable().ajax.reload(null, false);
-                    alert('이미 삭제된 데이터 입니다');
+                    alert('삭제 실패');
                 }
             });
         }

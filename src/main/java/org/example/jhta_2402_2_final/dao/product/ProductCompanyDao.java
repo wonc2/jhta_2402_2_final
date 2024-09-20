@@ -6,6 +6,7 @@ import org.example.jhta_2402_2_final.model.dto.productCompany.ProductCompanyChar
 import org.example.jhta_2402_2_final.model.dto.productCompany.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Mapper
@@ -60,4 +61,6 @@ public interface ProductCompanyDao {
     int getOrderStatus(String orderId);
     int getSourcePriceById(String companySourceId);
     int getSourceQuantityFromWarehouse(String sourcePriceId);
+
+    Map<String, Object> getSourcePriceIdBySourceWarehouseId(String sourceWarehouseId);
 }
