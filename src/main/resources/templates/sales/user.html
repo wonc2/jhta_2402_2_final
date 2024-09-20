@@ -5,11 +5,11 @@
 </head>
 
 
-<div th:replace="~{fragment/adminHeader :: body}"></div>
+<div th:replace="~{fragment/userHeader02 :: body}"></div>
 <div id="layoutSidenav_content">
     <!-- 페이지마다 다른 콘텐츠 -->
     <main>
-        <div id="alertMessage" th:if="${message}" class="alert alert-info" role="alert" th:text="${message}"></div>
+            <div id="alertMessage" th:if="${message}" class="alert alert-info" role="alert" th:text="${message}"></div>
 
         <div class="container-fluid px-4">
             <h1 class="mt-4 mb-4">판매 유저 페이지</h1>
@@ -24,7 +24,10 @@
 
                 <div class="card mt-4 mb-5">
                     <div class="card-header">
-                        <i class="fa-solid fa-circle-info"></i>
+<!--                        <i class="fa-solid fa-user-minus"></i>-->
+<!--                        <i class="fa-solid fa-info"></i>-->
+<!--                        <i class="fa-solid fa-circle-info"></i>-->
+                        <i class="fa-solid fa-user"></i>
                         <span th:text="${userId}"></span>님의 정보
                     </div>
                     <div class="card-body">

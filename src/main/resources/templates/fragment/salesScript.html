@@ -1,0 +1,431 @@
+<!--차트1-->
+<script th:inline="javascript">
+
+    const companyList = [[${totalQuantityByCompanyNameList}]];
+
+    // 데이터와 라벨 배열 초기화
+    const labels = [];
+    const data = [];
+    const backgroundColors = [];
+
+    // companyList의 각 항목을 사용하여 라벨, 데이터, 색상 생성
+    companyList.forEach(company => {
+        labels.push(company.companyName);  // 회사 이름을 라벨로 사용
+        data.push(company.totalPrice);  // 임의의 데이터 생성
+        backgroundColors.push(getRandomColorWithOpacity(0.5));  // 랜덤 배경색 (불투명)
+    });
+
+    // 랜덤 색상을 생성하는 함수 (rgba 형식)
+    function getRandomColorWithOpacity(opacity) {
+        const r = Math.floor(Math.random() * 256);
+        const g = Math.floor(Math.random() * 256);
+        const b = Math.floor(Math.random() * 256);
+        return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+
+
+
+    // 차트 생성
+    const ctx = document.getElementById('myChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '밀키트 업체별 판매 현황',
+                data: data,
+                backgroundColor: backgroundColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: false  // 범례를 숨기기
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+
+
+    // 두번째 차트
+    const monthList = [[${monthlySales}]];
+
+
+    // 라벨 생성
+    const month = [];
+    for (let i = 1; i <= 12; ++i) {
+        month.push(i.toString());
+    }
+
+    // companyList의 각 항목을 사용하여 데이터 포인트와 색상 생성
+    const datasets = monthList.map(company => ({
+        label: company.companyName,  // 데이터셋의 라벨
+        data: company.monthlySales,  // 서버에서 받은 월별 매출 데이터
+        borderColor: backgroundColors,  // 데이터셋의 색상
+        fill: false,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.4
+    }));
+
+    // 두 번째 차트 데이터와 설정 정의
+    const data02 = {
+        labels: month,  // X축 라벨
+        datasets: datasets  // 생성된 데이터셋
+    };
+
+    // 차트 설정
+    const config = {
+        type: 'line',
+        data: data02,
+        options: {
+            responsive: true,
+            plugins: {
+                title: {
+                    display: false,
+                    text: '매출액'
+                },
+            },
+            interaction: {
+                intersect: false,
+            },
+            scales: {
+                x: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: '월'
+                    }
+                },
+                y: {
+                    display: true,
+                    title: {
+                        display: true,
+                        text: '원'
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 500
+                }
+            }
+        },
+    };
+
+    const ctx02 = document.getElementById('myChart02').getContext('2d');
+    new Chart(ctx02, config);
+</script>
+
+<!--중복 검사-->
+<script>
+    // 중복 검사 결과를 추적하는 변수들
+    let isUserIdValid = false;
+    let isCompanyNameValid = false;
+    let isEmailValid = false;
+    let isTelValid = false;
+    let isAddressValid = false;
+    let isPasswordValid = false;
+    const submitBtn = document.getElementById('submitCompanyBtn');  // 등록 버튼
+
+
+    // 등록 버튼 상태를 업데이트하는 함수
+    function updateSubmitButtonState() {
+        submitBtn.disabled = !(isUserIdValid && isCompanyNameValid && isEmailValid && isTelValid && isAddressValid && isPasswordValid);  // 모든 검사가 통과해야 활성화
+    }
+
+    // 유저 아이디 중복 검사
+    document.querySelector('input[name="userId"]').addEventListener('input', function() {
+        const userIdInput = this.value;
+        const userIdFeedback = document.getElementById('userIdFeedback');
+
+        if (userIdInput.length > 0) {
+            fetch(`/sales/admin/checkUserId?userId=${userIdInput}`)
+                .then(response => response.text())
+                .then(result => {
+                    if (result === "duplicate") {
+                        userIdFeedback.textContent = "이미 사용 중인 아이디입니다.";
+                        userIdFeedback.style.color = "red";
+                        isUserIdValid = false;  // 중복이면 false
+                    } else {
+                        userIdFeedback.textContent = "사용 가능한 아이디입니다.";
+                        userIdFeedback.style.color = "green";
+                        isUserIdValid = true;  // 중복 아니면 true
+                    }
+                    updateSubmitButtonState();  // 상태 업데이트
+                });
+        } else {
+            userIdFeedback.textContent = "";
+            isUserIdValid = false;
+            updateSubmitButtonState();  // 상태 업데이트
+        }
+    });
+
+    // 업체명 중복 검사
+    document.querySelector('input[name="companyName"]').addEventListener('input', function() {
+        const companyNameInput = this.value;
+        const companyNameFeedback = document.getElementById('companyNameFeedback');
+
+        if (companyNameInput.length > 0) {
+            fetch(`/sales/admin/checkCompanyName?companyName=${companyNameInput}`)
+                .then(response => response.text())
+                .then(result => {
+                    if (result === "duplicate") {
+                        companyNameFeedback.textContent = "이미 사용 중인 업체명입니다.";
+                        companyNameFeedback.style.color = "red";
+                        isCompanyNameValid = false;  // 중복이면 false
+                    } else {
+                        companyNameFeedback.textContent = "사용 가능한 업체명입니다.";
+                        companyNameFeedback.style.color = "green";
+                        isCompanyNameValid = true;  // 중복 아니면 true
+                    }
+                    updateSubmitButtonState();  // 상태 업데이트
+                });
+        } else {
+            companyNameFeedback.textContent = "";
+            isCompanyNameValid = false;
+            updateSubmitButtonState();  // 상태 업데이트
+        }
+    });
+
+    // 이메일 중복 검사
+    document.querySelector('input[name="email"]').addEventListener('input', function() {
+        const emailInput = this.value;
+        const emailFeedback = document.getElementById('emailFeedback');
+
+        if (emailInput.length > 0) {
+            fetch(`/sales/admin/checkEmail?email=${emailInput}`)
+                .then(response => response.text())
+                .then(result => {
+                    if (result === "duplicate") {
+                        emailFeedback.textContent = "이미 사용 중인 이메일입니다.";
+                        emailFeedback.style.color = "red";
+                        isEmailValid = false;  // 중복이면 false
+                    } else {
+                        emailFeedback.textContent = "사용 가능한 이메일입니다.";
+                        emailFeedback.style.color = "green";
+                        isEmailValid = true;  // 중복 아니면 true
+                    }
+                    updateSubmitButtonState();  // 상태 업데이트
+                });
+        } else {
+            emailFeedback.textContent = "";
+            isEmailValid = false;
+            updateSubmitButtonState();  // 상태 업데이트
+        }
+    });
+
+    // 전화번호 중복 검사
+    document.querySelector('input[name="tel"]').addEventListener('input', function() {
+        const telInput = this.value;
+        const telFeedback = document.getElementById('telFeedback');
+
+        if (telInput.length > 0) {
+            fetch(`/sales/admin/checkTel?tel=${telInput}`)
+                .then(response => response.text())
+                .then(result => {
+                    if (result === "duplicate") {
+                        telFeedback.textContent = "이미 사용 중인 전화번호입니다.";
+                        telFeedback.style.color = "red";
+                        isTelValid = false;  // 중복이면 false
+                    } else {
+                        telFeedback.textContent = "사용 가능한 전화번호입니다.";
+                        telFeedback.style.color = "green";
+                        isTelValid = true;  // 중복 아니면 true
+                    }
+                    updateSubmitButtonState();  // 상태 업데이트
+                });
+        } else {
+            telFeedback.textContent = "";
+            isTelValid = false;
+            updateSubmitButtonState();  // 상태 업데이트
+        }
+    });
+
+    // 주소 중복 검사
+    document.querySelector('input[name="address"]').addEventListener('input', function() {
+        const addressInput = this.value;
+        const addressFeedback = document.getElementById('addressFeedback');
+
+        if (addressInput.length > 0) {
+            fetch(`/sales/admin/checkAddress?address=${addressInput}`)
+                .then(response => response.text())
+                .then(result => {
+                    if (result === "duplicate") {
+                        addressFeedback.textContent = "이미 사용 중인 주소입니다.";
+                        addressFeedback.style.color = "red";
+                        isAddressValid = false;  // 중복이면 false
+                    } else {
+                        addressFeedback.textContent = "사용 가능한 주소입니다.";
+                        addressFeedback.style.color = "green";
+                        isAddressValid = true;  // 중복 아니면 true
+                    }
+                    updateSubmitButtonState();  // 상태 업데이트
+                });
+        } else {
+            addressFeedback.textContent = "";
+            isAddressValid = false;
+            updateSubmitButtonState();  // 상태 업데이트
+        }
+    });
+
+    // 비밀번호와 비밀번호 확인 비교
+    document.querySelector('input[name="password"]').addEventListener('input', validatePasswords);
+    document.querySelector('input[name="passwordConfirm"]').addEventListener('input', validatePasswords);
+
+    function validatePasswords() {
+        const password = document.querySelector('input[name="password"]').value;
+        const passwordConfirm = document.querySelector('input[name="passwordConfirm"]').value;
+        const passwordFeedback = document.getElementById('passwordFeedback');
+
+        if (password && passwordConfirm) {
+            if (password === passwordConfirm) {
+                passwordFeedback.textContent = "비밀번호가 일치합니다.";
+                passwordFeedback.style.color = "green";
+                isPasswordValid = true;  // 비밀번호 일치하면 true
+            } else {
+                passwordFeedback.textContent = "비밀번호가 일치하지 않습니다.";
+                passwordFeedback.style.color = "red";
+                isPasswordValid = false;  // 비밀번호 불일치하면 false
+            }
+            updateSubmitButtonState();  // 상태 업데이트
+        } else {
+            passwordFeedback.textContent = "";
+            isPasswordValid = false;
+            updateSubmitButtonState();  // 상태 업데이트
+        }
+    }
+
+</script>
+
+<!--밀키트 재료 추가 -->
+<script>
+    function toggleQuantityInput(checkbox) {
+        const sourceId = checkbox.value;
+        const quantityInput = document.querySelector(`#quantity-${sourceId}`);
+        if (checkbox.checked) {
+            quantityInput.style.display = 'block';
+        } else {
+            quantityInput.style.display = 'none';
+            quantityInput.value = ''; // 체크박스가 해제되면 수량 필드 값도 초기화
+        }
+    }
+</script>
+
+<!--밀키트 가격 띄우기-->
+<script>
+    function showPrice() {
+        var selectElement = document.getElementById('mealkitId');
+        var selectedOption = selectElement.options[selectElement.selectedIndex];
+        var price = selectedOption.getAttribute('data-price');
+
+        var priceInput = document.getElementById('mealkitPrice');
+
+        if (price) {
+            priceInput.value = Math.round(price * 1.3);
+        } else {
+            priceInput.value = ""; // 초기 상태 또는 선택되지 않은 경우 빈칸 유지
+        }
+    }
+</script>
+
+<!--패치-->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var orderDetailModal = document.getElementById('orderDetailModal');
+        var sellButton = document.getElementById('sellButton'); // 판매 버튼을 선택
+
+        orderDetailModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var kitOrderId = button.getAttribute('data-order-id');
+            var quantity = button.getAttribute('data-quantity');
+            var mealkitName = button.getAttribute('data-mealkit-name');
+
+            document.getElementById('mealkitNameInput').value = mealkitName;
+            document.getElementById('quantityInput').value = quantity;
+
+            const encodedKitOrderId = encodeURIComponent(kitOrderId);
+            const encodedQuantity = encodeURIComponent(quantity);
+
+            // Fetch API를 이용해 서버에서 데이터를 가져옴
+            fetch(`/sales/admin/order/details?kitOrderId=${encodedKitOrderId}&quantity=${encodedQuantity}`)
+                .then(response => {
+                    if (!response.ok) {
+                        console.error('HTTP 오류:', response.status, response.statusText);
+                        throw new Error('네트워크 응답에 문제가 있습니다.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tbody = document.querySelector('#orderDetailModal .modal-body tbody');
+                    tbody.innerHTML = ''; // 기존 데이터를 지움
+
+                    const sourceNames = [];
+                    const itemQuantities = [];
+                    const stackQuantities = [];
+                    const minPrices = [];
+                    const companyNames = [];
+
+                    let canSell = true; // 판매 가능 여부를 추적
+
+                    data.forEach(item => {
+                        let rowHtml = `
+                        <tr>
+                            <td>${item.sourceName}</td>
+                            <td>${item.quantity}</td>
+                            <td>${item.stackQuantity}`;
+
+                        // 창고재고가 재료수량보다 적을 경우 시각적으로 표시
+                        if (item.stackQuantity < item.quantity) {
+                            rowHtml += ` <span style="color: red;">(부족)</span>`;
+                            canSell = false; // 판매 불가능
+                        }
+
+                        rowHtml += `</td>
+                                <td>${item.minPrice}</td>
+                                <td>${item.companyName}</td>
+                            </tr>`;
+
+                        tbody.innerHTML += rowHtml;
+
+                        sourceNames.push(item.sourceName);
+                        itemQuantities.push(item.quantity);
+                        stackQuantities.push(item.stackQuantity);
+                        minPrices.push(item.minPrice);
+                        companyNames.push(item.companyName);
+                    });
+
+                    document.getElementById('hiddenSourceNames').value = JSON.stringify(sourceNames);
+                    document.getElementById('hiddenItemQuantities').value = JSON.stringify(itemQuantities);
+                    document.getElementById('hiddenStackQuantities').value = JSON.stringify(stackQuantities);
+                    document.getElementById('hiddenMinPrices').value = JSON.stringify(minPrices);
+                    document.getElementById('hiddenCompanyNames').value = JSON.stringify(companyNames);
+                    document.getElementById('hiddenKitOrderId').value = kitOrderId;
+
+                    document.getElementById('hiddenSourceNamesForSale').value = JSON.stringify(sourceNames);
+                    document.getElementById('hiddenItemQuantitiesForSale').value = JSON.stringify(itemQuantities);;
+                    document.getElementById('hiddenKitOrderIdForSale').value = kitOrderId;
+                    // 판매 버튼 활성화/비활성화
+                    if (canSell) {
+                        sellButton.classList.remove('btn-secondary');
+                        sellButton.classList.add('btn-primary');
+                        sellButton.disabled = false;
+                    } else {
+                        sellButton.classList.remove('btn-primary');
+                        sellButton.classList.add('btn-secondary');
+                        sellButton.disabled = true;
+                    }
+
+                })
+                .catch(error => {
+                    console.error('Fetch 오류:', error);
+                });
+        });
+
+    });
+
+</script>

@@ -81,7 +81,6 @@ public class SalesUserController {
     @PostMapping("/cancel")
     public String cancel (@RequestParam UUID kitOrderId,
                           RedirectAttributes redirectAttributes) {
-        System.out.println("kitOrderId>>>>>>"+kitOrderId);
         salesService.updateKitOrderCancel(kitOrderId);
         alter(redirectAttributes,"주문이 취소되었습니다.");
         return "redirect:/sales/user";
