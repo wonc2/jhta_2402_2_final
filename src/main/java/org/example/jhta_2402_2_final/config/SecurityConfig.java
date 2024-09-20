@@ -46,9 +46,12 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/wareHouse/**").hasAnyRole("ADMIN","LOGISTICS_MANAGER")
                         .requestMatchers("/distribution/**").hasAnyRole("ADMIN","LOGISTICS_MANAGER")
-                        .requestMatchers("/sales/user/**").hasAnyRole("ADMIN","SALES_MANAGER")
+                        .requestMatchers("/sales/user/**").hasRole("SALES_MANAGER")
+                        .requestMatchers("/sales/admin/**").hasRole("ADMIN")
                         .requestMatchers("/product/company/**").hasAnyRole("ADMIN","PRODUCT_MANAGER")
                         .requestMatchers("/websocket-endpoint/**").permitAll()
+                        .requestMatchers("/").hasRole("ADMIN")
+                        .requestMatchers("/index").hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()
         );

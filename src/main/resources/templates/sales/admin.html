@@ -356,11 +356,12 @@
             <div class="modal-body">
                 <form id="insertCompanyForm" th:action="@{/sales/admin/insert/company}" th:method="post">
 
-                    <div class="mb-3">
-                        <label class="form-label">밀키트 업체 ID</label>
-                        <input type="text" class="form-control" name="userId" placeholder="아이디를 입력하세요." required>
+                    <div class="form-floating mb-3">
+                        <label class="form-label" for="userId">밀키트 업체 ID</label>
+                        <input id="userId" type="text" class="form-control" name="userId" placeholder="아이디를 입력하세요." required>
                         <small id="userIdFeedback" class="form-text"></small>
                     </div>
+
 
                     <div class="mb-3">
                         <label class="form-label">비밀번호</label>

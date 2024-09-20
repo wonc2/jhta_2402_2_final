@@ -18,6 +18,7 @@ public class CustomLoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
         HttpSession session = request.getSession();
+
         if(roles.contains("ROLE_ADMIN")){
             response.sendRedirect("/");
         }else if(roles.contains("ROLE_PRODUCT_MANAGER")){
