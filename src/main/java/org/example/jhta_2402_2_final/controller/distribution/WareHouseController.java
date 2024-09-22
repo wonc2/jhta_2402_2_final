@@ -44,6 +44,11 @@ public class WareHouseController {
         List<KitOrderDetailDto> kitOrderDetails = salesService.getAllKitOrderDetail();
         model.addAttribute("kitOrderDetails", kitOrderDetails);
 
+        /*
+         * [code-review] 제가 현재 시스템을 잘 알지는 못하지만 아래의 로직은 비지니스 로직으로 보입니다.
+         * 아래과 같은 비지니스 로직은 서비스 레이어에서 처리해주세요 그리고 아래에 있는 상수 0, 5 는 의미를 모르는 사람이 보면
+         * 파악이 힘들기 때문에 OrderStatus Enum 만들어서 처리해주시면 가동성이 증가 합니다.
+         * */
         // 프러덕트 오더 테이블에서 스테이터스가 5인 경우 창고에 적재하고 5 -> 7로 바꿈
         int result = logisticsWareHouseService.insertWarehouseStackForCompletedOrders();
         if (result > 0) {
@@ -170,6 +175,11 @@ public class WareHouseController {
             ));
         }
 
+        /*
+        * [code-review] 아래의 사용방법도 잘하셨습니다. 가독성 있게 조금 다듬으면
+        * combineLogs.sort((o1, o2) -> o2.getOrderDate().compareTo(o1.getOrderDate()));
+        * 바꿀 수 있겟습니다.
+        * */
         Collections.sort(combineLogs, new Comparator<CombineLogDto>() {
             @Override
             public int compare(CombineLogDto o1, CombineLogDto o2) {

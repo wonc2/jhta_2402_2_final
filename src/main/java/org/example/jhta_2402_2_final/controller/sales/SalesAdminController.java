@@ -263,6 +263,11 @@ public class SalesAdminController {
         // 현재 상태 확인
         String currentStatus = salesService.getKitOrderStatus(kitOrderId);
 
+        /*
+        * [code-review] 상태를 문자열로 처리하는 패턴이 자주 보이네요 해당 방법 보다는 KitOrderStatus Enum 을 만들어서
+        * 사용하는 것이 더 좋아보입니다. 만약 처리완료가 이후에는 완료로 변환되면 해당 상태를 Enum 관리 하였다면 해당 Enum 만
+        * 변경 시켜줄 수 있기 때문입니다.
+        * */
         if ("처리완료".equals(currentStatus) || "취소".equals(currentStatus)) {
             alter(redirectAttributes, "이미 취소되었거나 처리완료된 주문입니다.");
             return "redirect:/sales/admin";

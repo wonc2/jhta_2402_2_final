@@ -78,6 +78,9 @@ public class KitOrderProcessController {
 
     }
 
+    /*
+    * [code-review] requestBody의 경우 Map이 아닌 class로 만들어서 null 경우 에러를 출력하게 만들 수 있습니다.
+    * */
     @PostMapping("/kitOrderRelease")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> completeKitOrderRelease(@RequestBody Map<String, String> requestBody) {
@@ -90,6 +93,11 @@ public class KitOrderProcessController {
             return ResponseEntity.badRequest().body(response);
         }
 
+        /*
+         * [code-review] 아래와 같이 특정 함수를 실행하고 컨트롤러에서 실패여부를 판단하는 패턴이 보이는데
+         * 해당 방법보다는 해당 메서드에서 런타임에러를 발생시키고 그 런타임 에러를 전역처리기 에서 처리하는 방법을 추천드립니다.
+         * https://velog.io/@u-nij/Spring-%EC%A0%84%EC%97%AD-%EC%98%88%EC%99%B8-%EC%B2%98%EB%A6%AC-RestControllerAdivce-%EC%A0%81%EC%9A%A9
+         * */
         boolean success = kitOrderProcessService.processKitOrder(kitOrderId);
 
         if (success) {
@@ -103,7 +111,6 @@ public class KitOrderProcessController {
         return ResponseEntity.ok(response); // JSON 형식으로 응답
     }
 
-    // ResponseEntity 를 사용한 재료발주요청 메서드
     @PostMapping("/requestSourceOrder")
     public ResponseEntity<?> requestSourceOrder(@RequestBody RequestOrderDto requestOrderDto) {
 

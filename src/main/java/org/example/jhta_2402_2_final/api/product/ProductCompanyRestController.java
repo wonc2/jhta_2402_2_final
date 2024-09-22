@@ -144,6 +144,10 @@ public class ProductCompanyRestController {
         return ResponseEntity.ok().body(response);
     }
 
+    /*
+    * [code-review] 중복되는 코드를 함수화를 잘하셨네요. 그런데요 getCompanyId
+    * 에서 파라미터에도 @AuthenticationPrincipal 안달아줘도 작동할걸로 생각됩니다.
+    * */
     private String getCompanyId(@AuthenticationPrincipal CustomUserDetails userDetails){
         return productCompanyService.getCompanyIdByUserId(userDetails.getMemberDto().getUserId());
     }

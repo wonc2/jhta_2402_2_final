@@ -26,6 +26,10 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         if (auth != null) {
             Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 
+            /*
+            * ROLE_ADMIN, ROLE_PRODUCT_MANAGER, 문자열로 설정하는 것 보다는 이미 만들어진 Role Enum의 값으로
+            * 처리하는 것이 유지보수에 더 좋아보입니다.
+            * */
             // 권한에 따라 리다이렉트 경로 설정
             if (roles.contains("ROLE_ADMIN")) {
                 response.sendRedirect("/");
