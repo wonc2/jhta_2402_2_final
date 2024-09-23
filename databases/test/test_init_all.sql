@@ -104,7 +104,7 @@ CREATE TABLE PRODUCT_ORDER (
                                PRODUCT_ORDER_ID VARCHAR(50) PRIMARY KEY, -- 발주 PK
                                PRODUCT_COMPANY_ID VARCHAR(50) NOT NULL, -- 생산업체 FK
                                SOURCE_ID VARCHAR(50) NOT NULL, -- 재료 FK
-                               KIT_ORDER_ID VARCHAR(50) NOT NULL, -- 밀키트 주문 FK
+                               KIT_ORDER_ID VARCHAR(50), -- 밀키트 주문 FK
                                QUANTITY INT NOT NULL, -- 개수
                                PRICE INT NOT NULL, -- 가격
                                PRODUCT_ORDER_DATE DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL, -- 주문 일자
