@@ -8,6 +8,7 @@ import org.example.jhta_2402_2_final.model.dto.distribution.LogisticsWareHouseDt
 
 import org.example.jhta_2402_2_final.model.dto.distribution.ProductOrderLogDto;
 import org.example.jhta_2402_2_final.model.dto.distribution.wareHouseChartDto;
+import org.example.jhta_2402_2_final.model.enums.Status;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -29,7 +30,16 @@ public class LogisticsWareHouseService {
     }
 
     public int insertWarehouseStackForCompletedOrders() {
-        return distributionDao.insertWarehouseStackForCompletedOrders();
+        int result = distributionDao.insertWarehouseStackForCompletedOrders();
+
+// 프러덕트 오더 테이블에서 스테이터스가 5인 경우 창고에 적재하고 5 -> 7로 바꿈
+        if (result > 0) {
+            List<String> productOrderIdList = selectProductOrderIdByStatus(Status.WAITING_FOR_WAREHOUSING.getStatusId());
+            updateProductOrderStatus();
+            insertProductOrderLog(productOrderIdList);
+        }
+
+        return result;
     }
 
     public int updateProductOrderStatus() {
