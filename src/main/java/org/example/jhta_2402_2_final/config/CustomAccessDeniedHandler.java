@@ -3,6 +3,7 @@ package org.example.jhta_2402_2_final.config;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.jhta_2402_2_final.model.enums.Role;
 import org.example.jhta_2402_2_final.service.login.CustomLoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.AccessDeniedException;
@@ -27,13 +28,13 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             Set<String> roles = AuthorityUtils.authorityListToSet(auth.getAuthorities());
 
             // 권한에 따라 리다이렉트 경로 설정
-            if (roles.contains("ROLE_ADMIN")) {
+            if (roles.contains(Role.ROLE_ADMIN)) {
                 response.sendRedirect("/");
-            } else if (roles.contains("ROLE_PRODUCT_MANAGER")) {
+            } else if (roles.contains(Role.ROLE_PRODUCT_MANAGER)) {
                 response.sendRedirect("/product/company");
-            } else if (roles.contains("ROLE_LOGISTICS_MANAGER")) {
+            } else if (roles.contains(Role.ROLE_LOGISTICS_MANAGER)) {
                 response.sendRedirect("/wareHouse/selectAll");
-            } else if (roles.contains("ROLE_SALES_MANAGER")) {
+            } else if (roles.contains(Role.ROLE_SALES_MANAGER)) {
                 response.sendRedirect("/sales/user");
             } else {
                 response.sendRedirect("/accessDenied"); // 권한이 맞지 않을 경우 공통 에러 페이지

@@ -144,7 +144,7 @@ public class ProductCompanyRestController {
         return ResponseEntity.ok().body(response);
     }
 
-    private String getCompanyId(@AuthenticationPrincipal CustomUserDetails userDetails){
+    private String getCompanyId(CustomUserDetails userDetails){
         return productCompanyService.getCompanyIdByUserId(userDetails.getMemberDto().getUserId());
     }
 }
