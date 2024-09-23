@@ -25,8 +25,8 @@ public class ProductCompanyRestController {
 
     // companyId ( 사용자 정보 기반 단일 값 ) 조회
     @GetMapping("info")
-    public  Map<String, String> getCompanyIdInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        return Map.of("companyId", getCompanyId(userDetails));
+    public  ResponseEntity<Map<String, String>> getCompanyIdInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok().body(Map.of("companyId", getCompanyId(userDetails)));
     }
 
     // 등록된 생산품 리스트, 등록안된 생산품 리스트 조회
