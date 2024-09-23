@@ -85,7 +85,8 @@ public class ProductAdminService {
                 .productCompanyName(productCompanyInsertDto.getProductCompanyName())
                 .productCompanyAddress(productCompanyInsertDto.getProductCompanyAddress())
                 .build();
-        if(productDao.getProductCompanyId(productCompanyDto.getProductCompanyName()).isEmpty()){
+        String companyId = productDao.getProductCompanyId(productCompanyDto.getProductCompanyName());
+        if(companyId == null || companyId.isEmpty()){
             productDao.insertProductCompany(productCompanyDto);
         }
         return 0;
