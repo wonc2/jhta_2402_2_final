@@ -109,33 +109,15 @@
                             <a class="nav-link" href="/sales/admin/source-price">밀키트 가격 설정</a>
                         </nav>
                     </div>
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#salesUserMenu" aria-expanded="false" aria-controls="collapseLayouts">
-                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Sales User Page
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="salesUserMenu" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="/sales/user">유저 페이지</a>
-                        </nav>
-                    </div>
-
                     <a class="nav-link collapsed" href="/wareHouse/selectAll" th:href="@{/wareHouse/selectAll}" >
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                         Logistics
 
                     </a>
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#productMenu" aria-expanded="false" aria-controls="collapseLayouts">
+                    <a class="nav-link collapsed" href="/product" th:href="@{/product/admin/main?page=1}">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                         Products
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
-                    <div class="collapse" id="productMenu" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="/product" th:href="@{/product/admin/main?page=1}">Products Admin Page</a>
-                            <a class="nav-link" href="/product" th:href="@{/product/company}">Products User Page</a>
-                        </nav>
-                    </div>
                 </div>
             </div>
         </nav>

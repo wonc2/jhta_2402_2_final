@@ -41,6 +41,7 @@ public class KitOrderProcessController {
 
         List<Map<String, Object>> kitProcessedOrderList = kitOrderProcessService.findProcessedOrders();
         model.addAttribute("kitProcessedOrderList", kitProcessedOrderList);
+        // model 에 값을 담아서 html 내에서 사용할 수 있게 만듦
 
         /*List<Map<String, Object>> kitSourceList = kitOrderProcessService.findKitSource();
         model.addAttribute("kitSourceList", kitSourceList);*/

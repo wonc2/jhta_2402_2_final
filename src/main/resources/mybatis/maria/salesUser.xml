@@ -102,7 +102,7 @@
 
     <select id="getTotalMonthSale" resultType="int">
         SELECT
-            SUM(o.QUANTITY * m.PRICE) AS totalSum
+            COALESCE(SUM(o.QUANTITY * m.PRICE),0) AS totalSum
         FROM
             KIT_ORDER o
                 JOIN
@@ -122,7 +122,7 @@
     <!--    연매출가져오기-->
     <select id="getTotalYearSale" resultType="int">
         SELECT
-            SUM(o.QUANTITY * m.PRICE) AS totalSum
+            COALESCE(SUM(o.QUANTITY * m.PRICE),0) AS totalSum
         FROM
             KIT_ORDER o
                 JOIN
