@@ -1,8 +1,8 @@
 package org.example.jhta_2402_2_final.service.sales;
 
 import lombok.RequiredArgsConstructor;
-import org.example.jhta_2402_2_final.dao.sales.SalesDao;
-import org.example.jhta_2402_2_final.dao.sales.SalesUserDao;
+import org.example.jhta_2402_2_final.exception.dao.sales.SalesDao;
+import org.example.jhta_2402_2_final.exception.dao.sales.SalesUserDao;
 import org.example.jhta_2402_2_final.model.dto.salesUser.UserKitOrderDto;
 import org.springframework.stereotype.Service;
 

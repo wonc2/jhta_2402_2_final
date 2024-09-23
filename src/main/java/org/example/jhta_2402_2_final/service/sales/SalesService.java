@@ -1,15 +1,13 @@
 package org.example.jhta_2402_2_final.service.sales;
 
 import lombok.RequiredArgsConstructor;
-import org.example.jhta_2402_2_final.dao.sales.SalesDao;
+import org.example.jhta_2402_2_final.exception.dao.sales.SalesDao;
 import org.example.jhta_2402_2_final.model.dto.sales.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-
-import static org.example.jhta_2402_2_final.controller.sales.SalesAdminController.alter;
 
 
 @Service

@@ -1,5 +1,5 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.example.jhta_2402_2_final.dao.distribution.KitOrderProcessDao">
+<mapper namespace="org.example.jhta_2402_2_final.exception.dao.distribution.KitOrderProcessDao">
 
     <select id="findNewOrders" resultType="Map">
         SELECT

@@ -1,8 +1,7 @@
 package org.example.jhta_2402_2_final.service.product;
 
 import lombok.RequiredArgsConstructor;
-import org.example.jhta_2402_2_final.dao.product.ProductCompanyDao;
-import org.springframework.cache.annotation.Cacheable;
+import org.example.jhta_2402_2_final.exception.dao.product.ProductCompanyDao;
 import org.springframework.stereotype.Service;
 
 @Service

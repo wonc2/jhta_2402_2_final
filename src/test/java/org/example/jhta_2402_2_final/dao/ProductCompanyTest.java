@@ -1,12 +1,10 @@
 package org.example.jhta_2402_2_final.dao;
 
-import org.example.jhta_2402_2_final.dao.product.ProductCompanyDao;
+import org.example.jhta_2402_2_final.exception.dao.product.ProductCompanyDao;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;

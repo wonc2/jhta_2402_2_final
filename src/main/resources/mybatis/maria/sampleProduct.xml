@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="org.example.jhta_2402_2_final.dao.SampleProductDao">
+<mapper namespace="org.example.jhta_2402_2_final.exception.dao.SampleProductDao">
 
     <!-- SELECT query: 모든 제품을 조회 -->
     <select id="findAll" resultType="org.example.jhta_2402_2_final.model.dto.product.ProductDto">

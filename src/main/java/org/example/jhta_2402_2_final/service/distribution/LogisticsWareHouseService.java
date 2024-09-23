@@ -1,7 +1,7 @@
 package org.example.jhta_2402_2_final.service.distribution;
 
 import lombok.RequiredArgsConstructor;
-import org.example.jhta_2402_2_final.dao.distribution.DistributionDao;
+import org.example.jhta_2402_2_final.exception.dao.distribution.DistributionDao;
 import org.example.jhta_2402_2_final.model.dto.distribution.KitOrderDetailLogDto;
 import org.example.jhta_2402_2_final.model.dto.distribution.LogisticsWareHouseDto;
 //import org.example.jhta_2402_2_final.util.SmsUtil;
