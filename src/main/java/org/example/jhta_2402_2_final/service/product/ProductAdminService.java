@@ -79,16 +79,20 @@ public class ProductAdminService {
                 .userTel(productCompanyInsertDto.getUserTel())
                 .roleId("3")
                 .build();
-        memberDao.insertUser(memberDto);
-        memberDao.insertRole(memberDto.getUserId());
-        ProductCompanyDto productCompanyDto = ProductCompanyDto.builder()
-                .productCompanyName(productCompanyInsertDto.getProductCompanyName())
-                .productCompanyAddress(productCompanyInsertDto.getProductCompanyAddress())
-                .build();
-        String companyId = productDao.getProductCompanyId(productCompanyDto.getProductCompanyName());
-        if(companyId == null || companyId.isEmpty()){
-            productDao.insertProductCompany(productCompanyDto);
+        if(memberDao.checkUserIdProduct(memberDto.getUserId())==1){
+            return 0;
+        }else {
+            memberDao.insertUser(memberDto);
+            memberDao.insertRole(memberDto.getUserId());
+            ProductCompanyDto productCompanyDto = ProductCompanyDto.builder()
+                    .productCompanyName(productCompanyInsertDto.getProductCompanyName())
+                    .productCompanyAddress(productCompanyInsertDto.getProductCompanyAddress())
+                    .build();
+            String companyId = productDao.getProductCompanyId(productCompanyDto.getProductCompanyName());
+            if(companyId == null || companyId.isEmpty()){
+                productDao.insertProductCompany(productCompanyDto);
+            }
         }
-        return 0;
+        return 1;
     }
 }
