@@ -14,48 +14,40 @@
                     </ol>
                     <div class="row">
                         <div class="col-xl-6">
-                            <div class="card mb-4">
+                            <div class="card shadow mb-4">
                                 <div class="card-header">
-                                    <i class="fas fa-chart-bar me-1"></i>
-                                    판매 현황 차트
+                                    <i class="fa-solid fa-chart-column"></i>
+                                    밀키트 업체별 누적 판매 금액
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="salesChart01" width="100%" height="100%"></canvas>
+                                    <canvas id="myChart" width="100%" height="60"></canvas>
                                 </div>
                             </div>
                         </div>
                         <div class="col-xl-6">
-                            <div class="card mb-4">
+                            <div class="card shadow mb-4">
                                 <div class="card-header">
-                                    <i class="fas fa-chart-area me-1"></i>
-                                    판매 현황 차트
+                                    <i class="fa-solid fa-chart-line"></i>
+                                    밀키트 업체별 월별 매출액
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="salesChart02" width="100%" height="100%"></canvas>
+                                    <canvas id="myChart02" width="100%" height="60"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xl-6">
+                        <div class="col-xl-12"> <!-- 차트와 테이블을 동일 너비로 맞춤 -->
                             <div class="card mb-4">
-                                <div class="card-header">
-                                    <i class="fas fa-chart-bar me-1"></i>
-                                    유통 현황 차트
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-chart-area me-1"></i>
+                                        유통 재고 현황
+                                    </div>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="logisticsChart1" width="100%" height="100%"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-6">
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <i class="fas fa-chart-area me-1"></i>
-                                    유통 현황 차트
-                                </div>
-                                <div class="card-body">
-                                    <canvas id="logisticsChart2" width="100%" height="100%"></canvas>
+                                    <!-- 차트 너비를 100%로 맞추기 -->
+                                    <canvas id="logisticsWarehouseStockChart" style="width: 100%; height: 400px;"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -71,15 +63,38 @@
                                         </div>
                                         <div class="chartTitleCenter">
                                             <div class="dropdown">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="productOrderChartDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                        id="productOrderChartDropdown" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
                                                     막대 차트
                                                 </button>
-                                                <ul class="dropdown-menu" id="productOrderChartDropdownMenu" aria-labelledby="productOrderChartDropdown">
-                                                    <li><button class="dropdown-item productOrder-dropdown-item" data-value="bar" data-name="막대 차트 ">막대 차트</button></li>
-                                                    <li><button class="dropdown-item productOrder-dropdown-item" data-value="line" data-name="선형 차트 ">선형 차트</button></li>
-                                                    <li><button class="dropdown-item productOrder-dropdown-item" data-value="doughnut" data-name="도넛 차트 ">도넛 차트</button></li>
-                                                    <li><button class="dropdown-item productOrder-dropdown-item" data-value="polarArea" data-name="폴라 차트 ">폴라 차트</button></li>
-                                                    <li><button class="dropdown-item productOrder-dropdown-item" data-value="radar" data-name="레이더 차트 ">레이더 차트</button></li>
+                                                <ul class="dropdown-menu" id="productOrderChartDropdownMenu"
+                                                    aria-labelledby="productOrderChartDropdown">
+                                                    <li>
+                                                        <button class="dropdown-item productOrder-dropdown-item"
+                                                                data-value="bar" data-name="막대 차트 ">막대 차트
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item productOrder-dropdown-item"
+                                                                data-value="line" data-name="선형 차트 ">선형 차트
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item productOrder-dropdown-item"
+                                                                data-value="doughnut" data-name="도넛 차트 ">도넛 차트
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item productOrder-dropdown-item"
+                                                                data-value="polarArea" data-name="폴라 차트 ">폴라 차트
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item productOrder-dropdown-item"
+                                                                data-value="radar" data-name="레이더 차트 ">레이더 차트
+                                                        </button>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -114,15 +129,38 @@
                                         </div>
                                         <div class="chartTitleCenter">
                                             <div class="dropdown">
-                                                <button class="btn btn-secondary dropdown-toggle" type="button" id="sourcePriceChartDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <button class="btn btn-secondary dropdown-toggle" type="button"
+                                                        id="sourcePriceChartDropdown" data-bs-toggle="dropdown"
+                                                        aria-expanded="false">
                                                     막대 차트
                                                 </button>
-                                                <ul class="dropdown-menu" id="sourcePriceChartDropdownMenu" aria-labelledby="sourcePriceChartDropdown">
-                                                    <li><button class="dropdown-item sourcePrice-dropdown-item" data-value="bar" data-name="막대 차트 ">막대 차트</button></li>
-                                                    <li><button class="dropdown-item sourcePrice-dropdown-item" data-value="line" data-name="선형 차트 ">선형 차트</button></li>
-                                                    <li><button class="dropdown-item sourcePrice-dropdown-item" data-value="doughnut" data-name="도넛 차트 ">도넛 차트</button></li>
-                                                    <li><button class="dropdown-item sourcePrice-dropdown-item" data-value="polarArea" data-name="폴라 차트 ">폴라 차트</button></li>
-                                                    <li><button class="dropdown-item sourcePrice-dropdown-item" data-value="radar" data-name="레이더 차트 ">레이더 차트</button></li>
+                                                <ul class="dropdown-menu" id="sourcePriceChartDropdownMenu"
+                                                    aria-labelledby="sourcePriceChartDropdown">
+                                                    <li>
+                                                        <button class="dropdown-item sourcePrice-dropdown-item"
+                                                                data-value="bar" data-name="막대 차트 ">막대 차트
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item sourcePrice-dropdown-item"
+                                                                data-value="line" data-name="선형 차트 ">선형 차트
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item sourcePrice-dropdown-item"
+                                                                data-value="doughnut" data-name="도넛 차트 ">도넛 차트
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item sourcePrice-dropdown-item"
+                                                                data-value="polarArea" data-name="폴라 차트 ">폴라 차트
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item sourcePrice-dropdown-item"
+                                                                data-value="radar" data-name="레이더 차트 ">레이더 차트
+                                                        </button>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -148,57 +186,57 @@
                         </div>
                     </div>
                 </div>
-                <div class="container-fluid px-4">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-table me-1"></i>
-                            <button class="btn btn-sm btn-outline-primary">**현황</button>
-                            <button class="btn btn-sm btn-outline-danger">**현황</button>
-                            <button class="btn btn-sm btn-outline-dark">**현황</button>
-                            <button class="btn btn-sm btn-outline-success">**현황</button>
-                            <button class="btn btn-sm btn-outline-warning">**현황</button>
-                            <button class="btn btn-sm btn-outline-secondary">**현황</button>
-                            </i>
-                        </div>
-                        <div class="card-body">
-                            <div id="productOrderTableContainer">
-                                <table id="productAdminOrderTable" class="table table-bordered" style="width:100%">
-                                    <thead>
-                                    <tr>
-                                        <th>주문번호</th>
-                                        <th>생산업체명</th>
-                                        <th>생산품</th>
-                                        <th>생산품가격</th>
-                                        <th>개수</th>
-                                        <th>가격</th>
-                                        <th>주문일자</th>
-                                        <th>상태</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                                <div class="d-flex justify-content-end mt-2">
+                <!--                <div class="container-fluid px-4">-->
+                <!--                    <div class="card mb-4">-->
+                <!--                        <div class="card-header">-->
+                <!--                            <i class="fas fa-table me-1"></i>-->
+                <!--                            <button class="btn btn-sm btn-outline-primary">**현황</button>-->
+                <!--                            <button class="btn btn-sm btn-outline-danger">**현황</button>-->
+                <!--                            <button class="btn btn-sm btn-outline-dark">**현황</button>-->
+                <!--                            <button class="btn btn-sm btn-outline-success">**현황</button>-->
+                <!--                            <button class="btn btn-sm btn-outline-warning">**현황</button>-->
+                <!--                            <button class="btn btn-sm btn-outline-secondary">**현황</button>-->
+                <!--                            </i>-->
+                <!--                        </div>-->
+                <!--                        <div class="card-body">-->
+                <!--                            <div id="productOrderTableContainer">-->
+                <!--                                <table id="productAdminOrderTable" class="table table-bordered" style="width:100%">-->
+                <!--                                    <thead>-->
+                <!--                                    <tr>-->
+                <!--                                        <th>주문번호</th>-->
+                <!--                                        <th>생산업체명</th>-->
+                <!--                                        <th>생산품</th>-->
+                <!--                                        <th>생산품가격</th>-->
+                <!--                                        <th>개수</th>-->
+                <!--                                        <th>가격</th>-->
+                <!--                                        <th>주문일자</th>-->
+                <!--                                        <th>상태</th>-->
+                <!--                                    </tr>-->
+                <!--                                    </thead>-->
+                <!--                                    <tbody>-->
+                <!--                                    </tbody>-->
+                <!--                                </table>-->
+                <!--                                <div class="d-flex justify-content-end mt-2">-->
 
-                                </div>
-                            </div>
-                            <div id="sourcePriceTableContainer" style="display:none;">
-                                <table id="productAdminSourceTable" class="table table-bordered">
-                                    <thead>
-                                    <tr>
-                                        <th>생산번호</th>
-                                        <th>생산 업체명</th>
-                                        <th>상품 명</th>
-                                        <th>상품 가격</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!--                                </div>-->
+                <!--                            </div>-->
+                <!--                            <div id="sourcePriceTableContainer" style="display:none;">-->
+                <!--                                <table id="productAdminSourceTable" class="table table-bordered">-->
+                <!--                                    <thead>-->
+                <!--                                    <tr>-->
+                <!--                                        <th>생산번호</th>-->
+                <!--                                        <th>생산 업체명</th>-->
+                <!--                                        <th>상품 명</th>-->
+                <!--                                        <th>상품 가격</th>-->
+                <!--                                    </tr>-->
+                <!--                                    </thead>-->
+                <!--                                    <tbody>-->
+                <!--                                    </tbody>-->
+                <!--                                </table>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+                <!--                </div>-->
             </main>
             <th:block th:replace="fragment/productAdminPageModal"></th:block>
             <footer class="py-4 bg-light mt-auto">
@@ -218,6 +256,6 @@
 </div>
 <footer th:replace="~{fragment/indexAdminFooter}"></footer>
 <script src="/js/indexAdminPage.js" th:src="@{/js/indexAdminPage.js}"></script>
-
+<div th:replace="~{fragment/salesIndexScript}"></div>
 </body>
 </html>

@@ -1,4 +1,16 @@
 <footer>
+    <th:block th:if="${alertDto!=null}">
+        <script th:inline="javascript">
+            const title= [[${alertDto.title}]];
+            const text = [[${alertDto.text}]]
+            const icon = [[${alertDto.icon}]]
+            Swal.fire({
+                title:title,
+                text:text,
+                icon:icon,
+            });
+        </script>
+    </th:block>
     <script src="/js/scripts.js"></script>
     <!-- DataTables with Bootstrap 5 integration CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">

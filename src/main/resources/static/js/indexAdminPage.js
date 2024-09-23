@@ -1,3 +1,4 @@
+// product chart start
 $(document).ready(function () {
     getProductOrderCompanyName()
     productOrderChartCompanyOption.hide()
@@ -397,7 +398,7 @@ $('.sourcePrice-dropdown-item').on('click', function () {
         });
     }
 
-
+// product chart end
 const colors = [
     '#E57373', '#F06292', '#BA68C8', '#64B5F6', '#4FC3F7',
     '#4DD0E1', '#4DB6AC', '#81C784', '#AED581', '#DCE775',
@@ -409,3 +410,80 @@ const colors = [
     '#8E24AA', '#7B1FA2', '#6D1B9D', '#4A148C', '#2C6C9A',
     '#00838F', '#00695C', '#004D40', '#004D40', '#1B5E20'
 ];
+function webSocketConnect() {
+    const socket = new SockJS('/websocket-endpoint');
+    const stompClient = Stomp.over(socket);
+
+    // 웹소켓 연결 시작
+    stompClient.connect({}, function () {
+        // 창고 재고 업데이트를 위한 경로 구독
+        stompClient.subscribe('/topic/warehouse/update', function (message) {
+            const payload = message.body;
+
+            if (payload === 'update') {
+                // pageUpdate 함수를 호출하여 차트 데이터를 새로 고침
+                updateLogisticesWarehouseChart();  // 차트를 업데이트하는 함수
+            }
+
+        });
+    });
+}
+webSocketConnect();
+
+let warehouseStockChart;
+initChart();
+updateLogisticesWarehouseChart();
+
+function initChart() { // 여기 안에 type
+    const ctx = $('#logisticsWarehouseStockChart')[0].getContext('2d');
+
+    if(warehouseStockChart) {
+        warehouseStockChart.destroy(); // 기존 모양의 차트 삭제하고 새 유형의 차트 다시 로딩
+    }
+
+    warehouseStockChart = new Chart(ctx, {
+        type: 'bar', // 동적으로 받은 차트 타입, 'bar' 대신 type 적어보면되나
+        data: {
+            labels: [], // 초기 레이블
+            datasets: [{
+                label: '총 재고량',
+                data: [],
+                backgroundColor: [],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function updateLogisticesWarehouseChart() {
+    $.ajax({
+        url: '/distribution/api/warehouseStockChart', // 창고 데이터를 가져오는 URL
+        type: 'GET',
+        contentType: 'application/json',
+        success: function (response) {
+            const labels = [];
+            const data = [];
+
+            // response 데이터를 순회하며 필요한 정보 추출
+            response.forEach(function (item) {
+                labels.push(item.sourceName); // sourceName을 labels로 사용
+                data.push(item.sourceQuantity); // sourceQuantity 값을 data로 사용
+            });
+
+            warehouseStockChart.data.labels = labels;
+            warehouseStockChart.data.datasets[0].data = data;
+            warehouseStockChart.data.datasets[0].backgroundColor = colors.slice(0, data.length);
+            warehouseStockChart.update();
+        },
+        error: function (xhr, status, error) {
+            console.error('차트 데이터 가져오는데 실패했습니다. 다시 시도해주세요.:', error);
+        }
+    });
+}
