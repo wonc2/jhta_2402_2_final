@@ -91,6 +91,7 @@ public class WareHouseController {
         // KitOrderLog 기입
         salesService.insertKitOrderLog(UUID.fromString(kitOrderId));
 
+        Map<String,Object> map = new HashMap<>();
         return "redirect:/wareHouse/selectAll";
     }
 
@@ -166,7 +167,7 @@ public class WareHouseController {
 
         logisticsWareHouseService.insertProductOrder(map);
 
-        return "redirect:/wareHouse/selectList";
+        return "redirect:/wareHouse/selectAll";
 
     }
 

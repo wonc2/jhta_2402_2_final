@@ -209,7 +209,7 @@ public class SalesAdminController {
 
         alter(redirectAttributes, "발주 요청 되었습니다.");
 
-        return "redirect:/sales/product/order";
+        return "redirect:/wareHouse/selectAll";
     }
 
     @PostMapping("/shinhyeok")
