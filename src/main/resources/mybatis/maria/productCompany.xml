@@ -123,7 +123,7 @@
         sp.SOURCE_PRICE_ID as sourcePriceId,
         COALESCE(sw.totalQuantity, 0) AS stockBalance
         FROM PRODUCT_ORDER po
-        JOIN SOURCE_PRICE sp ON po.SOURCE_ID = sp.SOURCE_ID
+        JOIN SOURCE_PRICE sp ON po.SOURCE_ID = sp.SOURCE_ID AND po.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
         --         JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID
