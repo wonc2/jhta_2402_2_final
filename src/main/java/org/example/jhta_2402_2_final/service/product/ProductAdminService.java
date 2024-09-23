@@ -79,6 +79,21 @@ public class ProductAdminService {
                 .userTel(productCompanyInsertDto.getUserTel())
                 .roleId("3")
                 .build();
+        if(memberDto.getUserId().isEmpty()){
+            return 0;
+        }
+        if(memberDto.getUserPassword().isEmpty()){
+            return 0;
+        }
+        if(memberDto.getUserName().isEmpty()){
+            return 0;
+        }
+        if(memberDto.getUserTel().isEmpty()){
+            return 0;
+        }
+        if(memberDto.getUserEmail().isEmpty()){
+            return 0;
+        }
         if(memberDao.checkUserIdProduct(memberDto.getUserId())==1){
             return 0;
         }else {
