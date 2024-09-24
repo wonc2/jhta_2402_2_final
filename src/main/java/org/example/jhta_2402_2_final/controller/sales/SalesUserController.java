@@ -75,6 +75,8 @@ public class SalesUserController {
         List<Integer> monthlyList = salesUserService.selectMonthly(kitCompanyId);
         model.addAttribute("monthlyList", monthlyList);
 
+        model.addAttribute("sourceList", salesService.getSourceIdAndNames());
+
         return "sales/user";
     }
 
@@ -105,6 +107,21 @@ public class SalesUserController {
                          RedirectAttributes redirectAttributes) {
         salesService.updateKitOrderCancel(kitOrderId);
         alter(redirectAttributes, "주문이 취소되었습니다.");
+        return "redirect:/sales/user";
+    }
+
+    @PostMapping("/insert-mealkit")
+    public String insertMealkit(@RequestParam("mealkitName") String mealkitName,
+                                @RequestParam("sourceIds") List<String> sourceIds,
+                                @RequestParam(value = "quantities", required = false) List<Integer> quantities,
+                                RedirectAttributes redirectAttributes) {
+
+        System.out.println("mealkitName = " + mealkitName);
+        System.out.println("sourceIds = " + sourceIds);
+        System.out.println("quantities = " + quantities);
+
+        salesService.insertMealkit(mealkitName, sourceIds, quantities);
+        alter(redirectAttributes, "새로운 밀키트가 등록되었습니다.");
         return "redirect:/sales/user";
     }
 }

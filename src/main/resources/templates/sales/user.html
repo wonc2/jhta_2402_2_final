@@ -17,6 +17,12 @@
             <div class="d-flex justify-content-end mb-4 mt-4">
                 <button class="btn btn-primary mx-2"
                         data-bs-toggle="modal"
+                        data-bs-target="#insertMealkitModal">
+                    밀키트 등록
+                </button>
+
+                <button class="btn btn-primary mx-2"
+                        data-bs-toggle="modal"
                         data-bs-target="#insertKitOrderModal">
                     밀키트 주문 추가
                 </button>
@@ -286,6 +292,52 @@
     </div>
 </div>
 
+<!-- 밀키트 추가 모달 -->
+<div class="modal fade" id="insertMealkitModal" tabindex="-1" aria-labelledby="insertMealkitModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="insertMealkitModalLabel">밀키트 추가</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="mealkitForm" th:method="post" th:action="@{/sales/user/insert-mealkit}">
+                    <div class="mb-3">
+                        <label for="mealkitName" class="form-label">밀키트 이름</label>
+                        <input type="text" class="form-control" id="mealkitName" name="mealkitName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="sourceList" class="form-label">재료 선택</label>
+                        <div id="sourceList">
+                            <div th:each="map : ${sourceList}">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                           th:id="'source-' + ${map.sourceId}"
+                                           th:name="sourceIds"
+                                           th:value="${map.sourceId}"
+                                           onclick="toggleQuantityInput(this)">
+                                    <label class="form-check-label" th:for="'source-' + ${map.sourceId}">
+                                        <span th:text="${map.name}">재료 이름</span>
+                                    </label>
+                                    <!-- 수량 입력 필드 -->
+                                    <input type="number" class="form-control mt-2"
+                                           th:id="'quantity-' + ${map.sourceId}"
+                                           th:name="quantities"
+                                           placeholder="수량" min="1" style="width: 100px; display: none;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                        <button type="submit" class="btn btn-primary" form="mealkitForm" >저장</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -428,5 +480,20 @@
     new Chart(ctx02, config);
 
 </script>
+
+<!--밀키트 재료 추가 -->
+<script>
+    function toggleQuantityInput(checkbox) {
+        const sourceId = checkbox.value;
+        const quantityInput = document.querySelector(`#quantity-${sourceId}`);
+        if (checkbox.checked) {
+            quantityInput.style.display = 'block';
+        } else {
+            quantityInput.style.display = 'none';
+            quantityInput.value = ''; // 체크박스가 해제되면 수량 필드 값도 초기화
+        }
+    }
+</script>
+
 
 

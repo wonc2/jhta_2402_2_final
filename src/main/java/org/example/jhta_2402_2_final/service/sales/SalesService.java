@@ -56,9 +56,13 @@ public class SalesService {
     }
 
     private void insertKitSources(String mealkitId, List<String> sourceIds, List<Integer> quantities) {
+
+        int sourceIndex = 0;
+
         for (int i = 0; i < quantities.size(); i++) {
             if (quantities.get(i) != null) {
-                salesDao.insertKitSources(mealkitId, sourceIds.get(i), quantities.get(i));
+                salesDao.insertKitSources(mealkitId, sourceIds.get(sourceIndex), quantities.get(i));
+                sourceIndex++;
             }
         }
     }
