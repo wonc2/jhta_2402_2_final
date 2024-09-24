@@ -32,86 +32,86 @@
                     창고 재고 확인
                 </div>
 
-                    <div class="card-body slide-container">
+                <div class="card-body slide-container">
 
 
 
 
-                        <div class="row"> <!-- 여기에 데이터 차트 들어갑니다 -->
-                            <div class="col-xl-12"> <!-- 차트1(유통창고 재료 재고 조회 차트-->
-                                <div class="card mb-4">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <i class="fas fa-chart-area me-1"></i>
-                                            재고 현황
-                                        </div>
-                                        <!-- 드롭다운 버튼 -->
-
+                    <div class="row"> <!-- 여기에 데이터 차트 들어갑니다 -->
+                        <div class="col-xl-12"> <!-- 차트1(유통창고 재료 재고 조회 차트-->
+                            <div class="card mb-4">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-chart-area me-1"></i>
+                                        재고 현황
                                     </div>
-                                    <div class="card-body stockChart">
-                                        <canvas id="logisticsWarehouseStockChart" style="max-width: 2000px; max-height: 500px;"></canvas>
-                                    </div>
+                                    <!-- 드롭다운 버튼 -->
+
+                                </div>
+                                <div class="card-body stockChart">
+                                    <canvas id="logisticsWarehouseStockChart" style="max-width: 2000px; max-height: 500px;"></canvas>
                                 </div>
                             </div>
-
                         </div>
 
-
-
-
-
-
-
-
-
-                        <form action="/wareHouse/selectBySourceName" method="get"
-                              class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
-
-                            <input type="text" class="form-control" name="keyword" placeholder="재료명 입력">
-                            <button type="submit" class="btn btn-primary">검색</button>
-                            <a href="/wareHouse/selectAll">
-                                <button class="btn btn-primary" type="button">전체검색</button>
-                            </a>
-                        </form>
-
-
-                        <table id="datatablesSimple">
-                            <thead>
-                            <tr>
-                                <th>창고이름</th>
-                                <th>재료명</th>
-                                <th>수량</th>
-                                <th>상세</th>
-                            </tr>
-                            </thead>
-                            <tfoot>
-                            <tr>
-                                <th>창고이름</th>
-                                <th>재료명</th>
-                                <th>수량</th>
-                                <th>상세</th>
-                            </tr>
-                            </tfoot>
-                            <tbody>
-                            <tr th:each="items : ${warehouseList}">
-                                <td th:text="${items.wareHouseName}"></td>
-                                <td th:text="${items.sourceName}"></td>
-                                <td th:text="${items.quantity}"></td>
-                                <td>
-                                    <button class="btn btn-primary"
-                                            type="button"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#LogModal"
-                                            th:attr="data-source-id=${items.sourceUUID}"
-                                    >
-                                        <!-- 상세--> 로그버튼
-                                    </button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
                     </div>
+
+
+
+
+
+
+
+
+
+                    <form action="/wareHouse/selectBySourceName" method="get"
+                          class="input-group justify-content-end ms-auto mb-3" style="width: 400px;">
+
+                        <input type="text" class="form-control" name="keyword" placeholder="재료명 입력">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                        <a href="/wareHouse/selectAll">
+                            <button class="btn btn-primary" type="button">전체검색</button>
+                        </a>
+                    </form>
+
+
+                    <table id="datatablesSimple">
+                        <thead>
+                        <tr>
+                            <th>창고이름</th>
+                            <th>재료명</th>
+                            <th>수량</th>
+                            <th>상세</th>
+                        </tr>
+                        </thead>
+                        <tfoot>
+                        <tr>
+                            <th>창고이름</th>
+                            <th>재료명</th>
+                            <th>수량</th>
+                            <th>상세</th>
+                        </tr>
+                        </tfoot>
+                        <tbody>
+                        <tr th:each="items : ${warehouseList}">
+                            <td th:text="${items.wareHouseName}"></td>
+                            <td th:text="${items.sourceName}"></td>
+                            <td th:text="${items.quantity}"></td>
+                            <td>
+                                <button class="btn btn-primary"
+                                        type="button"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#LogModal"
+                                        th:attr="data-source-id=${items.sourceUUID}"
+                                >
+                                    <!-- 상세--> 로그버튼
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
 
             <div class="card mb-5">
@@ -438,7 +438,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                    <button type="submit" class="btn btn-primary" form="orderForm">발주 요청</button>
+                    <button type="submit" class="btn btn-primary" id="orderRequestButton" form="orderForm">발주 요청</button>
                     <form th:action="@{/wareHouse/sales}" th:method="post">
                         <input type="hidden" name="kitOrderIdForSale" id="hiddenKitOrderIdForSale">
                         <input type="hidden" name="sourceNamesForSale" id="hiddenSourceNamesForSale">
@@ -820,7 +820,8 @@
     document.addEventListener('DOMContentLoaded', function () {
 
         var orderDetailModal = document.getElementById('orderDetailModal');
-        var sellButton = document.getElementById('sellButton'); // 판매 버튼을 선택
+        var sellButton = document.getElementById('sellButton'); // 판매 버튼 선택
+        var orderRequestButton = document.getElementById('orderRequestButton'); // 발주 요청 버튼 선택
 
         orderDetailModal.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget;
@@ -853,25 +854,27 @@
                     const minPrices = [];
                     const companyNames = [];
 
-                    let canSell = true; // 판매 가능 여부를 추적
+                    let canSell = true; // 판매 가능 여부
+                    let canRequestOrder = true; // 발주 요청 가능 여부
 
                     data.forEach(item => {
                         let rowHtml = `
-                        <tr>
-                            <td>${item.sourceName}</td>
-                            <td>${item.quantity}</td>
-                            <td>${item.stackQuantity}`;
+                    <tr>
+                        <td>${item.sourceName}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.stackQuantity}`;
 
                         // 창고재고가 재료수량보다 적을 경우 시각적으로 표시
                         if (item.stackQuantity < item.quantity) {
                             rowHtml += ` <span style="color: red;">(부족)</span>`;
-                            canSell = false; // 판매 불가능
+                            canSell = false; // 판매 불가
+                            canRequestOrder = false; // 발주 요청도 불가
                         }
 
                         rowHtml += `</td>
-                                <td>${item.minPrice}</td>
-                                <td>${item.companyName}</td>
-                            </tr>`;
+                            <td>${item.minPrice}</td>
+                            <td>${item.companyName}</td>
+                        </tr>`;
 
                         tbody.innerHTML += rowHtml;
 
@@ -891,8 +894,8 @@
 
                     document.getElementById('hiddenSourceNamesForSale').value = JSON.stringify(sourceNames);
                     document.getElementById('hiddenItemQuantitiesForSale').value = JSON.stringify(itemQuantities);
-                    ;
                     document.getElementById('hiddenKitOrderIdForSale').value = kitOrderId;
+
                     // 판매 버튼 활성화/비활성화
                     if (canSell) {
                         sellButton.classList.remove('btn-secondary');
@@ -904,6 +907,17 @@
                         sellButton.disabled = true;
                     }
 
+                    // 발주 요청 버튼 활성화/비활성화
+                    if (!canRequestOrder) {
+                        orderRequestButton.classList.remove('btn-secondary');
+                        orderRequestButton.classList.add('btn-primary');
+                        orderRequestButton.disabled = false;
+                    } else {
+                        orderRequestButton.classList.remove('btn-primary');
+                        orderRequestButton.classList.add('btn-secondary');
+                        orderRequestButton.disabled = true;
+                    }
+
                 })
                 .catch(error => {
                     console.error('Fetch 오류:', error);
@@ -911,6 +925,7 @@
         });
 
     });
+
 
 
     document.addEventListener('DOMContentLoaded', function () {
