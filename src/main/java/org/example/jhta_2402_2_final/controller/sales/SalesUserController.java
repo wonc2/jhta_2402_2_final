@@ -33,78 +33,66 @@ public class SalesUserController {
     public String salesUser(@AuthenticationPrincipal CustomUserDetails userDetails,
                             Model model) {
         String userId = userDetails.getMemberDto().getUserId();
-        model.addAttribute("userId",userId);
+        model.addAttribute("userId", userId);
 
-
-        //로그인한 userId를 통해 kitCompanyId 가져오기
+        // 로그인한 userId를 통해 kitCompanyId 가져오기
         UserKitOrderDto info = salesUserService.selectKitCompanyIdByUserId(userId);
         String kitCompanyId = info.getKitCompanyId();
-        model.addAttribute("info",info);
+        model.addAttribute("info", info);
 
         // 현재 날짜를 가져옴
         LocalDate currentDate = LocalDate.now();
-
-        // 년도와 달을 구함
         int currentYear = currentDate.getYear();
         int currentMonth = currentDate.getMonthValue();
-
         model.addAttribute("currentYear", currentYear);
         model.addAttribute("currentMonth", currentMonth);
 
+        // 월 매출액
+        model.addAttribute("totalMonthSale", formatCurrency(salesUserService.getTotalMonthSale(currentYear, currentMonth, kitCompanyId)));
 
-        //월 매출액
-        int totalMonthSale = salesUserService.getTotalMonthSale(currentYear, currentMonth, kitCompanyId);
+        // 연매출액
+        model.addAttribute("totalYearSale", formatCurrency(salesUserService.getTotalYearSale(currentYear, kitCompanyId)));
 
-        // 숫자를 3자리마다 콤마로 구분하는 포맷 설정
-        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.KOREA);
-        String formattedMonthSale = numberFormat.format(totalMonthSale);
+        // 처리중인 주문 개수
+        model.addAttribute("processingCount", salesUserService.getProcessCount(kitCompanyId));
 
-        model.addAttribute("totalMonthSale", formattedMonthSale);
+        // 처리완료된 주문 개수
+        model.addAttribute("completeCount", salesUserService.getCompleteCount(kitCompanyId));
 
-        //연매출액
-        int totalYearSale = salesUserService.getTotalYearSale(currentYear, kitCompanyId);
-        String formattedYearSale = numberFormat.format(totalYearSale);
-        model.addAttribute("totalYearSale", formattedYearSale);
-
-        //처리중인 주문 개수
-        int processingCount = salesUserService.getProcessCount(kitCompanyId);
-        model.addAttribute("processingCount",processingCount);
-
-        //처리완료된 주문 개수
-        int completeCount = salesUserService.getCompleteCount(kitCompanyId);
-        model.addAttribute("completeCount",completeCount);
-
-        //해당 업체 주문 정보 가져오기
+        // 해당 업체 주문 정보 가져오기
         List<UserKitOrderDto> list = salesUserService.selectKitOrderByKitCompanyId(kitCompanyId);
-        model.addAttribute("list",list);
+        model.addAttribute("list", list);
 
-        //밀키트명이랑 pk가져오기
+        // 밀키트명이랑 pk 가져오기
         List<Map<String, Object>> mealkitList = salesService.getMealkitIdAndNames();
         model.addAttribute("mealkitList", mealkitList);
 
-        //밀키트 재고 가져오기
+        // 밀키트 재고 가져오기
         List<Map<String, Object>> kitStorage = salesUserService.selectKitStorage(kitCompanyId);
         model.addAttribute("kitStorage", kitStorage);
 
+        // 월별 매출 데이터 가져오기
         List<Integer> monthlyList = salesUserService.selectMonthly(kitCompanyId);
-        System.out.println("monthlyList = >>>>>>>" + monthlyList);
-        model.addAttribute("monthlyList",monthlyList);
+        model.addAttribute("monthlyList", monthlyList);
+
+        model.addAttribute("sourceList", salesService.getSourceIdAndNames());
+
         return "sales/user";
+    }
+
+    private String formatCurrency(int amount) {
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.KOREA);
+        return numberFormat.format(amount);
     }
 
     @PostMapping("/insert")
     public String insert(@ModelAttribute UserKitOrderDto userKitOrderDto,
                          RedirectAttributes redirectAttributes) {
-        System.out.println("kit order insert" +userKitOrderDto);
         String mealkitId = userKitOrderDto.getMealkitId();
-
         KitPriceDto dto = salesService.getCurrentPriceAndMinPrice(mealkitId);
 
-        int currentPrice = dto.getCurrentMealkitPrice();
-        int minPrice = dto.getMinMealkitPrice();
-
-        //현재 가격이 최소가격보다 낮을경우 판매 불가능 하도록
-        if (currentPrice < minPrice) {
+        // 현재 가격과 최소 가격 비교
+        if (dto.getCurrentMealkitPrice() < dto.getMinMealkitPrice()) {
             alter(redirectAttributes, "밀키트 가격이 변동되었습니다. 해당 밀키트는 현재 주문이 불가합니다.");
             return "redirect:/sales/user";
         }
@@ -115,10 +103,25 @@ public class SalesUserController {
     }
 
     @PostMapping("/cancel")
-    public String cancel (@RequestParam UUID kitOrderId,
-                          RedirectAttributes redirectAttributes) {
+    public String cancel(@RequestParam UUID kitOrderId,
+                         RedirectAttributes redirectAttributes) {
         salesService.updateKitOrderCancel(kitOrderId);
-        alter(redirectAttributes,"주문이 취소되었습니다.");
+        alter(redirectAttributes, "주문이 취소되었습니다.");
+        return "redirect:/sales/user";
+    }
+
+    @PostMapping("/insert-mealkit")
+    public String insertMealkit(@RequestParam("mealkitName") String mealkitName,
+                                @RequestParam("sourceIds") List<String> sourceIds,
+                                @RequestParam(value = "quantities", required = false) List<Integer> quantities,
+                                RedirectAttributes redirectAttributes) {
+
+        System.out.println("mealkitName = " + mealkitName);
+        System.out.println("sourceIds = " + sourceIds);
+        System.out.println("quantities = " + quantities);
+
+        salesService.insertMealkit(mealkitName, sourceIds, quantities);
+        alter(redirectAttributes, "새로운 밀키트가 등록되었습니다.");
         return "redirect:/sales/user";
     }
 }

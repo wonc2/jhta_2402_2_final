@@ -1,7 +1,7 @@
 package org.example.jhta_2402_2_final.service.product;
 
 import lombok.RequiredArgsConstructor;
-import org.example.jhta_2402_2_final.dao.product.ProductCompanyDao;
+import org.example.jhta_2402_2_final.exception.dao.product.ProductCompanyDao;
 import org.example.jhta_2402_2_final.exception.types.productCompany.CompanySourceException;
 import org.example.jhta_2402_2_final.exception.types.productCompany.ProduceSourceException;
 import org.example.jhta_2402_2_final.exception.types.productCompany.ProductCompanyAccessException;

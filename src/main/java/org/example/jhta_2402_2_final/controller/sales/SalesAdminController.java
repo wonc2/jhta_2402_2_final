@@ -34,168 +34,123 @@ public class SalesAdminController {
 
     @GetMapping
     public String salesMain(Model model) {
-
-        // 현재 날짜를 가져옴
         LocalDate currentDate = LocalDate.now();
-
-        // 년도와 달을 구함
         int currentYear = currentDate.getYear();
         int currentMonth = currentDate.getMonthValue();
 
         model.addAttribute("currentYear", currentYear);
         model.addAttribute("currentMonth", currentMonth);
-
-
-        //월 매출액
-        int totalMonthSale = salesService.getTotalMonthSale(currentYear, currentMonth);
-
-        // 숫자를 3자리마다 콤마로 구분하는 포맷 설정
-        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.KOREA);
-        String formattedMonthSale = numberFormat.format(totalMonthSale);
-
-        model.addAttribute("totalMonthSale", formattedMonthSale);
-
-        //연매출액
-        int totalYearSale = salesService.getTotalYearSale(currentYear);
-        String formattedYearSale = numberFormat.format(totalYearSale);
-        model.addAttribute("totalYearSale", formattedYearSale);
-
-        //처리중인 주문 개수
-        int processingCount = salesService.getProcessCount();
-        model.addAttribute("processingCount",processingCount);
-
-        //처리완료된 주문 개수
-        int completeCount = salesService.getCompleteCount();
-        model.addAttribute("completeCount",completeCount);
-
-        //업체별 월별 판매량
-        List<Map<String, Object>> monthlySales = salesService.getMonthlySales();
-        model.addAttribute("monthlySales",monthlySales);
-
-        //업체별 누적 판매량, 판매금액
-        List<Map<String, String>> totalQuantityByCompanyNameList = salesService.selectTotalQuantityByCompanyName();
-        model.addAttribute("totalQuantityByCompanyNameList", totalQuantityByCompanyNameList);
-
-        //밀키트와 해당 밀키트의 재료 가져오기
-        List<KitSourceDetailDto> kitSourceDetails = salesService.getAllKitSourceDetail();
-        model.addAttribute("kitSourceDetails", kitSourceDetails);
-
-        //상세정보 조인해서 가져오기
-        List<KitOrderDetailDto> kitOrderDetails = salesService.getAllKitOrderDetail();
-        model.addAttribute("kitOrderDetails", kitOrderDetails);
-
-        //업체명과 pk값 가져오기
-        List<Map<String, String>> companyList = salesService.getKitCompanyIdAndNames();
-        model.addAttribute("companyList",companyList);
-
-        //밀키트명이랑 pk가져오기
-        List<Map<String, Object>> mealkitList = salesService.getMealkitIdAndNames();
-        model.addAttribute("mealkitList", mealkitList);
-
-        //재료명이랑 pk가져오기
-        List<Map<String,String>> sourceList = salesService.getSourceIdAndNames();
-        model.addAttribute("sourceList", sourceList);
-
-        //로그
-        List<KitOrderLogDto> kitOrderLogs = salesService.getKitOrderLogs();
-        model.addAttribute("kitOrderLogs", kitOrderLogs);
+        model.addAttribute("totalMonthSale", formatNumber(salesService.getTotalMonthSale(currentYear, currentMonth)));
+        model.addAttribute("totalYearSale", formatNumber(salesService.getTotalYearSale(currentYear)));
+        model.addAttribute("processingCount", salesService.getProcessCount());
+        model.addAttribute("completeCount", salesService.getCompleteCount());
+        model.addAttribute("monthlySales", salesService.getMonthlySales());
+        model.addAttribute("totalQuantityByCompanyNameList", salesService.selectTotalQuantityByCompanyName());
+        model.addAttribute("kitSourceDetails", salesService.getAllKitSourceDetail());
+        model.addAttribute("kitOrderDetails", salesService.getAllKitOrderDetail());
+        model.addAttribute("companyList", salesService.getKitCompanyIdAndNames());
+        model.addAttribute("mealkitList", salesService.getMealkitIdAndNames());
+        model.addAttribute("sourceList", salesService.getSourceIdAndNames());
+        model.addAttribute("kitOrderLogs", salesService.getKitOrderLogs());
 
         return "sales/admin";
     }
 
-    @PostMapping("/insert")
-    public String insert(@ModelAttribute KitOrderDto kitOrderDto,
-                         RedirectAttributes redirectAttributes) {
-        String mealkitId = kitOrderDto.getMealkitId();
+    private String formatNumber(int number) {
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.KOREA);
+        return numberFormat.format(number);
+    }
 
+    @PostMapping("/insert")
+    public String insert(@ModelAttribute KitOrderDto kitOrderDto, RedirectAttributes redirectAttributes) {
+        String mealkitId = kitOrderDto.getMealkitId();
         KitPriceDto dto = salesService.getCurrentPriceAndMinPrice(mealkitId);
 
-        int currentPrice = dto.getCurrentMealkitPrice();
-        int minPrice = dto.getMinMealkitPrice();
-
-        //현재 가격이 최소가격보다 낮을경우 판매 불가능 하도록
-        if (currentPrice < minPrice) {
+        if (!isPriceValid(dto)) {
             alter(redirectAttributes, "밀키트 가격이 변동되었습니다. 해당 밀키트는 현재 주문이 불가합니다.");
             return "redirect:/sales/admin";
         }
 
+        handleKitOrderInsertion(kitOrderDto, redirectAttributes);
+        return "redirect:/sales/admin";
+    }
 
+    private boolean isPriceValid(KitPriceDto dto) {
+        return dto.getCurrentMealkitPrice() >= dto.getMinMealkitPrice();
+    }
+
+    private void handleKitOrderInsertion(KitOrderDto kitOrderDto, RedirectAttributes redirectAttributes) {
         int isSuccess = salesService.createKitOrder(kitOrderDto);
-
         UUID kitOrderId = kitOrderDto.getKitOrderId();
+
         if (isSuccess > 0) {
             salesService.insertKitOrderLog(kitOrderId);
             alter(redirectAttributes, "밀키트 주문이 추가되었습니다.");
         } else {
-            alter(redirectAttributes,"밀키트 주문에 실패하였습니다.");
+            alter(redirectAttributes, "밀키트 주문에 실패하였습니다.");
         }
-
-        return "redirect:/sales/admin";
     }
 
-    // 상태 변경
     @PostMapping("/update-status")
-    public String changeKitOrderStatus(
-            @RequestParam("kitOrderId") UUID kitOrderId,
-            @RequestParam("statusId") int statusId,
-            RedirectAttributes redirectAttributes) {
-
-        // 현재 상태 확인
-        String currentStatus = salesService.getKitOrderStatus(kitOrderId);
-
-        // 출고상태가 아닌경우 처리완료 못하도록
-        if (!"출고".equals(currentStatus)) {
-            alter(redirectAttributes, "출고 상태인 경우에만 처리 완료가 가능합니다. 주문 상태를 다시 확인하세요.");
+    public String changeKitOrderStatus(@RequestParam("kitOrderId") UUID kitOrderId,
+                                       @RequestParam("statusId") int statusId,
+                                       RedirectAttributes redirectAttributes) {
+        if (!isOrderStatusValid(kitOrderId, redirectAttributes)) {
             return "redirect:/sales/admin";
         }
 
-
         salesService.updateKitOrderStatus(kitOrderId, statusId);
         salesService.updateKitStorage(kitOrderId);
-
-        alter(redirectAttributes,"밀키트 주문이 처리완료 되었습니다.");
-
+        alter(redirectAttributes, "밀키트 주문이 처리완료 되었습니다.");
         return "redirect:/sales/admin/storage";
     }
 
-    @PostMapping("/insert-mealkit")
-    public String insertMealkit(
-            @RequestParam("mealkitName") String mealkitName,
-            @RequestParam("sourceIds") List<String> sourceIds,
-            @RequestParam(value = "quantities", required = false) List<Integer> quantities,
-            RedirectAttributes redirectAttributes) {
-
-        // 서비스에서 밀키트 추가 로직 호출
-        salesService.insertMealkit(mealkitName, sourceIds, quantities);
-        alter(redirectAttributes,"새로운 밀키트가 등록되었습니다.");
-
-        return "redirect:/sales/admin";  // 완료 후 목록 페이지로 리다이렉트
+    private boolean isOrderStatusValid(UUID kitOrderId, RedirectAttributes redirectAttributes) {
+        String currentStatus = salesService.getKitOrderStatus(kitOrderId);
+        if (!"출고".equals(currentStatus)) {
+            alter(redirectAttributes, "출고 상태인 경우에만 처리 완료가 가능합니다. 주문 상태를 다시 확인하세요.");
+            return false;
+        }
+        return true;
     }
 
-    //주문별 최소 재료값 포함한 상세정보
+    @PostMapping("/insert-mealkit")
+    public String insertMealkit(@RequestParam("mealkitName") String mealkitName,
+                                @RequestParam("sourceIds") List<String> sourceIds,
+                                @RequestParam(value = "quantities", required = false) List<Integer> quantities,
+                                RedirectAttributes redirectAttributes) {
+        salesService.insertMealkit(mealkitName, sourceIds, quantities);
+        alter(redirectAttributes, "새로운 밀키트가 등록되었습니다.");
+        return "redirect:/sales/admin";
+    }
+
     @GetMapping("/order/details")
     @ResponseBody
     public List<OrderDetailDto> getOrderDetails(@RequestParam("kitOrderId") UUID kitOrderId,
                                                 @RequestParam("quantity") int quantity) {
-
         return salesService.getOrderDetails(kitOrderId, quantity);
     }
 
-
     @Transactional
     @PostMapping("/order/create")
-    public String submitOrder(
-            @RequestParam("kitOrderId") UUID kitOrderId,
-            @RequestParam("mealkitName") String mealkitName,
-            @RequestParam("quantity") int quantity,
-            @RequestParam("sourceNames") String sourceNamesJson,
-            @RequestParam("itemQuantities") String itemQuantitiesJson,
-            @RequestParam("stackQuantities") String stackQuantitiesJson,
-            @RequestParam("minPrices") String minPricesJson,
-            @RequestParam("companyNames") String companyNamesJson,
-            RedirectAttributes redirectAttributes) throws JsonProcessingException {
+    public String submitOrder(@RequestParam("kitOrderId") UUID kitOrderId,
+                              @RequestParam("mealkitName") String mealkitName,
+                              @RequestParam("quantity") int quantity,
+                              @RequestParam("sourceNames") String sourceNamesJson,
+                              @RequestParam("itemQuantities") String itemQuantitiesJson,
+                              @RequestParam("stackQuantities") String stackQuantitiesJson,
+                              @RequestParam("minPrices") String minPricesJson,
+                              @RequestParam("companyNames") String companyNamesJson,
+                              RedirectAttributes redirectAttributes) throws JsonProcessingException {
 
-        // JSON 문자열을 배열로 변환
+        processOrderData(sourceNamesJson, itemQuantitiesJson, stackQuantitiesJson, minPricesJson, companyNamesJson, kitOrderId);
+        salesService.updateKitOrderStatus(kitOrderId, 2);
+        alter(redirectAttributes, "발주 요청 되었습니다.");
+        return "redirect:/sales/product/order";
+    }
+
+    private void processOrderData(String sourceNamesJson, String itemQuantitiesJson, String stackQuantitiesJson,
+                                  String minPricesJson, String companyNamesJson, UUID kitOrderId) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
         String[] sourceNames = mapper.readValue(sourceNamesJson, String[].class);
@@ -205,11 +160,6 @@ public class SalesAdminController {
         String[] companyNames = mapper.readValue(companyNamesJson, String[].class);
 
         salesService.processOrder(sourceNames, companyNames, itemQuantities, stackQuantities, minPrices, kitOrderId);
-        salesService.updateKitOrderStatus(kitOrderId, 2);
-
-        alter(redirectAttributes, "발주 요청 되었습니다.");
-
-        return "redirect:/wareHouse/selectAll";
     }
 
     @PostMapping("/shinhyeok")
@@ -218,18 +168,32 @@ public class SalesAdminController {
                             @RequestParam("itemQuantitiesForSale") String itemQuantitiesJson,
                             RedirectAttributes redirectAttributes) throws IOException {
 
+        List<String> sourceNames = parseJsonToList(sourceNamesJson, new TypeReference<List<String>>() {});
+        List<Integer> itemQuantities = parseJsonToList(itemQuantitiesJson, new TypeReference<List<Integer>>() {});
+
+        validateListsSize(sourceNames, itemQuantities);
+
+        List<Map<String, Object>> combinedList = createCombinedList(sourceNames, itemQuantities);
+        logisticsWareHouseService.updateStackBySourceName(combinedList);
+        salesService.updateKitOrderStatus(kitOrderId, 8);
+        salesService.insertKitOrderLog(kitOrderId);
+        alter(redirectAttributes, "출고되었습니다.");
+
+        return "redirect:/sales/admin";
+    }
+
+    private <T> List<T> parseJsonToList(String json, TypeReference<List<T>> typeReference) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(json, typeReference);
+    }
 
-        // JSON 문자열을 List로 변환
-        List<String> sourceNames = objectMapper.readValue(sourceNamesJson, new TypeReference<List<String>>() {});
-        List<Integer> itemQuantities = objectMapper.readValue(itemQuantitiesJson, new TypeReference<List<Integer>>() {});
-
-        // 검증: 두 리스트의 크기가 동일한지 확인
+    private void validateListsSize(List<?> sourceNames, List<?> itemQuantities) {
         if (sourceNames.size() != itemQuantities.size()) {
             throw new IllegalArgumentException("sourceNames와 itemQuantities의 크기가 다릅니다.");
         }
+    }
 
-        // List<Map<String, Object>>로 변환
+    private List<Map<String, Object>> createCombinedList(List<String> sourceNames, List<Integer> itemQuantities) {
         List<Map<String, Object>> combinedList = new ArrayList<>();
         for (int i = 0; i < sourceNames.size(); i++) {
             Map<String, Object> itemMap = new HashMap<>();
@@ -237,46 +201,30 @@ public class SalesAdminController {
             itemMap.put("quantity", itemQuantities.get(i));
             combinedList.add(itemMap);
         }
-
-        // 데이터 저장을 위한 Map 생성
-        Map<String, Object> map = new HashMap<>();
-        map.put("kitOrderId", kitOrderId);
-        map.put("combinedList", combinedList);
-
-        // 창고에서 차감
-        logisticsWareHouseService.updateStackBySourceName(combinedList);
-
-        // KitOrder의 Status 수정
-        salesService.updateKitOrderStatus(kitOrderId, 8);
-
-        // KitOrderLog 기입
-        salesService.insertKitOrderLog(kitOrderId);
-
-        alter(redirectAttributes, "출고되었습니다.");
-
-        return "redirect:/sales/admin";
+        return combinedList;
     }
 
     @PostMapping("/cancel")
-    public String cancel (@RequestParam UUID kitOrderId,
-                          RedirectAttributes redirectAttributes) {
-        // 현재 상태 확인
-        String currentStatus = salesService.getKitOrderStatus(kitOrderId);
+    public String cancel(@RequestParam UUID kitOrderId, RedirectAttributes redirectAttributes) {
+        if (isOrderCancellable(kitOrderId, redirectAttributes)) {
+            salesService.updateKitOrderCancel(kitOrderId);
+            alter(redirectAttributes, "주문이 취소되었습니다.");
+        }
+        return "redirect:/sales/admin";
+    }
 
+    private boolean isOrderCancellable(UUID kitOrderId, RedirectAttributes redirectAttributes) {
+        String currentStatus = salesService.getKitOrderStatus(kitOrderId);
         if ("처리완료".equals(currentStatus) || "취소".equals(currentStatus)) {
             alter(redirectAttributes, "이미 취소되었거나 처리완료된 주문입니다.");
-            return "redirect:/sales/admin";
+            return false;
         }
-
-        salesService.updateKitOrderCancel(kitOrderId);
-        alter(redirectAttributes, "주문이 취소되었습니다.");
-        return "redirect:/sales/admin";
+        return true;
     }
 
     @PostMapping("/insert/company")
     public String insertCompany(@ModelAttribute InsertKitCompanyDto insertKitCompanyDto,
                                 RedirectAttributes redirectAttributes) {
-
         salesService.insertKitCompany(insertKitCompanyDto);
         alter(redirectAttributes, "새로운 업체가 등록되었습니다.");
         return "redirect:/sales/admin";
@@ -285,38 +233,40 @@ public class SalesAdminController {
     @ResponseBody
     @GetMapping("/checkUserId")
     public String checkUserId(@RequestParam String userId) {
-        boolean exists = salesService.checkUserIdExists(userId);  // 중복 여부 확인 로직
-        return exists ? "duplicate" : "available";
+        return checkAvailability(() -> salesService.checkUserIdExists(userId));
     }
 
     @ResponseBody
     @GetMapping("/checkCompanyName")
     public String checkCompanyName(@RequestParam String companyName) {
-        System.out.println("companyName =>>>>>>> " + companyName);
-        boolean exists = salesService.checkCompanyNameExists(companyName);  // 중복 여부 확인 로직
-        return exists ? "duplicate" : "available";
+        return checkAvailability(() -> salesService.checkCompanyNameExists(companyName));
     }
 
     @ResponseBody
     @GetMapping("/checkEmail")
     public String checkEmail(@RequestParam String email) {
-        boolean exists = salesService.checkEmailExists(email);  // 이메일 중복 여부 확인 로직
-        return exists ? "duplicate" : "available";
+        return checkAvailability(() -> salesService.checkEmailExists(email));
     }
 
     @ResponseBody
     @GetMapping("/checkTel")
     public String checkTel(@RequestParam String tel) {
-        boolean exists = salesService.checkTelExists(tel);
-        return exists ? "duplicate" : "available";
+        return checkAvailability(() -> salesService.checkTelExists(tel));
     }
 
     @ResponseBody
     @GetMapping("/checkAddress")
     public String checkAddress(@RequestParam String address) {
-        boolean exists = salesService.checkAddressExists(address);
+        return checkAvailability(() -> salesService.checkAddressExists(address));
+    }
+
+    private String checkAvailability(CheckExistsFunction checkExistsFunction) {
+        boolean exists = checkExistsFunction.exists();
         return exists ? "duplicate" : "available";
     }
 
-
+    @FunctionalInterface
+    private interface CheckExistsFunction {
+        boolean exists();
+    }
 }

@@ -2,7 +2,7 @@ package org.example.jhta_2402_2_final.service;
 
 
 import lombok.RequiredArgsConstructor;
-import org.example.jhta_2402_2_final.dao.SampleProductDao;
+import org.example.jhta_2402_2_final.exception.dao.SampleProductDao;
 import org.example.jhta_2402_2_final.model.dto.product.ProductDto;
 import org.springframework.stereotype.Service;
 

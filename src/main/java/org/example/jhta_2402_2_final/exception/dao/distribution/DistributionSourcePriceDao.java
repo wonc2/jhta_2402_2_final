@@ -1,4 +1,4 @@
-package org.example.jhta_2402_2_final.dao.distribution;
+package org.example.jhta_2402_2_final.exception.dao.distribution;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

@@ -1,4 +1,4 @@
-package org.example.jhta_2402_2_final.dao.product;
+package org.example.jhta_2402_2_final.exception.dao.product;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.example.jhta_2402_2_final.model.dto.common.SourceMinPriceDto;

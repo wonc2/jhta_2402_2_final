@@ -1,10 +1,11 @@
 package org.example.jhta_2402_2_final.service.sales;
 
 import lombok.RequiredArgsConstructor;
-import org.example.jhta_2402_2_final.dao.sales.SalesDao;
-import org.example.jhta_2402_2_final.dao.sales.SalesUserDao;
+import org.example.jhta_2402_2_final.exception.dao.sales.SalesDao;
+import org.example.jhta_2402_2_final.exception.dao.sales.SalesUserDao;
 import org.example.jhta_2402_2_final.model.dto.salesUser.UserKitOrderDto;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ public class SalesUserService {
         return salesUserDao.selectKitOrderByKitCompanyId(kitCompanyId);
     }
 
+    @Transactional
     public void insertKitOrder(UserKitOrderDto dto) {
         String kitOrderId = String.valueOf(UUID.randomUUID());
         dto.setKitOrderId(kitOrderId);

@@ -2,10 +2,9 @@ package org.example.jhta_2402_2_final.service.distribution;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.jhta_2402_2_final.dao.distribution.DistributionOrderDao;
+import org.example.jhta_2402_2_final.exception.dao.distribution.DistributionOrderDao;
 import org.example.jhta_2402_2_final.model.dto.distribution.*;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
