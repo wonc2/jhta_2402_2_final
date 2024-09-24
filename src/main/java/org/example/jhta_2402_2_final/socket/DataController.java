@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -17,4 +18,5 @@ public class DataController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.now().format(formatter);
     }
+
 }

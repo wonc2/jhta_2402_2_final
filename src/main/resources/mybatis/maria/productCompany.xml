@@ -60,7 +60,7 @@
         SELECT ROW_NUMBER() OVER (order by sw.produce_date asc) AS rowNum,
         sw.source_warehouse_id                   as sourceWarehouseId,
         sw.QUANTITY                              as sourceQuantity,
-        DATE_FORMAT(sw.produce_date, '%Y-%m-%d %h:%m') as produceDate,
+        DATE_FORMAT(sw.produce_date, '%Y-%m-%d %H:%i') as produceDate,
         s.name                                   as sourceName,
         CASE
         WHEN sw.QUANTITY &gt; 0 THEN '입고'
@@ -118,12 +118,12 @@
         po.PRICE AS sourcePrice,
         po.QUANTITY AS quantity,
         (po.PRICE * po.QUANTITY) AS totalPrice,
-        DATE_FORMAT(po.PRODUCT_ORDER_DATE, '%Y-%m-%d %h:%m') AS orderDate,
+        DATE_FORMAT(po.PRODUCT_ORDER_DATE, '%Y-%m-%d %H:%i') AS orderDate,
         COALESCE(post.STATUS_ID, po.STATUS_ID) AS orderStatus,
         sp.SOURCE_PRICE_ID as sourcePriceId,
         COALESCE(sw.totalQuantity, 0) AS stockBalance
         FROM PRODUCT_ORDER po
-        JOIN SOURCE_PRICE sp ON po.SOURCE_ID = sp.SOURCE_ID
+        JOIN SOURCE_PRICE sp ON po.SOURCE_ID = sp.SOURCE_ID AND po.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         JOIN PRODUCT_COMPANY pc ON pc.PRODUCT_COMPANY_ID = sp.PRODUCT_COMPANY_ID
         JOIN SOURCE s ON sp.SOURCE_ID = s.SOURCE_ID
         --         JOIN STATUS st ON st.STATUS_ID = po.STATUS_ID

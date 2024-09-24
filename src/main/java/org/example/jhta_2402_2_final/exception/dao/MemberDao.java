@@ -13,5 +13,5 @@ public interface MemberDao {
     boolean checkUserIdExists(String userId);
     String getProductMemberId(String userEmail);
     int insertProductCompanyMember(String userId ,String productCompanyId);
-
+    int checkUserIdProduct(String userId);
 }

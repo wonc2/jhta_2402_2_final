@@ -289,18 +289,18 @@
 
     </select>
 
- <insert id="insertProductOrder" parameterType="map">
-     INSERT INTO PRODUCT_ORDER  VALUES (
-                                           UUID(),
-                                           (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = #{companyName}),
-                                           (SELECT SOURCE_ID FROM SOURCE WHERE NAME = #{sourceName}),
-                                           #{quantity},
-                                           #{price},
-                                           NOW(),
-                                           1,
-                                           NULL
-                                       )
- </insert>
+    <insert id="insertProductOrder" parameterType="map">
+        INSERT INTO PRODUCT_ORDER VALUES (
+                                             UUID(),
+                                             (SELECT PRODUCT_COMPANY_ID FROM PRODUCT_COMPANY WHERE NAME = #{companyName}),
+                                             (SELECT SOURCE_ID FROM SOURCE WHERE NAME = #{sourceName}),
+                                             NULL, -- KIT_ORDER_ID를 NULL로 설정
+                                             #{quantity},
+                                             #{price},
+                                             NOW(),
+                                             1
+                                         )
+    </insert>
 
 </mapper>
 

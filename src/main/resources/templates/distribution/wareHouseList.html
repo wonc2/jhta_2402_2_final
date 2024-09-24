@@ -11,7 +11,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 </head>
 <body>
-<th:block th:replace="fragment/adminHeader :: body"></th:block>
+
+
+<th:block th:if="${#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+    <th:block th:replace="fragment/adminHeader :: body"></th:block>
+</th:block>
+<th:block th:if="${!#authorization.expression('hasRole(''ROLE_ADMIN'')')}">
+    <th:block th:replace="fragment/salesUserHeader :: body"></th:block>
+</th:block>
 <div id="layoutSidenav_content">
     <main>
 
@@ -390,7 +397,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="orderForm" th:action="@{/sales/order/create}" th:method="post">
+                <form id="orderForm" th:action="@{/sales/admin/order/create}" th:method="post">
                     <div id="kitInfo">
 
                         <div class="mb-3">
