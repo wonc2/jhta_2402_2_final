@@ -19,10 +19,10 @@
 <img src="https://img.shields.io/badge/amazon web services-232F3E?style=for-the-badge&logo=amazonwebservices&logoColor=white"> <img src="https://img.shields.io/badge/docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
 
 ## 팀 구성
-**허태훈** : PM , 생산 개발 <br>
+**허태훈** : PM , <a href="https://github.com/HaeToon/ScmProject">생산 개발</a> <br>
 **박신혁** : 기술 담당자 , 유통 개발 <br>
-**신가현** : 판매 개발 <br>
-**이기예** : 유통 개발 <br>
+**신가현** : <a href="https://github.com/gahyun1113/SCM_PROJECT">판매 개발</a><br>
+**이기예** : <a href = "https://github.com/TheThinkingOne/SCM_Project_LKY">유통 개발</a> <br>
 **이성은** : 유통 개발 <br>
 **이원철** : 기술 담당자 , 생산 개발 <br>
 
